@@ -1,5 +1,6 @@
 import init, { MapModel } from "backend";
 import type { Position, Feature, Polygon, FeatureCollection } from "geojson";
+import type { RouteGJ } from "./stores";
 
 export class Backend {
   inner: MapModel | null;
@@ -91,7 +92,7 @@ export class Backend {
     // TODO LngLatLike doesn't work?
     start: { lng: number; lat: number };
     end: Position;
-  }): FeatureCollection {
+  }): RouteGJ {
     if (!this.inner) {
       throw new Error("Backend used without a file loaded");
     }

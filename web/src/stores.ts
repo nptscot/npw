@@ -2,6 +2,7 @@ import type { Map } from "maplibre-gl";
 import { writable, type Writable } from "svelte/store";
 import { type Backend } from "./worker";
 import { RouteTool } from "route-snapper-ts";
+import type { FeatureCollection } from "geojson";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 
@@ -31,3 +32,16 @@ export let infraTypes: [string, string, string][] = [
   ["MixedTraffic", "Mixed traffic", "purple"],
   ["Unknown", "Unknown (but not mixed traffic)", "cyan"],
 ];
+
+export interface RouteGJ extends FeatureCollection {
+  direct_length: number;
+  route_length: number;
+  directions: Step[];
+}
+
+export interface Step {
+  name?: string;
+  length: number;
+  way: string;
+  infra_type: string;
+}

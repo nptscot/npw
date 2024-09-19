@@ -9,11 +9,11 @@
   } from "svelte-maplibre";
   import { SplitComponent } from "svelte-utils/top_bar_layout";
   import { notNull } from "svelte-utils";
-  import { mode, backend, routeA, routeB } from "./stores";
+  import { mode, backend, routeA, routeB, type RouteGJ } from "./stores";
   import { colorByInraType } from "./common";
-  import type { FeatureCollection } from "geojson";
+  import Directions from "./Directions.svelte";
 
-  let gj: FeatureCollection | null = null;
+  let gj: RouteGJ | null = null;
   let err = "";
 
   async function update(
@@ -58,6 +58,10 @@
 
     {#if err}
       <p>{err}</p>
+    {/if}
+
+    {#if gj}
+      <Directions {gj} />
     {/if}
   </div>
 
