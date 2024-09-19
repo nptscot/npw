@@ -3,7 +3,7 @@
   import { SplitComponent } from "svelte-utils/top_bar_layout";
   import { PropertiesTable, notNull } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
-  import { backend } from "./stores";
+  import { backend, mode } from "./stores";
   import { onMount } from "svelte";
   import type { FeatureCollection } from "geojson";
 
@@ -14,7 +14,11 @@
 </script>
 
 <SplitComponent>
-  <div slot="top">Nav</div>
+  <div slot="top">
+    <button on:click={() => ($mode = { kind: "main" })}
+      >Back to main mode</button
+    >
+  </div>
   <div slot="sidebar">
     <h2>Debug mode</h2>
     <p>Hover to see a segment's properties, and click to open OSM</p>

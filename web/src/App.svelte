@@ -11,8 +11,18 @@
     topContents,
   } from "svelte-utils/top_bar_layout";
   import DebugMode from "./DebugMode.svelte";
-  import { map as mapStore, mode, backend, maptilerApiKey } from "./stores";
+  import MainMode from "./MainMode.svelte";
+  import SketchRouteMode from "./SketchRouteMode.svelte";
+  import {
+    map as mapStore,
+    mode,
+    backend,
+    maptilerApiKey,
+    routeTool,
+  } from "./stores";
   import { Backend } from "./worker";
+  import { routeToolGj, snapMode, undoLength } from "./snapper/stores";
+  import { init, RouteTool } from "route-snapper-ts";
   // TODO Indirect dependencies
   import * as pmtiles from "pmtiles";
   import maplibregl from "maplibre-gl";
@@ -24,7 +34,24 @@
     maplibregl.addProtocol("pmtiles", protocol.tile);
   }
 
+  let map: Map;
+  $: if (map) {
+    mapStore.set(map);
+  }
+
+  $: if (map && $backend) {
+    $routeTool = new RouteTool(
+      map,
+      $backend.toRouteSnapper(),
+      routeToolGj,
+      snapMode,
+      undoLength,
+    );
+  }
+
   onMount(async () => {
+    await init();
+
     let backendWorker = new Backend();
 
     let resp = await fetch("model.bin");
@@ -35,11 +62,6 @@
 
     await zoomToFit();
   });
-
-  let map: Map;
-  $: if (map) {
-    mapStore.set(map);
-  }
 
   async function zoomToFit() {
     if (map && $backend) {
@@ -70,7 +92,6 @@
     <span bind:this={topDiv} style="width: 100%" />
   </div>
   <div slot="left">
-    <h1>Untitled NPT editor</h1>
     <div bind:this={sidebarDiv} />
   </div>
   <div slot="main" style="position:relative; width: 100%; height: 100%;">
@@ -98,7 +119,11 @@
           </GeoJSON>
         {/await}
 
-        {#if $mode.kind == "debug"}
+        {#if $mode.kind == "main"}
+          <MainMode />
+        {:else if $mode.kind == "sketch-route"}
+          <SketchRouteMode id={$mode.id} />
+        {:else if $mode.kind == "debug"}
           <DebugMode />
         {/if}
       {/if}

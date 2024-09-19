@@ -7,6 +7,8 @@ use graph::{Graph, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
+mod route_snapper;
+
 static START: Once = Once::new();
 
 #[wasm_bindgen]
@@ -46,6 +48,11 @@ impl MapModel {
     pub fn get_bounds(&self) -> Vec<f64> {
         let b = &self.graph.mercator.wgs84_bounds;
         vec![b.min().x, b.min().y, b.max().x, b.max().y]
+    }
+
+    #[wasm_bindgen(js_name = toRouteSnapper)]
+    pub fn to_route_snapper(&self) -> Vec<u8> {
+        bincode::serialize(&self.to_route_snapper_graph()).unwrap()
     }
 }
 

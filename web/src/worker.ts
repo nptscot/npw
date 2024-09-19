@@ -44,4 +44,12 @@ export class Backend {
 
     return JSON.parse(this.inner.renderDebug());
   }
+
+  toRouteSnapper(): Uint8Array {
+    if (!this.inner) {
+      throw new Error("Backend used without a file loaded");
+    }
+
+    return this.inner.toRouteSnapper();
+  }
 }
