@@ -1,6 +1,5 @@
 <script lang="ts">
   import "@picocss/pico/css/pico.jade.min.css";
-  import { notNull } from "svelte-utils";
   import { Geocoder } from "svelte-utils/map";
   import type { Map } from "maplibre-gl";
   import { onMount } from "svelte";
@@ -12,13 +11,7 @@
     topContents,
   } from "svelte-utils/top_bar_layout";
   import DebugMode from "./DebugMode.svelte";
-  import {
-    map as mapStore,
-    mode,
-    backend,
-    maptilerApiKey,
-    isLoaded,
-  } from "./stores";
+  import { map as mapStore, mode, backend, maptilerApiKey } from "./stores";
   import workerWrapper from "./worker?worker";
   import { type Backend } from "./worker";
   import * as Comlink from "comlink";
@@ -50,7 +43,14 @@
       new workerWrapper(),
     );
     let backendWorker = await new MyWorker();
+
+    let resp = await fetch("model.bin");
+    let bytes = await resp.arrayBuffer();
+    await backendWorker.loadFile(new Uint8Array(bytes));
+
     backend.set(backendWorker);
+
+    await zoomToFit();
   });
 
   let map: Map;
@@ -59,21 +59,10 @@
   }
 
   async function zoomToFit() {
-    if (map && $isLoaded) {
-      map.fitBounds(await $backend!.getBounds(), { animate: false });
+    if (map && $backend) {
+      map.fitBounds(await $backend.getBounds(), { animate: false });
     }
   }
-
-  // TODO All feels overkill
-  async function gotModel(ready: boolean) {
-    if (ready) {
-      console.log("New map model loaded");
-
-      await zoomToFit();
-      $mode = { kind: "debug" };
-    }
-  }
-  $: gotModel($isLoaded);
 
   let topDiv: HTMLSpanElement;
   let sidebarDiv: HTMLDivElement;
@@ -119,8 +108,8 @@
       {/if}
       <div bind:this={mapDiv} />
 
-      {#if $isLoaded}
-        {#await notNull($backend).getInvertedBoundary() then data}
+      {#if $backend}
+        {#await $backend.getInvertedBoundary() then data}
           <GeoJSON {data}>
             <FillLayer paint={{ "fill-color": "black", "fill-opacity": 0.3 }} />
           </GeoJSON>

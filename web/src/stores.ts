@@ -12,5 +12,3 @@ export let map: Writable<Map | null> = writable(null);
 
 // TODO Does this need to be a store?
 export let backend: Writable<Comlink.Remote<Backend> | null> = writable(null);
-// Indicates the backend is ready and a file is loaded
-export let isLoaded = writable(false);
