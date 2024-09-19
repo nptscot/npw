@@ -13,6 +13,7 @@
   import DebugMode from "./DebugMode.svelte";
   import MainMode from "./MainMode.svelte";
   import SketchRouteMode from "./SketchRouteMode.svelte";
+  import RouteDetailsMode from "./RouteDetailsMode.svelte";
   import {
     map as mapStore,
     mode,
@@ -123,6 +124,8 @@
           <MainMode />
         {:else if $mode.kind == "sketch-route"}
           <SketchRouteMode id={$mode.id} />
+        {:else if $mode.kind == "route-details"}
+          <RouteDetailsMode id={$mode.id} />
         {:else if $mode.kind == "debug"}
           <DebugMode />
         {/if}

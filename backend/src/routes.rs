@@ -7,7 +7,7 @@ use graph::RoadID;
 use crate::{MapModel, Route};
 
 impl MapModel {
-    pub fn add_route(&mut self, route: Route) -> Result<()> {
+    pub fn add_route(&mut self, route: Route) -> Result<usize> {
         // Check for overlaps
         let used_roads: HashSet<RoadID> = self
             .routes
@@ -18,9 +18,25 @@ impl MapModel {
             bail!("Another route already crosses the same road");
         }
 
-        self.routes.insert(self.id_counter, route);
+        let id = self.id_counter;
+        self.routes.insert(id, route);
         self.id_counter += 1;
+        Ok(id)
+    }
 
+    pub fn delete_route(&mut self, id: usize) -> Result<()> {
+        if self.routes.remove(&id).is_some() {
+            return Ok(());
+        }
+        bail!("Unknown route {id}");
+    }
+
+    pub fn edit_route_details(&mut self, id: usize, name: String, notes: String) -> Result<()> {
+        let Some(route) = self.routes.get_mut(&id) else {
+            bail!("Unknown route {id}");
+        };
+        route.name = name;
+        route.notes = notes;
         Ok(())
     }
 

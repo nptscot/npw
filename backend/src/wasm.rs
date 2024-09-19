@@ -47,8 +47,9 @@ impl MapModel {
         bincode::serialize(&self.to_route_snapper_graph()).unwrap()
     }
 
+    /// Returns the ID of the new route
     #[wasm_bindgen(js_name = newRoute)]
-    pub fn new_route(&mut self, input: JsValue) -> Result<(), JsValue> {
+    pub fn new_route(&mut self, input: JsValue) -> Result<usize, JsValue> {
         let route: InputRoute = serde_wasm_bindgen::from_value(input)?;
 
         let mut intersections = Vec::new();
@@ -65,7 +66,9 @@ impl MapModel {
         let mut roads = Vec::new();
         for pair in intersections.windows(2) {
             match self.graph.find_edge(pair[0], pair[1]) {
-                Some(road) => {roads.push(road.id);}
+                Some(road) => {
+                    roads.push(road.id);
+                }
                 None => {
                     // TODO Change route snapper behavior here? Or treat as a freehand line?
                     return Err(JsValue::from_str("no path between some waypoints"));
@@ -80,6 +83,21 @@ impl MapModel {
             roads,
         })
         .map_err(err_to_js)
+    }
+
+    #[wasm_bindgen(js_name = deleteRoute)]
+    pub fn delete_route_wasm(&mut self, id: usize) -> Result<(), JsValue> {
+        self.delete_route(id).map_err(err_to_js)
+    }
+
+    #[wasm_bindgen(js_name = editRouteDetails)]
+    pub fn edit_route_details_wasm(
+        &mut self,
+        id: usize,
+        name: String,
+        notes: String,
+    ) -> Result<(), JsValue> {
+        self.edit_route_details(id, name, notes).map_err(err_to_js)
     }
 
     /// Returns a GeoJSON string showing all routes

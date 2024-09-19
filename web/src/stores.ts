@@ -8,6 +8,7 @@ export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 export type Mode =
   | { kind: "main" }
   | { kind: "sketch-route"; id: number | null }
+  | { kind: "route-details"; id: number }
   | { kind: "debug" };
 
 export let mode: Writable<Mode> = writable({ kind: "main" });

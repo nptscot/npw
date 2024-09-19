@@ -25,18 +25,22 @@
   $routeTool!.addEventListenerSuccess((f) => {
     let feature = f as Feature<LineString, RouteProps>;
     try {
-      $backend!.newRoute({
+      let newId = $backend!.newRoute({
         feature,
-        name: "TODO",
-        notes: "TODO",
+        name: "",
+        notes: "",
         nodes: feature.properties.full_path,
       });
+      $mode = {
+        kind: "route-details",
+        id: newId,
+      };
     } catch (err) {
       window.alert(err);
+      $mode = {
+        kind: "main",
+      };
     }
-    $mode = {
-      kind: "main",
-    };
   });
   $routeTool!.addEventListenerFailure(() => {
     $mode = {
