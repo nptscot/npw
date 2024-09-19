@@ -52,4 +52,21 @@ export class Backend {
 
     return this.inner.toRouteSnapper();
   }
+
+  renderRoutes(): FeatureCollection {
+    if (!this.inner) {
+      throw new Error("Backend used without a file loaded");
+    }
+
+    return JSON.parse(this.inner.renderRoutes());
+  }
+
+  // TODO types
+  newRoute(input: any) {
+    if (!this.inner) {
+      throw new Error("Backend used without a file loaded");
+    }
+
+    this.inner.newRoute(input);
+  }
 }
