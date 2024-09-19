@@ -17,15 +17,10 @@
     gj = await $backend!.renderRoutes();
   });
 
-  function newRoute() {
-    $routeTool!.startRoute();
-    $mode = { kind: "sketch-route", id: null };
-  }
-
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "r") {
       e.preventDefault();
-      newRoute();
+      $mode = { kind: "sketch-route", id: null };
     }
   }
 
@@ -48,7 +43,7 @@
     <h2>Main mode</h2>
 
     {#if $routeTool}
-      <button on:click={newRoute}>
+      <button on:click={() => ($mode = { kind: "sketch-route", id: null })}>
         New <u>r</u>
         oute
       </button>
@@ -59,7 +54,7 @@
         {#each gj.features as f}
           <li>
             <Link on:click={() => editRouteSidebar(f.id)}>
-              {f.properties?.name ?? `Untitled route ${f.id}`}
+              {f.properties?.name || `Untitled route ${f.id}`}
             </Link>
           </li>
         {/each}

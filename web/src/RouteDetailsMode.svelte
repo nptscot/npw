@@ -8,26 +8,46 @@
   export let id: number;
 
   let gj: FeatureCollection | null = null;
-  let props: { name: string; notes: string } | null = null;
+  let feature: any | null = null;
 
   onMount(async () => {
     gj = await $backend!.renderRoutes();
-    props = gj.features.find((f) => f.id == id)!.properties as {
-      name: string;
-      notes: string;
-    };
+    feature = gj.features.find((f) => f.id == id)!;
   });
 
   onDestroy(async () => {
-    if (props) {
-      await $backend!.editRouteDetails(id, props.name, props.notes);
+    if (feature) {
+      // TODO This API is weird
+      await $backend!.editRoute(id, {
+        feature,
+        name: feature.properties.name,
+        notes: feature.properties.notes,
+        nodes: feature.properties.full_path,
+      });
     }
   });
 
   async function deleteRoute() {
     await $backend!.deleteRoute(id);
   }
+
+  function onKeyDown(e: KeyboardEvent) {
+    // Ignore keypresses if we're not focused on the map
+    if ((e.target as HTMLElement).tagName == "INPUT") {
+      return;
+    }
+
+    if (e.key == "Escape") {
+      e.preventDefault();
+      $mode = { kind: "main" };
+    } else if (e.key == "e") {
+      e.preventDefault();
+      $mode = { kind: "sketch-route", id };
+    }
+  }
 </script>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <SplitComponent>
   <div slot="top">Nav</div>
@@ -35,17 +55,21 @@
     <h2>Route details mode</h2>
 
     <button on:click={() => ($mode = { kind: "main" })}>Save</button>
+    <button on:click={() => ($mode = { kind: "sketch-route", id })}>
+      <u>E</u>
+      dit route
+    </button>
     <button on:click={deleteRoute}>Delete</button>
 
-    {#if props}
+    {#if feature}
       <label>
         Name:
-        <input type="text" bind:value={props.name} />
+        <input type="text" bind:value={feature.properties.name} />
       </label>
 
       <label>
         Notes:
-        <textarea rows="5" bind:value={props.notes} />
+        <textarea rows="5" bind:value={feature.properties.notes} />
       </label>
     {/if}
   </div>

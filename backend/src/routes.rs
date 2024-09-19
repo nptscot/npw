@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
-use geojson::{feature::Id, GeoJson};
+use geojson::{feature::Id, Feature, GeoJson};
 use graph::RoadID;
 
 use crate::{MapModel, Route};
@@ -31,12 +31,30 @@ impl MapModel {
         bail!("Unknown route {id}");
     }
 
-    pub fn edit_route_details(&mut self, id: usize, name: String, notes: String) -> Result<()> {
+    pub fn edit_route(&mut self, id: usize, route: Route) -> Result<()> {
+        if self.routes.remove(&id).is_none() {
+            bail!("Unknown route {id}");
+        }
+
+        // Check for overlaps
+        let used_roads: HashSet<RoadID> = self
+            .routes
+            .values()
+            .flat_map(|route| route.roads.clone())
+            .collect();
+        if route.roads.iter().any(|r| used_roads.contains(r)) {
+            bail!("Another route already crosses the same road");
+        }
+
+        self.routes.insert(id, route);
+        Ok(())
+    }
+
+    pub fn edit_route_geometry(&mut self, id: usize, feature: Feature) -> Result<()> {
         let Some(route) = self.routes.get_mut(&id) else {
             bail!("Unknown route {id}");
         };
-        route.name = name;
-        route.notes = notes;
+        route.feature = feature;
         Ok(())
     }
 

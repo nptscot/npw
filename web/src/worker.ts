@@ -70,12 +70,13 @@ export class Backend {
     return this.inner.newRoute(input);
   }
 
-  editRouteDetails(id: number, name: string, notes: string) {
+  // TODO types
+  editRoute(id: number, input: any) {
     if (!this.inner) {
       throw new Error("Backend used without a file loaded");
     }
 
-    this.inner.editRouteDetails(id, name, notes);
+    this.inner.editRoute(id, input);
   }
 
   deleteRoute(id: number) {

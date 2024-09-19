@@ -50,16 +50,42 @@ impl MapModel {
     /// Returns the ID of the new route
     #[wasm_bindgen(js_name = newRoute)]
     pub fn new_route(&mut self, input: JsValue) -> Result<usize, JsValue> {
-        let route: InputRoute = serde_wasm_bindgen::from_value(input)?;
+        let route = self.parse_route(input).map_err(err_to_js)?;
+        self.add_route(route).map_err(err_to_js)
+    }
+
+    #[wasm_bindgen(js_name = deleteRoute)]
+    pub fn delete_route_wasm(&mut self, id: usize) -> Result<(), JsValue> {
+        self.delete_route(id).map_err(err_to_js)
+    }
+
+    #[wasm_bindgen(js_name = editRoute)]
+    pub fn edit_route_wasm(&mut self, id: usize, input: JsValue) -> Result<(), JsValue> {
+        let route = self.parse_route(input).map_err(err_to_js)?;
+        self.edit_route(id, route).map_err(err_to_js)
+    }
+
+    /// Returns a GeoJSON string showing all routes
+    #[wasm_bindgen(js_name = renderRoutes)]
+    pub fn render_routes(&self) -> Result<String, JsValue> {
+        serde_json::to_string(&self.to_routes_gj()).map_err(err_to_js)
+    }
+
+    fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
+        // TODO map_err?
+        let route: InputRoute = match serde_wasm_bindgen::from_value(input) {
+            Ok(r) => r,
+            Err(err) => bail!("{err}"),
+        };
 
         let mut intersections = Vec::new();
         for node in route.nodes {
             if let Some(id) = node.snapped {
                 intersections.push(IntersectionID(id as usize));
             } else if node.free.is_some() {
-                return Err(JsValue::from_str("can't handle freehand points yet"));
+                bail!("can't handle freehand points yet");
             } else {
-                return Err(JsValue::from_str("input has a blank node"));
+                bail!("input has a blank node");
             }
         }
 
@@ -71,39 +97,17 @@ impl MapModel {
                 }
                 None => {
                     // TODO Change route snapper behavior here? Or treat as a freehand line?
-                    return Err(JsValue::from_str("no path between some waypoints"));
+                    bail!("no path between some waypoints");
                 }
             }
         }
 
-        self.add_route(Route {
+        Ok(Route {
             feature: route.feature,
             name: route.name,
             notes: route.notes,
             roads,
         })
-        .map_err(err_to_js)
-    }
-
-    #[wasm_bindgen(js_name = deleteRoute)]
-    pub fn delete_route_wasm(&mut self, id: usize) -> Result<(), JsValue> {
-        self.delete_route(id).map_err(err_to_js)
-    }
-
-    #[wasm_bindgen(js_name = editRouteDetails)]
-    pub fn edit_route_details_wasm(
-        &mut self,
-        id: usize,
-        name: String,
-        notes: String,
-    ) -> Result<(), JsValue> {
-        self.edit_route_details(id, name, notes).map_err(err_to_js)
-    }
-
-    /// Returns a GeoJSON string showing all routes
-    #[wasm_bindgen(js_name = renderRoutes)]
-    pub fn render_routes(&self) -> Result<String, JsValue> {
-        serde_json::to_string(&self.to_routes_gj()).map_err(err_to_js)
     }
 }
 

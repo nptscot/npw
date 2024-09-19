@@ -13,6 +13,68 @@
   let existingGj: FeatureCollection | null = null;
   onMount(async () => {
     existingGj = await $backend!.renderRoutes();
+
+    if (id == null) {
+      $routeTool!.startRoute();
+
+      $routeTool!.addEventListenerSuccess((f) => {
+        let feature = f as Feature<LineString, RouteProps>;
+        try {
+          let newId = $backend!.newRoute({
+            feature,
+            name: "",
+            notes: "",
+            nodes: feature.properties.full_path,
+          });
+          $mode = {
+            kind: "route-details",
+            id: newId,
+          };
+        } catch (err) {
+          window.alert(err);
+          $mode = {
+            kind: "main",
+          };
+        }
+      });
+      $routeTool!.addEventListenerFailure(() => {
+        $mode = {
+          kind: "main",
+        };
+      });
+    } else {
+      let originalFeature = existingGj.features.find(
+        (f) => f.id == id,
+      )! as Feature<LineString, RouteProps & { name: string; notes: string }>;
+      $routeTool!.editExistingRoute(originalFeature);
+
+      $routeTool!.addEventListenerSuccess((f) => {
+        let editedFeature = f as Feature<LineString, RouteProps>;
+        try {
+          $backend!.editRoute(id, {
+            feature: editedFeature,
+            name: originalFeature.properties.name,
+            notes: originalFeature.properties.notes,
+            nodes: editedFeature.properties.full_path,
+          });
+          $mode = {
+            kind: "route-details",
+            id,
+          };
+        } catch (err) {
+          window.alert(err);
+          $mode = {
+            kind: "route-details",
+            id,
+          };
+        }
+      });
+      $routeTool!.addEventListenerFailure(() => {
+        $mode = {
+          kind: "main",
+        };
+      });
+    }
   });
 
   // The user can change the mode in many ways, like clicking a link.
@@ -20,32 +82,6 @@
   onDestroy(() => {
     $routeTool?.clearEventListeners();
     $routeTool?.stop();
-  });
-
-  $routeTool!.addEventListenerSuccess((f) => {
-    let feature = f as Feature<LineString, RouteProps>;
-    try {
-      let newId = $backend!.newRoute({
-        feature,
-        name: "",
-        notes: "",
-        nodes: feature.properties.full_path,
-      });
-      $mode = {
-        kind: "route-details",
-        id: newId,
-      };
-    } catch (err) {
-      window.alert(err);
-      $mode = {
-        kind: "main",
-      };
-    }
-  });
-  $routeTool!.addEventListenerFailure(() => {
-    $mode = {
-      kind: "main",
-    };
   });
 </script>
 
@@ -63,6 +99,7 @@
       <GeoJSON data={existingGj}>
         <LineLayer
           id="routes"
+          filter={id == null ? undefined : ["!=", ["id"], id]}
           paint={{
             "line-width": 5,
             "line-color": "red",
