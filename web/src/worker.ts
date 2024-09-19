@@ -1,4 +1,3 @@
-import * as Comlink from "comlink";
 import init, { MapModel } from "backend";
 import type { Feature, Polygon, FeatureCollection } from "geojson";
 
@@ -46,5 +45,3 @@ export class Backend {
     return JSON.parse(this.inner.renderDebug());
   }
 }
-
-Comlink.expose(Backend);

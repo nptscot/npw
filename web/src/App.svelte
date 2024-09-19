@@ -12,9 +12,7 @@
   } from "svelte-utils/top_bar_layout";
   import DebugMode from "./DebugMode.svelte";
   import { map as mapStore, mode, backend, maptilerApiKey } from "./stores";
-  import workerWrapper from "./worker?worker";
-  import { type Backend } from "./worker";
-  import * as Comlink from "comlink";
+  import { Backend } from "./worker";
   // TODO Indirect dependencies
   import * as pmtiles from "pmtiles";
   import maplibregl from "maplibre-gl";
@@ -27,22 +25,7 @@
   }
 
   onMount(async () => {
-    // If you get "import declarations may only appear at top level of a
-    // module", then you need a newer browser.
-    // https://caniuse.com/mdn-api_worker_worker_ecmascript_modules
-    //
-    // In Firefox 112, go to about:config and enable dom.workers.modules.enabled
-    //
-    // Note this should work fine in older browsers when doing 'npm run build'.
-    // It's only a problem during local dev mode.
-    interface WorkerConstructor {
-      new (): Backend;
-    }
-
-    const MyWorker: Comlink.Remote<WorkerConstructor> = Comlink.wrap(
-      new workerWrapper(),
-    );
-    let backendWorker = await new MyWorker();
+    let backendWorker = new Backend();
 
     let resp = await fetch("model.bin");
     let bytes = await resp.arrayBuffer();
