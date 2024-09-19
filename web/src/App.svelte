@@ -14,12 +14,15 @@
   import MainMode from "./MainMode.svelte";
   import SketchRouteMode from "./SketchRouteMode.svelte";
   import RouteDetailsMode from "./RouteDetailsMode.svelte";
+  import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
   import {
     map as mapStore,
     mode,
     backend,
     maptilerApiKey,
     routeTool,
+    routeA,
+    routeB,
   } from "./stores";
   import { Backend } from "./worker";
   import { routeToolGj, snapMode, undoLength } from "./snapper/stores";
@@ -62,7 +65,21 @@
     backend.set(backendWorker);
 
     await zoomToFit();
+
+    let bbox = await backendWorker.getBounds();
+    $routeA = {
+      lng: lerp(0.4, bbox[0], bbox[2]),
+      lat: lerp(0.4, bbox[1], bbox[3]),
+    };
+    $routeB = {
+      lng: lerp(0.6, bbox[0], bbox[2]),
+      lat: lerp(0.6, bbox[1], bbox[3]),
+    };
   });
+
+  function lerp(pct: number, a: number, b: number): number {
+    return a + pct * (b - a);
+  }
 
   async function zoomToFit() {
     if (map && $backend) {
@@ -126,6 +143,8 @@
           <SketchRouteMode id={$mode.id} />
         {:else if $mode.kind == "route-details"}
           <RouteDetailsMode id={$mode.id} />
+        {:else if $mode.kind == "evaluate-route"}
+          <EvaluateRouteMode />
         {:else if $mode.kind == "debug"}
           <DebugMode />
         {/if}

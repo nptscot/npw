@@ -1,5 +1,6 @@
 use std::sync::Once;
 
+use geo::Coord;
 use geojson::Feature;
 use graph::IntersectionID;
 use serde::Deserialize;
@@ -71,6 +72,22 @@ impl MapModel {
         serde_json::to_string(&self.to_routes_gj()).map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = evaluateRoute)]
+    pub fn evaluate_route_wasm(&self, input: JsValue) -> Result<String, JsValue> {
+        let req: EvaluateRouteRequest = serde_wasm_bindgen::from_value(input)?;
+        self.evaluate_route(
+            self.graph.mercator.pt_to_mercator(Coord {
+                x: req.x1,
+                y: req.y1,
+            }),
+            self.graph.mercator.pt_to_mercator(Coord {
+                x: req.x2,
+                y: req.y2,
+            }),
+        )
+        .map_err(err_to_js)
+    }
+
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
         // TODO map_err?
         let route: InputRoute = match serde_wasm_bindgen::from_value(input) {
@@ -125,6 +142,14 @@ struct InputRoute {
 struct RouteNode {
     snapped: Option<u32>,
     free: Option<[f64; 2]>,
+}
+
+#[derive(Deserialize)]
+struct EvaluateRouteRequest {
+    x1: f64,
+    y1: f64,
+    x2: f64,
+    y2: f64,
 }
 
 fn err_to_js<E: std::fmt::Display>(err: E) -> JsValue {

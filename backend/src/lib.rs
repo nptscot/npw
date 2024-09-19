@@ -8,6 +8,7 @@ use graph::{Graph, RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
+mod evaluate;
 mod route_snapper;
 mod routes;
 mod wasm;

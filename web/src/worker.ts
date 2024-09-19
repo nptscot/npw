@@ -1,5 +1,5 @@
 import init, { MapModel } from "backend";
-import type { Feature, Polygon, FeatureCollection } from "geojson";
+import type { Position, Feature, Polygon, FeatureCollection } from "geojson";
 
 export class Backend {
   inner: MapModel | null;
@@ -85,5 +85,24 @@ export class Backend {
     }
 
     this.inner.deleteRoute(id);
+  }
+
+  evaluateRoute(req: {
+    // TODO LngLatLike doesn't work?
+    start: { lng: number; lat: number };
+    end: Position;
+  }): FeatureCollection {
+    if (!this.inner) {
+      throw new Error("Backend used without a file loaded");
+    }
+
+    return JSON.parse(
+      this.inner.evaluateRoute({
+        x1: req.start.lng,
+        y1: req.start.lat,
+        x2: req.end[0],
+        y2: req.end[1],
+      }),
+    );
   }
 }

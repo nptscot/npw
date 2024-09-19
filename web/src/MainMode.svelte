@@ -38,6 +38,7 @@
 
 <SplitComponent>
   <div slot="top">
+    <button on:click={() => ($mode = { kind: "evaluate-route" })}>Evaluate a route</button>
     <button on:click={() => ($mode = { kind: "debug" })}>Debug</button>
   </div>
   <div slot="sidebar">
