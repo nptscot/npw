@@ -1,10 +1,16 @@
 <script lang="ts">
-  import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
+  import {
+    GeoJSON,
+    hoverStateFilter,
+    LineLayer,
+    type LayerClickInfo,
+  } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { SplitComponent } from "svelte-utils/top_bar_layout";
   import { backend, mode, routeTool } from "./stores";
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
+  import Link from "./common/Link.svelte";
 
   let gj: FeatureCollection | null = null;
   onMount(async () => {
@@ -22,6 +28,14 @@
       newRoute();
     }
   }
+
+  function editRouteMap(e: CustomEvent<LayerClickInfo>) {
+    $mode = { kind: "route-details", id: e.detail.features[0].id as number };
+  }
+
+  function editRouteSidebar(id: string | number | undefined) {
+    $mode = { kind: "route-details", id: id as number };
+  }
 </script>
 
 <svelte:window on:keydown={onKeyDown} />
@@ -32,8 +46,24 @@
   </div>
   <div slot="sidebar">
     <h2>Main mode</h2>
+
     {#if $routeTool}
-      <button on:click={newRoute}>New <u>r</u>oute</button>
+      <button on:click={newRoute}>
+        New <u>r</u>
+        oute
+      </button>
+    {/if}
+
+    {#if gj}
+      <ol>
+        {#each gj.features as f}
+          <li>
+            <Link on:click={() => editRouteSidebar(f.id)}>
+              {f.properties?.name ?? `Untitled route ${f.id}`}
+            </Link>
+          </li>
+        {/each}
+      </ol>
     {/if}
   </div>
 
@@ -47,6 +77,8 @@
             "line-color": "red",
           }}
           manageHoverState
+          hoverCursor="pointer"
+          on:click={editRouteMap}
         >
           <Popup openOn="hover" let:props>{props.name}</Popup>
         </LineLayer>

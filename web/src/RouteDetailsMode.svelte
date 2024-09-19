@@ -58,7 +58,7 @@
           paint={{
             "line-width": 5,
             "line-color": "red",
-            "line-opacity": ["case", ["==", "id", id], 1.0, 0.5],
+            "line-opacity": ["case", ["==", ["id"], id], 1.0, 0.5],
           }}
         />
       </GeoJSON>

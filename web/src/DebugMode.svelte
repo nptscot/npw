@@ -15,9 +15,9 @@
 
 <SplitComponent>
   <div slot="top">
-    <button on:click={() => ($mode = { kind: "main" })}
-      >Back to main mode</button
-    >
+    <button on:click={() => ($mode = { kind: "main" })}>
+      Back to main mode
+    </button>
   </div>
   <div slot="sidebar">
     <h2>Debug mode</h2>
