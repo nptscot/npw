@@ -56,9 +56,18 @@
   onMount(async () => {
     await init();
 
+    let params = new URLSearchParams(window.location.search);
+    if (!params.has("boundary")) {
+      window.alert(
+        "Missing boundary param. TODO, redirect back to an LA dashboard",
+      );
+      return;
+    }
+    let boundaryName = params.get("boundary");
+
     let backendWorker = new Backend();
 
-    let resp = await fetch("model.bin");
+    let resp = await fetch(`${boundaryName}.bin`);
     let bytes = await resp.arrayBuffer();
     await backendWorker.loadFile(new Uint8Array(bytes));
 
