@@ -65,6 +65,10 @@ impl MapModel {
             f.id = Some(Id::Number((*id).into()));
             f.set_property("name", route.name.clone());
             f.set_property("notes", route.notes.clone());
+            f.set_property(
+                "infra_type",
+                serde_json::to_value(&route.infra_type).unwrap(),
+            );
             features.push(f);
         }
         GeoJson::from(features)

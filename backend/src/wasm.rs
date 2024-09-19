@@ -5,7 +5,7 @@ use graph::IntersectionID;
 use serde::Deserialize;
 use wasm_bindgen::prelude::*;
 
-use crate::{MapModel, Route};
+use crate::{InfraType, MapModel, Route};
 
 static START: Once = Once::new();
 
@@ -107,6 +107,7 @@ impl MapModel {
             name: route.name,
             notes: route.notes,
             roads,
+            infra_type: route.infra_type,
         })
     }
 }
@@ -117,6 +118,7 @@ struct InputRoute {
     name: String,
     notes: String,
     nodes: Vec<RouteNode>,
+    infra_type: InfraType,
 }
 
 #[derive(Deserialize)]

@@ -7,6 +7,7 @@
   import RouteControls from "./snapper/RouteControls.svelte";
   import type { RouteProps } from "route-snapper-ts";
   import type { Feature, FeatureCollection, LineString } from "geojson";
+  import { colorByInraType } from "./common";
 
   export let id: number | null;
 
@@ -25,6 +26,7 @@
             name: "",
             notes: "",
             nodes: feature.properties.full_path,
+            infra_type: "Unknown",
           });
           $mode = {
             kind: "route-details",
@@ -45,7 +47,10 @@
     } else {
       let originalFeature = existingGj.features.find(
         (f) => f.id == id,
-      )! as Feature<LineString, RouteProps & { name: string; notes: string }>;
+      )! as Feature<
+        LineString,
+        RouteProps & { name: string; notes: string; infra_type: string }
+      >;
       $routeTool!.editExistingRoute(originalFeature);
 
       $routeTool!.addEventListenerSuccess((f) => {
@@ -56,6 +61,7 @@
             name: originalFeature.properties.name,
             notes: originalFeature.properties.notes,
             nodes: editedFeature.properties.full_path,
+            infra_type: originalFeature.properties.infra_type,
           });
           $mode = {
             kind: "route-details",
@@ -102,7 +108,7 @@
           filter={id == null ? undefined : ["!=", ["id"], id]}
           paint={{
             "line-width": 5,
-            "line-color": "red",
+            "line-color": colorByInraType,
             "line-opacity": 0.5,
           }}
         />

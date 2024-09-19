@@ -29,7 +29,16 @@ pub struct Route {
     name: String,
     notes: String,
     roads: Vec<RoadID>,
-    // TODO infra type
+    infra_type: InfraType,
+}
+
+#[derive(Clone, Copy, Serialize, Deserialize)]
+pub enum InfraType {
+    Separated,
+    Roadside,
+    CycleLane,
+    MixedTraffic,
+    Unknown,
 }
 
 impl MapModel {
