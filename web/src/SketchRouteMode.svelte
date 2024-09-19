@@ -1,7 +1,7 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { SplitComponent } from "svelte-utils/top_bar_layout";
-  import { backend, mode, routeTool } from "./stores";
+  import { autosave, backend, mode, routeTool } from "./stores";
   import { onMount, onDestroy } from "svelte";
   import RouteSnapperLayer from "./snapper/RouteSnapperLayer.svelte";
   import RouteControls from "./snapper/RouteControls.svelte";
@@ -18,7 +18,7 @@
     if (id == null) {
       $routeTool!.startRoute();
 
-      $routeTool!.addEventListenerSuccess((f) => {
+      $routeTool!.addEventListenerSuccess(async (f) => {
         let feature = f as Feature<LineString, RouteProps>;
         try {
           let newId = $backend!.newRoute({
@@ -28,6 +28,7 @@
             nodes: feature.properties.full_path,
             infra_type: "Unknown",
           });
+          await autosave();
           $mode = {
             kind: "route-details",
             id: newId,
@@ -53,7 +54,7 @@
       >;
       $routeTool!.editExistingRoute(originalFeature);
 
-      $routeTool!.addEventListenerSuccess((f) => {
+      $routeTool!.addEventListenerSuccess(async (f) => {
         let editedFeature = f as Feature<LineString, RouteProps>;
         try {
           $backend!.editRoute(id, {
@@ -63,6 +64,7 @@
             nodes: editedFeature.properties.full_path,
             infra_type: originalFeature.properties.infra_type,
           });
+          await autosave();
           $mode = {
             kind: "route-details",
             id,

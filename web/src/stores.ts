@@ -1,5 +1,5 @@
 import type { Map } from "maplibre-gl";
-import { writable, type Writable } from "svelte/store";
+import { get, writable, type Writable } from "svelte/store";
 import { type Backend } from "./worker";
 import { RouteTool } from "route-snapper-ts";
 import type { FeatureCollection } from "geojson";
@@ -44,4 +44,13 @@ export interface Step {
   length: number;
   way: string;
   infra_type: string;
+}
+
+export async function autosave() {
+  let backendValue = get(backend);
+  if (!backendValue) {
+    return;
+  }
+  let state = await backendValue.toSavefile();
+  window.localStorage.setItem("tmp-npt-editor", state);
 }

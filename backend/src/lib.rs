@@ -24,6 +24,7 @@ pub struct MapModel {
     id_counter: usize,
 }
 
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Route {
     /// The unedited GeoJSON feature returned from route-snapper
     feature: Feature,

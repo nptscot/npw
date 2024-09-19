@@ -1,7 +1,7 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { SplitComponent } from "svelte-utils/top_bar_layout";
-  import { backend, mode, infraTypes } from "./stores";
+  import { backend, mode, infraTypes, autosave } from "./stores";
   import type { FeatureCollection } from "geojson";
   import { onMount, onDestroy } from "svelte";
   import { colorByInraType } from "./common";
@@ -26,6 +26,7 @@
         nodes: feature.properties.full_path,
         infra_type: feature.properties.infra_type,
       });
+      await autosave();
     }
   });
 

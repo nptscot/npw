@@ -1,9 +1,10 @@
+use std::collections::HashMap;
 use std::sync::Once;
 
 use geo::Coord;
 use geojson::Feature;
 use graph::IntersectionID;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
 use crate::{InfraType, MapModel, Route};
@@ -88,6 +89,23 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = toSavefile)]
+    pub fn to_savefile(&self) -> Result<String, JsValue> {
+        serde_json::to_string(&Savefile {
+            routes: self.routes.clone(),
+            id_counter: self.id_counter,
+        })
+        .map_err(err_to_js)
+    }
+
+    #[wasm_bindgen(js_name = loadSavefile)]
+    pub fn load_savefile(&mut self, input: String) -> Result<(), JsValue> {
+        let savefile: Savefile = serde_json::from_str(&input).map_err(err_to_js)?;
+        self.routes = savefile.routes;
+        self.id_counter = savefile.id_counter;
+        Ok(())
+    }
+
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
         // TODO map_err?
         let route: InputRoute = match serde_wasm_bindgen::from_value(input) {
@@ -150,6 +168,13 @@ struct EvaluateRouteRequest {
     y1: f64,
     x2: f64,
     y2: f64,
+}
+
+// TODO This is an odd, repetitive format. Redesign later.
+#[derive(Serialize, Deserialize)]
+struct Savefile {
+    routes: HashMap<usize, Route>,
+    id_counter: usize,
 }
 
 fn err_to_js<E: std::fmt::Display>(err: E) -> JsValue {

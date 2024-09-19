@@ -62,9 +62,15 @@
     let bytes = await resp.arrayBuffer();
     await backendWorker.loadFile(new Uint8Array(bytes));
 
-    backend.set(backendWorker);
-
-    await zoomToFit();
+    // Load saved state?
+    let item = window.localStorage.getItem("tmp-npt-editor");
+    if (item) {
+      try {
+        await backendWorker.loadSavefile(item);
+      } catch (err) {
+        window.alert(`Couldn't restore saved state: ${err}`);
+      }
+    }
 
     let bbox = await backendWorker.getBounds();
     $routeA = {
@@ -75,6 +81,9 @@
       lng: lerp(0.6, bbox[0], bbox[2]),
       lat: lerp(0.6, bbox[1], bbox[3]),
     };
+
+    backend.set(backendWorker);
+    await zoomToFit();
   });
 
   function lerp(pct: number, a: number, b: number): number {
