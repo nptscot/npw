@@ -16,7 +16,7 @@
 
   $routeTool!.addEventListenerSuccess((feature) => {
     window.alert(
-      `got a route with ${feature.properties.waypoints.length} waypoints`,
+      `got a route with ${feature.properties.full_path.length} nodes`,
     );
     $mode = {
       kind: "main",
