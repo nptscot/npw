@@ -27,6 +27,7 @@
   import { Backend } from "./worker";
   import { routeToolGj, snapMode, undoLength } from "./snapper/stores";
   import { init, RouteTool } from "route-snapper-ts";
+  import { Loading } from "svelte-utils";
   // TODO Indirect dependencies
   import * as pmtiles from "pmtiles";
   import maplibregl from "maplibre-gl";
@@ -37,6 +38,8 @@
     let protocol = new pmtiles.Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
   }
+
+  let loading = "";
 
   let map: Map;
   $: if (map) {
@@ -64,6 +67,7 @@
       return;
     }
     let boundaryName = params.get("boundary");
+    loading = `Loading ${boundaryName}`;
 
     let backendWorker = new Backend();
 
@@ -90,6 +94,8 @@
         window.alert(`Couldn't restore saved state: ${err}`);
       }
     }
+
+    loading = "";
 
     let bbox = await backendWorker.getBounds();
     $routeA = {
@@ -131,6 +137,8 @@
     mapDiv.appendChild($mapContents);
   }
 </script>
+
+<Loading {loading} />
 
 <Layout>
   <div slot="top" style="display: flex">
