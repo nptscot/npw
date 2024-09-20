@@ -32,7 +32,7 @@
   import maplibregl from "maplibre-gl";
 
   // TODO Remove later
-  let offlineMode = true;
+  let offlineMode = false;
   if (offlineMode) {
     let protocol = new pmtiles.Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -67,7 +67,17 @@
 
     let backendWorker = new Backend();
 
+    // Detect if we're running locally first
     let resp = await fetch(`${boundaryName}.bin`);
+    if (resp.ok) {
+      console.log(`Using locally hosted files`);
+    } else {
+      console.log(`Using remote hosted files`);
+      resp = await fetch(
+        `https://assets.od2net.org/tmp_npt_editor/${boundaryName}.bin`,
+      );
+    }
+
     let bytes = await resp.arrayBuffer();
     await backendWorker.loadFile(new Uint8Array(bytes));
 
