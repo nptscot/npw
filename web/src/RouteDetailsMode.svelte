@@ -32,6 +32,8 @@
 
   async function deleteRoute() {
     await $backend!.deleteRoute(id);
+    await autosave();
+    $mode = { kind: "main" };
   }
 
   function onKeyDown(e: KeyboardEvent) {
