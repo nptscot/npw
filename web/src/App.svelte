@@ -15,6 +15,7 @@
   import SketchRouteMode from "./SketchRouteMode.svelte";
   import RouteDetailsMode from "./RouteDetailsMode.svelte";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
+  import ImportRouteMode from "./ImportRouteMode.svelte";
   import {
     map as mapStore,
     mode,
@@ -23,6 +24,7 @@
     routeTool,
     routeA,
     routeB,
+    coherentNetwork,
   } from "./stores";
   import { Backend } from "./worker";
   import { routeToolGj, snapMode, undoLength } from "./snapper/stores";
@@ -73,9 +75,11 @@
 
     // Detect if we're running locally first
     let resp = await fetch(`${boundaryName}.bin`);
+    let remote = false;
     if (resp.ok) {
       console.log(`Using locally hosted files`);
     } else {
+      remote = true;
       console.log(`Using remote hosted files`);
       resp = await fetch(
         `https://assets.od2net.org/tmp_npt_editor/${boundaryName}.bin`,
@@ -94,6 +98,13 @@
         window.alert(`Couldn't restore saved state: ${err}`);
       }
     }
+
+    let resp2 = await fetch(
+      remote
+        ? `https://assets.od2net.org/tmp_npt_editor/cn_manual.geojson`
+        : `cn_manual.geojson`,
+    );
+    $coherentNetwork = await resp2.json();
 
     loading = "";
 
@@ -152,7 +163,7 @@
     <MapLibre
       style={offlineMode
         ? "http://localhost:5173/offline/light_style.json"
-        : `https://api.maptiler.com/maps/dataviz/style.json?key=${maptilerApiKey}`}
+        : `https://api.maptiler.com/maps/uk-openzoomstack-light/style.json?key=${maptilerApiKey}`}
       standardControls
       hash
       bind:map
@@ -177,6 +188,8 @@
           <MainMode />
         {:else if $mode.kind == "sketch-route"}
           <SketchRouteMode id={$mode.id} />
+        {:else if $mode.kind == "import-route"}
+          <ImportRouteMode />
         {:else if $mode.kind == "route-details"}
           <RouteDetailsMode id={$mode.id} />
         {:else if $mode.kind == "evaluate-route"}
