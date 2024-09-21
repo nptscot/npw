@@ -26,7 +26,7 @@
       });
       await autosave();
       $mode = {
-        kind: "route-details",
+        kind: "edit-route",
         id: newId,
       };
     } catch (err) {

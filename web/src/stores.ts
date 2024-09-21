@@ -9,8 +9,7 @@ export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 export type Mode =
   | { kind: "main" }
   | { kind: "import-route" }
-  | { kind: "sketch-route"; id: number | null }
-  | { kind: "route-details"; id: number }
+  | { kind: "edit-route"; id: number | null }
   | { kind: "evaluate-route" }
   | { kind: "debug" };
 

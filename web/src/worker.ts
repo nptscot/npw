@@ -42,6 +42,7 @@ export class Backend {
     return this.inner!.toRouteSnapper();
   }
 
+  // TODO More specific type
   renderRoutes(): FeatureCollection {
     this.checkReady();
     return JSON.parse(this.inner!.renderRoutes());

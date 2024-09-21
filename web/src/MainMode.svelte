@@ -21,16 +21,16 @@
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "r") {
       e.preventDefault();
-      $mode = { kind: "sketch-route", id: null };
+      $mode = { kind: "edit-route", id: null };
     }
   }
 
   function editRouteMap(e: CustomEvent<LayerClickInfo>) {
-    $mode = { kind: "route-details", id: e.detail.features[0].id as number };
+    $mode = { kind: "edit-route", id: e.detail.features[0].id as number };
   }
 
   function editRouteSidebar(id: string | number | undefined) {
-    $mode = { kind: "route-details", id: id as number };
+    $mode = { kind: "edit-route", id: id as number };
   }
 </script>
 
@@ -49,7 +49,7 @@
     <p style:text-align="center"><b>-or-</b></p>
 
     {#if $routeTool}
-      <button on:click={() => ($mode = { kind: "sketch-route", id: null })}>
+      <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
         Draw new <u>r</u>
         oute line
       </button>
@@ -61,7 +61,9 @@
       Evaluate a route
     </button>
 
-    <button on:click={() => ($mode = { kind: "debug" })}>Debug</button>
+    <button class="secondary" on:click={() => ($mode = { kind: "debug" })}>
+      Debug
+    </button>
 
     <h4>Current network:</h4>
 

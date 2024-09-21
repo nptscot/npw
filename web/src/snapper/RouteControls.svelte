@@ -21,11 +21,6 @@
   $: loadNodes($showAllNodes);
 </script>
 
-<div>
-  <button on:click={() => routeTool.finish()}>Finish</button>
-  <button on:click={() => routeTool.cancel()}>Cancel</button>
-</div>
-
 <button
   disabled={$undoLength == 0}
   on:click={() => routeTool.undo()}

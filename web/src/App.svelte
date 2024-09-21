@@ -12,8 +12,7 @@
   import DebugMode from "./DebugMode.svelte";
   import MainMode from "./MainMode.svelte";
   import Legend from "./common/Legend.svelte";
-  import SketchRouteMode from "./SketchRouteMode.svelte";
-  import RouteDetailsMode from "./RouteDetailsMode.svelte";
+  import EditRouteMode from "./EditRouteMode.svelte";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
   import ImportRouteMode from "./ImportRouteMode.svelte";
   import {
@@ -180,12 +179,10 @@
 
         {#if $mode.kind == "main"}
           <MainMode />
-        {:else if $mode.kind == "sketch-route"}
-          <SketchRouteMode id={$mode.id} />
         {:else if $mode.kind == "import-route"}
           <ImportRouteMode />
-        {:else if $mode.kind == "route-details"}
-          <RouteDetailsMode id={$mode.id} />
+        {:else if $mode.kind == "edit-route"}
+          <EditRouteMode id={$mode.id} />
         {:else if $mode.kind == "evaluate-route"}
           <EvaluateRouteMode />
         {:else if $mode.kind == "debug"}
