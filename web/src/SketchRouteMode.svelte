@@ -1,6 +1,6 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/top_bar_layout";
+  import { SplitComponent } from "svelte-utils/two_column_layout";
   import { autosave, backend, mode, routeTool } from "./stores";
   import { onMount, onDestroy } from "svelte";
   import RouteSnapperLayer from "./snapper/RouteSnapperLayer.svelte";
@@ -94,7 +94,6 @@
 </script>
 
 <SplitComponent>
-  <div slot="top">Nav</div>
   <div slot="sidebar">
     <h2>Sketch route mode</h2>
     {#if $routeTool}

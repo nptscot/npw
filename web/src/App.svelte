@@ -8,8 +8,7 @@
     Layout,
     mapContents,
     sidebarContents,
-    topContents,
-  } from "svelte-utils/top_bar_layout";
+  } from "svelte-utils/two_column_layout";
   import DebugMode from "./DebugMode.svelte";
   import MainMode from "./MainMode.svelte";
   import SketchRouteMode from "./SketchRouteMode.svelte";
@@ -132,13 +131,8 @@
     }
   }
 
-  let topDiv: HTMLSpanElement;
   let sidebarDiv: HTMLDivElement;
   let mapDiv: HTMLDivElement;
-  $: if (topDiv && $topContents) {
-    topDiv.innerHTML = "";
-    topDiv.appendChild($topContents);
-  }
   $: if (sidebarDiv && $sidebarContents) {
     sidebarDiv.innerHTML = "";
     sidebarDiv.appendChild($sidebarContents);
@@ -152,14 +146,10 @@
 <Loading {loading} />
 
 <Layout>
-  <div slot="top" style="display: flex">
-    Logo/about
-    <span bind:this={topDiv} style="width: 100%" />
-  </div>
   <div slot="left">
     <div bind:this={sidebarDiv} />
   </div>
-  <div slot="main" style="position:relative; width: 100%; height: 100%;">
+  <div slot="main" style="position:relative; width: 100%; height: 100vh;">
     <MapLibre
       style={offlineMode
         ? "http://localhost:5173/offline/light_style.json"

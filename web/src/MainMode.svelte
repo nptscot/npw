@@ -6,7 +6,7 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { SplitComponent } from "svelte-utils/top_bar_layout";
+  import { SplitComponent } from "svelte-utils/two_column_layout";
   import { backend, mode, routeTool, infraTypes } from "./stores";
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
@@ -37,15 +37,6 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <SplitComponent>
-  <div slot="top">
-    <button on:click={() => ($mode = { kind: "evaluate-route" })}>
-      Evaluate a route
-    </button>
-    <button on:click={() => ($mode = { kind: "import-route" })}>
-      Import from coherent network
-    </button>
-    <button on:click={() => ($mode = { kind: "debug" })}>Debug</button>
-  </div>
   <div slot="sidebar">
     <h2>Main mode</h2>
 
@@ -55,6 +46,16 @@
         oute
       </button>
     {/if}
+
+    <button on:click={() => ($mode = { kind: "import-route" })}>
+      Import from coherent network
+    </button>
+
+    <button on:click={() => ($mode = { kind: "evaluate-route" })}>
+      Evaluate a route
+    </button>
+
+    <button on:click={() => ($mode = { kind: "debug" })}>Debug</button>
 
     {#if gj}
       <ol>

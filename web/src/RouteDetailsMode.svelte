@@ -1,6 +1,6 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/top_bar_layout";
+  import { SplitComponent } from "svelte-utils/two_column_layout";
   import { backend, mode, infraTypes, autosave } from "./stores";
   import type { FeatureCollection } from "geojson";
   import { onMount, onDestroy } from "svelte";
@@ -55,7 +55,6 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <SplitComponent>
-  <div slot="top">Nav</div>
   <div slot="sidebar">
     <h2>Route details mode</h2>
 
