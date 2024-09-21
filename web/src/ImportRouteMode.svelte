@@ -39,9 +39,7 @@
   <div slot="sidebar">
     <h2>Import a route from the coherent network</h2>
 
-    <button on:click={() => ($mode = { kind: "main" })}>
-      Back to main mode
-    </button>
+    <button on:click={() => ($mode = { kind: "main" })}>Back</button>
 
     <p>
       Click a route to import it. Note this isn't a real example of a coherent

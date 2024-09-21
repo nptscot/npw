@@ -38,24 +38,32 @@
 
 <SplitComponent>
   <div slot="sidebar">
-    <h2>Main mode</h2>
+    <h2>Network Planning Workspace</h2>
 
-    {#if $routeTool}
-      <button on:click={() => ($mode = { kind: "sketch-route", id: null })}>
-        New <u>r</u>
-        oute
-      </button>
-    {/if}
+    <h4>Build network:</h4>
 
     <button on:click={() => ($mode = { kind: "import-route" })}>
       Import from coherent network
     </button>
+
+    <p style:text-align="center"><b>-or-</b></p>
+
+    {#if $routeTool}
+      <button on:click={() => ($mode = { kind: "sketch-route", id: null })}>
+        Draw new <u>r</u>
+        oute line
+      </button>
+    {/if}
+
+    <h4>Evaluate:</h4>
 
     <button on:click={() => ($mode = { kind: "evaluate-route" })}>
       Evaluate a route
     </button>
 
     <button on:click={() => ($mode = { kind: "debug" })}>Debug</button>
+
+    <h4>Current network:</h4>
 
     {#if gj}
       <ol>

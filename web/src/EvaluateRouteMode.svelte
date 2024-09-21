@@ -43,9 +43,7 @@
   <div slot="sidebar">
     <h2>Evaluate a route mode</h2>
 
-    <button on:click={() => ($mode = { kind: "main" })}>
-      Back to main mode
-    </button>
+    <button on:click={() => ($mode = { kind: "main" })}>Back</button>
 
     <p>
       Move the <b>A</b>
