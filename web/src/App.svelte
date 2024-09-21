@@ -11,6 +11,7 @@
   } from "svelte-utils/two_column_layout";
   import DebugMode from "./DebugMode.svelte";
   import MainMode from "./MainMode.svelte";
+  import Legend from "./common/Legend.svelte";
   import SketchRouteMode from "./SketchRouteMode.svelte";
   import RouteDetailsMode from "./RouteDetailsMode.svelte";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
@@ -165,6 +166,9 @@
       {#if !offlineMode}
         <Geocoder {map} apiKey={maptilerApiKey} />
       {/if}
+
+      <Legend />
+
       <div bind:this={mapDiv} />
 
       {#if $backend}

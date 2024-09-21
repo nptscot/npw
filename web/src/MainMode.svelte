@@ -7,7 +7,7 @@
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { SplitComponent } from "svelte-utils/two_column_layout";
-  import { backend, mode, routeTool, infraTypes } from "./stores";
+  import { backend, mode, routeTool } from "./stores";
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
@@ -69,17 +69,6 @@
         {/each}
       </ol>
     {/if}
-
-    <hr />
-
-    <details open>
-      <summary>Legend</summary>
-      <ul>
-        {#each infraTypes as [_, label, color]}
-          <li style:background={color}>{label}</li>
-        {/each}
-      </ul>
-    </details>
   </div>
 
   <div slot="map">

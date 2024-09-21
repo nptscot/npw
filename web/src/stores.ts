@@ -31,11 +31,11 @@ export let routeB: Writable<{ lng: number; lat: number } | null> =
   writable(null);
 
 export let infraTypes: [string, string, string][] = [
-  ["Separated", "Separated cycle-track", "green"],
-  ["Roadside", "Roadside (stepped)", "blue"],
-  ["CycleLane", "Cycle lane", "yellow"],
-  ["MixedTraffic", "Mixed traffic", "purple"],
-  ["Unknown", "Unknown (but not mixed traffic)", "cyan"],
+  ["Separated", "Separated cycle track", "#008000"],
+  ["Roadside", "Roadside infrastructure", "#FFBF00"],
+  ["CycleLane", "Cycle lane on carriageway", "#FF0000"],
+  ["MixedTraffic", "Mixed traffic", "#EFD1C5"],
+  ["Unknown", "Unknown", "blue"],
 ];
 
 export interface RouteGJ extends FeatureCollection {
