@@ -76,6 +76,12 @@ export class Backend {
     );
   }
 
+  evaluateOD(zones: FeatureCollection, od: [string, string, number][]): string {
+    this.checkReady();
+    // TODO Passing as a JSON string is quite roundabout
+    return this.inner!.evaluateOD(JSON.stringify(zones), JSON.stringify(od));
+  }
+
   toSavefile(): string {
     this.checkReady();
     return this.inner!.toSavefile();

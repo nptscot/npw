@@ -71,7 +71,9 @@ export function parseOD(raw: string): [string, string, number][] {
   let od = [] as [string, string, number][];
   for (let line of lines) {
     let tuple = line.split(",");
-    od.push([tuple[0], tuple[1], parseInt(tuple[2])]);
+    if (tuple.length == 3) {
+      od.push([tuple[0], tuple[1], parseInt(tuple[2])]);
+    }
   }
   return od;
 }

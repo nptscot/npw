@@ -7,7 +7,7 @@
   } from "svelte-maplibre";
   import { SplitComponent } from "svelte-utils/two_column_layout";
   import { Popup } from "svelte-utils/map";
-  import { odZones, odPairs, mode } from "./stores";
+  import { backend, odZones, odPairs, mode } from "./stores";
   import type { Position } from "geojson";
   import centroid from "@turf/centroid";
 
@@ -37,6 +37,9 @@
         };
       }),
   };
+
+  // TODO tmp
+  window.alert($backend!.evaluateOD($odZones, $odPairs));
 </script>
 
 <SplitComponent>
