@@ -22,6 +22,17 @@
   $: loadNodes($showAllNodes);
 </script>
 
+<label>
+  <input
+    type="checkbox"
+    role="switch"
+    bind:checked={$snapMode}
+    on:click={() => routeSnapper.toggleSnapMode()}
+  />
+  <u>S</u>
+  nap to roads
+</label>
+
 <button
   disabled={$undoLength == 0}
   on:click={() => routeSnapper.undo()}
@@ -42,20 +53,6 @@
   <input type="checkbox" bind:checked={$showAllNodes} />
   Show all snappable points
 </label>
-
-{#if $snapMode}
-  <p style="background: red; color: white; padding: 8px;">
-    Snapping to existing roads. Press <b>s</b>
-    or click below to draw anywhere
-  </p>
-  <button on:click={() => routeSnapper.toggleSnapMode()}>Draw anywhere</button>
-{:else}
-  <p style="background: blue; color: white; padding: 8px;">
-    Drawing points anywhere. Press <b>s</b>
-    or click below to snap to roads
-  </p>
-  <button on:click={() => routeSnapper.toggleSnapMode()}>Snap to roads</button>
-{/if}
 
 <ul>
   <li>

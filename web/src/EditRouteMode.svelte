@@ -173,7 +173,7 @@
   <div slot="sidebar">
     <h2>Creating/editing a route</h2>
 
-    <button on:click={() => ($mode = { kind: "main" })}>Done</button>
+    <button on:click={() => ($mode = { kind: "main" })}>Back</button>
     <button class="secondary" on:click={deleteRoute}>Delete</button>
 
     <label>
@@ -195,8 +195,6 @@
       Notes:
       <textarea rows="5" bind:value={notes} />
     </label>
-
-    <hr />
 
     <RouteControls {routeSnapper} />
   </div>
