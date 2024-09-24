@@ -57,27 +57,32 @@
     routeSnapper.clearState();
 
     if (!output) {
+      window.alert("No route drawn");
       return;
     }
     let feature = JSON.parse(output);
 
     // TODO Combine the WASM APIs, id is just optional
-    if (id == null) {
-      $backend!.newRoute({
-        feature,
-        name,
-        notes,
-        nodes: feature.properties.full_path,
-        infra_type: infraType,
-      });
-    } else {
-      await $backend!.editRoute(id, {
-        feature,
-        name,
-        notes,
-        nodes: feature.properties.full_path,
-        infra_type: infraType,
-      });
+    try {
+      if (id == null) {
+        await $backend!.newRoute({
+          feature,
+          name,
+          notes,
+          nodes: feature.properties.full_path,
+          infra_type: infraType,
+        });
+      } else {
+        await $backend!.editRoute(id, {
+          feature,
+          name,
+          notes,
+          nodes: feature.properties.full_path,
+          infra_type: infraType,
+        });
+      }
+    } catch (err) {
+      window.alert(err);
     }
     await autosave();
   });
