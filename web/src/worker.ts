@@ -49,15 +49,10 @@ export class Backend {
   }
 
   // TODO types
-  newRoute(input: any): number {
+  // TODO Be consistent about undefined vs null
+  setRoute(id: number | null, input: any): number {
     this.checkReady();
-    return this.inner!.newRoute(input);
-  }
-
-  // TODO types
-  editRoute(id: number, input: any) {
-    this.checkReady();
-    this.inner!.editRoute(id, input);
+    return this.inner!.setRoute(id == null ? undefined : id, input);
   }
 
   deleteRoute(id: number) {

@@ -49,22 +49,16 @@ impl MapModel {
         bincode::serialize(&self.to_route_snapper_graph()).unwrap()
     }
 
-    /// Returns the ID of the new route
-    #[wasm_bindgen(js_name = newRoute)]
-    pub fn new_route(&mut self, input: JsValue) -> Result<usize, JsValue> {
+    /// Create or edit a route. Returns the ID
+    #[wasm_bindgen(js_name = setRoute)]
+    pub fn set_route_wasm(&mut self, id: Option<usize>, input: JsValue) -> Result<usize, JsValue> {
         let route = self.parse_route(input).map_err(err_to_js)?;
-        self.add_route(route).map_err(err_to_js)
+        self.set_route(id, route).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = deleteRoute)]
     pub fn delete_route_wasm(&mut self, id: usize) -> Result<(), JsValue> {
         self.delete_route(id).map_err(err_to_js)
-    }
-
-    #[wasm_bindgen(js_name = editRoute)]
-    pub fn edit_route_wasm(&mut self, id: usize, input: JsValue) -> Result<(), JsValue> {
-        let route = self.parse_route(input).map_err(err_to_js)?;
-        self.edit_route(id, route).map_err(err_to_js)
     }
 
     /// Returns a GeoJSON string showing all routes

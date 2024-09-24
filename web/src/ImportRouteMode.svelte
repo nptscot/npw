@@ -17,7 +17,7 @@
     let feature = $coherentNetwork.features[id];
 
     try {
-      let newId = $backend!.newRoute({
+      let newId = $backend!.setRoute(null, {
         feature,
         name: "",
         notes: "",
@@ -53,7 +53,7 @@
         id="cn"
         paint={{
           "line-width": hoverStateFilter(5, 10),
-          "line-color": "red",
+          "line-color": "purple",
         }}
         manageHoverState
         hoverCursor="pointer"
@@ -68,6 +68,7 @@
           paint={{
             "line-width": 5,
             "line-color": colorByInraType,
+            "line-opacity": 0.5,
           }}
         />
       </GeoJSON>
