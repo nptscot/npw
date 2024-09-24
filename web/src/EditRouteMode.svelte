@@ -171,7 +171,7 @@
 
 <SplitComponent>
   <div slot="sidebar">
-    <h2>Creating/editing a route</h2>
+    <h2>Editing a route</h2>
 
     <button on:click={() => ($mode = { kind: "main" })}>Back</button>
     <button class="secondary" on:click={deleteRoute}>Delete</button>
@@ -181,15 +181,14 @@
       <input type="text" bind:value={name} />
     </label>
 
-    <fieldset>
-      <legend>Infrastructure type:</legend>
-      {#each infraTypes as [value, label, _]}
-        <label>
-          <input type="radio" {value} bind:group={infraType} />
-          {label}
-        </label>
-      {/each}
-    </fieldset>
+    <label>
+      Infrastructure type:
+      <select bind:value={infraType}>
+        {#each infraTypes as [value, label, _]}
+          <option {value}>{label}</option>
+        {/each}
+      </select>
+    </label>
 
     <label>
       Notes:

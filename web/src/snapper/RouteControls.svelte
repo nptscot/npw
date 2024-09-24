@@ -54,35 +54,38 @@
   Show all snappable points
 </label>
 
-<ul>
-  <li>
-    <b>Click</b>
-    the map to add points
-  </li>
-  <li>
-    Press <b>s</b>
-    to switch between snapping points to existing roads and drawing anywhere
-  </li>
-  <li>
-    <b>Click and drag</b>
-    any point to move it
-  </li>
-  <li>
-    <b>Click</b>
-    a waypoint to delete it
-  </li>
-  <li>
-    Press <b>Control+Z</b>
-    to undo your last change
-  </li>
-  <li>
-    Press <b>Enter</b>
-    or
-    <b>double click</b>
-    to finish
-  </li>
-  <li>
-    Press <b>Escape</b>
-    to cancel
-  </li>
-</ul>
+<details open>
+  <summary>Help</summary>
+  <ul>
+    <li>
+      <b>Click</b>
+      the map to add points
+    </li>
+    <li>
+      Press <b>s</b>
+      to switch between snapping points to existing roads and drawing anywhere
+    </li>
+    <li>
+      <b>Click and drag</b>
+      any point to move it
+    </li>
+    <li>
+      <b>Click</b>
+      a waypoint to delete it
+    </li>
+    <li>
+      Press <b>Control+Z</b>
+      to undo your last change
+    </li>
+    <li>
+      Press <b>Enter</b>
+      or
+      <b>double click</b>
+      to finish
+    </li>
+    <li>
+      Press <b>Escape</b>
+      to cancel
+    </li>
+  </ul>
+</details>
