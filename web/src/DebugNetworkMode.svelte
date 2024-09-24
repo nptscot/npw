@@ -15,7 +15,7 @@
 
 <SplitComponent>
   <div slot="sidebar">
-    <h2>Debug mode</h2>
+    <h2>Debug network mode</h2>
     <button on:click={() => ($mode = { kind: "main" })}>Back</button>
     <p>Hover to see a segment's properties, and click to open OSM</p>
   </div>

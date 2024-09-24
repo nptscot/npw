@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@picocss/pico": "^2.0.3",
+    "@turf/centroid": "^7.1.0",
     "comlink": "^4.4.1",
     "route-snapper": "^0.4.3",
     "svelte-maplibre": "^0.9.7",

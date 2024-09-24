@@ -9,7 +9,8 @@
     mapContents,
     sidebarContents,
   } from "svelte-utils/two_column_layout";
-  import DebugMode from "./DebugMode.svelte";
+  import DebugNetworkMode from "./DebugNetworkMode.svelte";
+  import DebugODMode from "./DebugODMode.svelte";
   import MainMode from "./MainMode.svelte";
   import Legend from "./common/Legend.svelte";
   import EditRouteMode from "./EditRouteMode.svelte";
@@ -24,6 +25,9 @@
     routeA,
     routeB,
     coherentNetwork,
+    odZones,
+    odPairs,
+    parseOD,
   } from "./stores";
   import { Backend } from "./worker";
   import init, { JsRouteSnapper } from "route-snapper";
@@ -93,6 +97,18 @@
         : `cn_manual.geojson`,
     );
     $coherentNetwork = await resp2.json();
+
+    let resp3 = await fetch(
+      remote
+        ? `https://assets.od2net.org/tmp_npt_editor/zones.geojson`
+        : `zones.geojson`,
+    );
+    $odZones = await resp3.json();
+
+    let resp4 = await fetch(
+      remote ? `https://assets.od2net.org/tmp_npt_editor/od.csv` : `od.csv`,
+    );
+    $odPairs = parseOD(await resp4.text());
 
     loading = "";
 
@@ -176,8 +192,10 @@
           <EditRouteMode id={$mode.id} {map} routeSnapper={$routeSnapper} />
         {:else if $mode.kind == "evaluate-route"}
           <EvaluateRouteMode />
-        {:else if $mode.kind == "debug"}
-          <DebugMode />
+        {:else if $mode.kind == "debug-network"}
+          <DebugNetworkMode />
+        {:else if $mode.kind == "debug-od"}
+          <DebugODMode />
         {/if}
       {/if}
     </MapLibre>

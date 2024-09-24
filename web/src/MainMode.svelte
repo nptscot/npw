@@ -59,8 +59,14 @@
       Evaluate a route
     </button>
 
-    <button class="secondary" on:click={() => ($mode = { kind: "debug" })}>
-      Debug
+    <button
+      class="secondary"
+      on:click={() => ($mode = { kind: "debug-network" })}
+    >
+      Debug network
+    </button>
+    <button class="secondary" on:click={() => ($mode = { kind: "debug-od" })}>
+      Debug OD
     </button>
 
     <h4>Current network:</h4>

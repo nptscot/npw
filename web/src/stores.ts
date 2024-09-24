@@ -11,7 +11,8 @@ export type Mode =
   | { kind: "import-route" }
   | { kind: "edit-route"; id: number | null }
   | { kind: "evaluate-route" }
-  | { kind: "debug" };
+  | { kind: "debug-network" }
+  | { kind: "debug-od" };
 
 export let mode: Writable<Mode> = writable({ kind: "main" });
 export let map: Writable<Map | null> = writable(null);
@@ -23,6 +24,11 @@ export let coherentNetwork: Writable<FeatureCollection> = writable({
   type: "FeatureCollection",
   features: [],
 });
+export let odZones: Writable<FeatureCollection> = writable({
+  type: "FeatureCollection",
+  features: [],
+});
+export let odPairs: Writable<[string, string, number][]> = writable([]);
 
 export let routeA: Writable<{ lng: number; lat: number } | null> =
   writable(null);
@@ -57,4 +63,15 @@ export async function autosave() {
   }
   let state = await backendValue.toSavefile();
   window.localStorage.setItem("tmp-npt-editor", state);
+}
+
+export function parseOD(raw: string): [string, string, number][] {
+  let lines = raw.split("\n");
+  lines.shift();
+  let od = [] as [string, string, number][];
+  for (let line of lines) {
+    let tuple = line.split(",");
+    od.push([tuple[0], tuple[1], parseInt(tuple[2])]);
+  }
+  return od;
 }
