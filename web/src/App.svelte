@@ -20,14 +20,13 @@
     mode,
     backend,
     maptilerApiKey,
-    routeTool,
+    routeSnapper,
     routeA,
     routeB,
     coherentNetwork,
   } from "./stores";
   import { Backend } from "./worker";
-  import { routeToolGj, snapMode, undoLength } from "./snapper/stores";
-  import { init, RouteTool } from "route-snapper-ts";
+  import init, { JsRouteSnapper } from "route-snapper";
   import { Loading } from "svelte-utils";
   // TODO Indirect dependencies
   import * as pmtiles from "pmtiles";
@@ -45,16 +44,6 @@
   let map: Map;
   $: if (map) {
     mapStore.set(map);
-  }
-
-  $: if (map && $backend) {
-    $routeTool = new RouteTool(
-      map,
-      $backend.toRouteSnapper(),
-      routeToolGj,
-      snapMode,
-      undoLength,
-    );
   }
 
   onMount(async () => {
@@ -116,6 +105,8 @@
       lng: lerp(0.6, bbox[0], bbox[2]),
       lat: lerp(0.6, bbox[1], bbox[3]),
     };
+
+    $routeSnapper = new JsRouteSnapper(backendWorker.toRouteSnapper());
 
     backend.set(backendWorker);
     await zoomToFit();
@@ -181,8 +172,8 @@
           <MainMode />
         {:else if $mode.kind == "import-route"}
           <ImportRouteMode />
-        {:else if $mode.kind == "edit-route"}
-          <EditRouteMode id={$mode.id} />
+        {:else if $mode.kind == "edit-route" && $routeSnapper && map}
+          <EditRouteMode id={$mode.id} {map} routeSnapper={$routeSnapper} />
         {:else if $mode.kind == "evaluate-route"}
           <EvaluateRouteMode />
         {:else if $mode.kind == "debug"}

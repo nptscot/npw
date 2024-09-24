@@ -7,7 +7,7 @@
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { SplitComponent } from "svelte-utils/two_column_layout";
-  import { backend, mode, routeTool } from "./stores";
+  import { backend, mode } from "./stores";
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
@@ -48,12 +48,10 @@
 
     <p style:text-align="center"><b>-or-</b></p>
 
-    {#if $routeTool}
-      <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
-        Draw new <u>r</u>
-        oute line
-      </button>
-    {/if}
+    <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
+      Draw new <u>r</u>
+      oute line
+    </button>
 
     <h4>Evaluate:</h4>
 

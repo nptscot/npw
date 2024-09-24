@@ -1,21 +1,22 @@
 <script lang="ts">
   import { snapMode, undoLength, showAllNodes, showAllNodesGj } from "./stores";
-  import { RouteTool } from "route-snapper-ts";
+  import { JsRouteSnapper } from "route-snapper";
 
-  export let routeTool: RouteTool;
+  export let routeSnapper: JsRouteSnapper;
 
   // TODO session storage at least
   let extendRoute = false;
 
   // TODO When editing, we should save in the route and use the previous value
-  $: routeTool.setRouteConfig({
+  // TODO Need to trigger redraw
+  $: routeSnapper.setRouteConfig({
     avoid_doubling_back: false,
     extend_route: extendRoute,
   });
 
   function loadNodes(show: boolean) {
     if (show && $showAllNodesGj.features.length == 0) {
-      $showAllNodesGj = JSON.parse(routeTool.inner.debugSnappableNodes());
+      $showAllNodesGj = JSON.parse(routeSnapper.debugSnappableNodes());
     }
   }
   $: loadNodes($showAllNodes);
@@ -23,7 +24,7 @@
 
 <button
   disabled={$undoLength == 0}
-  on:click={() => routeTool.undo()}
+  on:click={() => routeSnapper.undo()}
   data-tooltip="Ctrl+Z"
 >
   {#if $undoLength == 0}
@@ -47,13 +48,13 @@
     Snapping to existing roads. Press <b>s</b>
     or click below to draw anywhere
   </p>
-  <button on:click={() => routeTool.toggleSnapMode()}>Draw anywhere</button>
+  <button on:click={() => routeSnapper.toggleSnapMode()}>Draw anywhere</button>
 {:else}
   <p style="background: blue; color: white; padding: 8px;">
     Drawing points anywhere. Press <b>s</b>
     or click below to snap to roads
   </p>
-  <button on:click={() => routeTool.toggleSnapMode()}>Snap to roads</button>
+  <button on:click={() => routeSnapper.toggleSnapMode()}>Snap to roads</button>
 {/if}
 
 <ul>
