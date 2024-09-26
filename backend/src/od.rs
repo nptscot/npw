@@ -2,37 +2,94 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use geo::{BoundingRect, Contains, Coord, MultiPolygon};
-use geojson::{FeatureCollection, Value};
+use geojson::{Feature, FeatureCollection, Geometry, Value};
+use graph::{Mode, PathStep};
 use nanorand::{Rng, WyRand};
 use utils::Mercator;
 
-use crate::MapModel;
+use crate::{InfraType, MapModel};
 
 impl MapModel {
     pub fn evaluate_od(&self, gj: String, od: Vec<(String, String, usize)>) -> Result<String> {
         let zones = parse_zones(gj, &self.graph.mercator)?;
         let mut rng = WyRand::new_seed(42);
+        let infra_types = self.get_infra_types();
 
-        let mut success = 0;
+        let mut counts = HashMap::new();
+        let mut succeeded = 0;
+        let mut failed = 0;
+
         for (zone1, zone2, count) in od {
-            let from = match zones.get(&zone1) {
-                Some(zone) => zone.random_point(&mut rng),
-                None => {
-                    continue;
-                }
-            };
-            let to = match zones.get(&zone2) {
-                Some(zone) => zone.random_point(&mut rng),
-                None => {
-                    continue;
-                }
-            };
+            for _ in 0..count {
+                let pt1 = match zones.get(&zone1) {
+                    Some(zone) => zone.random_point(&mut rng),
+                    None => {
+                        continue;
+                    }
+                };
+                let pt2 = match zones.get(&zone2) {
+                    Some(zone) => zone.random_point(&mut rng),
+                    None => {
+                        continue;
+                    }
+                };
 
-            // TODO Route
-            success += 1;
+                let mode = Mode::Bicycle;
+                let start = self.graph.snap_to_road(pt1, mode);
+                let end = self.graph.snap_to_road(pt2, mode);
+                let Ok(route) = self.graph.router[mode].route(&self.graph, start, end) else {
+                    failed += 1;
+                    continue;
+                };
+                succeeded += 1;
+
+                // TODO Use a lower-level API to squeeze out some speed
+                for step in route.steps {
+                    if let PathStep::Road { road, .. } = step {
+                        *counts.entry(road).or_insert(0) += 1;
+                    }
+                }
+            }
         }
 
-        Ok(format!("{success} succeeded"))
+        let mut max_count = 0;
+        let mut features = Vec::new();
+        for (r, count) in counts {
+            max_count = max_count.max(count);
+            let mut f = Feature::from(Geometry::from(
+                &self
+                    .graph
+                    .mercator
+                    .to_wgs84(&self.graph.roads[r.0].linestring),
+            ));
+            f.set_property("count", count);
+            f.set_property(
+                "infra_type",
+                serde_json::to_value(
+                    infra_types
+                        .get(&r)
+                        .cloned()
+                        .unwrap_or(InfraType::MixedTraffic),
+                )
+                .unwrap(),
+            );
+            features.push(f);
+        }
+
+        Ok(serde_json::to_string(&FeatureCollection {
+            features,
+            bbox: None,
+            foreign_members: Some(
+                serde_json::json!({
+                    "succeeded": succeeded,
+                    "failed": failed,
+                    "max_count": max_count,
+                })
+                .as_object()
+                .unwrap()
+                .clone(),
+            ),
+        })?)
     }
 }
 

@@ -11,6 +11,7 @@ export type Mode =
   | { kind: "import-route" }
   | { kind: "edit-route"; id: number | null }
   | { kind: "evaluate-route" }
+  | { kind: "evaluate-od" }
   | { kind: "debug-network" }
   | { kind: "debug-od" };
 

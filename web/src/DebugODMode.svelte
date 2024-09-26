@@ -17,6 +17,7 @@
       centroid(f).geometry.coordinates,
     ]),
   );
+  // TODO The old A/B Street style heatmap when hovering on a zone would work better for this density
   let flowGj = {
     type: "FeatureCollection" as const,
     features: $odPairs

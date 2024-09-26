@@ -15,6 +15,7 @@
   import Legend from "./common/Legend.svelte";
   import EditRouteMode from "./EditRouteMode.svelte";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
+  import EvaluateODMode from "./EvaluateODMode.svelte";
   import ImportRouteMode from "./ImportRouteMode.svelte";
   import {
     map as mapStore,
@@ -37,7 +38,7 @@
   import maplibregl from "maplibre-gl";
 
   // TODO Remove later
-  let offlineMode = false;
+  let offlineMode = true;
   if (offlineMode) {
     let protocol = new pmtiles.Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
@@ -192,6 +193,8 @@
           <EditRouteMode id={$mode.id} {map} routeSnapper={$routeSnapper} />
         {:else if $mode.kind == "evaluate-route"}
           <EvaluateRouteMode />
+        {:else if $mode.kind == "evaluate-od"}
+          <EvaluateODMode />
         {:else if $mode.kind == "debug-network"}
           <DebugNetworkMode />
         {:else if $mode.kind == "debug-od"}

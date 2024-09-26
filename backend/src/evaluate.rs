@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use anyhow::Result;
 use geo::{Coord, EuclideanLength, LineString};
 use geojson::{Feature, FeatureCollection, Geometry};
@@ -10,13 +8,7 @@ use crate::{InfraType, MapModel};
 
 impl MapModel {
     pub fn evaluate_route(&self, pt1: Coord, pt2: Coord) -> Result<String> {
-        let mut infra_types = HashMap::new();
-        for route in self.routes.values() {
-            for road in &route.roads {
-                infra_types.insert(*road, route.infra_type);
-            }
-        }
-
+        let infra_types = self.get_infra_types();
         let mode = Mode::Bicycle;
         let start = self.graph.snap_to_road(pt1, mode);
         let end = self.graph.snap_to_road(pt2, mode);

@@ -58,6 +58,9 @@
     <button on:click={() => ($mode = { kind: "evaluate-route" })}>
       Evaluate a route
     </button>
+    <button on:click={() => ($mode = { kind: "evaluate-od" })}>
+      Evaluate OD
+    </button>
 
     <button
       class="secondary"

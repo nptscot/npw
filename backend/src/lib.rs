@@ -60,4 +60,15 @@ impl MapModel {
             id_counter: 0,
         })
     }
+
+    // TODO If this is done frequently, just cache it?
+    pub fn get_infra_types(&self) -> HashMap<RoadID, InfraType> {
+        let mut infra_types = HashMap::new();
+        for route in self.routes.values() {
+            for road in &route.roads {
+                infra_types.insert(*road, route.infra_type);
+            }
+        }
+        infra_types
+    }
 }
