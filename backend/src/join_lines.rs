@@ -1,6 +1,6 @@
 use std::collections::{BTreeSet, HashMap};
 
-use geo::{Coord, EuclideanLength, Line, LineString};
+use geo::{Coord, EuclideanLength, LineString};
 use petgraph::graphmap::UnGraphMap;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -17,6 +17,7 @@ impl HashedPoint {
 }
 
 // TODO Copied from polygon-width; move to utils or upstream in geo
+#[allow(unused)]
 pub fn join_linestrings(mut lines: Vec<LineString>) -> Vec<LineString> {
     loop {
         log::info!("join_linestrings: {} lines left", lines.len());

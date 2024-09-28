@@ -1,6 +1,6 @@
 use anyhow::Result;
 use cavalier_contours::polyline::{
-    BooleanOp, PlineCreation, PlineOffsetOptions, PlineSource, PlineVertex, Polyline,
+    BooleanOp, BooleanResultInfo, PlineCreation, PlineSource, PlineVertex, Polyline,
 };
 use geo::{BoundingRect, Coord, GeometryCollection, LineString, Polygon, Rect};
 use geojson::{Feature, FeatureCollection, Geometry};
@@ -13,13 +13,21 @@ impl MapModel {
         let linestrings = crate::join_lines::collapse_degree_2(linestrings);
         //let linestrings = crate::join_lines::join_linestrings(linestrings);
 
+        let polygons = split_polygon_by_linestrings(&bbox, &linestrings)?;
+
         let mut features = Vec::new();
         /*features.push(Feature::from(Geometry::from(
             &self.graph.mercator.to_wgs84(&bbox),
-        )));*/
+        )));
         for ls in linestrings {
             features.push(Feature::from(Geometry::from(
                 &self.graph.mercator.to_wgs84(&ls),
+            )));
+        }*/
+        for p in polygons {
+            // Easier to visualize as the boundaries
+            features.push(Feature::from(Geometry::from(
+                &self.graph.mercator.to_wgs84(p.exterior()),
             )));
         }
 
@@ -72,7 +80,8 @@ impl MapModel {
 }
 
 fn linestring_to_pline(linestring: &LineString) -> Polyline {
-    let is_closed = false;
+    // TODO hack
+    let is_closed = true;
     Polyline::from_iter(
         linestring
             .0
@@ -90,4 +99,60 @@ fn pline_to_linestring(pline: &Polyline) -> LineString {
             .map(|v| Coord { x: v.x, y: v.y })
             .collect(),
     )
+}
+
+fn polygon_to_pline(polygon: &Polygon) -> Result<Polyline> {
+    if !polygon.interiors().is_empty() {
+        bail!("Polygon with holes not supported");
+    }
+    let is_closed = true;
+    Ok(Polyline::from_iter(
+        polygon
+            .exterior()
+            .0
+            .iter()
+            .map(|pt| PlineVertex::new(pt.x, pt.y, 0.0)),
+        is_closed,
+    ))
+}
+
+fn pline_to_polygon(pline: &Polyline) -> Polygon {
+    Polygon::new(pline_to_linestring(pline), Vec::new())
+}
+
+fn split_polygon_by_linestrings(
+    polygon: &Polygon,
+    linestrings: &Vec<LineString>,
+) -> Result<Vec<Polygon>> {
+    let mut output = vec![polygon_to_pline(polygon)?];
+    log::info!("splitting polygon by {} linestrings", linestrings.len());
+    for ls in linestrings {
+        log::info!("splitting. {} polygons so far", output.len());
+        let pl = linestring_to_pline(ls);
+
+        let mut new_output = Vec::new();
+        for piece in output.drain(..) {
+            let result1 = piece.boolean(&pl, BooleanOp::And);
+            if !matches!(result1.result_info, BooleanResultInfo::Intersected) {
+                new_output.push(piece);
+                continue;
+            }
+            let result2 = piece.boolean(&pl, BooleanOp::Not);
+
+            let mut pieces = Vec::new();
+            // TODO Could be more precise here
+            pieces.extend(result1.pos_plines.into_iter().map(|r| r.pline));
+            pieces.extend(result1.neg_plines.into_iter().map(|r| r.pline));
+            pieces.extend(result2.pos_plines.into_iter().map(|r| r.pline));
+            pieces.extend(result2.neg_plines.into_iter().map(|r| r.pline));
+            if pieces.is_empty() {
+                // They must've been disjoint
+                new_output.push(piece);
+            } else {
+                new_output.extend(pieces);
+            }
+        }
+        output = new_output;
+    }
+    Ok(output.iter().map(pline_to_polygon).collect())
 }
