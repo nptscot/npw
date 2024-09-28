@@ -91,6 +91,11 @@ export class Backend {
     );
   }
 
+  meshDensity(): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.meshDensity());
+  }
+
   toSavefile(): string {
     this.checkReady();
     return this.inner!.toSavefile();

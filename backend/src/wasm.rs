@@ -106,6 +106,11 @@ impl MapModel {
         Ok(())
     }
 
+    #[wasm_bindgen(js_name = meshDensity)]
+    pub fn mesh_density(&self) -> Result<String, JsValue> {
+        self.calculate_mesh_density().map_err(err_to_js)
+    }
+
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
         // TODO map_err?
         let route: InputRoute = match serde_wasm_bindgen::from_value(input) {

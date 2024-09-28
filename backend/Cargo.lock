@@ -77,6 +77,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bincode",
+ "cavalier_contours",
  "console_error_panic_hook",
  "console_log",
  "geo",
@@ -85,6 +86,7 @@ dependencies = [
  "js-sys",
  "log",
  "nanorand",
+ "petgraph",
  "route-snapper-graph",
  "rstar",
  "serde",
@@ -131,6 +133,16 @@ name = "byteorder"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1fd0f2584146f6f2ef48085050886acf353beff7305ebd1ae69500e27c67f64b"
+
+[[package]]
+name = "cavalier_contours"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d96d14b73da522c59e5e8d2aafcfbcd45380ab9a3eae6dd98108689d9c948a97"
+dependencies = [
+ "num-traits",
+ "static_aabb2d_index",
+]
 
 [[package]]
 name = "cc"
@@ -351,6 +363,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8c02a5121d4ea3eb16a80748c74f5549a5665e4c21333c6098f283870fbdea6"
 
 [[package]]
+name = "fixedbitset"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0ce7134b9999ecaf8bcd65542e436736ef32ddca1b3e06094cb6ec5755203b80"
+
+[[package]]
 name = "flate2"
 version = "1.0.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -453,6 +471,7 @@ dependencies = [
 [[package]]
 name = "graph"
 version = "0.1.0"
+source = "git+https://github.com/a-b-street/15m#a4d143162283235d560e1a09895d039b79e3d50f"
 dependencies = [
  "anyhow",
  "chrono",
@@ -772,6 +791,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "petgraph"
+version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4c5cc86750666a3ed20bdaf5ca2a0344f9c67674cae0515bec2da16fbaa47db"
+dependencies = [
+ "fixedbitset",
+ "indexmap",
+]
+
+[[package]]
 name = "pin-project-lite"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1053,6 +1082,15 @@ name = "stable_deref_trait"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
+
+[[package]]
+name = "static_aabb2d_index"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1204bd3057a2225dc60d157bd921aaeaa4d318527bd32af4678cad39e5279849"
+dependencies = [
+ "num-traits",
+]
 
 [[package]]
 name = "syn"

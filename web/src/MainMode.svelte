@@ -5,6 +5,7 @@
     LineLayer,
     type LayerClickInfo,
   } from "svelte-maplibre";
+  import { downloadGeneratedFile } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
   import { SplitComponent } from "svelte-utils/two_column_layout";
   import { backend, mode } from "./stores";
@@ -31,6 +32,13 @@
 
   function editRouteSidebar(id: string | number | undefined) {
     $mode = { kind: "edit-route", id: id as number };
+  }
+
+  async function debugMeshDensity() {
+    downloadGeneratedFile(
+      "mesh_density.geojson",
+      JSON.stringify(await $backend!.meshDensity()),
+    );
   }
 </script>
 
@@ -70,6 +78,9 @@
     </button>
     <button class="secondary" on:click={() => ($mode = { kind: "debug-od" })}>
       Debug OD
+    </button>
+    <button class="secondary" on:click={debugMeshDensity}>
+      Debug mesh density
     </button>
 
     <h4>Current network:</h4>
