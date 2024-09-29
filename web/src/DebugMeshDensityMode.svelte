@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
+  import {
+    CircleLayer,
+    GeoJSON,
+    hoverStateFilter,
+    LineLayer,
+  } from "svelte-maplibre";
   import { SplitComponent } from "svelte-utils/two_column_layout";
   import { PropertiesTable, notNull } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
@@ -18,8 +23,9 @@
         <LineLayer
           paint={{
             "line-width": hoverStateFilter(5, 7),
-            "line-color": "black",
+            "line-color": ["case", ["get", "forwards"], "red", "blue"],
             "line-opacity": 0.8,
+            "line-offset": 5,
           }}
           manageHoverState
         >
@@ -27,6 +33,19 @@
             <PropertiesTable properties={props} />
           </Popup>
         </LineLayer>
+
+        <CircleLayer
+          paint={{
+            "circle-radius": 8,
+            "circle-color": "black",
+            "circle-opacity": hoverStateFilter(0.5, 1.0),
+          }}
+          manageHoverState
+        >
+          <Popup openOn="hover" let:props>
+            <PropertiesTable properties={props} />
+          </Popup>
+        </CircleLayer>
       </GeoJSON>
     {/await}
   </div>

@@ -11,7 +11,12 @@ impl MapModel {
 
         linestrings = crate::split_lines::split_crossing_linestrings(linestrings);
 
-        let polygons = crate::planar_graph::get_faces(&linestrings);
+        Ok(crate::planar_graph::get_faces(
+            &self.graph.mercator,
+            &linestrings,
+        ))
+
+        /*let polygons = crate::planar_graph::get_faces(&linestrings);
 
         let mut features = Vec::new();
         for ls in polygons {
@@ -24,7 +29,7 @@ impl MapModel {
             features,
             bbox: None,
             foreign_members: None,
-        })?)
+        })?)*/
     }
 
     fn get_mesh_density_sources(&self) -> (Vec<LineString>, Polygon) {

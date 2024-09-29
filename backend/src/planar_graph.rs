@@ -1,6 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
-use geo::{Coord, LineString};
+use geo::{Coord, LineString, Point};
+use geojson::{Feature, FeatureCollection, Geometry};
+use utils::Mercator;
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 struct HashedPoint(isize, isize);
@@ -19,7 +21,7 @@ impl HashedPoint {
     }
 }
 
-pub fn get_faces(input: &Vec<LineString>) -> Vec<LineString> {
+pub fn get_faces(mercator: &Mercator, input: &Vec<LineString>) -> String {
     // Repeat every edge in both directions
     let mut linestrings = Vec::new();
     for ls in input {
@@ -43,7 +45,30 @@ pub fn get_faces(input: &Vec<LineString>) -> Vec<LineString> {
         sort_edges_ccw(*pt, edges, &linestrings);
     }
 
-    let mut results = Vec::new();
+    let mut features = Vec::new();
+    for (idx, ls) in linestrings.iter().enumerate() {
+        let mut f = Feature::from(Geometry::from(&mercator.to_wgs84(ls)));
+        f.set_property("idx", idx);
+        f.set_property("forwards", idx % 2 == 0);
+        features.push(f);
+    }
+
+    for (pt, edges) in &edges_per_node {
+        let mut f = Feature::from(Geometry::from(&Point::from(
+            mercator.pt_to_wgs84(pt.to_geo()),
+        )));
+        f.set_property("edges", format!("{edges:?}"));
+        features.push(f);
+    }
+
+    serde_json::to_string(&FeatureCollection {
+        features,
+        bbox: None,
+        foreign_members: None,
+    })
+    .unwrap()
+
+    /*let mut results = Vec::new();
     let mut visited_edges: HashSet<usize> = HashSet::new();
     for start_idx in 0..linestrings.len() {
         if visited_edges.contains(&start_idx) {
@@ -79,7 +104,7 @@ pub fn get_faces(input: &Vec<LineString>) -> Vec<LineString> {
         break;
     }
 
-    results
+    results*/
 }
 
 fn sort_edges_ccw(endpoint: HashedPoint, edges: &mut Vec<usize>, linestrings: &Vec<LineString>) {
