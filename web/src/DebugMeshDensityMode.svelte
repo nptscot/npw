@@ -8,25 +8,20 @@
 
 <SplitComponent>
   <div slot="sidebar">
-    <h2>Debug network mode</h2>
+    <h2>Debug mesh density mode</h2>
     <button on:click={() => ($mode = { kind: "main" })}>Back</button>
-    <p>Hover to see a segment's properties, and click to open OSM</p>
   </div>
 
   <div slot="map">
-    {#await notNull($backend).renderDebug() then data}
+    {#await notNull($backend).meshDensity() then data}
       <GeoJSON {data} generateId>
         <LineLayer
-          id="network"
           paint={{
             "line-width": hoverStateFilter(5, 7),
             "line-color": "black",
+            "line-opacity": 0.8,
           }}
           manageHoverState
-          on:click={(e) =>
-            window.open(notNull(e.detail.features[0].properties).way, "_blank")}
-          hoverCursor="pointer"
-          eventsIfTopMost
         >
           <Popup openOn="hover" let:props>
             <PropertiesTable properties={props} />

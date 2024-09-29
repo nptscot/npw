@@ -10,6 +10,7 @@
     sidebarContents,
   } from "svelte-utils/two_column_layout";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
+  import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
   import DebugODMode from "./DebugODMode.svelte";
   import MainMode from "./MainMode.svelte";
   import Legend from "./common/Legend.svelte";
@@ -199,6 +200,8 @@
           <DebugNetworkMode />
         {:else if $mode.kind == "debug-od"}
           <DebugODMode />
+        {:else if $mode.kind == "debug-mesh-density"}
+          <DebugMeshDensityMode />
         {/if}
       {/if}
     </MapLibre>

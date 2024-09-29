@@ -13,7 +13,8 @@ export type Mode =
   | { kind: "evaluate-route" }
   | { kind: "evaluate-od" }
   | { kind: "debug-network" }
-  | { kind: "debug-od" };
+  | { kind: "debug-od" }
+  | { kind: "debug-mesh-density" };
 
 export let mode: Writable<Mode> = writable({ kind: "main" });
 export let map: Writable<Map | null> = writable(null);
