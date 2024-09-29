@@ -47,13 +47,9 @@ pub fn split_crossing_linestrings(mut input: Vec<LineString>) -> Vec<LineString>
     // Now split the linestrings at all places needed
     let mut remove_old_linestrings = Vec::new();
     for (idx, fractions) in split_fractions {
-        log::info!("splitting {idx} at {fractions:?}");
         for split_ls in input[idx].line_split_many(&fractions).unwrap() {
             let Some(split_ls) = split_ls else {
                 // Sometimes the split points are too close together
-                // TODO This isn't happening for the example input, but still some lines are
-                // disappearing that don't seem to be involved in any crosses
-                log::info!("something broke for {idx}. fractions were {fractions:?}");
                 continue;
             };
             input.push(split_ls);
@@ -62,7 +58,8 @@ pub fn split_crossing_linestrings(mut input: Vec<LineString>) -> Vec<LineString>
     }
 
     // Remove all linestrings we split. Since we're deleting by index/position, do the deletions in
-    // reverse
+    // reverse order
+    remove_old_linestrings.sort();
     remove_old_linestrings.reverse();
     for idx in remove_old_linestrings {
         input.remove(idx);

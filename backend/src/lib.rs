@@ -9,9 +9,9 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
 mod evaluate;
-mod join_lines;
 mod mesh_density;
 mod od;
+mod planar_graph;
 mod route_snapper;
 mod routes;
 mod split_lines;

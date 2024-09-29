@@ -17,7 +17,6 @@ graph = { git = "https://github.com/a-b-street/15m" }
 js-sys = "0.3.69"
 log = "0.4.20"
 nanorand = { version = "0.7.0", default-features = false, features = ["wyrand"] }
-petgraph = "0.6.5"
 route-snapper-graph = { git = "https://github.com/dabreegster/route_snapper" }
 rstar = { version = "0.12.0", features = ["serde"] }
 serde = "1.0.188"

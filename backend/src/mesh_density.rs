@@ -11,8 +11,10 @@ impl MapModel {
 
         linestrings = crate::split_lines::split_crossing_linestrings(linestrings);
 
+        let polygons = crate::planar_graph::get_faces(&linestrings);
+
         let mut features = Vec::new();
-        for ls in linestrings {
+        for ls in polygons {
             features.push(Feature::from(Geometry::from(
                 &self.graph.mercator.to_wgs84(&ls),
             )));
