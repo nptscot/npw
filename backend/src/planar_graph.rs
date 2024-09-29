@@ -58,6 +58,19 @@ pub fn get_faces(mercator: &Mercator, input: &Vec<LineString>) -> String {
             mercator.pt_to_wgs84(pt.to_geo()),
         )));
         f.set_property("edges", format!("{edges:?}"));
+        f.set_property(
+            "angles",
+            format!(
+                "{:?}",
+                edges
+                    .iter()
+                    .map(|idx| {
+                        (100.0 * angle_from_endpoint(*pt, &linestrings[*idx])).round() / 100.0
+                    })
+                    .collect::<Vec<_>>()
+            ),
+        );
+
         features.push(f);
     }
 
@@ -109,22 +122,28 @@ pub fn get_faces(mercator: &Mercator, input: &Vec<LineString>) -> String {
 
 fn sort_edges_ccw(endpoint: HashedPoint, edges: &mut Vec<usize>, linestrings: &Vec<LineString>) {
     edges.sort_by_key(|idx| {
-        let points = &linestrings[*idx].0;
-        // Which end of the linestring starts here?
-        let starts_at_endpoint = endpoint == HashedPoint::new(points[0]);
-        // Find the angle in degrees from the endpoint to the next point in this line
-        let next_pt = if starts_at_endpoint {
-            points[1]
-        } else {
-            points[points.len() - 2]
-        };
-        let endpoint_geo = endpoint.to_geo();
-        let angle_degrees = (next_pt.y - endpoint_geo.y)
-            .atan2(next_pt.x - endpoint_geo.x)
-            .to_degrees();
         // Make the angle sortable
-        (angle_degrees * 1000.0) as isize
+        (angle_from_endpoint(endpoint, &linestrings[*idx]) * 1000.0) as isize
     });
+}
+
+fn angle_from_endpoint(endpoint: HashedPoint, linestring: &LineString) -> f64 {
+    let points = &linestring.0;
+    // Which end of the linestring starts here?
+    let starts_at_endpoint = endpoint == HashedPoint::new(points[0]);
+    // Find the angle in degrees from the endpoint to the next point in this line
+    let next_pt = if starts_at_endpoint {
+        points[1]
+    } else {
+        points[points.len() - 2]
+    };
+    let endpoint_geo = endpoint.to_geo();
+    let angle_degrees = (next_pt.y - endpoint_geo.y)
+        .atan2(next_pt.x - endpoint_geo.x)
+        .to_degrees();
+    let flip = if starts_at_endpoint { 0.0 } else { 180.0 };
+    // Normalize to [0, 360)
+    (angle_degrees + flip + 360.0) % 360.0
 }
 
 fn pick_next_ccw_edge(

@@ -19,11 +19,20 @@
 
   <div slot="map">
     {#await notNull($backend).meshDensity() then data}
-      <GeoJSON {data} generateId>
+      <GeoJSON {data} generateId lineMetrics>
         <LineLayer
+          filter={["has", "forwards"]}
           paint={{
             "line-width": hoverStateFilter(5, 7),
-            "line-color": ["case", ["get", "forwards"], "red", "blue"],
+            "line-gradient": [
+              "interpolate",
+              ["linear"],
+              ["line-progress"],
+              0,
+              "red",
+              1,
+              "blue",
+            ],
             "line-opacity": 0.8,
             "line-offset": 5,
           }}
