@@ -1,22 +1,18 @@
 use anyhow::Result;
 use geo::{BoundingRect, Coord, GeometryCollection, LineString, Polygon, Rect};
 use geojson::{Feature, FeatureCollection, Geometry};
+use i_float::f64_point::F64Point;
+use i_overlay::core::fill_rule::FillRule;
+use i_overlay::f64::string::F64StringOverlay;
+use i_overlay::string::rule::StringRule;
 
 use crate::MapModel;
 
 impl MapModel {
     pub fn calculate_mesh_density(&self) -> Result<String> {
-        let (mut linestrings, bbox) = self.get_mesh_density_sources();
-        linestrings.push(bbox.exterior().clone());
+        let (linestrings, bbox) = self.get_mesh_density_sources();
 
-        linestrings = crate::split_lines::split_crossing_linestrings(linestrings);
-
-        Ok(crate::planar_graph::get_faces(
-            &self.graph.mercator,
-            &linestrings,
-        ))
-
-        /*let polygons = crate::planar_graph::get_faces(&linestrings);
+        let polygons = split_polygon(bbox, linestrings);
 
         let mut features = Vec::new();
         for ls in polygons {
@@ -29,7 +25,7 @@ impl MapModel {
             features,
             bbox: None,
             foreign_members: None,
-        })?)*/
+        })?)
     }
 
     fn get_mesh_density_sources(&self) -> (Vec<LineString>, Polygon) {
@@ -71,4 +67,39 @@ impl MapModel {
 
         (linestrings, tighter_bbox)
     }
+}
+
+fn split_polygon(polygon: Polygon, linestrings: Vec<LineString>) -> Vec<Polygon> {
+    let mut overlay = F64StringOverlay::new();
+    overlay.add_shape_path(polygon.exterior().coords().map(to_pt).collect());
+    for ls in linestrings {
+        overlay.add_string_lines(
+            ls.lines()
+                .map(|l| [to_pt(&l.start), to_pt(&l.end)])
+                .collect(),
+        );
+    }
+
+    let graph = overlay.into_graph(FillRule::NonZero);
+    let shapes = graph.extract_shapes(StringRule::Slice);
+
+    shapes.into_iter().map(to_geo_polygon).collect()
+}
+
+fn to_pt(pt: &Coord) -> F64Point {
+    F64Point::new(pt.x, pt.y)
+}
+
+fn to_geo_polygon(rings: Vec<Vec<F64Point>>) -> Polygon {
+    let mut interiors: Vec<LineString> = rings.into_iter().map(to_geo_linestring).collect();
+    let exterior = interiors.remove(0);
+    Polygon::new(exterior, interiors)
+}
+
+fn to_geo_linestring(pts: Vec<F64Point>) -> LineString {
+    LineString(
+        pts.into_iter()
+            .map(|pt| Coord { x: pt.x, y: pt.y })
+            .collect(),
+    )
 }

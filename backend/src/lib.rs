@@ -11,10 +11,8 @@ use wasm_bindgen::prelude::*;
 mod evaluate;
 mod mesh_density;
 mod od;
-mod planar_graph;
 mod route_snapper;
 mod routes;
-mod split_lines;
 mod wasm;
 
 #[wasm_bindgen]

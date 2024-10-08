@@ -1,13 +1,12 @@
 <script lang="ts">
   import {
-    CircleLayer,
     GeoJSON,
     hoverStateFilter,
+    FillLayer,
     LineLayer,
   } from "svelte-maplibre";
   import { SplitComponent } from "svelte-utils/two_column_layout";
-  import { PropertiesTable, notNull } from "svelte-utils";
-  import { Popup } from "svelte-utils/map";
+  import { notNull } from "svelte-utils";
   import { backend, mode } from "./stores";
 </script>
 
@@ -19,42 +18,20 @@
 
   <div slot="map">
     {#await notNull($backend).meshDensity() then data}
-      <GeoJSON {data} generateId lineMetrics>
+      <GeoJSON {data} generateId>
         <LineLayer
-          filter={["has", "forwards"]}
           paint={{
-            "line-width": hoverStateFilter(5, 7),
-            "line-gradient": [
-              "interpolate",
-              ["linear"],
-              ["line-progress"],
-              0,
-              "red",
-              1,
-              "blue",
-            ],
-            "line-opacity": 0.8,
-            "line-offset": 5,
+            "line-color": "black",
           }}
-          manageHoverState
-        >
-          <Popup openOn="hover" let:props>
-            <PropertiesTable properties={props} />
-          </Popup>
-        </LineLayer>
+        />
 
-        <CircleLayer
+        <FillLayer
           paint={{
-            "circle-radius": 8,
-            "circle-color": "black",
-            "circle-opacity": hoverStateFilter(0.5, 1.0),
+            "fill-color": "grey",
+            "fill-opacity": hoverStateFilter(0.5, 1.0),
           }}
           manageHoverState
-        >
-          <Popup openOn="hover" let:props>
-            <PropertiesTable properties={props} />
-          </Popup>
-        </CircleLayer>
+        />
       </GeoJSON>
     {/await}
   </div>
