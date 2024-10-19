@@ -86,3 +86,11 @@ export function parseOD(raw: string): [string, string, number][] {
   }
   return od;
 }
+
+export let remoteStorage = writable(true);
+
+export function assetUrl(path: string): string {
+  return get(remoteStorage)
+    ? `https://assets.od2net.org/tmp_npt_editor/${path}`
+    : path;
+}

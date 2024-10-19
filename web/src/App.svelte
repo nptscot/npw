@@ -30,6 +30,8 @@
     odZones,
     odPairs,
     parseOD,
+    remoteStorage,
+    assetUrl,
   } from "./stores";
   import { Backend } from "./worker";
   import init, { JsRouteSnapper } from "route-snapper";
@@ -70,15 +72,12 @@
 
     // Detect if we're running locally first
     let resp = await fetch(`${boundaryName}.bin`);
-    let remote = false;
     if (resp.ok) {
       console.log(`Using locally hosted files`);
+      $remoteStorage = false;
     } else {
-      remote = true;
       console.log(`Using remote hosted files`);
-      resp = await fetch(
-        `https://assets.od2net.org/tmp_npt_editor/${boundaryName}.bin`,
-      );
+      resp = await fetch(assetUrl(`${boundaryName}.bin`));
     }
 
     let bytes = await resp.arrayBuffer();
@@ -94,23 +93,13 @@
       }
     }
 
-    let resp2 = await fetch(
-      remote
-        ? `https://assets.od2net.org/tmp_npt_editor/cn_manual.geojson`
-        : `cn_manual.geojson`,
-    );
+    let resp2 = await fetch(assetUrl("cn_manual.geojson"));
     $coherentNetwork = await resp2.json();
 
-    let resp3 = await fetch(
-      remote
-        ? `https://assets.od2net.org/tmp_npt_editor/zones.geojson`
-        : `zones.geojson`,
-    );
+    let resp3 = await fetch(assetUrl("zones.geojson"));
     $odZones = await resp3.json();
 
-    let resp4 = await fetch(
-      remote ? `https://assets.od2net.org/tmp_npt_editor/od.csv` : `od.csv`,
-    );
+    let resp4 = await fetch(assetUrl("od.csv"));
     $odPairs = parseOD(await resp4.text());
 
     loading = "";

@@ -2,4 +2,4 @@
 target/
 node_modules/
 # Local symlink to avoid hitting remote storage
-web/public
+web/public/

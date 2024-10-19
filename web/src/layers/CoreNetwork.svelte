@@ -2,13 +2,10 @@
   import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { coreNetwork } from "./stores";
-
-  // TODO Rethink hosting
-  let url =
-    "https://github.com/nptscot/npt/releases/download/CN_class/city_of_edinburgh_2024-10-01_4_coherent_network.geojson";
+  import { assetUrl } from "../stores";
 </script>
 
-<GeoJSON data={url} generateId>
+<GeoJSON data={assetUrl("core_network.geojson")} generateId>
   <LineLayer
     manageHoverState
     paint={{
