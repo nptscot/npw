@@ -38,9 +38,11 @@ export let routeB: Writable<{ lng: number; lat: number } | null> =
   writable(null);
 
 export let infraTypes: [string, string, string][] = [
-  ["Separated", "Separated cycle track", "#008000"],
-  ["Roadside", "Roadside infrastructure", "#FFBF00"],
-  ["CycleLane", "Cycle lane on carriageway", "#FF0000"],
+  ["SegregatedWide", "Segregated Track (wide)", "#054d05"],
+  ["OffRoad", "Off Road Cycleway", "#3a9120"],
+  ["SegregatedNarrow", "Segregated Track (narrow)", "#87d668"],
+  ["SharedFootway", "Shared Footway", "#ffbf00"],
+  ["CycleLane", "Painted Cycle Lane", "#FF0000"],
   ["MixedTraffic", "Mixed traffic", "#EFD1C5"],
   ["Unknown", "Unknown", "blue"],
 ];

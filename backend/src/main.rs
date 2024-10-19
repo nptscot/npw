@@ -7,6 +7,7 @@ use graph::Timer;
 use backend::MapModel;
 
 fn main() -> Result<()> {
+    simple_logger::init_with_level(log::Level::Info).unwrap();
     // TODO simple logger (but split crates, probably)
     let args: Vec<String> = std::env::args().collect();
     let mut timer = Timer::new("build model", None);

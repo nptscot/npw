@@ -38,8 +38,10 @@ pub struct Route {
 
 #[derive(Clone, Copy, Serialize, Deserialize)]
 pub enum InfraType {
-    Separated,
-    Roadside,
+    SegregatedWide,
+    OffRoad,
+    SegregatedNarrow,
+    SharedFootway,
     CycleLane,
     MixedTraffic,
     Unknown,
