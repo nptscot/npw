@@ -7,11 +7,12 @@
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { SplitComponent } from "svelte-utils/two_column_layout";
-  import { backend, mode } from "./stores";
+  import { backend, mode, infraTypeMapping } from "./stores";
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
   import { colorByInraType } from "./common";
+  import Controls from "./layers/Controls.svelte";
 
   let gj: FeatureCollection | null = null;
   onMount(async () => {
@@ -53,45 +54,54 @@
       oute line
     </button>
 
-    <h4>Evaluate:</h4>
+    <details>
+      <summary>Evaluate</summary>
 
-    <button on:click={() => ($mode = { kind: "evaluate-route" })}>
-      Evaluate a route
-    </button>
-    <button on:click={() => ($mode = { kind: "evaluate-od" })}>
-      Evaluate OD
-    </button>
+      <button on:click={() => ($mode = { kind: "evaluate-route" })}>
+        Evaluate a route
+      </button>
+      <button on:click={() => ($mode = { kind: "evaluate-od" })}>
+        Evaluate OD
+      </button>
 
-    <button
-      class="secondary"
-      on:click={() => ($mode = { kind: "debug-network" })}
-    >
-      Debug network
-    </button>
-    <button class="secondary" on:click={() => ($mode = { kind: "debug-od" })}>
-      Debug OD
-    </button>
-    <button
-      class="secondary"
-      on:click={() => ($mode = { kind: "debug-mesh-density" })}
-    >
-      Debug mesh density
-    </button>
+      <button
+        class="secondary"
+        on:click={() => ($mode = { kind: "debug-network" })}
+      >
+        Debug network
+      </button>
+      <button class="secondary" on:click={() => ($mode = { kind: "debug-od" })}>
+        Debug OD
+      </button>
+      <button
+        class="secondary"
+        on:click={() => ($mode = { kind: "debug-mesh-density" })}
+      >
+        Debug mesh density
+      </button>
+    </details>
 
-    <h4>Current network:</h4>
+    <details open>
+      <summary>Reference layers</summary>
+      <Controls />
+    </details>
 
-    {#if gj}
-      <ol>
-        {#each gj.features as f}
-          <li>
-            <Link on:click={() => editRouteSidebar(f.id)}>
-              {f.properties?.name || `Untitled route ${f.id}`} ({f.properties
-                ?.infra_type})
-            </Link>
-          </li>
-        {/each}
-      </ol>
-    {/if}
+    <details open>
+      <summary>Current network</summary>
+
+      {#if gj}
+        <ol>
+          {#each gj.features as f}
+            <li>
+              <Link on:click={() => editRouteSidebar(f.id)}>
+                {f.properties?.name || `Untitled route ${f.id}`} ({f.properties
+                  ?.infra_type})
+              </Link>
+            </li>
+          {/each}
+        </ol>
+      {/if}
+    </details>
   </div>
 
   <div slot="map">
@@ -108,7 +118,7 @@
           on:click={editRouteMap}
         >
           <Popup openOn="hover" let:props>
-            {props.name || "Untitled"} ({props.infra_type})
+            {props.name || "Untitled"} ({infraTypeMapping[props.infra_type][0]})
           </Popup>
         </LineLayer>
       </GeoJSON>

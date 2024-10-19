@@ -34,6 +34,7 @@
   import { Backend } from "./worker";
   import init, { JsRouteSnapper } from "route-snapper";
   import { Loading } from "svelte-utils";
+  import ReferenceLayers from "./layers/ReferenceLayers.svelte";
   // TODO Indirect dependencies
   import * as pmtiles from "pmtiles";
   import maplibregl from "maplibre-gl";
@@ -185,6 +186,8 @@
             <FillLayer paint={{ "fill-color": "black", "fill-opacity": 0.3 }} />
           </GeoJSON>
         {/await}
+
+        <ReferenceLayers />
 
         {#if $mode.kind == "main"}
           <MainMode />

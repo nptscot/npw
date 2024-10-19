@@ -47,6 +47,11 @@ export let infraTypes: [string, string, string][] = [
   ["Unknown", "Unknown", "blue"],
 ];
 
+export let infraTypeMapping: { [name: string]: [string, string] } =
+  Object.fromEntries(
+    infraTypes.map(([name, label, color]) => [name, [label, color]]),
+  );
+
 export interface RouteGJ extends FeatureCollection {
   direct_length: number;
   route_length: number;
