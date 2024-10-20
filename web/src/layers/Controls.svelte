@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { coreNetwork, schools, townCentres } from "./stores";
+  import { coreNetwork, schools, townCentres, gpHospitals } from "./stores";
 </script>
 
 <label>
@@ -15,4 +15,9 @@
 <label>
   <input type="checkbox" bind:checked={$townCentres} />
   Town centres
+</label>
+
+<label>
+  <input type="checkbox" bind:checked={$gpHospitals} />
+  GPs and hospitals
 </label>
