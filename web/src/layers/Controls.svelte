@@ -1,6 +1,17 @@
 <script lang="ts">
-  import { coreNetwork, schools, townCentres, gpHospitals } from "./stores";
+  import {
+    coreNetwork,
+    schools,
+    townCentres,
+    gpHospitals,
+    existingNetwork,
+  } from "./stores";
 </script>
+
+<label>
+  <input type="checkbox" bind:checked={$existingNetwork} />
+  Existing network
+</label>
 
 <label>
   <input type="checkbox" bind:checked={$coreNetwork} />

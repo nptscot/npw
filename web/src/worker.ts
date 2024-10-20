@@ -96,6 +96,11 @@ export class Backend {
     return JSON.parse(this.inner!.meshDensity());
   }
 
+  classifyExistingNetwork(): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.classifyExistingNetwork());
+  }
+
   toSavefile(): string {
     this.checkReady();
     return this.inner!.toSavefile();

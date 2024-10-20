@@ -111,6 +111,11 @@ impl MapModel {
         self.calculate_mesh_density().map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = classifyExistingNetwork)]
+    pub fn classify_existing_network_wasm(&self) -> Result<String, JsValue> {
+        self.classify_existing_network().map_err(err_to_js)
+    }
+
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
         // TODO map_err?
         let route: InputRoute = match serde_wasm_bindgen::from_value(input) {
