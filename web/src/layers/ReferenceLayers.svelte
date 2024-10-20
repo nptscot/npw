@@ -1,7 +1,9 @@
 <script lang="ts">
   import CoreNetwork from "./CoreNetwork.svelte";
   import Schools from "./Schools.svelte";
+  import TownCentres from "./TownCentres.svelte";
 </script>
 
 <CoreNetwork />
 <Schools />
+<TownCentres />

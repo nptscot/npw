@@ -19,5 +19,16 @@ function schools {
   rm -rf SG_SchoolRoll_2023 SG_SchoolRoll_2023.zip
 }
 
+function town_centres {
+  # Manually register and download GeoJSON from https://data.spatialhub.scot/dataset/town_centres-is
+  ogr2ogr town_centres.geojson \
+          -t_srs EPSG:4326 \
+          $1 \
+          -sql 'SELECT site_name as name FROM "Town_Centres_-_Scotland"'
+  tippecanoe --drop-densest-as-needed --generate-ids -zg town_centres.geojson -o ../web/public/town_centres.pmtiles
+  rm -f town_centres.geojson
+}
+
 core_net
 schools
+town_centres ~/Downloads/Town_Centres_-_Scotland.json
