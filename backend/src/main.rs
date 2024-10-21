@@ -28,7 +28,8 @@ fn main() -> Result<()> {
 
     let mut timer = Timer::new("build model", None);
     let osm_bytes = std::fs::read(&args.input)?;
-    let model = MapModel::create(&osm_bytes, &mut timer)?;
+    let boundary_gj = std::fs::read_to_string(&args.boundary)?;
+    let model = MapModel::create(&osm_bytes, &boundary_gj, &mut timer)?;
 
     timer.step("Writing");
     let writer = BufWriter::new(File::create(&args.output)?);

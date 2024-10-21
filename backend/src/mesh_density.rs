@@ -1,5 +1,5 @@
 use anyhow::Result;
-use geo::{BoundingRect, Coord, GeometryCollection, LineString, Polygon, Rect};
+use geo::{Coord, LineString, Polygon};
 use geojson::{Feature, FeatureCollection, Geometry};
 use i_float::f64_point::F64Point;
 use i_overlay::core::fill_rule::FillRule;
@@ -10,9 +10,9 @@ use crate::MapModel;
 
 impl MapModel {
     pub fn calculate_mesh_density(&self) -> Result<String> {
-        let (linestrings, bbox) = self.get_mesh_density_sources();
-
-        let polygons = split_polygon(bbox, linestrings);
+        let linestrings = self.get_mesh_density_sources();
+        let boundary = self.graph.mercator.to_mercator(&self.boundary.0[0]);
+        let polygons = split_polygon(boundary, linestrings);
 
         let mut features = Vec::new();
         for ls in polygons {
@@ -28,7 +28,7 @@ impl MapModel {
         })?)
     }
 
-    fn get_mesh_density_sources(&self) -> (Vec<LineString>, Polygon) {
+    fn get_mesh_density_sources(&self) -> Vec<LineString> {
         // Find all main roads (later this'll be the drawn cycle network, but most sketches aren't
         // likely to be complete enough yet)
         let mut linestrings = Vec::new();
@@ -47,25 +47,7 @@ impl MapModel {
                 linestrings.push(road.linestring.clone());
             }
         }
-
-        // Ultimately we'll divide the study area boundary, but since it's built from a convex hull
-        // of geometry right now, roads aren't likely to cross it. Use a slightly shrunken bbox
-        // around these linestrings, just to focus on splitting that polygon.
-        let gc = GeometryCollection::from(linestrings.clone());
-        let bbox = gc.bounding_rect().unwrap();
-        let tighter_bbox = Rect::new(
-            Coord {
-                x: bbox.min().x + 0.2 * bbox.width(),
-                y: bbox.min().y + 0.2 * bbox.height(),
-            },
-            Coord {
-                x: bbox.max().x - 0.2 * bbox.width(),
-                y: bbox.max().y - 0.2 * bbox.height(),
-            },
-        )
-        .to_polygon();
-
-        (linestrings, tighter_bbox)
+        linestrings
     }
 }
 

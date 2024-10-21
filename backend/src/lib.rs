@@ -3,6 +3,8 @@ extern crate anyhow;
 
 use std::collections::HashMap;
 
+use anyhow::Result;
+use geo::MultiPolygon;
 use geojson::Feature;
 use graph::{Graph, RoadID, Timer};
 use serde::{Deserialize, Serialize};
@@ -25,6 +27,9 @@ pub struct MapModel {
     routes: HashMap<usize, Route>,
     #[serde(skip_serializing, skip_deserializing, default)]
     id_counter: usize,
+
+    // In WGS84
+    boundary: MultiPolygon,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -49,7 +54,7 @@ pub enum InfraType {
 }
 
 impl MapModel {
-    pub fn create(input_bytes: &[u8], timer: &mut Timer) -> anyhow::Result<MapModel> {
+    pub fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<MapModel> {
         let modify_roads = |_roads: &mut Vec<graph::Road>| {};
         let graph = Graph::new(
             input_bytes,
@@ -62,6 +67,7 @@ impl MapModel {
             graph,
             routes: HashMap::new(),
             id_counter: 0,
+            boundary: read_multipolygon(boundary_gj)?,
         })
     }
 
@@ -74,5 +80,17 @@ impl MapModel {
             }
         }
         infra_types
+    }
+}
+
+fn read_multipolygon(gj_string: &str) -> Result<MultiPolygon> {
+    let gj: geojson::Feature = gj_string.parse()?;
+    if matches!(
+        gj.geometry.as_ref().unwrap().value,
+        geojson::Value::Polygon(_)
+    ) {
+        Ok(MultiPolygon(vec![gj.try_into()?]))
+    } else {
+        Ok(gj.try_into()?)
     }
 }

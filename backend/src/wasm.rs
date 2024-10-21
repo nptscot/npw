@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::sync::Once;
 
-use geo::Coord;
-use geojson::Feature;
+use geo::{Coord, LineString, Polygon};
+use geojson::{Feature, Geometry};
 use graph::IntersectionID;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
@@ -34,7 +34,24 @@ impl MapModel {
     /// Return a polygon covering the world, minus a hole for the boundary, in WGS84
     #[wasm_bindgen(js_name = getInvertedBoundary)]
     pub fn get_inverted_boundary(&self) -> Result<String, JsValue> {
-        self.graph.get_inverted_boundary().map_err(err_to_js)
+        // TODO Assume none of the boundary polygons have holes
+        let polygon = Polygon::new(
+            LineString::from(vec![
+                (180.0, 90.0),
+                (-180.0, 90.0),
+                (-180.0, -90.0),
+                (180.0, -90.0),
+                (180.0, 90.0),
+            ]),
+            self.boundary
+                .0
+                .iter()
+                .map(|p| p.exterior().clone())
+                .collect(),
+        );
+        let f = Feature::from(Geometry::from(&polygon));
+        let out = serde_json::to_string(&f).map_err(err_to_js)?;
+        Ok(out)
     }
 
     /// WGS84
