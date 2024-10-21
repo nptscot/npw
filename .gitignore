@@ -3,3 +3,6 @@ target/
 node_modules/
 # Local symlink to avoid hitting remote storage
 web/public/
+data_prep/scotland-latest.osm.pbf
+data_prep/osm/
+data_prep/graph-files/
