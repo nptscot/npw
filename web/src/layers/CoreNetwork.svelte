@@ -1,12 +1,17 @@
 <script lang="ts">
-  import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
+  import {
+    VectorTileSource,
+    hoverStateFilter,
+    LineLayer,
+  } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { coreNetwork } from "./stores";
   import { assetUrl } from "../stores";
 </script>
 
-<GeoJSON data={assetUrl("core_network.geojson")} generateId>
+<VectorTileSource url={`pmtiles://${assetUrl("core_network.pmtiles")}`}>
   <LineLayer
+    sourceLayer="coherent_networks"
     manageHoverState
     paint={{
       "line-color": "black",
@@ -17,7 +22,7 @@
     }}
   >
     <Popup openOn="hover" let:props>
-      {props.name_1} has function {props.road_function} and Go Dutch value {props.all_fastest_bicycle_go_dutch}
+      Go Dutch value {props.all_fastest_bicycle_go_dutch}
     </Popup>
   </LineLayer>
-</GeoJSON>
+</VectorTileSource>
