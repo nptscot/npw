@@ -80,7 +80,7 @@
     await backendWorker.loadFile(new Uint8Array(bytes));
 
     // Load saved state?
-    let item = window.localStorage.getItem("tmp-npt-editor");
+    let item = window.localStorage.getItem(`tmp-npt-editor/${$boundaryName}`);
     if (item) {
       try {
         await backendWorker.loadSavefile(item);

@@ -57,11 +57,12 @@ export interface Step {
 
 export async function autosave() {
   let backendValue = get(backend);
-  if (!backendValue) {
+  let boundary = get(boundaryName);
+  if (!backendValue || !boundary) {
     return;
   }
   let state = await backendValue.toSavefile();
-  window.localStorage.setItem("tmp-npt-editor", state);
+  window.localStorage.setItem(`tmp-npt-editor/${boundary}`, state);
 }
 
 export let remoteStorage = writable(true);
