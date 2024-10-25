@@ -17,7 +17,6 @@
   import EditRouteMode from "./EditRouteMode.svelte";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
   import EvaluateODMode from "./EvaluateODMode.svelte";
-  import ImportRouteMode from "./ImportRouteMode.svelte";
   import {
     map as mapStore,
     mode,
@@ -26,7 +25,6 @@
     routeSnapper,
     routeA,
     routeB,
-    coherentNetwork,
     odZones,
     odPairs,
     parseOD,
@@ -92,9 +90,6 @@
         window.alert(`Couldn't restore saved state: ${err}`);
       }
     }
-
-    let resp2 = await fetch(assetUrl("cn_manual.geojson"));
-    $coherentNetwork = await resp2.json();
 
     let resp3 = await fetch(assetUrl("zones.geojson"));
     $odZones = await resp3.json();
@@ -180,8 +175,6 @@
 
         {#if $mode.kind == "main"}
           <MainMode />
-        {:else if $mode.kind == "import-route"}
-          <ImportRouteMode />
         {:else if $mode.kind == "edit-route" && $routeSnapper && map}
           <EditRouteMode id={$mode.id} {map} routeSnapper={$routeSnapper} />
         {:else if $mode.kind == "evaluate-route"}

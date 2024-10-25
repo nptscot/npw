@@ -8,7 +8,6 @@ export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 
 export type Mode =
   | { kind: "main" }
-  | { kind: "import-route" }
   | { kind: "edit-route"; id: number | null }
   | { kind: "evaluate-route" }
   | { kind: "evaluate-od" }
@@ -22,10 +21,6 @@ export let map: Writable<Map | null> = writable(null);
 // TODO Does this need to be a store?
 export let backend: Writable<Backend | null> = writable(null);
 export let routeSnapper: Writable<JsRouteSnapper | null> = writable(null);
-export let coherentNetwork: Writable<FeatureCollection> = writable({
-  type: "FeatureCollection",
-  features: [],
-});
 export let odZones: Writable<FeatureCollection> = writable({
   type: "FeatureCollection",
   features: [],

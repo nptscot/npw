@@ -43,12 +43,6 @@
 
     <h4>Build network:</h4>
 
-    <button on:click={() => ($mode = { kind: "import-route" })}>
-      Import from coherent network
-    </button>
-
-    <p style:text-align="center"><b>-or-</b></p>
-
     <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
       Draw new <u>r</u>
       oute line
