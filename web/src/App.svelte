@@ -12,7 +12,6 @@
   } from "svelte-utils/three_column_layout";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
-  import DebugODMode from "./DebugODMode.svelte";
   import MainMode from "./MainMode.svelte";
   import Legend from "./common/Legend.svelte";
   import EditRouteMode from "./EditRouteMode.svelte";
@@ -26,9 +25,6 @@
     routeSnapper,
     routeA,
     routeB,
-    odZones,
-    odPairs,
-    parseOD,
     remoteStorage,
     assetUrl,
   } from "./stores";
@@ -91,12 +87,6 @@
         window.alert(`Couldn't restore saved state: ${err}`);
       }
     }
-
-    let resp3 = await fetch(assetUrl("zones.geojson"));
-    $odZones = await resp3.json();
-
-    let resp4 = await fetch(assetUrl("od.csv"));
-    $odPairs = parseOD(await resp4.text());
 
     loading = "";
 
@@ -189,8 +179,6 @@
           <EvaluateODMode />
         {:else if $mode.kind == "debug-network"}
           <DebugNetworkMode />
-        {:else if $mode.kind == "debug-od"}
-          <DebugODMode />
         {:else if $mode.kind == "debug-mesh-density"}
           <DebugMeshDensityMode />
         {/if}

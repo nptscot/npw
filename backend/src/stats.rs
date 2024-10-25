@@ -6,16 +6,12 @@ use crate::{InfraType, MapModel};
 impl MapModel {
     /// After any edit, calculate summary stats. Returns JSON.
     // TODO Bake in OD data, stop plumbing it from the frontend
-    pub fn recalculate_stats(
-        &self,
-        gj: String,
-        od: Vec<(String, String, usize)>,
-    ) -> Result<String> {
+    pub fn recalculate_stats(&self) -> Result<String> {
         let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();
         let mut count_off_network = 0;
         let mut total_count = 0;
 
-        let od = self.od_counts(gj, od)?;
+        let od = self.od_counts()?;
         let infra_types = self.get_infra_types();
         for (r, count) in od.counts {
             total_count += count;

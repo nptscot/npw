@@ -76,26 +76,14 @@ export class Backend {
     );
   }
 
-  evaluateOD(
-    zones: FeatureCollection,
-    od: [string, string, number][],
-  ): EvaluateODOut {
+  evaluateOD(): EvaluateODOut {
     this.checkReady();
-    // TODO Passing as a JSON string is quite roundabout
-    return JSON.parse(
-      this.inner!.evaluateOD(JSON.stringify(zones), JSON.stringify(od)),
-    );
+    return JSON.parse(this.inner!.evaluateOD());
   }
 
-  recalculateStats(
-    zones: FeatureCollection,
-    od: [string, string, number][],
-  ): Stats {
+  recalculateStats(): Stats {
     this.checkReady();
-    // TODO Passing as a JSON string is quite roundabout
-    return JSON.parse(
-      this.inner!.recalculateStats(JSON.stringify(zones), JSON.stringify(od)),
-    );
+    return JSON.parse(this.inner!.recalculateStats());
   }
 
   meshDensity(): FeatureCollection {

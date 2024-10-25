@@ -101,15 +101,13 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = evaluateOD)]
-    pub fn evaluate_od_wasm(&self, gj: String, od: String) -> Result<String, JsValue> {
-        self.evaluate_od(gj, serde_json::from_str(&od).map_err(err_to_js)?)
-            .map_err(err_to_js)
+    pub fn evaluate_od_wasm(&self) -> Result<String, JsValue> {
+        self.evaluate_od().map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = recalculateStats)]
-    pub fn recalculate_stats_wasm(&self, gj: String, od: String) -> Result<String, JsValue> {
-        self.recalculate_stats(gj, serde_json::from_str(&od).map_err(err_to_js)?)
-            .map_err(err_to_js)
+    pub fn recalculate_stats_wasm(&self) -> Result<String, JsValue> {
+        self.recalculate_stats().map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = toSavefile)]

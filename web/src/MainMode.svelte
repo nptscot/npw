@@ -111,9 +111,6 @@
     >
       Debug network
     </button>
-    <button class="secondary" on:click={() => ($mode = { kind: "debug-od" })}>
-      Debug OD
-    </button>
     <button
       class="secondary"
       on:click={() => ($mode = { kind: "debug-mesh-density" })}

@@ -18,28 +18,24 @@ pub struct CountsOD {
 }
 
 impl MapModel {
-    pub fn od_counts(&self, gj: String, od: Vec<(String, String, usize)>) -> Result<CountsOD> {
-        let zones = Zone::parse_zones(gj, &self.boundary, &self.graph.mercator)?;
+    pub fn od_counts(&self) -> Result<CountsOD> {
         let mut rng = WyRand::new_seed(42);
 
         let mut counts = HashMap::new();
         let mut succeeded = 0;
         let mut failed = 0;
 
-        for (zone1, zone2, count) in od {
-            for _ in 0..count {
-                let pt1 = match zones.get(&zone1) {
-                    Some(zone) => zone.random_point(&mut rng),
-                    None => {
-                        continue;
-                    }
-                };
-                let pt2 = match zones.get(&zone2) {
-                    Some(zone) => zone.random_point(&mut rng),
-                    None => {
-                        continue;
-                    }
-                };
+        // TODO Limit runtime
+        let limit = 1000;
+
+        'OUTER: for (zone1, zone2, count) in &self.desire_lines {
+            for _ in 0..*count {
+                if succeeded + failed == limit {
+                    break 'OUTER;
+                }
+
+                let pt1 = self.zones[zone1].random_point(&mut rng);
+                let pt2 = self.zones[zone2].random_point(&mut rng);
 
                 let profile = self.graph.profile_names["bicycle"];
                 let start = self.graph.snap_to_road(pt1, profile);
@@ -67,8 +63,8 @@ impl MapModel {
     }
 
     /// Returns detailed GJ with per-road counts
-    pub fn evaluate_od(&self, gj: String, od: Vec<(String, String, usize)>) -> Result<String> {
-        let out = self.od_counts(gj, od)?;
+    pub fn evaluate_od(&self) -> Result<String> {
+        let out = self.od_counts()?;
         let infra_types = self.get_infra_types();
 
         let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();

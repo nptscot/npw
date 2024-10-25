@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { backend, odZones, odPairs, stats } from "./stores";
+  import { backend, stats } from "./stores";
   import { onMount } from "svelte";
 
   async function recalc() {
-    $stats = await $backend!.recalculateStats($odZones, $odPairs);
+    $stats = await $backend!.recalculateStats();
   }
 
   onMount(async () => {
