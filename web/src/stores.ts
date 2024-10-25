@@ -14,6 +14,7 @@ export type Mode =
   | { kind: "debug-network" }
   | { kind: "debug-mesh-density" };
 
+export let boundaryName = writable("");
 export let mode: Writable<Mode> = writable({ kind: "main" });
 export let map: Writable<Map | null> = writable(null);
 

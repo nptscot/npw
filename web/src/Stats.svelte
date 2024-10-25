@@ -16,7 +16,11 @@
 <button on:click={recalc}>Recalculate</button>
 
 {#if $stats}
-  <p>Average weighted directness: {$stats.average_weighted_directness.toFixed(1)}x</p>
+  <p>
+    Average weighted directness: {$stats.average_weighted_directness.toFixed(
+      1,
+    )}x
+  </p>
 
   <p>Percent of demand by infrastructure type:</p>
   <ul>

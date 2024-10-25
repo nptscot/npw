@@ -27,6 +27,7 @@
     routeB,
     remoteStorage,
     assetUrl,
+    boundaryName,
   } from "./stores";
   import { Backend } from "./worker";
   import init, { JsRouteSnapper } from "route-snapper";
@@ -60,19 +61,19 @@
       );
       return;
     }
-    let boundaryName = params.get("boundary");
-    loading = `Loading ${boundaryName}`;
+    $boundaryName = params.get("boundary")!;
+    loading = `Loading ${$boundaryName}`;
 
     let backendWorker = new Backend();
 
     // Detect if we're running locally first
-    let resp = await fetch(`areas/${boundaryName}.bin`);
+    let resp = await fetch(`areas/${$boundaryName}.bin`);
     if (resp.ok) {
       console.log(`Using locally hosted files`);
       $remoteStorage = false;
     } else {
       console.log(`Using remote hosted files`);
-      resp = await fetch(assetUrl(`areas/${boundaryName}.bin`));
+      resp = await fetch(assetUrl(`areas/${$boundaryName}.bin`));
     }
 
     let bytes = await resp.arrayBuffer();

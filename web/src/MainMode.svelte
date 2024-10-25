@@ -7,13 +7,14 @@
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { SplitComponent } from "svelte-utils/three_column_layout";
-  import { backend, mode, infraTypeMapping } from "./stores";
+  import { backend, mode, infraTypeMapping, boundaryName } from "./stores";
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
   import { colorByInraType } from "./common";
   import Controls from "./layers/Controls.svelte";
   import Stats from "./Stats.svelte";
+  import ChangeArea from "./ChangeArea.svelte";
 
   let gj: FeatureCollection | null = null;
   onMount(async () => {
@@ -41,6 +42,7 @@
 <SplitComponent>
   <div slot="left">
     <h2>Network Planning Workspace</h2>
+    <ChangeArea area={$boundaryName} />
 
     <h4>Build network:</h4>
 
