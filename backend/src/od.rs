@@ -25,32 +25,27 @@ impl MapModel {
         let mut succeeded = 0;
         let mut failed = 0;
 
-        // TODO Limit runtime
-        let limit = 1000;
+        info!("Evaluating {} desire lines", self.desire_lines.len());
 
+        // TODO TEMPORARILY, evaluate just one route from each desire line and weight it by the
+        // count
         'OUTER: for (zone1, zone2, count) in &self.desire_lines {
-            for _ in 0..*count {
-                if succeeded + failed == limit {
-                    break 'OUTER;
-                }
+            let pt1 = self.zones[zone1].random_point(&mut rng);
+            let pt2 = self.zones[zone2].random_point(&mut rng);
 
-                let pt1 = self.zones[zone1].random_point(&mut rng);
-                let pt2 = self.zones[zone2].random_point(&mut rng);
+            let profile = self.graph.profile_names["bicycle"];
+            let start = self.graph.snap_to_road(pt1, profile);
+            let end = self.graph.snap_to_road(pt2, profile);
+            let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) else {
+                failed += 1;
+                continue;
+            };
+            succeeded += 1;
 
-                let profile = self.graph.profile_names["bicycle"];
-                let start = self.graph.snap_to_road(pt1, profile);
-                let end = self.graph.snap_to_road(pt2, profile);
-                let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) else {
-                    failed += 1;
-                    continue;
-                };
-                succeeded += 1;
-
-                // TODO Use a lower-level API to squeeze out some speed
-                for step in route.steps {
-                    if let PathStep::Road { road, .. } = step {
-                        *counts.entry(road).or_insert(0) += 1;
-                    }
+            // TODO Use a lower-level API to squeeze out some speed
+            for step in route.steps {
+                if let PathStep::Road { road, .. } = step {
+                    *counts.entry(road).or_insert(0) += *count;
                 }
             }
         }
