@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use anyhow::Result;
 use geo::{BoundingRect, Contains, Coord, MultiPolygon};
 use geojson::{Feature, FeatureCollection, Geometry, Value};
-use graph::{Mode, PathStep};
+use graph::PathStep;
 use nanorand::{Rng, WyRand};
 use utils::Mercator;
 
@@ -34,10 +34,10 @@ impl MapModel {
                     }
                 };
 
-                let mode = Mode::Bicycle;
-                let start = self.graph.snap_to_road(pt1, mode);
-                let end = self.graph.snap_to_road(pt2, mode);
-                let Ok(route) = self.graph.router[mode].route(&self.graph, start, end) else {
+                let profile = self.graph.profile_names["bicycle"];
+                let start = self.graph.snap_to_road(pt1, profile);
+                let end = self.graph.snap_to_road(pt2, profile);
+                let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) else {
                     failed += 1;
                     continue;
                 };

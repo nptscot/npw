@@ -1,11 +1,13 @@
 use route_snapper_graph::{Edge, NodeID, RouteSnapperMap};
 
-use graph::{Direction, Mode};
+use graph::Direction;
 
 use crate::MapModel;
 
 impl MapModel {
     pub fn to_route_snapper_graph(&self) -> RouteSnapperMap {
+        let profile = self.graph.profile_names["bicycle"];
+
         let mut nodes = Vec::new();
         for i in &self.graph.intersections {
             nodes.push(self.graph.mercator.to_wgs84(&i.point).into());
@@ -13,7 +15,7 @@ impl MapModel {
 
         let mut edges = Vec::new();
         for r in &self.graph.roads {
-            if r.access[Mode::Bicycle] == Direction::None {
+            if r.access[profile.0] == Direction::None {
                 continue;
             }
             edges.push(Edge {

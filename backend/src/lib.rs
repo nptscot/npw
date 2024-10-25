@@ -55,11 +55,10 @@ pub enum InfraType {
 
 impl MapModel {
     pub fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<MapModel> {
-        let modify_roads = |_roads: &mut Vec<graph::Road>| {};
         let graph = Graph::new(
             input_bytes,
             &mut utils::osm2graph::NullReader,
-            modify_roads,
+            vec![("bicycle".to_string(), Box::new(existing::bicycle_profile))],
             timer,
         )?;
 

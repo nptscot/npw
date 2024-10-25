@@ -1,7 +1,7 @@
 use anyhow::Result;
 use geo::{Coord, EuclideanLength, LineString};
 use geojson::{Feature, FeatureCollection, Geometry};
-use graph::{Mode, PathStep};
+use graph::PathStep;
 use serde::Serialize;
 
 use crate::{InfraType, MapModel};
@@ -9,10 +9,10 @@ use crate::{InfraType, MapModel};
 impl MapModel {
     pub fn evaluate_route(&self, pt1: Coord, pt2: Coord) -> Result<String> {
         let infra_types = self.get_infra_types();
-        let mode = Mode::Bicycle;
-        let start = self.graph.snap_to_road(pt1, mode);
-        let end = self.graph.snap_to_road(pt2, mode);
-        let route = self.graph.router[mode].route(&self.graph, start, end)?;
+        let profile = self.graph.profile_names["bicycle"];
+        let start = self.graph.snap_to_road(pt1, profile);
+        let end = self.graph.snap_to_road(pt2, profile);
+        let route = self.graph.routers[profile.0].route(&self.graph, start, end)?;
         let route_linestring = route.linestring(&self.graph);
 
         let mut directions = Vec::new();

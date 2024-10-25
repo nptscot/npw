@@ -1,8 +1,35 @@
+use std::time::Duration;
+
 use anyhow::Result;
+use geo::{EuclideanLength, LineString};
 use geojson::{Feature, FeatureCollection, Geometry};
+use graph::Direction;
 use utils::Tags;
 
 use crate::{InfraType, MapModel};
+
+/// This determines what's in the graph
+pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration) {
+    // This is somewhat based on
+    // https://github.com/nptscot/osmactive/blob/b08d91b310187c6b344d3682e040e47ce2519be1/R/osmactive.R#L133-L316,
+    // but the purpose is different -- unless a road can't be modified, then it still belongs in
+    // the graph.
+
+    // Exclude dedicated sidewalks; they're almost always parallel to a road that should be
+    // edited instead
+    if tags.is("footway", "sidewalk") {
+        return (Direction::None, Duration::ZERO);
+    }
+    // These don't have the potential to become part of a network
+    if tags.is("highway", "steps") {
+        return (Direction::None, Duration::ZERO);
+    }
+
+    // 10mph
+    let speed = 4.4704;
+    let cost = Duration::from_secs_f64(linestring.euclidean_length() / speed);
+    (Direction::Both, cost)
+}
 
 impl MapModel {
     pub fn classify_existing_network(&self) -> Result<String> {
