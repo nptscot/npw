@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use enum_map::EnumMap;
 use geo::{BoundingRect, Contains, Coord, MultiPolygon};
 use geojson::{Feature, FeatureCollection, Geometry, Value};
 use graph::PathStep;
@@ -52,6 +53,10 @@ impl MapModel {
             }
         }
 
+        let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();
+        let mut count_off_network = 0;
+        let mut total_count = 0;
+
         let mut max_count = 0;
         let mut features = Vec::new();
         for (r, count) in counts {
@@ -74,21 +79,40 @@ impl MapModel {
                 .unwrap(),
             );
             features.push(f);
+
+            total_count += count;
+            if let Some(infra_type) = infra_types.get(&r).cloned() {
+                count_by_infra[infra_type] += count;
+            } else {
+                count_off_network += count;
+            }
         }
+
+        let mut foreign_members = serde_json::json!({
+            "succeeded": succeeded,
+            "failed": failed,
+            "max_count": max_count,
+            "percent_off_network": percent(count_off_network, total_count),
+        })
+        .as_object()
+        .unwrap()
+        .clone();
+        let mut percent_on_network = serde_json::Map::new();
+        for (infra_type, count) in count_by_infra {
+            percent_on_network.insert(
+                format!("{infra_type:?}"),
+                percent(count, total_count).into(),
+            );
+        }
+        foreign_members.insert(
+            "percent_on_network".to_string(),
+            serde_json::Value::Object(percent_on_network),
+        );
 
         Ok(serde_json::to_string(&FeatureCollection {
             features,
             bbox: None,
-            foreign_members: Some(
-                serde_json::json!({
-                    "succeeded": succeeded,
-                    "failed": failed,
-                    "max_count": max_count,
-                })
-                .as_object()
-                .unwrap()
-                .clone(),
-            ),
+            foreign_members: Some(foreign_members),
         })?)
     }
 }
@@ -141,4 +165,12 @@ fn parse_zones(gj: String, mercator: &Mercator) -> Result<HashMap<String, Zone>>
         );
     }
     Ok(zones)
+}
+
+fn percent(x: usize, total: usize) -> f64 {
+    if total == 0 {
+        0.0
+    } else {
+        (x as f64) / (total as f64)
+    }
 }

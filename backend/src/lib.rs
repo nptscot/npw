@@ -4,6 +4,7 @@ extern crate anyhow;
 use std::collections::HashMap;
 
 use anyhow::Result;
+use enum_map::Enum;
 use geo::MultiPolygon;
 use geojson::Feature;
 use graph::{Graph, RoadID, Timer};
@@ -42,7 +43,7 @@ pub struct Route {
     infra_type: InfraType,
 }
 
-#[derive(Clone, Copy, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Enum, Serialize, Deserialize)]
 pub enum InfraType {
     SegregatedWide,
     OffRoad,

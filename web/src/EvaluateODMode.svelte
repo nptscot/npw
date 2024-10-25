@@ -56,6 +56,14 @@
         failed
       </p>
       <p>Highest count on any one road is {gj.max_count.toLocaleString()}</p>
+
+      <p>Percent of demand by infrastructure type:</p>
+      <ul>
+        <li>Off the network: {(100 * gj.percent_off_network).toFixed(1)}%</li>
+        {#each Object.entries(gj.percent_on_network) as [key, percent]}
+          <li>{key}: {(100 * percent).toFixed(1)}%</li>
+        {/each}
+      </ul>
     {/if}
   </div>
 
