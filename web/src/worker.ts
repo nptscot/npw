@@ -1,6 +1,6 @@
 import init, { MapModel } from "backend";
 import type { Position, Feature, Polygon, FeatureCollection } from "geojson";
-import type { RouteGJ } from "./stores";
+import type { RouteGJ, EvaluateODOut, Stats } from "./stores";
 
 export class Backend {
   inner: MapModel | null;
@@ -79,15 +79,22 @@ export class Backend {
   evaluateOD(
     zones: FeatureCollection,
     od: [string, string, number][],
-  ): FeatureCollection & {
-    succeeded: number;
-    failed: number;
-    max_count: number;
-  } {
+  ): EvaluateODOut {
     this.checkReady();
     // TODO Passing as a JSON string is quite roundabout
     return JSON.parse(
       this.inner!.evaluateOD(JSON.stringify(zones), JSON.stringify(od)),
+    );
+  }
+
+  recalculateStats(
+    zones: FeatureCollection,
+    od: [string, string, number][],
+  ): Stats {
+    this.checkReady();
+    // TODO Passing as a JSON string is quite roundabout
+    return JSON.parse(
+      this.inner!.recalculateStats(JSON.stringify(zones), JSON.stringify(od)),
     );
   }
 

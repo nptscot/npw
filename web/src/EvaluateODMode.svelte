@@ -2,22 +2,21 @@
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { SplitComponent } from "svelte-utils/three_column_layout";
   import { Popup } from "svelte-utils/map";
-  import { backend, odZones, odPairs, mode } from "./stores";
+  import {
+    backend,
+    odZones,
+    odPairs,
+    mode,
+    type EvaluateODOut,
+  } from "./stores";
   import { onMount } from "svelte";
-  import type { FeatureCollection } from "geojson";
   import { colorByInraType } from "./common";
   import type {
     ExpressionSpecification,
     DataDrivenPropertyValueSpecification,
   } from "maplibre-gl";
 
-  let gj:
-    | (FeatureCollection & {
-        succeeded: number;
-        failed: number;
-        max_count: number;
-      })
-    | null = null;
+  let gj: EvaluateODOut | null = null;
 
   onMount(async () => {
     gj = await $backend!.evaluateOD($odZones, $odPairs);

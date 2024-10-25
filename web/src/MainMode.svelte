@@ -13,6 +13,7 @@
   import Link from "./common/Link.svelte";
   import { colorByInraType } from "./common";
   import Controls from "./layers/Controls.svelte";
+  import Stats from "./Stats.svelte";
 
   let gj: FeatureCollection | null = null;
   onMount(async () => {
@@ -94,6 +95,8 @@
 
   <div slot="right">
     <h4>Evaluate:</h4>
+
+    <Stats />
 
     <button on:click={() => ($mode = { kind: "evaluate-route" })}>
       Evaluate a route

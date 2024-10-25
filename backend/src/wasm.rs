@@ -106,6 +106,12 @@ impl MapModel {
             .map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = recalculateStats)]
+    pub fn recalculate_stats_wasm(&self, gj: String, od: String) -> Result<String, JsValue> {
+        self.recalculate_stats(gj, serde_json::from_str(&od).map_err(err_to_js)?)
+            .map_err(err_to_js)
+    }
+
     #[wasm_bindgen(js_name = toSavefile)]
     pub fn to_savefile(&self) -> Result<String, JsValue> {
         serde_json::to_string(&Savefile {

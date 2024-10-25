@@ -89,3 +89,17 @@ export function assetUrl(path: string): string {
     ? `https://assets.od2net.org/tmp_npt_editor/${path}`
     : path;
 }
+
+export type EvaluateODOut = FeatureCollection & {
+  succeeded: number;
+  failed: number;
+  max_count: number;
+  percent_off_network: number;
+  percent_on_network: { [name: string]: number };
+};
+
+export interface Stats {
+  od_percents: { [name: string]: number };
+}
+// For now, the user manually recalculates this
+export let stats: Writable<Stats | null> = writable(null);

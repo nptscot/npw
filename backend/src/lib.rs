@@ -17,6 +17,7 @@ mod mesh_density;
 mod od;
 mod route_snapper;
 mod routes;
+mod stats;
 mod wasm;
 
 #[wasm_bindgen]

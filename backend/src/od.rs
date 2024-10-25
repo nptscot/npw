@@ -4,17 +4,22 @@ use anyhow::Result;
 use enum_map::EnumMap;
 use geo::{BoundingRect, Contains, Coord, MultiPolygon};
 use geojson::{Feature, FeatureCollection, Geometry, Value};
-use graph::PathStep;
+use graph::{PathStep, RoadID};
 use nanorand::{Rng, WyRand};
 use utils::Mercator;
 
 use crate::{InfraType, MapModel};
 
+pub struct CountsOD {
+    pub counts: HashMap<RoadID, usize>,
+    pub succeeded: usize,
+    pub failed: usize,
+}
+
 impl MapModel {
-    pub fn evaluate_od(&self, gj: String, od: Vec<(String, String, usize)>) -> Result<String> {
+    pub fn od_counts(&self, gj: String, od: Vec<(String, String, usize)>) -> Result<CountsOD> {
         let zones = parse_zones(gj, &self.graph.mercator)?;
         let mut rng = WyRand::new_seed(42);
-        let infra_types = self.get_infra_types();
 
         let mut counts = HashMap::new();
         let mut succeeded = 0;
@@ -53,13 +58,25 @@ impl MapModel {
             }
         }
 
+        Ok(CountsOD {
+            counts,
+            succeeded,
+            failed,
+        })
+    }
+
+    /// Returns detailed GJ with per-road counts
+    pub fn evaluate_od(&self, gj: String, od: Vec<(String, String, usize)>) -> Result<String> {
+        let out = self.od_counts(gj, od)?;
+        let infra_types = self.get_infra_types();
+
         let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();
         let mut count_off_network = 0;
         let mut total_count = 0;
 
         let mut max_count = 0;
         let mut features = Vec::new();
-        for (r, count) in counts {
+        for (r, count) in out.counts {
             max_count = max_count.max(count);
             let mut f = Feature::from(Geometry::from(
                 &self
@@ -89,8 +106,8 @@ impl MapModel {
         }
 
         let mut foreign_members = serde_json::json!({
-            "succeeded": succeeded,
-            "failed": failed,
+            "succeeded": out.succeeded,
+            "failed": out.failed,
             "max_count": max_count,
             "percent_off_network": percent(count_off_network, total_count),
         })
