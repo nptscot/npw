@@ -2,10 +2,11 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use enum_map::EnumMap;
-use geo::{BoundingRect, Contains, Coord, MultiPolygon};
+use geo::{BoundingRect, Contains, Coord, Intersects, MultiPolygon};
 use geojson::{Feature, FeatureCollection, Geometry, Value};
 use graph::{PathStep, RoadID};
 use nanorand::{Rng, WyRand};
+use serde::{Deserialize, Serialize};
 use utils::Mercator;
 
 use crate::{InfraType, MapModel};
@@ -18,7 +19,7 @@ pub struct CountsOD {
 
 impl MapModel {
     pub fn od_counts(&self, gj: String, od: Vec<(String, String, usize)>) -> Result<CountsOD> {
-        let zones = parse_zones(gj, &self.graph.mercator)?;
+        let zones = Zone::parse_zones(gj, &self.boundary, &self.graph.mercator)?;
         let mut rng = WyRand::new_seed(42);
 
         let mut counts = HashMap::new();
@@ -134,13 +135,14 @@ impl MapModel {
     }
 }
 
-struct Zone {
-    mp: MultiPolygon,
+#[derive(Serialize, Deserialize)]
+pub struct Zone {
+    pub mp: MultiPolygon,
     // The bbox, rounded to centimeters, for generate_range to work
-    x1: i64,
-    y1: i64,
-    x2: i64,
-    y2: i64,
+    pub x1: i64,
+    pub y1: i64,
+    pub x2: i64,
+    pub y2: i64,
 }
 
 impl Zone {
@@ -154,34 +156,49 @@ impl Zone {
             }
         }
     }
-}
 
-// TODO Clip to study area
-fn parse_zones(gj: String, mercator: &Mercator) -> Result<HashMap<String, Zone>> {
-    let gj: FeatureCollection = gj.parse()?;
-    let mut zones = HashMap::new();
-    for f in gj.features {
-        let name = f.property("name").unwrap().as_str().unwrap().to_string();
-        let mut mp: MultiPolygon =
-            if matches!(f.geometry.as_ref().unwrap().value, Value::Polygon(_)) {
-                MultiPolygon(vec![f.try_into()?])
-            } else {
-                f.try_into()?
-            };
-        mercator.to_mercator_in_place(&mut mp);
-        let bbox = mp.bounding_rect().unwrap();
-        zones.insert(
-            name,
-            Zone {
-                mp,
-                x1: (bbox.min().x * 100.0) as i64,
-                y1: (bbox.min().y * 100.0) as i64,
-                x2: (bbox.max().x * 100.0) as i64,
-                y2: (bbox.max().y * 100.0) as i64,
-            },
-        );
+    pub fn parse_zones(
+        gj: String,
+        boundary_wgs84: &MultiPolygon,
+        mercator: &Mercator,
+    ) -> Result<HashMap<String, Zone>> {
+        let gj: FeatureCollection = gj.parse()?;
+        let mut zones = HashMap::new();
+        for f in gj.features {
+            // TODO Rename in data_prep
+            let name = f
+                .property("InterZone")
+                .unwrap()
+                .as_str()
+                .unwrap()
+                .to_string();
+            let mut mp: MultiPolygon =
+                if matches!(f.geometry.as_ref().unwrap().value, Value::Polygon(_)) {
+                    MultiPolygon(vec![f.try_into()?])
+                } else {
+                    f.try_into()?
+                };
+
+            if !boundary_wgs84.intersects(&mp) {
+                continue;
+            }
+
+            mercator.to_mercator_in_place(&mut mp);
+            let bbox = mp.bounding_rect().unwrap();
+            zones.insert(
+                name,
+                Zone {
+                    mp,
+                    x1: (bbox.min().x * 100.0) as i64,
+                    y1: (bbox.min().y * 100.0) as i64,
+                    x2: (bbox.max().x * 100.0) as i64,
+                    y2: (bbox.max().y * 100.0) as i64,
+                },
+            );
+        }
+        info!("Matched to {} zones", zones.len());
+        Ok(zones)
     }
-    Ok(zones)
 }
 
 fn percent(x: usize, total: usize) -> f64 {

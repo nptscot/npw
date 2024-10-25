@@ -114,6 +114,7 @@ dependencies = [
  "clap",
  "console_error_panic_hook",
  "console_log",
+ "csv",
  "enum-map",
  "geo",
  "geojson",
