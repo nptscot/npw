@@ -5,6 +5,7 @@
     townCentres,
     gpHospitals,
     existingNetwork,
+    urbanAreas,
   } from "./stores";
 </script>
 
@@ -31,4 +32,9 @@
 <label>
   <input type="checkbox" bind:checked={$gpHospitals} />
   GPs and hospitals
+</label>
+
+<label>
+  <input type="checkbox" bind:checked={$urbanAreas} />
+  Urban areas
 </label>

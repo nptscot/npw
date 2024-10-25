@@ -5,3 +5,4 @@ export let coreNetwork = writable(false);
 export let schools = writable(false);
 export let townCentres = writable(false);
 export let gpHospitals = writable(false);
+export let urbanAreas = writable(false);
