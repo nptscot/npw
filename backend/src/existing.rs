@@ -40,6 +40,7 @@ impl MapModel {
                     &self.graph.mercator.to_wgs84(&road.linestring),
                 ));
                 f.set_property("infra_type", serde_json::to_value(infra_type)?);
+                f.set_property("way", format!("{}", road.way));
                 features.push(f);
             }
         }

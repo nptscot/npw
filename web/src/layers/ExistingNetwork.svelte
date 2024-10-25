@@ -4,13 +4,13 @@
   import { colorByInraType } from "../common";
   import { Popup } from "svelte-utils/map";
   import { existingNetwork } from "./stores";
+  import { notNull } from "svelte-utils";
 </script>
 
 {#if $backend}
   {#await $backend.classifyExistingNetwork() then data}
     <GeoJSON {data} generateId>
       <LineLayer
-        manageHoverState
         layout={{
           visibility: $existingNetwork ? "visible" : "none",
         }}
@@ -19,6 +19,10 @@
           "line-color": colorByInraType,
           "line-opacity": 0.8,
         }}
+        manageHoverState
+        on:click={(e) =>
+          window.open(notNull(e.detail.features[0].properties).way, "_blank")}
+        hoverCursor="pointer"
       >
         <Popup openOn="hover" let:props>
           {infraTypeMapping[props.infra_type][0]}
