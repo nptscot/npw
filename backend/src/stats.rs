@@ -39,6 +39,10 @@ impl MapModel {
             "od_percents".to_string(),
             serde_json::Value::Object(od_percents),
         );
+        out.insert(
+            "average_weighted_directness".to_string(),
+            od.average_weighted_directness.into(),
+        );
 
         Ok(serde_json::to_string(&out)?)
     }

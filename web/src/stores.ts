@@ -81,6 +81,7 @@ export type EvaluateODOut = FeatureCollection & {
 
 export interface Stats {
   od_percents: { [name: string]: number };
+  average_weighted_directness: number;
 }
 // For now, the user manually recalculates this
 export let stats: Writable<Stats | null> = writable(null);

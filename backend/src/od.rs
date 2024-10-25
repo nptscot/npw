@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use enum_map::EnumMap;
-use geo::{BoundingRect, Contains, Coord, Intersects, MultiPolygon};
+use geo::{BoundingRect, Contains, Coord, EuclideanDistance, Intersects, MultiPolygon};
 use geojson::{Feature, FeatureCollection, Geometry, Value};
 use graph::{PathStep, RoadID};
 use nanorand::{Rng, WyRand};
@@ -15,6 +15,7 @@ pub struct CountsOD {
     pub counts: HashMap<RoadID, usize>,
     pub succeeded: usize,
     pub failed: usize,
+    pub average_weighted_directness: f64,
 }
 
 impl MapModel {
@@ -24,12 +25,14 @@ impl MapModel {
         let mut counts = HashMap::new();
         let mut succeeded = 0;
         let mut failed = 0;
+        let mut sum_directness = 0.0;
+        let mut sum_count = 0;
 
         info!("Evaluating {} desire lines", self.desire_lines.len());
 
         // TODO TEMPORARILY, evaluate just one route from each desire line and weight it by the
         // count
-        'OUTER: for (zone1, zone2, count) in &self.desire_lines {
+        for (zone1, zone2, count) in &self.desire_lines {
             let pt1 = self.zones[zone1].random_point(&mut rng);
             let pt2 = self.zones[zone2].random_point(&mut rng);
 
@@ -42,11 +45,25 @@ impl MapModel {
             };
             succeeded += 1;
 
+            // route.linestring() is more accurate, but slower, and then harder to find the snapped
+            // position on the road for direct_length
+            let mut route_length = 0.0;
+            let direct_length = self.graph.intersections[start.intersection.0]
+                .point
+                .euclidean_distance(&self.graph.intersections[end.intersection.0].point);
+
             // TODO Use a lower-level API to squeeze out some speed
             for step in route.steps {
                 if let PathStep::Road { road, .. } = step {
                     *counts.entry(road).or_insert(0) += *count;
+                    route_length += self.graph.roads[road.0].length_meters;
                 }
+            }
+
+            if direct_length > 0.0 {
+                let directness = route_length / direct_length;
+                sum_directness += (*count as f64) * directness;
+                sum_count += *count;
             }
         }
 
@@ -54,6 +71,7 @@ impl MapModel {
             counts,
             succeeded,
             failed,
+            average_weighted_directness: sum_directness / (sum_count as f64),
         })
     }
 
