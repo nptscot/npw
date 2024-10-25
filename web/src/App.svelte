@@ -7,8 +7,9 @@
   import {
     Layout,
     mapContents,
-    sidebarContents,
-  } from "svelte-utils/two_column_layout";
+    leftSidebarContents,
+    rightSidebarContents,
+  } from "svelte-utils/three_column_layout";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
   import DebugODMode from "./DebugODMode.svelte";
@@ -125,15 +126,20 @@
     }
   }
 
-  let sidebarDiv: HTMLDivElement;
+  let leftSidebarDiv: HTMLDivElement;
   let mapDiv: HTMLDivElement;
-  $: if (sidebarDiv && $sidebarContents) {
-    sidebarDiv.innerHTML = "";
-    sidebarDiv.appendChild($sidebarContents);
+  let rightSidebarDiv: HTMLDivElement;
+  $: if (leftSidebarDiv && $leftSidebarContents) {
+    leftSidebarDiv.innerHTML = "";
+    leftSidebarDiv.appendChild($leftSidebarContents);
   }
   $: if (mapDiv && $mapContents) {
     mapDiv.innerHTML = "";
     mapDiv.appendChild($mapContents);
+  }
+  $: if (rightSidebarDiv && $rightSidebarContents) {
+    rightSidebarDiv.innerHTML = "";
+    rightSidebarDiv.appendChild($rightSidebarContents);
   }
 </script>
 
@@ -141,7 +147,7 @@
 
 <Layout>
   <div slot="left">
-    <div bind:this={sidebarDiv} />
+    <div bind:this={leftSidebarDiv} />
   </div>
   <div slot="main" style="position:relative; width: 100%; height: 100vh;">
     <MapLibre
@@ -190,6 +196,9 @@
         {/if}
       {/if}
     </MapLibre>
+  </div>
+  <div slot="right">
+    <div bind:this={rightSidebarDiv} />
   </div>
 </Layout>
 

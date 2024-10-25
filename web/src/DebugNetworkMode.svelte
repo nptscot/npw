@@ -1,13 +1,13 @@
 <script lang="ts">
   import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/two_column_layout";
+  import { SplitComponent } from "svelte-utils/three_column_layout";
   import { PropertiesTable, notNull } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
   import { backend, mode } from "./stores";
 </script>
 
 <SplitComponent>
-  <div slot="sidebar">
+  <div slot="left">
     <h2>Debug network mode</h2>
     <button on:click={() => ($mode = { kind: "main" })}>Back</button>
     <p>Hover to see a segment's properties, and click to open OSM</p>

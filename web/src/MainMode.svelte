@@ -6,7 +6,7 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { SplitComponent } from "svelte-utils/two_column_layout";
+  import { SplitComponent } from "svelte-utils/three_column_layout";
   import { backend, mode, infraTypeMapping } from "./stores";
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
@@ -38,7 +38,7 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <SplitComponent>
-  <div slot="sidebar">
+  <div slot="left">
     <h2>Network Planning Workspace</h2>
 
     <h4>Build network:</h4>
@@ -47,33 +47,6 @@
       Draw new <u>r</u>
       oute line
     </button>
-
-    <details>
-      <summary>Evaluate</summary>
-
-      <button on:click={() => ($mode = { kind: "evaluate-route" })}>
-        Evaluate a route
-      </button>
-      <button on:click={() => ($mode = { kind: "evaluate-od" })}>
-        Evaluate OD
-      </button>
-
-      <button
-        class="secondary"
-        on:click={() => ($mode = { kind: "debug-network" })}
-      >
-        Debug network
-      </button>
-      <button class="secondary" on:click={() => ($mode = { kind: "debug-od" })}>
-        Debug OD
-      </button>
-      <button
-        class="secondary"
-        on:click={() => ($mode = { kind: "debug-mesh-density" })}
-      >
-        Debug mesh density
-      </button>
-    </details>
 
     <details open>
       <summary>Reference layers</summary>
@@ -117,5 +90,32 @@
         </LineLayer>
       </GeoJSON>
     {/if}
+  </div>
+
+  <div slot="right">
+    <h4>Evaluate:</h4>
+
+    <button on:click={() => ($mode = { kind: "evaluate-route" })}>
+      Evaluate a route
+    </button>
+    <button on:click={() => ($mode = { kind: "evaluate-od" })}>
+      Evaluate OD
+    </button>
+
+    <button
+      class="secondary"
+      on:click={() => ($mode = { kind: "debug-network" })}
+    >
+      Debug network
+    </button>
+    <button class="secondary" on:click={() => ($mode = { kind: "debug-od" })}>
+      Debug OD
+    </button>
+    <button
+      class="secondary"
+      on:click={() => ($mode = { kind: "debug-mesh-density" })}
+    >
+      Debug mesh density
+    </button>
   </div>
 </SplitComponent>

@@ -5,13 +5,13 @@
     FillLayer,
     LineLayer,
   } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/two_column_layout";
+  import { SplitComponent } from "svelte-utils/three_column_layout";
   import { notNull } from "svelte-utils";
   import { backend, mode } from "./stores";
 </script>
 
 <SplitComponent>
-  <div slot="sidebar">
+  <div slot="left">
     <h2>Debug mesh density mode</h2>
     <button on:click={() => ($mode = { kind: "main" })}>Back</button>
   </div>

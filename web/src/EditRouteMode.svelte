@@ -1,6 +1,6 @@
 <script lang="ts">
   import { GeoJSON, LineLayer, MapEvents } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/two_column_layout";
+  import { SplitComponent } from "svelte-utils/three_column_layout";
   import { backend, mode, infraTypes, autosave } from "./stores";
   import { JsRouteSnapper } from "route-snapper";
   import type { Feature, FeatureCollection, LineString } from "geojson";
@@ -164,7 +164,7 @@
 <svelte:window on:keydown={onKeyDown} on:keypress={onKeyPress} />
 
 <SplitComponent>
-  <div slot="sidebar">
+  <div slot="left">
     <h2>Editing a route</h2>
 
     <button on:click={() => ($mode = { kind: "main" })}>Back</button>

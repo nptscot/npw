@@ -5,7 +5,7 @@
     LineLayer,
     FillLayer,
   } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/two_column_layout";
+  import { SplitComponent } from "svelte-utils/three_column_layout";
   import { Popup } from "svelte-utils/map";
   import { backend, odZones, odPairs, mode } from "./stores";
   import type { Position } from "geojson";
@@ -44,7 +44,7 @@
 </script>
 
 <SplitComponent>
-  <div slot="sidebar">
+  <div slot="left">
     <h2>Debug OD mode</h2>
     <button on:click={() => ($mode = { kind: "main" })}>Back</button>
   </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/two_column_layout";
+  import { SplitComponent } from "svelte-utils/three_column_layout";
   import { Popup } from "svelte-utils/map";
   import { backend, odZones, odPairs, mode } from "./stores";
   import { onMount } from "svelte";
@@ -46,7 +46,7 @@
 </script>
 
 <SplitComponent>
-  <div slot="sidebar">
+  <div slot="left">
     <h2>Evaluate OD mode</h2>
     <button on:click={() => ($mode = { kind: "main" })}>Back</button>
 

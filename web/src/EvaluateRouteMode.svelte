@@ -7,7 +7,7 @@
     Marker,
     hoverStateFilter,
   } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/two_column_layout";
+  import { SplitComponent } from "svelte-utils/three_column_layout";
   import { notNull } from "svelte-utils";
   import { mode, backend, routeA, routeB, type RouteGJ } from "./stores";
   import { colorByInraType } from "./common";
@@ -40,7 +40,7 @@
 </script>
 
 <SplitComponent>
-  <div slot="sidebar">
+  <div slot="left">
     <h2>Evaluate a route mode</h2>
 
     <button on:click={() => ($mode = { kind: "main" })}>Back</button>
