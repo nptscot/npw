@@ -58,7 +58,7 @@ impl MapModel {
 // direction, return the stronger case.
 //
 // TODO This is only a partial implementation
-fn classify(tags: &Tags) -> Option<InfraType> {
+pub fn classify(tags: &Tags) -> Option<InfraType> {
     if tags.is_any("highway", vec!["cycleway", "pedestrian", "footway", "path"]) {
         // TODO maybe regex
         if let Some(name) = tags.get("name") {

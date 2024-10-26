@@ -111,6 +111,11 @@ export class Backend {
     return JSON.parse(this.inner!.getSchools());
   }
 
+  getNetworkBuffer(includeExisting: boolean): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.getNetworkBuffer(includeExisting));
+  }
+
   private checkReady() {
     if (!this.inner) {
       throw new Error("Backend used without a file loaded");
