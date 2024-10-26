@@ -55,13 +55,7 @@
     await init();
 
     let params = new URLSearchParams(window.location.search);
-    if (!params.has("boundary")) {
-      window.alert(
-        "Missing boundary param. TODO, redirect back to an LA dashboard",
-      );
-      return;
-    }
-    $boundaryName = params.get("boundary")!;
+    $boundaryName = params.get("boundary") || "LAD_City of Edinburgh";
     loading = `Loading ${$boundaryName}`;
 
     let backendWorker = new Backend();
