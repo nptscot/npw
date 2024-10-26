@@ -32,10 +32,10 @@ function split_osm {
 
 function build_graph_files {
         # Build the CLI
-        cd ../backend
+        cd ../cli
         cargo build --release
         cd ../data_prep
-        bin=../backend/target/release/backend
+        bin=../cli/target/release/cli
 
         mkdir -p graph-files
         IFS=$'\n'
