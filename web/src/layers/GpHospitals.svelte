@@ -1,9 +1,18 @@
 <script lang="ts">
   import { GeoJSON, hoverStateFilter, CircleLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { gpHospitals } from "./stores";
   import { assetUrl } from "../stores";
+  import LayerControls from "./LayerControls.svelte";
+
+  let show = false;
 </script>
+
+<LayerControls>
+  <label>
+    <input type="checkbox" bind:checked={show} />
+    GPs and hospitals
+  </label>
+</LayerControls>
 
 <GeoJSON data={assetUrl("gp_practices.geojson")} generateId>
   <CircleLayer
@@ -13,7 +22,7 @@
       "circle-radius": hoverStateFilter(5, 8),
     }}
     layout={{
-      visibility: $gpHospitals ? "visible" : "none",
+      visibility: show ? "visible" : "none",
     }}
   >
     <Popup openOn="hover" let:props>
@@ -30,7 +39,7 @@
       "circle-radius": hoverStateFilter(5, 8),
     }}
     layout={{
-      visibility: $gpHospitals ? "visible" : "none",
+      visibility: show ? "visible" : "none",
     }}
   >
     <Popup openOn="hover" let:props>

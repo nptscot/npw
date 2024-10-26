@@ -12,7 +12,7 @@
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
   import { colorByInraType } from "./common";
-  import Controls from "./layers/Controls.svelte";
+  import AllControls from "./layers/AllControls.svelte";
   import Stats from "./Stats.svelte";
   import ChangeArea from "./ChangeArea.svelte";
 
@@ -53,7 +53,7 @@
 
     <details open>
       <summary>Reference layers</summary>
-      <Controls />
+      <AllControls />
     </details>
 
     <details open>

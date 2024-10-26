@@ -3,16 +3,25 @@
   import { backend, infraTypeMapping } from "../stores";
   import { colorByInraType } from "../common";
   import { Popup } from "svelte-utils/map";
-  import { existingNetwork } from "./stores";
   import { notNull } from "svelte-utils";
+  import LayerControls from "./LayerControls.svelte";
+
+  let show = false;
 </script>
+
+<LayerControls>
+  <label>
+    <input type="checkbox" bind:checked={show} />
+    Existing network
+  </label>
+</LayerControls>
 
 {#if $backend}
   {#await $backend.classifyExistingNetwork() then data}
     <GeoJSON {data} generateId>
       <LineLayer
         layout={{
-          visibility: $existingNetwork ? "visible" : "none",
+          visibility: show ? "visible" : "none",
         }}
         paint={{
           "line-width": hoverStateFilter(5, 7),

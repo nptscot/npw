@@ -5,9 +5,18 @@
     LineLayer,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { coreNetwork } from "./stores";
   import { assetUrl } from "../stores";
+  import LayerControls from "./LayerControls.svelte";
+
+  let show = false;
 </script>
+
+<LayerControls>
+  <label>
+    <input type="checkbox" bind:checked={show} />
+    Core network
+  </label>
+</LayerControls>
 
 <VectorTileSource url={`pmtiles://${assetUrl("core_network.pmtiles")}`}>
   <LineLayer
@@ -18,7 +27,7 @@
       "line-width": hoverStateFilter(2, 3),
     }}
     layout={{
-      visibility: $coreNetwork ? "visible" : "none",
+      visibility: show ? "visible" : "none",
     }}
   >
     <Popup openOn="hover" let:props>

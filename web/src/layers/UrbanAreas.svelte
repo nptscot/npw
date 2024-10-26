@@ -4,9 +4,18 @@
     hoverStateFilter,
     FillLayer,
   } from "svelte-maplibre";
-  import { urbanAreas } from "./stores";
+  import LayerControls from "./LayerControls.svelte";
   import { assetUrl } from "../stores";
+
+  let show = false;
 </script>
+
+<LayerControls>
+  <label>
+    <input type="checkbox" bind:checked={show} />
+    Urban areas
+  </label>
+</LayerControls>
 
 <VectorTileSource url={`pmtiles://${assetUrl("urban_areas.pmtiles")}`}>
   <FillLayer
@@ -17,7 +26,7 @@
       "fill-opacity": hoverStateFilter(1.0, 0.5),
     }}
     layout={{
-      visibility: $urbanAreas ? "visible" : "none",
+      visibility: show ? "visible" : "none",
     }}
   />
 </VectorTileSource>

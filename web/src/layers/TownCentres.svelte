@@ -5,9 +5,18 @@
     FillLayer,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { townCentres } from "./stores";
+  import LayerControls from "./LayerControls.svelte";
   import { assetUrl } from "../stores";
+
+  let show = false;
 </script>
+
+<LayerControls>
+  <label>
+    <input type="checkbox" bind:checked={show} />
+    Town centres
+  </label>
+</LayerControls>
 
 <VectorTileSource url={`pmtiles://${assetUrl("town_centres.pmtiles")}`}>
   <FillLayer
@@ -18,7 +27,7 @@
       "fill-opacity": hoverStateFilter(1.0, 0.5),
     }}
     layout={{
-      visibility: $townCentres ? "visible" : "none",
+      visibility: show ? "visible" : "none",
     }}
   >
     <Popup openOn="hover" let:props>
