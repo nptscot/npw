@@ -9,6 +9,7 @@
   let purpose = "all";
   let scenario = "bicycle_go_dutch";
   let networkType = "fastest";
+  let colorBy = "flow";
 
   $: key = `${purpose}_${networkType}_${scenario}`;
 
@@ -27,6 +28,12 @@
   let networkTypes = [
     ["fastest", "Fast/Direct"],
     ["quietest", "Quiet/Indirect"],
+  ];
+  let colorByOptions = [
+    ["none", "None"],
+    ["flow", "People cycling per day"],
+    ["quietness", "Cycle friendliness"],
+    ["gradient", "Gradient"],
   ];
 
   // Implements the formula y = (3 / (1 + exp(-3*(x/1000 - 1.6))) + 0.3)
@@ -105,6 +112,59 @@
       ],
     ],
   ] as ExpressionSpecification;
+
+  $: lineColor = {
+    none: "#304ce7",
+    flow: [
+      "step",
+      ["get", key],
+      "rgba(0,0,0,0)",
+      1,
+      "#9C9C9C",
+      50,
+      "#FFFF73",
+      100,
+      "#AFFF00",
+      250,
+      "#00FFFF",
+      500,
+      "#30B0FF",
+      1000,
+      "#2E5FFF",
+      2000,
+      "#0000FF",
+      3000,
+      "#FF00C5",
+    ],
+    quietness: [
+      "step",
+      ["get", "quietness"],
+      "#882255",
+      25,
+      "#CC6677",
+      50,
+      "#44AA99",
+      75,
+      "#117733",
+      101,
+      "#000000",
+    ],
+    gradient: [
+      "step",
+      ["get", "gradient"],
+      "#59ee19",
+      3,
+      "#37a009",
+      5,
+      "#FFC300",
+      7,
+      "#C70039",
+      10,
+      "#581845",
+      100,
+      "#000000",
+    ],
+  }[colorBy] as ExpressionSpecification;
 </script>
 
 <LayerControls>
@@ -140,6 +200,15 @@
         {/each}
       </select>
     </label>
+
+    <label>
+      Color by:
+      <select bind:value={colorBy}>
+        {#each colorByOptions as [value, label]}
+          <option {value}>{label}</option>
+        {/each}
+      </select>
+    </label>
   {/if}
 </LayerControls>
 
@@ -147,7 +216,7 @@
   <LineLayer
     sourceLayer="rnet"
     paint={{
-      "line-color": "black",
+      "line-color": lineColor,
       "line-width": lineWidth,
     }}
     layout={{
