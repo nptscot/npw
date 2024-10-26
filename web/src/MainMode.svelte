@@ -100,24 +100,40 @@
 
     <Stats />
 
-    <button on:click={() => ($mode = { kind: "evaluate-route" })}>
-      Evaluate a route
-    </button>
-    <button on:click={() => ($mode = { kind: "evaluate-od" })}>
-      Evaluate OD
-    </button>
+    <div>
+      <button
+        class="secondary"
+        on:click={() => ($mode = { kind: "evaluate-route" })}
+      >
+        Evaluate a route
+      </button>
+    </div>
 
-    <button
-      class="secondary"
-      on:click={() => ($mode = { kind: "debug-network" })}
-    >
-      Debug network
-    </button>
-    <button
-      class="secondary"
-      on:click={() => ($mode = { kind: "debug-mesh-density" })}
-    >
-      Debug mesh density
-    </button>
+    <div>
+      <button
+        class="secondary"
+        on:click={() => ($mode = { kind: "evaluate-od" })}
+      >
+        Evaluate OD
+      </button>
+    </div>
+
+    <div>
+      <button
+        class="secondary"
+        on:click={() => ($mode = { kind: "debug-network" })}
+      >
+        Debug network
+      </button>
+    </div>
+
+    <div>
+      <button
+        class="secondary"
+        on:click={() => ($mode = { kind: "debug-mesh-density" })}
+      >
+        Debug mesh density
+      </button>
+    </div>
   </div>
 </SplitComponent>
