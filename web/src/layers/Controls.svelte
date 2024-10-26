@@ -6,12 +6,18 @@
     gpHospitals,
     existingNetwork,
     urbanAreas,
+    routeNetwork,
   } from "./stores";
 </script>
 
 <label>
   <input type="checkbox" bind:checked={$existingNetwork} />
   Existing network
+</label>
+
+<label>
+  <input type="checkbox" bind:checked={$routeNetwork} />
+  Route network
 </label>
 
 <label>

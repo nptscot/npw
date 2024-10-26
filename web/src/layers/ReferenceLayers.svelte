@@ -1,5 +1,6 @@
 <script lang="ts">
   import ExistingNetwork from "./ExistingNetwork.svelte";
+  import RouteNetwork from "./RouteNetwork.svelte";
   import CoreNetwork from "./CoreNetwork.svelte";
   import Schools from "./Schools.svelte";
   import TownCentres from "./TownCentres.svelte";
@@ -8,6 +9,7 @@
 </script>
 
 <ExistingNetwork />
+<RouteNetwork />
 <CoreNetwork />
 <Schools />
 <TownCentres />

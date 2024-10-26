@@ -5,8 +5,13 @@ set -x
 mkdir -p tmp
 
 function core_net {
-  # From https://github.com/nptscot/npt/releases
+  # From https://github.com/nptscot/outputdata/releases
   wget https://github.com/nptscot/outputdata/releases/download/v2024-10-01/combined_CN_4_2024-10-01_OS.pmtiles -O ../web/public/core_network.pmtiles
+}
+
+function rnet {
+  # From https://github.com/nptscot/outputdata/releases
+  wget https://github.com/nptscot/outputdata/releases/download/v2024-10-01/rnet_2024-10-01.pmtiles -O ../web/public/route_network.pmtiles
 }
 
 function schools {
@@ -69,6 +74,7 @@ function od_and_zones {
 }
 
 core_net
+rnet
 schools
 town_centres ~/Downloads/Town_Centres_-_Scotland.json
 gp_and_hospitals ~/Downloads/GP_Practices_-_Scotland.json ~/Downloads/NHS_Hospitals_-_Scotland.json
