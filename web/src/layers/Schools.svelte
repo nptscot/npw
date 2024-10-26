@@ -2,7 +2,7 @@
   import { GeoJSON, hoverStateFilter, CircleLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import LayerControls from "./LayerControls.svelte";
-  import { assetUrl } from "../stores";
+  import { backend } from "../stores";
 
   let show = false;
 </script>
@@ -14,19 +14,23 @@
   </label>
 </LayerControls>
 
-<GeoJSON data={assetUrl("schools.geojson")} generateId>
-  <CircleLayer
-    manageHoverState
-    paint={{
-      "circle-color": "black",
-      "circle-radius": hoverStateFilter(5, 8),
-    }}
-    layout={{
-      visibility: show ? "visible" : "none",
-    }}
-  >
-    <Popup openOn="hover" let:props>
-      {props.name} is a {props.type} school with {props.pupils} pupils
-    </Popup>
-  </CircleLayer>
-</GeoJSON>
+{#if $backend}
+  {#await $backend.getSchools() then data}
+    <GeoJSON {data} generateId>
+      <CircleLayer
+        manageHoverState
+        paint={{
+          "circle-color": "black",
+          "circle-radius": hoverStateFilter(5, 8),
+        }}
+        layout={{
+          visibility: show ? "visible" : "none",
+        }}
+      >
+        <Popup openOn="hover" let:props>
+          {props.name} is a {props.kind} school with {props.pupils} pupils
+        </Popup>
+      </CircleLayer>
+    </GeoJSON>
+  {/await}
+{/if}

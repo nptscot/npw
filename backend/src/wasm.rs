@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::Once;
 
 use geo::{Coord, LineString, Polygon};
-use geojson::{Feature, Geometry};
+use geojson::{Feature, FeatureCollection, Geometry};
 use graph::IntersectionID;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
@@ -21,6 +21,7 @@ impl MapModel {
             console_log::init_with_level(log::Level::Info).unwrap();
         });
 
+        info!("Deserializing MapModel from {} bytes", input_bytes.len());
         bincode::deserialize_from(input_bytes).map_err(err_to_js)
     }
 
@@ -43,7 +44,7 @@ impl MapModel {
                 (180.0, -90.0),
                 (180.0, 90.0),
             ]),
-            self.boundary
+            self.boundary_wgs84
                 .0
                 .iter()
                 .map(|p| p.exterior().clone())
@@ -135,6 +136,20 @@ impl MapModel {
     #[wasm_bindgen(js_name = classifyExistingNetwork)]
     pub fn classify_existing_network_wasm(&self) -> Result<String, JsValue> {
         self.classify_existing_network().map_err(err_to_js)
+    }
+
+    #[wasm_bindgen(js_name = getSchools)]
+    pub fn get_schools(&self) -> Result<String, JsValue> {
+        serde_json::to_string(&FeatureCollection {
+            bbox: None,
+            foreign_members: None,
+            features: self
+                .schools
+                .iter()
+                .map(|s| s.to_gj(&self.graph.mercator))
+                .collect(),
+        })
+        .map_err(err_to_js)
     }
 
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {

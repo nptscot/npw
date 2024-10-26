@@ -11,7 +11,7 @@ use crate::MapModel;
 impl MapModel {
     pub fn calculate_mesh_density(&self) -> Result<String> {
         let linestrings = self.get_mesh_density_sources();
-        let boundary = self.graph.mercator.to_mercator(&self.boundary.0[0]);
+        let boundary = self.graph.mercator.to_mercator(&self.boundary_wgs84.0[0]);
         let polygons = split_polygon(boundary, linestrings);
 
         let mut features = Vec::new();

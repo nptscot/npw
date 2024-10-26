@@ -18,7 +18,7 @@ function schools {
   # From https://www.data.gov.uk/dataset/9a6f9d86-9698-4a5d-a2c8-89f3b212c52c/scottish-school-roll-and-locations
   wget https://maps.gov.scot/ATOM/shapefiles/SG_SchoolRoll_2023.zip
   unzip SG_SchoolRoll_2023.zip
-  ogr2ogr ../web/public/schools.geojson \
+  ogr2ogr tmp/schools.geojson \
           -t_srs EPSG:4326 \
           SG_SchoolRoll_2023/SG_SchoolRoll_2023.shp \
           -sql 'SELECT SchoolType AS type, SchoolName AS name, PupilRoll AS pupils FROM SG_SchoolRoll_2023'

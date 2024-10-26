@@ -106,6 +106,11 @@ export class Backend {
     this.inner!.loadSavefile(contents);
   }
 
+  getSchools(): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.getSchools());
+  }
+
   private checkReady() {
     if (!this.inner) {
       throw new Error("Backend used without a file loaded");

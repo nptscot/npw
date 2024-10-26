@@ -16,6 +16,7 @@ mod evaluate;
 pub mod existing;
 mod mesh_density;
 pub mod od;
+pub mod places;
 mod route_snapper;
 mod routes;
 mod stats;
@@ -31,12 +32,13 @@ pub struct MapModel {
     #[serde(skip_serializing, skip_deserializing, default)]
     id_counter: usize,
 
-    // In WGS84
-    boundary: MultiPolygon,
+    boundary_wgs84: MultiPolygon,
 
     zones: HashMap<String, od::Zone>,
     // TODO Use more compact encoding for zone names
     desire_lines: Vec<(String, String, usize)>,
+
+    schools: Vec<places::School>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -64,17 +66,19 @@ impl MapModel {
     // TODO For main.rs to create this. Can't make fields public without wasm_bindgen on them
     pub fn create(
         graph: Graph,
-        boundary: MultiPolygon,
+        boundary_wgs84: MultiPolygon,
         zones: HashMap<String, od::Zone>,
         desire_lines: Vec<(String, String, usize)>,
+        schools: Vec<places::School>,
     ) -> Self {
         Self {
             graph,
             routes: HashMap::new(),
             id_counter: 0,
-            boundary,
+            boundary_wgs84,
             zones,
             desire_lines,
+            schools,
         }
     }
 

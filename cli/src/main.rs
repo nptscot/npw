@@ -52,15 +52,26 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         )],
         timer,
     )?;
-    let boundary = read_multipolygon(boundary_gj)?;
+    let boundary_wgs84 = read_multipolygon(boundary_gj)?;
     let zones = backend::od::Zone::parse_zones(
-        std::fs::read_to_string("tmp/zones.geojson")?,
-        &boundary,
+        std::fs::read_to_string("../data_prep/tmp/zones.geojson")?,
+        &boundary_wgs84,
         &graph.mercator,
     )?;
-    let desire_lines = read_desire_lines_csv("tmp/od.csv", &zones)?;
+    let desire_lines = read_desire_lines_csv("../data_prep/tmp/od.csv", &zones)?;
+    let schools = backend::places::School::from_gj(
+        &std::fs::read_to_string("../data_prep/tmp/schools.geojson")?,
+        &boundary_wgs84,
+        &graph.mercator,
+    )?;
 
-    Ok(MapModel::create(graph, boundary, zones, desire_lines))
+    Ok(MapModel::create(
+        graph,
+        boundary_wgs84,
+        zones,
+        desire_lines,
+        schools,
+    ))
 }
 
 fn read_multipolygon(gj_string: &str) -> Result<MultiPolygon> {
