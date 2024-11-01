@@ -53,7 +53,7 @@ pub struct Route {
     infra_type: InfraType,
 }
 
-#[derive(Clone, Copy, Debug, Enum, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Enum, Serialize, Deserialize)]
 pub enum InfraType {
     SegregatedWide,
     OffRoad,

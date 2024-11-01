@@ -134,3 +134,106 @@ fn is_wide_track(tags: &Tags) -> bool {
 fn is_any_key(tags: &Tags, keys: Vec<&'static str>, value: &str) -> bool {
     keys.iter().any(|k| tags.is(k, value))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_classify() {
+        let mut ok = true;
+        for (input, expected) in [
+            // Examples of each class
+            (
+                vec![
+                    "highway=cycleway",
+                    "cycleway=track",
+                    "foot=no",
+                    "width=5",
+                    "lanes=2",
+                    "oneway=no",
+                    "surface=asphalt",
+                    "lit=yes",
+                    "lcn=yes",
+                ],
+                Some(InfraType::SegregatedWide),
+            ),
+            (
+                vec![
+                    "highway=cycleway",
+                    "cycleway=track",
+                    "foot=yes",
+                    "width=3",
+                    "segregated=no",
+                    "lanes=2",
+                    "oneway=no",
+                    "surface=asphalt",
+                    "lit=yes",
+                ],
+                Some(InfraType::OffRoad),
+            ),
+            (
+                vec![
+                    "highway=cycleway",
+                    "cycleway=track",
+                    "foot=no",
+                    "width=2",
+                    "oneway=no",
+                    "surface=asphalt",
+                    "lit=yes",
+                    "lcn=yes",
+                ],
+                Some(InfraType::SegregatedNarrow),
+            ),
+            (
+                vec![
+                    "highway=footway",
+                    "bicycle=yes",
+                    "width=2.5",
+                    "segregated=no",
+                    "oneway=no",
+                    "surface=asphalt",
+                ],
+                Some(InfraType::SharedFootway),
+            ),
+            (
+                vec![
+                    "highway=primary",
+                    "cycleway=lane",
+                    "width=1.5",
+                    "lit=yes",
+                    "cycleway:separation=no",
+                ],
+                Some(InfraType::CycleLane),
+            ),
+            // This is an example of MixedTraffic for route costing purposes, but for
+            // classification, we ignore it
+            (vec!["highway=residential"], None),
+            // Regression tests
+            (vec!["highway=path", "name=Eastwood Trail"], None),
+            (
+                vec![
+                    "highway=path",
+                    "name=Waulkmills Nature Trail",
+                    "bicycle=designated",
+                ],
+                Some(InfraType::OffRoad),
+            ),
+        ] {
+            let mut tags = Tags::empty();
+            for kv in &input {
+                let parts = kv.split("=").collect::<Vec<_>>();
+                tags.insert(parts[0], parts[1]);
+            }
+            let actual = classify(&tags);
+            if actual != expected {
+                println!("For {input:?}, expected {expected:?} but got {actual:?}\n");
+                ok = false;
+            }
+        }
+
+        if !ok {
+            panic!("Some cases failed");
+        }
+    }
+}
