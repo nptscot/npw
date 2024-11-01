@@ -41,6 +41,7 @@ impl School {
                 });
             }
         }
+        info!("Matched {} schools", schools.len());
         Ok(schools)
     }
 }

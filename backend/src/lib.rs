@@ -41,6 +41,9 @@ pub struct MapModel {
     desire_lines: Vec<(String, String, usize)>,
 
     schools: Vec<places::School>,
+
+    // Per RoadID
+    traffic_volumes: Vec<usize>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -72,6 +75,7 @@ impl MapModel {
         zones: HashMap<String, od::Zone>,
         desire_lines: Vec<(String, String, usize)>,
         schools: Vec<places::School>,
+        traffic_volumes: Vec<usize>,
     ) -> Self {
         Self {
             graph,
@@ -81,6 +85,7 @@ impl MapModel {
             zones,
             desire_lines,
             schools,
+            traffic_volumes,
         }
     }
 

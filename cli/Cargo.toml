@@ -16,3 +16,5 @@ log = "0.4.20"
 serde = "1.0.188"
 simple_logger = "5.0.0"
 utils = { git = "https://github.com/a-b-street/utils", features = ["serde"] }
+gdal = "0.17.1"
+rstar = "0.12.0"

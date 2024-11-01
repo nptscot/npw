@@ -73,6 +73,11 @@ function od_and_zones {
   rm -f SG_IntermediateZone_Bdry_2011*
 }
 
+function traffic {
+  # Manually download https://github.com/nptscot/scottraffic/releases/download/v6/final_estimates_Scotland.gpkg from internal GH repo
+  cp $1 tmp/traffic.gpkg
+}
+
 core_net
 rnet
 schools
@@ -80,3 +85,4 @@ town_centres ~/Downloads/Town_Centres_-_Scotland.json
 gp_and_hospitals ~/Downloads/GP_Practices_-_Scotland.json ~/Downloads/NHS_Hospitals_-_Scotland.json
 urban_rural
 od_and_zones ~/Downloads/desire_lines_scotland.csv
+traffic ~/Downloads/final_estimates_Scotland.gpkg
