@@ -45,6 +45,10 @@ impl MapModel {
         bail!("Unknown route {id}");
     }
 
+    pub fn clear_all_routes(&mut self) {
+        self.routes.clear();
+    }
+
     pub fn to_routes_gj(&self) -> GeoJson {
         let mut features = Vec::new();
         for (id, route) in &self.routes {

@@ -13,6 +13,7 @@
     infraTypeMapping,
     boundaryName,
     mainModeRoutesChanged,
+    autosave,
   } from "./stores";
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
@@ -47,6 +48,14 @@
   function editRouteSidebar(id: string | number | undefined) {
     $mode = { kind: "edit-route", id: id as number };
   }
+
+  async function clearAll() {
+    if (window.confirm("Clear everything? You can't undo this")) {
+      await $backend.clearAllRoutes();
+      await autosave();
+      await recalc();
+    }
+  }
 </script>
 
 <svelte:window on:keydown={onKeyDown} />
@@ -62,6 +71,8 @@
       Draw new <u>r</u>
       oute line
     </button>
+
+    <button on:click={clearAll}>Clear current network</button>
 
     <details open>
       <summary>Reference layers</summary>

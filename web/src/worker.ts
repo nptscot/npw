@@ -65,6 +65,11 @@ export class Backend {
     this.inner!.deleteRoute(id);
   }
 
+  clearAllRoutes() {
+    this.checkReady();
+    this.inner!.clearAllRoutes();
+  }
+
   evaluateRoute(req: {
     // TODO LngLatLike doesn't work?
     start: { lng: number; lat: number };

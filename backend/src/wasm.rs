@@ -79,6 +79,11 @@ impl MapModel {
         self.delete_route(id).map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = clearAllRoutes)]
+    pub fn clear_all_routes_wasm(&mut self) {
+        self.clear_all_routes()
+    }
+
     /// Returns a GeoJSON string showing all routes
     #[wasm_bindgen(js_name = renderRoutes)]
     pub fn render_routes(&self) -> Result<String, JsValue> {
