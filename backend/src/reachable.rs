@@ -4,7 +4,7 @@ use anyhow::Result;
 use geojson::{Feature, FeatureCollection, Geometry};
 use graph::RoadID;
 
-use crate::{level_of_service, InfraType, MapModel};
+use crate::{InfraType, LevelOfService, MapModel};
 
 pub struct Reachability {
     pub network: HashSet<RoadID>,
@@ -22,7 +22,7 @@ impl MapModel {
         let mut queue: Vec<RoadID> = Vec::new();
 
         let infra_types = self.get_infra_types();
-        for (idx, road) in self.graph.roads.iter().enumerate() {
+        for idx in 0..self.graph.roads.len() {
             let id = RoadID(idx);
             if let Some(infra_type) = infra_types.get(&id) {
                 // TODO If a piece of assigned infrastructure is inappropriate and the level of
@@ -34,12 +34,7 @@ impl MapModel {
                 }
             }
 
-            let los = level_of_service::level_of_service(
-                InfraType::MixedTraffic,
-                self.traffic_volumes[idx],
-                level_of_service::get_speed_mph(road),
-            );
-            if los != level_of_service::LevelOfService::High {
+            if self.level_of_service(id) != LevelOfService::High {
                 severances.insert(id);
             }
         }

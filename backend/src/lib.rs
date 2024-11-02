@@ -14,6 +14,8 @@ use graph::{Graph, RoadID};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
+use crate::level_of_service::LevelOfService;
+
 mod costs;
 mod evaluate;
 pub mod existing;
@@ -47,6 +49,8 @@ pub struct MapModel {
 
     // Per RoadID
     traffic_volumes: Vec<usize>,
+    // mph
+    speeds: Vec<usize>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -80,6 +84,11 @@ impl MapModel {
         schools: Vec<places::School>,
         traffic_volumes: Vec<usize>,
     ) -> Self {
+        let speeds = graph
+            .roads
+            .iter()
+            .map(level_of_service::get_speed_mph)
+            .collect();
         Self {
             graph,
             routes: HashMap::new(),
@@ -89,6 +98,7 @@ impl MapModel {
             desire_lines,
             schools,
             traffic_volumes,
+            speeds,
         }
     }
 
@@ -101,6 +111,14 @@ impl MapModel {
             }
         }
         infra_types
+    }
+
+    pub fn get_infra_type(&self, r: RoadID) -> InfraType {
+        // TODO Ridiculous perf
+        self.get_infra_types()
+            .get(&r)
+            .cloned()
+            .unwrap_or(InfraType::MixedTraffic)
     }
 
     /// All roads within some predefined buffer of the defined (and maybe existing) network

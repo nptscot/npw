@@ -8,7 +8,6 @@ use crate::{InfraType, MapModel};
 
 impl MapModel {
     pub fn evaluate_route(&self, pt1: Coord, pt2: Coord) -> Result<String> {
-        let infra_types = self.get_infra_types();
         let profile = self.graph.profile_names["bicycle"];
         let start = self.graph.snap_to_road(pt1, profile);
         let end = self.graph.snap_to_road(pt2, profile);
@@ -17,16 +16,13 @@ impl MapModel {
 
         let mut directions = Vec::new();
         for step in route.steps {
-            if let PathStep::Road { road, .. } = step {
-                let road = &self.graph.roads[road.0];
+            if let PathStep::Road { road: id, .. } = step {
+                let road = &self.graph.roads[id.0];
                 directions.push(Step {
                     name: road.osm_tags.get("name").cloned(),
                     length: road.length_meters,
                     way: road.way.to_string(),
-                    infra_type: infra_types
-                        .get(&road.id)
-                        .cloned()
-                        .unwrap_or(InfraType::MixedTraffic),
+                    infra_type: self.get_infra_type(id),
                 });
             }
         }
