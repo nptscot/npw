@@ -37,6 +37,11 @@ export class Backend {
     return JSON.parse(this.inner!.renderDebug());
   }
 
+  renderLevelOfService(): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.renderLevelOfService());
+  }
+
   toRouteSnapper(): Uint8Array {
     this.checkReady();
     return this.inner!.toRouteSnapper();

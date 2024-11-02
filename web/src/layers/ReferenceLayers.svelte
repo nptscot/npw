@@ -7,6 +7,7 @@
   import GpHospitals from "./GpHospitals.svelte";
   import UrbanAreas from "./UrbanAreas.svelte";
   import NetworkBuffer from "./NetworkBuffer.svelte";
+  import LevelOfService from "./LevelOfService.svelte";
 </script>
 
 <ExistingNetwork />
@@ -17,3 +18,4 @@
 <GpHospitals />
 <UrbanAreas />
 <NetworkBuffer />
+<LevelOfService />

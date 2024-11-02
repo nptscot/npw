@@ -16,6 +16,7 @@ use wasm_bindgen::prelude::*;
 
 mod evaluate;
 pub mod existing;
+mod level_of_service;
 mod mesh_density;
 pub mod od;
 pub mod places;

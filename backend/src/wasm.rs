@@ -173,6 +173,11 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = renderLevelOfService)]
+    pub fn render_level_of_service_wasm(&self) -> Result<String, JsValue> {
+        self.render_level_of_service().map_err(err_to_js)
+    }
+
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
         // TODO map_err?
         let route: InputRoute = match serde_wasm_bindgen::from_value(input) {
