@@ -35,11 +35,13 @@ impl MapModel {
             }
         };
         self.routes.insert(id, route);
+        self.recalculate_after_edits();
         Ok(id)
     }
 
     pub fn delete_route(&mut self, id: usize) -> Result<()> {
         if self.routes.remove(&id).is_some() {
+            self.recalculate_after_edits();
             return Ok(());
         }
         bail!("Unknown route {id}");
@@ -47,6 +49,7 @@ impl MapModel {
 
     pub fn clear_all_routes(&mut self) {
         self.routes.clear();
+        self.recalculate_after_edits();
     }
 
     pub fn to_routes_gj(&self) -> GeoJson {
@@ -107,6 +110,7 @@ impl MapModel {
             changes += 1;
         }
 
+        self.recalculate_after_edits();
         changes
     }
 }

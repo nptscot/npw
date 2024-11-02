@@ -22,7 +22,9 @@ impl MapModel {
         });
 
         info!("Deserializing MapModel from {} bytes", input_bytes.len());
-        bincode::deserialize_from(input_bytes).map_err(err_to_js)
+        let mut map: MapModel = bincode::deserialize_from(input_bytes).map_err(err_to_js)?;
+        map.recalculate_after_edits();
+        Ok(map)
     }
 
     /// Returns a GeoJSON string. Just shows the full network
@@ -133,6 +135,7 @@ impl MapModel {
         let savefile: Savefile = serde_json::from_str(&input).map_err(err_to_js)?;
         self.routes = savefile.routes;
         self.id_counter = savefile.id_counter;
+        self.recalculate_after_edits();
         Ok(())
     }
 

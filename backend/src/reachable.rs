@@ -21,13 +21,12 @@ impl MapModel {
         let mut visited: HashSet<RoadID> = HashSet::new();
         let mut queue: Vec<RoadID> = Vec::new();
 
-        let infra_types = self.get_infra_types();
         for idx in 0..self.graph.roads.len() {
             let id = RoadID(idx);
-            if let Some(infra_type) = infra_types.get(&id) {
+            if let Some(infra_type) = self.infra_types[idx] {
                 // TODO If a piece of assigned infrastructure is inappropriate and the level of
                 // service is poor, consider it part of the network or not?
-                if *infra_type != InfraType::MixedTraffic {
+                if infra_type != InfraType::MixedTraffic {
                     network.insert(id);
                     queue.push(id);
                     continue;

@@ -79,7 +79,6 @@ impl MapModel {
     /// Returns detailed GJ with per-road counts
     pub fn evaluate_od(&self) -> Result<String> {
         let out = self.od_counts()?;
-        let infra_types = self.get_infra_types();
 
         let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();
         let mut count_off_network = 0;
@@ -98,18 +97,12 @@ impl MapModel {
             f.set_property("count", count);
             f.set_property(
                 "infra_type",
-                serde_json::to_value(
-                    infra_types
-                        .get(&r)
-                        .cloned()
-                        .unwrap_or(InfraType::MixedTraffic),
-                )
-                .unwrap(),
+                serde_json::to_value(self.get_infra_type(r)).unwrap(),
             );
             features.push(f);
 
             total_count += count;
-            if let Some(infra_type) = infra_types.get(&r).cloned() {
+            if let Some(infra_type) = self.infra_types[r.0] {
                 count_by_infra[infra_type] += count;
             } else {
                 count_off_network += count;

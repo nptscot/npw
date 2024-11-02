@@ -16,10 +16,9 @@ impl MapModel {
         let mut total_count = 0;
 
         let od = self.od_counts()?;
-        let infra_types = self.get_infra_types();
         for (r, count) in od.counts {
             total_count += count;
-            if let Some(infra_type) = infra_types.get(&r).cloned() {
+            if let Some(infra_type) = self.infra_types[r.0] {
                 count_by_infra[infra_type] += count;
             } else {
                 count_off_network += count;

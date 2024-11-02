@@ -51,6 +51,8 @@ pub struct MapModel {
     traffic_volumes: Vec<usize>,
     // mph
     speeds: Vec<usize>,
+    #[serde(skip_serializing, skip_deserializing, default)]
+    infra_types: Vec<Option<InfraType>>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -89,6 +91,7 @@ impl MapModel {
             .iter()
             .map(level_of_service::get_speed_mph)
             .collect();
+        let infra_types = std::iter::repeat(None).take(graph.roads.len()).collect();
         Self {
             graph,
             routes: HashMap::new(),
@@ -99,26 +102,24 @@ impl MapModel {
             schools,
             traffic_volumes,
             speeds,
+            infra_types,
         }
     }
 
-    // TODO If this is done frequently, just cache it?
-    pub fn get_infra_types(&self) -> HashMap<RoadID, InfraType> {
-        let mut infra_types = HashMap::new();
+    pub fn recalculate_after_edits(&mut self) {
+        self.infra_types = std::iter::repeat(None)
+            .take(self.graph.roads.len())
+            .collect();
+
         for route in self.routes.values() {
             for road in &route.roads {
-                infra_types.insert(*road, route.infra_type);
+                self.infra_types[road.0] = Some(route.infra_type);
             }
         }
-        infra_types
     }
 
     pub fn get_infra_type(&self, r: RoadID) -> InfraType {
-        // TODO Ridiculous perf
-        self.get_infra_types()
-            .get(&r)
-            .cloned()
-            .unwrap_or(InfraType::MixedTraffic)
+        self.infra_types[r.0].unwrap_or(InfraType::MixedTraffic)
     }
 
     /// All roads within some predefined buffer of the defined (and maybe existing) network
