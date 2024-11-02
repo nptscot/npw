@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use enum_map::EnumMap;
-use geo::{BoundingRect, Contains, Coord, EuclideanDistance, Intersects, MultiPolygon};
+use geo::{BoundingRect, Contains, Coord, Distance, Euclidean, Intersects, MultiPolygon};
 use geojson::{Feature, FeatureCollection, Geometry, Value};
 use graph::{PathStep, RoadID};
 use nanorand::{Rng, WyRand};
@@ -48,9 +48,10 @@ impl MapModel {
             // route.linestring() is more accurate, but slower, and then harder to find the snapped
             // position on the road for direct_length
             let mut route_length = 0.0;
-            let direct_length = self.graph.intersections[start.intersection.0]
-                .point
-                .euclidean_distance(&self.graph.intersections[end.intersection.0].point);
+            let direct_length = Euclidean::distance(
+                self.graph.intersections[start.intersection.0].point,
+                self.graph.intersections[end.intersection.0].point,
+            );
 
             // TODO Use a lower-level API to squeeze out some speed
             for step in route.steps {

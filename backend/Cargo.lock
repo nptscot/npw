@@ -314,14 +314,15 @@ dependencies = [
 
 [[package]]
 name = "geo"
-version = "0.28.0"
+version = "0.29.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f811f663912a69249fa620dcd2a005db7254529da2d8a0b23942e81f47084501"
+checksum = "8798f09c0fb3625cf216569408e151a1884c3a028a0b533b7c223ae8f695c89a"
 dependencies = [
  "earcutr",
  "float_next_after",
  "geo-types",
  "geographiclib-rs",
+ "i_overlay",
  "log",
  "num-traits",
  "robust",
@@ -365,7 +366,7 @@ dependencies = [
 [[package]]
 name = "graph"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/15m#17da1bbf22e4cf473ad925c7e31e7d3810f6c8c5"
+source = "git+https://github.com/a-b-street/15m#3064732f3804e543123f2a09c40592d50a343e91"
 dependencies = [
  "anyhow",
  "chrono",
@@ -441,14 +442,15 @@ checksum = "347c253b4748a1a28baf94c9ce133b6b166f08573157e05afe718812bc599fcd"
 
 [[package]]
 name = "i_overlay"
-version = "1.7.0"
+version = "1.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36f0a35e48f0a49ca3cd3ea68c07a886f977e33f16b1fd30fb01d296c7684564"
+checksum = "a469f68cb8a7cef375b2b0f581faf5859b4b50600438c00d46b71acc25ebbd0c"
 dependencies = [
  "i_float",
  "i_key_sort",
  "i_shape",
  "i_tree",
+ "rayon",
 ]
 
 [[package]]
@@ -755,7 +757,7 @@ checksum = "cbf4a6aa5f6d6888f39e980649f3ad6b666acdce1d78e95b8a2cb076e687ae30"
 [[package]]
 name = "route-snapper-graph"
 version = "0.1.0"
-source = "git+https://github.com/dabreegster/route_snapper#9603d48a972d1d0e3b8388c9c7025b9b095e0426"
+source = "git+https://github.com/dabreegster/route_snapper#0834519b09152168ee4908dcd630d54605aa759b"
 dependencies = [
  "geo",
  "serde",
@@ -918,7 +920,7 @@ checksum = "e91b56cd4cadaeb79bbf1a5645f6b4f8dc5bde8834ad5894a8db35fda9efa1fe"
 [[package]]
 name = "utils"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/utils#c17dbe2c0bc9c5fa0d9949754b1d0dd0a0abc8bb"
+source = "git+https://github.com/a-b-street/utils#9144e3b9e0094640178565ea1e30ea037e5b2481"
 dependencies = [
  "anyhow",
  "fast_paths",

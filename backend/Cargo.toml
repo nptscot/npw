@@ -13,7 +13,7 @@ chrono = { version = "0.4.33", default-features = false }
 console_error_panic_hook = "0.1.6"
 console_log = "1.0.0"
 enum-map = "2.7.3"
-geo = "0.28.0"
+geo = "0.29.1"
 geojson = { git = "https://github.com/georust/geojson", features = ["geo-types"] }
 graph = { git = "https://github.com/a-b-street/15m" }
 i_overlay = { version = "1.7.0", default-features = false }

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use geo::{Coord, EuclideanLength, LineString};
+use geo::{Coord, Euclidean, Length, LineString};
 use geojson::{Feature, FeatureCollection, Geometry};
 use graph::PathStep;
 use serde::Serialize;
@@ -42,8 +42,8 @@ impl MapModel {
             bbox: None,
             foreign_members: Some(
                 serde_json::json!({
-                    "direct_length": direct_line.euclidean_length(),
-                    "route_length": route_linestring.euclidean_length(),
+                    "direct_length": direct_line.length::<Euclidean>(),
+                    "route_length": route_linestring.length::<Euclidean>(),
                     "directions": directions,
                 })
                 .as_object()

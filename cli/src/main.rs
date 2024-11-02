@@ -5,7 +5,7 @@ use std::io::BufWriter;
 use anyhow::Result;
 use clap::Parser;
 use gdal::{vector::LayerAccess, Dataset};
-use geo::{EuclideanDistance, LineString, MultiPolygon};
+use geo::{Distance, Euclidean, LineString, MultiPolygon};
 use graph::{Graph, Timer};
 use log::info;
 use rstar::{primitives::GeomWithData, RTree, RTreeObject};
@@ -160,16 +160,8 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
 // Just sum distance between endpoints
 // TODO When the volume links are much longer than OSM, or vice versa, how well does this work?
 fn compare_road_geometry(ls1: &LineString, ls2: &LineString) -> usize {
-    let dist1 = ls1
-        .coords()
-        .next()
-        .unwrap()
-        .euclidean_distance(ls2.coords().next().unwrap());
-    let dist2 = ls1
-        .coords()
-        .last()
-        .unwrap()
-        .euclidean_distance(ls2.coords().last().unwrap());
+    let dist1 = Euclidean::distance(*ls1.coords().next().unwrap(), *ls2.coords().next().unwrap());
+    let dist2 = Euclidean::distance(*ls1.coords().last().unwrap(), *ls2.coords().last().unwrap());
     // cm precision
     ((dist1 + dist2) * 100.0) as usize
 }

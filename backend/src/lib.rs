@@ -14,6 +14,7 @@ use graph::{Graph, RoadID};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
+mod costs;
 mod evaluate;
 pub mod existing;
 mod level_of_service;
