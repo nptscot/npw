@@ -35,6 +35,7 @@
               High: "mediumseagreen",
               Medium: "orange",
               Low: "red",
+              ShouldNotBeUsed: "brown",
             },
             "black",
           ),
@@ -58,7 +59,7 @@
             </tr>
             <tr>
               <th>Average daily motor traffic</th>
-              <td>{props.traffic}</td>
+              <td>{props.traffic.toLocaleString()}</td>
             </tr>
           </table>
         </Popup>

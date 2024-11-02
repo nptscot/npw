@@ -10,6 +10,7 @@ enum LevelOfService {
     High,
     Medium,
     Low,
+    ShouldNotBeUsed,
 }
 
 impl MapModel {
@@ -46,16 +47,38 @@ impl MapModel {
 
 // TODO Implement directly from
 // https://www.transport.gov.scot/media/50323/cycling-by-design-update-2019-final-document-15-september-2021-1.pdf?
-fn level_of_service(infra_type: InfraType, _traffic: usize, _speed: usize) -> LevelOfService {
+fn level_of_service(infra_type: InfraType, traffic: usize, speed: usize) -> LevelOfService {
     // TODO Total placeholder
     match infra_type {
+        // TODO The rest of these are still placeholder; osmactive isn't implemented in terms of
+        // these categories
         InfraType::SegregatedWide => LevelOfService::High,
         InfraType::OffRoad => LevelOfService::High,
         InfraType::SegregatedNarrow => LevelOfService::Medium,
         InfraType::SharedFootway => LevelOfService::Medium,
         InfraType::CycleLane => LevelOfService::Low,
-        InfraType::MixedTraffic => LevelOfService::Low,
-        InfraType::Unknown => LevelOfService::Low,
+        // Treat Unknown like MixedTraffic, or like CycleLane?
+        InfraType::MixedTraffic | InfraType::Unknown => {
+            if speed <= 20 && traffic < 2000 {
+                LevelOfService::High
+            } else if speed == 30 && traffic < 1000 {
+                LevelOfService::High
+            } else if speed <= 20 && traffic < 4000 {
+                LevelOfService::Medium
+            } else if speed == 30 && traffic < 2000 {
+                LevelOfService::Medium
+            } else if speed == 40 && traffic < 1000 {
+                LevelOfService::Medium
+            } else if speed <= 30 {
+                LevelOfService::Low
+            } else if speed == 40 && traffic < 2000 {
+                LevelOfService::Low
+            } else if speed == 60 && traffic < 1000 {
+                LevelOfService::Low
+            } else {
+                LevelOfService::ShouldNotBeUsed
+            }
+        }
     }
 }
 
