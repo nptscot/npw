@@ -20,6 +20,7 @@ mod level_of_service;
 mod mesh_density;
 pub mod od;
 pub mod places;
+mod reachable;
 mod route_snapper;
 mod routes;
 mod stats;

@@ -183,6 +183,11 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = getReachableNetwork)]
+    pub fn get_reachable_network_wasm(&self) -> Result<String, JsValue> {
+        self.get_reachable_network().map_err(err_to_js)
+    }
+
     #[wasm_bindgen(js_name = renderLevelOfService)]
     pub fn render_level_of_service_wasm(&self) -> Result<String, JsValue> {
         self.render_level_of_service().map_err(err_to_js)

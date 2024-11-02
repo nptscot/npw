@@ -131,6 +131,11 @@ export class Backend {
     return JSON.parse(this.inner!.getNetworkBuffer());
   }
 
+  getReachableNetwork(): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.getReachableNetwork());
+  }
+
   private checkReady() {
     if (!this.inner) {
       throw new Error("Backend used without a file loaded");

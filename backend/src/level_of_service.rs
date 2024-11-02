@@ -5,8 +5,8 @@ use serde::Serialize;
 
 use crate::{InfraType, MapModel};
 
-#[derive(Debug, Serialize)]
-enum LevelOfService {
+#[derive(Debug, PartialEq, Serialize)]
+pub enum LevelOfService {
     High,
     Medium,
     Low,
@@ -47,7 +47,7 @@ impl MapModel {
 
 // TODO Implement directly from
 // https://www.transport.gov.scot/media/50323/cycling-by-design-update-2019-final-document-15-september-2021-1.pdf?
-fn level_of_service(infra_type: InfraType, traffic: usize, speed: usize) -> LevelOfService {
+pub fn level_of_service(infra_type: InfraType, traffic: usize, speed: usize) -> LevelOfService {
     // TODO Total placeholder
     match infra_type {
         // TODO The rest of these are still placeholder; osmactive isn't implemented in terms of
@@ -83,7 +83,7 @@ fn level_of_service(infra_type: InfraType, traffic: usize, speed: usize) -> Leve
 }
 
 // TODO Unit test
-fn get_speed_mph(road: &Road) -> usize {
+pub fn get_speed_mph(road: &Road) -> usize {
     if road.osm_tags.is("maxspeed", "national") {
         return if road
             .osm_tags
