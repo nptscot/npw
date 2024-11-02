@@ -1,14 +1,14 @@
 use std::time::Duration;
 
 use geo::{Euclidean, Length};
-use graph::{Road, RoadID};
+use graph::{Road, RoadID, Timer};
 
 use crate::{level_of_service, InfraType, MapModel};
 
 impl MapModel {
     /// After some kind of edit, recalculate edge costs. Overwrites the only router.
-    pub fn recalculate_router(&mut self) {
-        info!("Recalculating router with new edge costs");
+    pub fn recalculate_router(&mut self, timer: &mut Timer) {
+        timer.step("recalculate edge costs");
 
         let infra_types = self.get_infra_types();
         for (idx, road) in self.graph.roads.iter_mut().enumerate() {
@@ -23,6 +23,7 @@ impl MapModel {
             road.cost = vec![cost];
         }
 
+        timer.step("recalculate CH");
         let profile = self.graph.profile_names["bicycle"];
         self.graph.routers[profile.0].update_costs(&self.graph.roads, profile);
     }

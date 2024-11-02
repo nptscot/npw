@@ -3,7 +3,7 @@ use std::sync::Once;
 
 use geo::{Coord, LineString, Polygon};
 use geojson::{Feature, FeatureCollection, Geometry};
-use graph::IntersectionID;
+use graph::{IntersectionID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
@@ -112,8 +112,11 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = recalculateStats)]
-    pub fn recalculate_stats_wasm(&self) -> Result<String, JsValue> {
-        self.recalculate_stats().map_err(err_to_js)
+    pub fn recalculate_stats_wasm(&mut self) -> Result<String, JsValue> {
+        let mut timer = Timer::new("recalculate after edits", None);
+        let result = self.recalculate_stats(&mut timer).map_err(err_to_js);
+        timer.done();
+        result
     }
 
     #[wasm_bindgen(js_name = toSavefile)]

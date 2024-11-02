@@ -1,12 +1,16 @@
 use anyhow::Result;
 use enum_map::EnumMap;
+use graph::Timer;
 
 use crate::{InfraType, MapModel};
 
 impl MapModel {
     /// After any edit, calculate summary stats. Returns JSON.
-    // TODO Bake in OD data, stop plumbing it from the frontend
-    pub fn recalculate_stats(&self) -> Result<String> {
+    pub fn recalculate_stats(&mut self, timer: &mut Timer) -> Result<String> {
+        self.recalculate_router(timer);
+
+        timer.step("calculate OD routes and stats");
+
         let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();
         let mut count_off_network = 0;
         let mut total_count = 0;
