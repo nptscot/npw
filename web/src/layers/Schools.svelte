@@ -2,14 +2,26 @@
   import { GeoJSON, hoverStateFilter, CircleLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import LayerControls from "./LayerControls.svelte";
-  import { backend } from "../stores";
+  import { backend, percent, type Schools } from "../stores";
 
   let show = false;
-  let firstLoad = false;
 
-  $: if (show) {
-    firstLoad = true;
+  let data: Schools = {
+    type: "FeatureCollection",
+    features: [],
+  };
+
+  async function recalc() {
+    if ($backend) {
+      data = await $backend.getSchools();
+    }
   }
+
+  $: if (show && data.features.length == 0) {
+    recalc();
+  }
+
+  $: reachable = data.features.filter((f) => f.properties.reachable).length;
 </script>
 
 <LayerControls>
@@ -17,25 +29,33 @@
     <input type="checkbox" bind:checked={show} />
     Schools
   </label>
+
+  {#if show}
+    <button on:click={recalc}>Recalculate</button>
+    <p>
+      {reachable.toLocaleString()} / {data.features.length.toLocaleString()} ({percent(
+        reachable,
+        data.features.length,
+      )}) reachable
+    </p>
+  {/if}
 </LayerControls>
 
-{#if $backend && firstLoad}
-  {#await $backend.getSchools() then data}
-    <GeoJSON {data} generateId>
-      <CircleLayer
-        manageHoverState
-        paint={{
-          "circle-color": "black",
-          "circle-radius": hoverStateFilter(5, 8),
-        }}
-        layout={{
-          visibility: show ? "visible" : "none",
-        }}
-      >
-        <Popup openOn="hover" let:props>
-          {props.name} is a {props.kind} school with {props.pupils} pupils
-        </Popup>
-      </CircleLayer>
-    </GeoJSON>
-  {/await}
-{/if}
+<GeoJSON {data} generateId>
+  <CircleLayer
+    manageHoverState
+    paint={{
+      "circle-color": ["case", ["get", "reachable"], "green", "red"],
+      "circle-radius": hoverStateFilter(5, 8),
+    }}
+    layout={{
+      visibility: show ? "visible" : "none",
+    }}
+  >
+    <Popup openOn="hover" let:props>
+      {props.name} is a {props.kind} school with {props.pupils} pupils. It {props.reachable
+        ? "is"
+        : "is not"} reachable.
+    </Popup>
+  </CircleLayer>
+</GeoJSON>

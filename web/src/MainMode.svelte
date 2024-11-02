@@ -51,7 +51,7 @@
 
   async function clearAll() {
     if (window.confirm("Clear everything? You can't undo this")) {
-      await $backend.clearAllRoutes();
+      await $backend?.clearAllRoutes();
       await autosave();
       await recalc();
     }

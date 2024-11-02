@@ -15,7 +15,7 @@
   };
 
   async function recalc() {
-    data = await $backend!.getReachableNetwork();
+    data = await $backend!.renderReachableNetwork();
   }
 
   $: if (show && data.features.length == 0) {

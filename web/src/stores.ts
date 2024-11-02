@@ -2,7 +2,7 @@ import type { Map } from "maplibre-gl";
 import { get, writable, type Writable } from "svelte/store";
 import { type Backend } from "./worker";
 import { JsRouteSnapper } from "route-snapper";
-import type { FeatureCollection } from "geojson";
+import type { FeatureCollection, Point } from "geojson";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 
@@ -90,3 +90,17 @@ export interface Stats {
 }
 // For now, the user manually recalculates this
 export let stats: Writable<Stats | null> = writable(null);
+
+export type Schools = FeatureCollection<
+  Point,
+  { kind: string; name: string; pupils: number; reachable: boolean }
+>;
+
+export function percent(x: number, total: number): string {
+  if (total == 0) {
+    return "0%";
+  }
+
+  let p = Math.round((x / total) * 100);
+  return `${p}%`;
+}

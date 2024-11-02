@@ -68,7 +68,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
     let schools = backend::places::School::from_gj(
         &std::fs::read_to_string("../data_prep/tmp/schools.geojson")?,
         &boundary_wgs84,
-        &graph.mercator,
+        &graph,
     )?;
     let traffic_volumes = read_traffic_volumes("../data_prep/tmp/traffic.gpkg", &graph, timer)?;
 

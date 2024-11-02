@@ -6,13 +6,20 @@ use graph::RoadID;
 
 use crate::{level_of_service, InfraType, MapModel};
 
+pub struct Reachability {
+    pub network: HashSet<RoadID>,
+    pub severances: HashSet<RoadID>,
+    pub reachable: HashSet<RoadID>,
+}
+
 impl MapModel {
-    pub fn get_reachable_network(&self) -> Result<String> {
-        let mut starts: HashSet<RoadID> = HashSet::new();
+    pub fn get_reachable_network(&self) -> Reachability {
+        let mut network: HashSet<RoadID> = HashSet::new();
         let mut severances: HashSet<RoadID> = HashSet::new();
+        let mut reachable: HashSet<RoadID> = HashSet::new();
+
         let mut visited: HashSet<RoadID> = HashSet::new();
         let mut queue: Vec<RoadID> = Vec::new();
-        let mut features = Vec::new();
 
         let infra_types = self.get_infra_types();
         for (idx, road) in self.graph.roads.iter().enumerate() {
@@ -21,13 +28,8 @@ impl MapModel {
                 // TODO If a piece of assigned infrastructure is inappropriate and the level of
                 // service is poor, consider it part of the network or not?
                 if *infra_type != InfraType::MixedTraffic {
-                    starts.insert(id);
+                    network.insert(id);
                     queue.push(id);
-                    let mut f = Feature::from(Geometry::from(
-                        &self.graph.mercator.to_wgs84(&road.linestring),
-                    ));
-                    f.set_property("kind", "network");
-                    features.push(f);
                     continue;
                 }
             }
@@ -39,11 +41,6 @@ impl MapModel {
             );
             if los != level_of_service::LevelOfService::High {
                 severances.insert(id);
-                let mut f = Feature::from(Geometry::from(
-                    &self.graph.mercator.to_wgs84(&road.linestring),
-                ));
-                f.set_property("kind", "severance");
-                features.push(f);
             }
         }
 
@@ -56,15 +53,39 @@ impl MapModel {
             visited.insert(r);
 
             let road = &self.graph.roads[r.0];
-            if !starts.contains(&r) {
-                let mut f = Feature::from(Geometry::from(
-                    &self.graph.mercator.to_wgs84(&road.linestring),
-                ));
-                f.set_property("kind", "reachable");
-                features.push(f);
+            if !network.contains(&r) {
+                reachable.insert(r);
             }
             for i in [road.src_i, road.dst_i] {
                 queue.extend(self.graph.intersections[i.0].roads.clone());
+            }
+        }
+
+        Reachability {
+            network,
+            severances,
+            reachable,
+        }
+    }
+
+    pub fn render_reachable_network(&self) -> Result<String> {
+        let mut features = Vec::new();
+        let out = self.get_reachable_network();
+
+        for (kind, list) in [
+            ("network", out.network),
+            ("severance", out.severances),
+            ("reachable", out.reachable),
+        ] {
+            for r in list {
+                let mut f = Feature::from(Geometry::from(
+                    &self
+                        .graph
+                        .mercator
+                        .to_wgs84(&self.graph.roads[r.0].linestring),
+                ));
+                f.set_property("kind", kind);
+                features.push(f);
             }
         }
 

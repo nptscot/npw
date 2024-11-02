@@ -1,6 +1,11 @@
 import init, { MapModel } from "backend";
-import type { Position, Feature, Polygon, FeatureCollection } from "geojson";
-import type { RouteGJ, EvaluateODOut, Stats } from "./stores";
+import type {
+  Position,
+  Feature,
+  Polygon,
+  FeatureCollection,
+} from "geojson";
+import type { RouteGJ, EvaluateODOut, Stats, Schools } from "./stores";
 
 export class Backend {
   inner: MapModel | null;
@@ -121,7 +126,7 @@ export class Backend {
     this.inner!.loadSavefile(contents);
   }
 
-  getSchools(): FeatureCollection {
+  getSchools(): Schools {
     this.checkReady();
     return JSON.parse(this.inner!.getSchools());
   }
@@ -131,9 +136,9 @@ export class Backend {
     return JSON.parse(this.inner!.getNetworkBuffer());
   }
 
-  getReachableNetwork(): FeatureCollection {
+  renderReachableNetwork(): FeatureCollection {
     this.checkReady();
-    return JSON.parse(this.inner!.getReachableNetwork());
+    return JSON.parse(this.inner!.renderReachableNetwork());
   }
 
   private checkReady() {
