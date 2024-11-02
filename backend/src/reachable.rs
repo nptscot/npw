@@ -33,7 +33,7 @@ impl MapModel {
                 }
             }
 
-            if self.level_of_service(id) != LevelOfService::High {
+            if self.los[idx] != LevelOfService::High {
                 severances.insert(id);
             }
         }

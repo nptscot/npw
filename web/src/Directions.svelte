@@ -24,7 +24,6 @@
       }
       lengthByType[step.infra_type] += step.length;
     }
-    console.log(lengthByType);
     let total = 0;
     for (let length of Object.values(lengthByType)) {
       total += length;

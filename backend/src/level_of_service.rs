@@ -5,7 +5,7 @@ use serde::Serialize;
 
 use crate::{InfraType, MapModel};
 
-#[derive(Debug, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
 pub enum LevelOfService {
     High,
     Medium,
@@ -22,7 +22,7 @@ impl MapModel {
             let mut f = Feature::from(Geometry::from(
                 &self.graph.mercator.to_wgs84(&road.linestring),
             ));
-            f.set_property("los", serde_json::to_value(self.level_of_service(id))?);
+            f.set_property("los", serde_json::to_value(self.los[idx])?);
             f.set_property("infra_type", serde_json::to_value(self.get_infra_type(id))?);
             f.set_property("traffic", self.traffic_volumes[idx]);
             f.set_property("speed", self.speeds[idx]);
@@ -38,7 +38,7 @@ impl MapModel {
 
     // TODO Implement directly from
     // https://www.transport.gov.scot/media/50323/cycling-by-design-update-2019-final-document-15-september-2021-1.pdf?
-    pub fn level_of_service(&self, r: RoadID) -> LevelOfService {
+    pub fn calculate_level_of_service(&self, r: RoadID) -> LevelOfService {
         let infra_type = self.get_infra_type(r);
         let speed = self.speeds[r.0];
         let traffic = self.traffic_volumes[r.0];

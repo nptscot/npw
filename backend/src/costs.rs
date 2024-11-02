@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use geo::{Euclidean, Length};
-use graph::{Road, RoadID, Timer};
+use graph::{Road, Timer};
 
 use crate::{LevelOfService, MapModel};
 
@@ -12,7 +12,7 @@ impl MapModel {
 
         let mut costs = Vec::new();
         for (idx, road) in self.graph.roads.iter().enumerate() {
-            costs.push(edge_cost(road, self.level_of_service(RoadID(idx))));
+            costs.push(edge_cost(road, self.los[idx]));
         }
         for (road, cost) in self.graph.roads.iter_mut().zip(costs.into_iter()) {
             road.cost = vec![cost];

@@ -51,8 +51,11 @@ pub struct MapModel {
     traffic_volumes: Vec<usize>,
     // mph
     speeds: Vec<usize>,
+    // Derived things maintained by recalculate_after_edits
     #[serde(skip_serializing, skip_deserializing, default)]
     infra_types: Vec<Option<InfraType>>,
+    #[serde(skip_serializing, skip_deserializing, default)]
+    los: Vec<LevelOfService>,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -92,6 +95,9 @@ impl MapModel {
             .map(level_of_service::get_speed_mph)
             .collect();
         let infra_types = std::iter::repeat(None).take(graph.roads.len()).collect();
+        let los = std::iter::repeat(LevelOfService::ShouldNotBeUsed)
+            .take(graph.roads.len())
+            .collect();
         Self {
             graph,
             routes: HashMap::new(),
@@ -103,6 +109,7 @@ impl MapModel {
             traffic_volumes,
             speeds,
             infra_types,
+            los,
         }
     }
 
@@ -116,6 +123,10 @@ impl MapModel {
                 self.infra_types[road.0] = Some(route.infra_type);
             }
         }
+
+        self.los = (0..self.graph.roads.len())
+            .map(|idx| self.calculate_level_of_service(RoadID(idx)))
+            .collect();
     }
 
     pub fn get_infra_type(&self, r: RoadID) -> InfraType {
