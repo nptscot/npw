@@ -6,6 +6,11 @@
   import { constructMatchExpression } from "svelte-utils/map";
 
   let show = false;
+  let firstLoad = false;
+
+  $: if (show) {
+    firstLoad = true;
+  }
 </script>
 
 <LayerControls>
@@ -15,7 +20,7 @@
   </label>
 </LayerControls>
 
-{#if $backend}
+{#if $backend && firstLoad}
   {#await $backend.renderLevelOfService() then data}
     <GeoJSON {data} generateId>
       <LineLayer

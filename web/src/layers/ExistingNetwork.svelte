@@ -7,6 +7,11 @@
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;
+  let firstLoad = false;
+
+  $: if (show) {
+    firstLoad = true;
+  }
 </script>
 
 <LayerControls>
@@ -16,7 +21,7 @@
   </label>
 </LayerControls>
 
-{#if $backend}
+{#if $backend && firstLoad}
   {#await $backend.classifyExistingNetwork() then data}
     <GeoJSON {data} generateId>
       <LineLayer
