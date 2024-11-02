@@ -101,6 +101,11 @@ export class Backend {
     return JSON.parse(this.inner!.classifyExistingNetwork());
   }
 
+  importExistingRoutes(): number {
+    this.checkReady();
+    return this.inner!.importExistingRoutes();
+  }
+
   toSavefile(): string {
     this.checkReady();
     return this.inner!.toSavefile();
@@ -116,9 +121,9 @@ export class Backend {
     return JSON.parse(this.inner!.getSchools());
   }
 
-  getNetworkBuffer(includeExisting: boolean): FeatureCollection {
+  getNetworkBuffer(): FeatureCollection {
     this.checkReady();
-    return JSON.parse(this.inner!.getNetworkBuffer(includeExisting));
+    return JSON.parse(this.inner!.getNetworkBuffer());
   }
 
   private checkReady() {

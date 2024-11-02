@@ -18,6 +18,9 @@ export let boundaryName = writable("");
 export let mode: Writable<Mode> = writable({ kind: "main" });
 export let map: Writable<Map | null> = writable(null);
 
+// When the state is modified in main mode, trigger it to refresh the routes
+export let mainModeRoutesChanged = writable(0);
+
 // TODO Does this need to be a store?
 export let backend: Writable<Backend | null> = writable(null);
 export let routeSnapper: Writable<JsRouteSnapper | null> = writable(null);

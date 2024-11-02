@@ -102,22 +102,13 @@ impl MapModel {
     }
 
     /// All roads within some predefined buffer of the defined (and maybe existing) network
-    pub fn get_network_buffer(&self, include_existing: bool) -> Vec<RoadID> {
+    pub fn get_network_buffer(&self) -> Vec<RoadID> {
         let mut starts = HashSet::new();
         for route in self.routes.values() {
             for r in &route.roads {
                 let road = &self.graph.roads[r.0];
                 starts.insert(road.src_i);
                 starts.insert(road.dst_i);
-            }
-        }
-
-        if include_existing {
-            for road in &self.graph.roads {
-                if existing::classify(&road.osm_tags).is_some() {
-                    starts.insert(road.src_i);
-                    starts.insert(road.dst_i);
-                }
             }
         }
 

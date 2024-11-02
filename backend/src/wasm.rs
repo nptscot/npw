@@ -138,6 +138,11 @@ impl MapModel {
         self.classify_existing_network().map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = importExistingRoutes)]
+    pub fn import_existing_routes_wasm(&mut self) -> usize {
+        self.import_existing_routes()
+    }
+
     #[wasm_bindgen(js_name = getSchools)]
     pub fn get_schools(&self) -> Result<String, JsValue> {
         serde_json::to_string(&FeatureCollection {
@@ -153,12 +158,12 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = getNetworkBuffer)]
-    pub fn get_network_buffer_wasm(&self, include_existing: bool) -> Result<String, JsValue> {
+    pub fn get_network_buffer_wasm(&self) -> Result<String, JsValue> {
         serde_json::to_string(&FeatureCollection {
             bbox: None,
             foreign_members: None,
             features: self
-                .get_network_buffer(include_existing)
+                .get_network_buffer()
                 .into_iter()
                 .map(|r| {
                     Feature::from(Geometry::from(

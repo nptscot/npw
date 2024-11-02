@@ -7,7 +7,6 @@
   // TODO Does this belong as a layer like this, or a debug mode, in the short term?
 
   let show = false;
-  let includeExisting = false;
 
   let data: FeatureCollection = {
     type: "FeatureCollection",
@@ -15,7 +14,7 @@
   };
 
   async function recalc() {
-    data = await $backend!.getNetworkBuffer(includeExisting);
+    data = await $backend!.getNetworkBuffer();
   }
 
   $: if (show && data.features.length == 0) {
@@ -30,14 +29,6 @@
   </label>
 
   {#if show}
-    <label>
-      <input
-        type="checkbox"
-        bind:checked={includeExisting}
-        on:change={recalc}
-      />
-      Include existing network
-    </label>
     <button on:click={recalc}>Recalculate</button>
   {/if}
 </LayerControls>

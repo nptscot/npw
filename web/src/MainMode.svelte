@@ -7,7 +7,13 @@
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { SplitComponent } from "svelte-utils/three_column_layout";
-  import { backend, mode, infraTypeMapping, boundaryName } from "./stores";
+  import {
+    backend,
+    mode,
+    infraTypeMapping,
+    boundaryName,
+    mainModeRoutesChanged,
+  } from "./stores";
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
@@ -17,9 +23,15 @@
   import ChangeArea from "./ChangeArea.svelte";
 
   let gj: FeatureCollection | null = null;
-  onMount(async () => {
+  onMount(recalc);
+
+  $: if ($mainModeRoutesChanged > 0) {
+    recalc();
+  }
+
+  async function recalc() {
     gj = await $backend!.renderRoutes();
-  });
+  }
 
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "r") {
