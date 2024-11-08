@@ -86,7 +86,8 @@ export type EvaluateODOut = FeatureCollection & {
 };
 
 export interface Stats {
-  od_percents: { [name: string]: number };
+  od_percents_infra_type: { [name: string]: number };
+  od_percents_los: { [name: string]: number };
   average_weighted_directness: number;
 }
 // For now, the user manually recalculates this

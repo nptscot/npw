@@ -1,11 +1,12 @@
 use anyhow::Result;
+use enum_map::Enum;
 use geojson::{Feature, FeatureCollection, Geometry};
 use graph::{Road, RoadID};
 use serde::Serialize;
 
 use crate::{InfraType, MapModel};
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Enum, Serialize)]
 pub enum LevelOfService {
     High,
     Medium,

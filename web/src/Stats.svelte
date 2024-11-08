@@ -4,6 +4,7 @@
 
   async function recalc() {
     $stats = await $backend!.recalculateStats();
+    console.log($stats);
   }
 
   onMount(async () => {
@@ -22,10 +23,21 @@
     )}x
   </p>
 
-  <p>Percent of demand by infrastructure type:</p>
-  <ul>
-    {#each Object.entries($stats.od_percents) as [key, percent]}
-      <li>{key}: {(100 * percent).toFixed(1)}%</li>
-    {/each}
-  </ul>
+  <details>
+    <summary>Percent of demand by infrastructure type</summary>
+    <ul>
+      {#each Object.entries($stats.od_percents_infra_type) as [key, percent]}
+        <li>{key}: {(100 * percent).toFixed(1)}%</li>
+      {/each}
+    </ul>
+  </details>
+
+  <details>
+    <summary>Percent of demand by level of service:</summary>
+    <ul>
+      {#each Object.entries($stats.od_percents_los) as [key, percent]}
+        <li>{key}: {(100 * percent).toFixed(1)}%</li>
+      {/each}
+    </ul>
+  </details>
 {/if}
