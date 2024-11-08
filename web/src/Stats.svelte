@@ -4,7 +4,6 @@
 
   async function recalc() {
     $stats = await $backend!.recalculateStats();
-    console.log($stats);
   }
 
   onMount(async () => {

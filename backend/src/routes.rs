@@ -1,10 +1,12 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
+use geo::LineString;
 use geojson::{feature::Id, Feature, GeoJson, Geometry};
-use graph::{Graph, Road, RoadID};
+use graph::{Graph, RoadID};
 use serde::Serialize;
 
+use crate::join_lines::{Dir, KeyedLineString};
 use crate::{InfraType, MapModel, Route};
 
 impl MapModel {
@@ -70,13 +72,13 @@ impl MapModel {
 
     /// Returns the number of edits
     pub fn import_existing_routes(&mut self) -> usize {
+        // Find individual segments to import
+        let mut pieces = Vec::new();
         let used_roads: HashSet<RoadID> = self
             .routes
             .values()
             .flat_map(|route| route.roads.clone())
             .collect();
-
-        let mut changes = 0;
         for (idx, road) in self.graph.roads.iter().enumerate() {
             let road_id = RoadID(idx);
             if used_roads.contains(&road_id) {
@@ -92,22 +94,37 @@ impl MapModel {
                 continue;
             }
 
-            // TODO We could group contiguous segments into larger routes, to be nicer
+            pieces.push(KeyedLineString {
+                linestring: road.linestring.clone(),
+                ids: vec![(road_id, Dir::Forwards)],
+                key: infra_type,
+            });
+        }
+
+        // Group them in hopefully meaningful chunks
+        // TODO Could try more aggressive joining after this, but this one seems to work fine so
+        // far. Although oddly it seems to handle more than just degree 2...
+        pieces = crate::join_lines::collapse_degree_2(pieces);
+        let changes = pieces.len();
+
+        for line in pieces {
             let route = Route {
-                feature: make_route_snapper_feature(&self.graph, road),
-                name: road
-                    .osm_tags
-                    .get("name")
-                    .cloned()
+                feature: make_route_snapper_feature(&self.graph, &line.ids, &line.linestring),
+                // Pick the first name
+                // TODO Does this short-circuit?
+                name: line
+                    .ids
+                    .iter()
+                    .filter_map(|(r, _)| self.graph.roads[r.0].osm_tags.get("name").cloned())
+                    .next()
                     .unwrap_or_else(String::new),
                 notes: "imported from existing network".to_string(),
-                roads: vec![road_id],
-                infra_type,
+                roads: line.ids.into_iter().map(|(r, _)| r).collect(),
+                infra_type: line.key,
             };
             let route_id = self.id_counter;
             self.id_counter += 1;
             self.routes.insert(route_id, route);
-            changes += 1;
         }
 
         self.recalculate_after_edits();
@@ -116,45 +133,52 @@ impl MapModel {
 }
 
 // Mimic enough of what the route snapper creates, so the segment can be edited in the web app
-fn make_route_snapper_feature(graph: &Graph, road: &Road) -> Feature {
-    let mut f = Feature::from(Geometry::from(&graph.mercator.to_wgs84(&road.linestring)));
-    let pt1 = graph
-        .mercator
-        .to_wgs84(&graph.intersections[road.src_i.0].point);
-    let pt2 = graph
-        .mercator
-        .to_wgs84(&graph.intersections[road.dst_i.0].point);
+fn make_route_snapper_feature(
+    graph: &Graph,
+    ids: &Vec<(RoadID, Dir)>,
+    linestring: &LineString,
+) -> Feature {
+    let mut intersections = Vec::new();
+    for (r, dir) in ids {
+        let road = &graph.roads[r.0];
+        if matches!(dir, Dir::Forwards) {
+            intersections.push(road.src_i);
+            intersections.push(road.dst_i);
+        } else {
+            intersections.push(road.dst_i);
+            intersections.push(road.src_i);
+        }
+    }
+    intersections.dedup();
 
-    f.set_property(
-        "waypoints",
-        serde_json::Value::Array(vec![
+    let mut f = Feature::from(Geometry::from(&graph.mercator.to_wgs84(linestring)));
+
+    // We don't know what waypoints we could leave out without doing some kind of iterative
+    // approach. For now, just include all of them.
+    let waypoints = intersections
+        .iter()
+        .map(|i| {
+            let pt = graph.mercator.to_wgs84(&graph.intersections[i.0].point);
             serde_json::to_value(&RouteWaypoint {
-                lon: pt1.x(),
-                lat: pt1.y(),
+                lon: pt.x(),
+                lat: pt.y(),
                 snapped: true,
             })
-            .unwrap(),
-            serde_json::to_value(&RouteWaypoint {
-                lon: pt2.x(),
-                lat: pt2.y(),
-                snapped: true,
-            })
-            .unwrap(),
-        ]),
-    );
-    f.set_property(
-        "full_path",
-        serde_json::Value::Array(vec![
+            .unwrap()
+        })
+        .collect();
+    f.set_property("waypoints", serde_json::Value::Array(waypoints));
+
+    let full_path = intersections
+        .iter()
+        .map(|i| {
             serde_json::to_value(&JsonNode {
-                snapped: road.src_i.0 as u32,
+                snapped: i.0 as u32,
             })
-            .unwrap(),
-            serde_json::to_value(&JsonNode {
-                snapped: road.dst_i.0 as u32,
-            })
-            .unwrap(),
-        ]),
-    );
+            .unwrap()
+        })
+        .collect();
+    f.set_property("full_path", serde_json::Value::Array(full_path));
 
     f
 }

@@ -7,11 +7,18 @@ use petgraph::graphmap::UnGraphMap;
 use crate::InfraType;
 
 // TODO For simplicty right now, hardcodes an ID and key type. Make generic later.
+// TODO Upstream in geo or utils
+
+#[derive(Clone)]
+pub enum Dir {
+    Forwards,
+    Backwards,
+}
 
 /// A linestring with a list of IDs in order and some key
 pub struct KeyedLineString {
     pub linestring: LineString,
-    pub ids: Vec<RoadID>,
+    pub ids: Vec<(RoadID, Dir)>,
     pub key: InfraType,
 }
 
@@ -29,9 +36,9 @@ impl HashedPoint {
     }
 }
 
-// TODO Copied from polygon-width; move to utils or upstream in geo
 /// Takes a bunch of individual linestrings and joins them together greedily. Only joins lines with
 /// a matching key.
+// TODO Seems to hang, keep it around for later, but unused right now
 #[allow(unused)]
 pub fn join_linestrings(mut lines: Vec<KeyedLineString>) -> Vec<KeyedLineString> {
     loop {
@@ -57,7 +64,6 @@ pub fn join_linestrings(mut lines: Vec<KeyedLineString>) -> Vec<KeyedLineString>
 }
 
 /// Find all linestrings that meet at one end and join them. Only joins lines with a matching key.
-#[allow(unused)]
 pub fn collapse_degree_2(mut lines: Vec<KeyedLineString>) -> Vec<KeyedLineString> {
     // TODO I think this is doable in one pass
     loop {
@@ -168,21 +174,19 @@ fn join_path(lines: Vec<KeyedLineString>, path: Vec<EdgeIdx>) -> Vec<KeyedLineSt
             points.extend(next_points);
 
             ids.reverse();
-            ids.pop();
+            flip_direction(&mut ids);
             ids.extend(next_ids);
         } else if pt1 == pt4 {
             next_points.pop();
             next_points.extend(points);
             points = next_points;
 
-            ids.pop();
             next_ids.extend(ids);
             ids = next_ids;
         } else if pt2 == pt3 {
             points.pop();
             points.extend(next_points);
 
-            ids.pop();
             ids.extend(next_ids);
         } else if pt2 == pt4 {
             next_points.reverse();
@@ -190,7 +194,7 @@ fn join_path(lines: Vec<KeyedLineString>, path: Vec<EdgeIdx>) -> Vec<KeyedLineSt
             points.extend(next_points);
 
             next_ids.reverse();
-            ids.pop();
+            flip_direction(&mut next_ids);
             ids.extend(next_ids);
         } else {
             unreachable!()
@@ -231,4 +235,13 @@ fn number_shared_endpoints(line1: &KeyedLineString, line2: &KeyedLineString) -> 
         line2.key,
     ));
     4 - set.len()
+}
+
+fn flip_direction(ids: &mut Vec<(RoadID, Dir)>) {
+    for pair in ids {
+        pair.1 = match pair.1 {
+            Dir::Forwards => Dir::Backwards,
+            Dir::Backwards => Dir::Forwards,
+        }
+    }
 }
