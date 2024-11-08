@@ -1,10 +1,5 @@
 import init, { MapModel } from "backend";
-import type {
-  Position,
-  Feature,
-  Polygon,
-  FeatureCollection,
-} from "geojson";
+import type { Position, Feature, Polygon, FeatureCollection } from "geojson";
 import type { RouteGJ, EvaluateODOut, Stats, Schools } from "./stores";
 
 export class Backend {

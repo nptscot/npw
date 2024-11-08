@@ -56,6 +56,7 @@ export interface Step {
   length: number;
   way: string;
   infra_type: string;
+  los: string;
 }
 
 export async function autosave() {

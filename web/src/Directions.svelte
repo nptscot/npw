@@ -1,38 +1,42 @@
 <script lang="ts">
-  import type { RouteGJ } from "./stores";
+  import type { RouteGJ, Step } from "./stores";
 
   export let gj: RouteGJ;
 
-  function infraTypeChanges(gj: RouteGJ): number {
+  let byInfraType = (step: Step) => step.infra_type;
+  let byLos = (step: Step) => step.los;
+
+  function numChanges(gj: RouteGJ, key: (step: Step) => string): number {
     let count = 0;
     // No windows(2)?
     for (let i = 0; i < gj.directions.length - 1; i++) {
-      let t1 = gj.directions[i].infra_type;
-      let t2 = gj.directions[i + 1].infra_type;
-      if (t1 != t2) {
+      let x1 = key(gj.directions[i]);
+      let x2 = key(gj.directions[i + 1]);
+      if (x1 != x2) {
         count++;
       }
     }
     return count;
   }
 
-  function infraTypePercentages(gj: RouteGJ): string {
-    let lengthByType: { [name: string]: number } = {};
+  function percentages(gj: RouteGJ, key: (step: Step) => string): string {
+    let lengthByKey: { [name: string]: number } = {};
     for (let step of gj.directions) {
-      if (!Object.hasOwn(lengthByType, step.infra_type)) {
-        lengthByType[step.infra_type] = 0;
+      let x = key(step);
+      if (!Object.hasOwn(lengthByKey, x)) {
+        lengthByKey[x] = 0;
       }
-      lengthByType[step.infra_type] += step.length;
+      lengthByKey[x] += step.length;
     }
     let total = 0;
-    for (let length of Object.values(lengthByType)) {
+    for (let length of Object.values(lengthByKey)) {
       total += length;
     }
 
     let results = [];
-    for (let [infraType, length] of Object.entries(lengthByType)) {
+    for (let [x, length] of Object.entries(lengthByKey).toSorted((a, b) => b[1] - a[1])) {
       let percent = Math.round((length / total) * 100);
-      results.push(`${percent}% ${infraType}`);
+      results.push(`${percent}% ${x}`);
     }
     return results.join(", ");
   }
@@ -43,8 +47,17 @@
   longer than straight line
 </p>
 
-<p>{infraTypeChanges(gj)} changes in infrastructure type</p>
-<p>By length: {infraTypePercentages(gj)}</p>
+<hr />
+
+<p>{numChanges(gj, byInfraType)} changes in infrastructure type</p>
+<p>By length: {percentages(gj, byInfraType)}</p>
+
+<hr />
+
+<p>{numChanges(gj, byLos)} changes in level of service</p>
+<p>By length: {percentages(gj, byLos)}</p>
+
+<hr />
 
 <details>
   <summary>Route directions</summary>

@@ -4,7 +4,7 @@ use geojson::{Feature, FeatureCollection, Geometry};
 use graph::PathStep;
 use serde::Serialize;
 
-use crate::{InfraType, MapModel};
+use crate::{InfraType, LevelOfService, MapModel};
 
 impl MapModel {
     pub fn evaluate_route(&self, pt1: Coord, pt2: Coord) -> Result<String> {
@@ -23,6 +23,7 @@ impl MapModel {
                     length: road.length_meters,
                     way: road.way.to_string(),
                     infra_type: self.get_infra_type(id),
+                    los: self.los[id.0],
                 });
             }
         }
@@ -56,4 +57,5 @@ struct Step {
     length: f64,
     way: String,
     infra_type: InfraType,
+    los: LevelOfService,
 }
