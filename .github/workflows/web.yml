@@ -21,10 +21,10 @@ jobs:
         uses: jetli/wasm-pack-action@v0.4.0
 
       - name: Cache WASM build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: backend/target
-          key: doesnt-matter-share-everything
+          key: cargo-${{ hashFiles('backend/Cargo.lock') }}
 
       - name: Build web app
         run: |
