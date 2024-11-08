@@ -7,6 +7,7 @@
   // TODO Does this belong as a layer like this, or a debug mode, in the short term?
 
   let show = false;
+  let firstLoad = true;
 
   let data: FeatureCollection = {
     type: "FeatureCollection",
@@ -17,7 +18,8 @@
     data = await $backend!.getNetworkBuffer();
   }
 
-  $: if (show && data.features.length == 0) {
+  $: if (show && firstLoad) {
+    firstLoad = false;
     recalc();
   }
 </script>
