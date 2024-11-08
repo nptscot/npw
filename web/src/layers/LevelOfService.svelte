@@ -4,6 +4,7 @@
   import { Popup } from "svelte-utils/map";
   import LayerControls from "./LayerControls.svelte";
   import { constructMatchExpression } from "svelte-utils/map";
+  import { QualitativeLegend } from "../common";
 
   let show = false;
   let firstLoad = false;
@@ -11,6 +12,13 @@
   $: if (show) {
     firstLoad = true;
   }
+
+  let colors = {
+    High: "mediumseagreen",
+    Medium: "orange",
+    Low: "red",
+    ShouldNotBeUsed: "brown",
+  };
 </script>
 
 <LayerControls>
@@ -18,6 +26,10 @@
     <input type="checkbox" bind:checked={show} />
     Level of Service
   </label>
+
+  {#if show}
+    <QualitativeLegend {colors} />
+  {/if}
 </LayerControls>
 
 {#if $backend && firstLoad}
@@ -31,12 +43,7 @@
           "line-width": hoverStateFilter(5, 7),
           "line-color": constructMatchExpression(
             ["get", "los"],
-            {
-              High: "mediumseagreen",
-              Medium: "orange",
-              Low: "red",
-              ShouldNotBeUsed: "brown",
-            },
+            colors,
             "black",
           ),
           "line-opacity": 0.8,

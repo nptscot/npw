@@ -4,6 +4,7 @@
   import LayerControls from "./LayerControls.svelte";
   import type { FeatureCollection } from "geojson";
   import { constructMatchExpression } from "svelte-utils/map";
+  import { QualitativeLegend } from "../common";
 
   // TODO Does this belong as a layer like this, or a debug mode, in the short term?
 
@@ -21,6 +22,12 @@
   $: if (show && data.features.length == 0) {
     recalc();
   }
+
+  let colors = {
+    network: "green",
+    reachable: "purple",
+    severance: "red",
+  };
 </script>
 
 <LayerControls>
@@ -31,6 +38,7 @@
 
   {#if show}
     <button on:click={recalc}>Recalculate</button>
+    <QualitativeLegend {colors} />
   {/if}
 </LayerControls>
 
@@ -41,15 +49,7 @@
     }}
     paint={{
       "line-width": hoverStateFilter(5, 7),
-      "line-color": constructMatchExpression(
-        ["get", "kind"],
-        {
-          network: "green",
-          reachable: "purple",
-          severance: "red",
-        },
-        "black",
-      ),
+      "line-color": constructMatchExpression(["get", "kind"], colors, "black"),
       "line-opacity": 0.8,
     }}
     manageHoverState

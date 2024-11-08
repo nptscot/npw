@@ -1,3 +1,4 @@
+export { default as QualitativeLegend } from "./QualitativeLegend.svelte";
 import { constructMatchExpression } from "svelte-utils/map";
 import { infraTypes } from "../stores";
 

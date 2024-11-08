@@ -34,7 +34,9 @@
     }
 
     let results = [];
-    for (let [x, length] of Object.entries(lengthByKey).toSorted((a, b) => b[1] - a[1])) {
+    for (let [x, length] of Object.entries(lengthByKey).toSorted(
+      (a, b) => b[1] - a[1],
+    )) {
       let percent = Math.round((length / total) * 100);
       results.push(`${percent}% ${x}`);
     }
