@@ -90,6 +90,7 @@ export interface Stats {
   od_percents_los: { [name: string]: number };
   average_weighted_directness: number;
   percent_reachable_schools: number;
+  percent_reachable_gp_hospitals: number;
 }
 // For now, the user manually recalculates this
 export let stats: Writable<Stats | null> = writable(null);
@@ -97,6 +98,11 @@ export let stats: Writable<Stats | null> = writable(null);
 export type Schools = FeatureCollection<
   Point,
   { kind: string; name: string; pupils: number; reachable: boolean }
+>;
+
+export type GPHospitals = FeatureCollection<
+  Point,
+  { kind: string; name: string; reachable: boolean }
 >;
 
 export function percent(x: number, total: number): string {

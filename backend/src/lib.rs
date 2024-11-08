@@ -47,6 +47,7 @@ pub struct MapModel {
     desire_lines: Vec<(String, String, usize)>,
 
     schools: Vec<places::School>,
+    gp_hospitals: Vec<places::GPHospital>,
 
     // Per RoadID
     traffic_volumes: Vec<usize>,
@@ -90,6 +91,7 @@ impl MapModel {
         zones: HashMap<String, od::Zone>,
         desire_lines: Vec<(String, String, usize)>,
         schools: Vec<places::School>,
+        gp_hospitals: Vec<places::GPHospital>,
         traffic_volumes: Vec<usize>,
     ) -> Self {
         let speeds = graph
@@ -109,6 +111,7 @@ impl MapModel {
             zones,
             desire_lines,
             schools,
+            gp_hospitals,
             traffic_volumes,
             speeds,
             infra_types,

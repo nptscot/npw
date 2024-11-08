@@ -37,17 +37,23 @@ function town_centres {
 
 function gp_and_hospitals {
   # Manually register and download GeoJSON from https://data.spatialhub.scot/dataset/gp_practices-is
-  ogr2ogr ../web/public/gp_practices.geojson \
+  ogr2ogr tmp/gp_practices.geojson \
           -t_srs EPSG:4326 \
           $1 \
           -sql 'SELECT address AS name FROM "GP_Practices_-_Scotland"'
 
   # Manually register and download GeoJSON from https://data.spatialhub.scot/dataset/gp_practices-i://data.spatialhub.scot/dataset/nhs_hospitals-is
-  ogr2ogr ../web/public/hospitals.geojson \
+  ogr2ogr tmp/hospitals.geojson \
           -t_srs EPSG:4326 \
           $2 \
           -sql 'SELECT sitename AS name FROM "NHS_Hospitals_-_Scotland"'
-  # TODO Clean up bboxes and IDs from both
+
+  # The bboxes or something else included are breaking parsing, so clean these up
+  jq '{ type: "FeatureCollection", features: [.features[] | { type: "Feature", geometry: .geometry, properties: { name: .properties.name } }] }' tmp/gp_practices.geojson > tmp.gj
+  mv -f tmp.gj tmp/gp_practices.geojson
+
+  jq '{ type: "FeatureCollection", features: [.features[] | { type: "Feature", geometry: .geometry, properties: { name: .properties.name } }] }' tmp/hospitals.geojson > tmp.gj
+  mv -f tmp.gj tmp/hospitals.geojson
 
   # TODO Consider combining
 }

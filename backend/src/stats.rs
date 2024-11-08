@@ -16,8 +16,19 @@ impl MapModel {
         out.insert(
             "percent_reachable_schools".to_string(),
             percent(
-                self.schools.iter().filter(|s| roads.covers(s.road)).count(),
+                self.schools.iter().filter(|x| roads.covers(x.road)).count(),
                 self.schools.len(),
+            )
+            .into(),
+        );
+        out.insert(
+            "percent_reachable_gp_hospitals".to_string(),
+            percent(
+                self.gp_hospitals
+                    .iter()
+                    .filter(|x| roads.covers(x.road))
+                    .count(),
+                self.gp_hospitals.len(),
             )
             .into(),
         );

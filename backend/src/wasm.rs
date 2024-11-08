@@ -171,6 +171,23 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = getGPHospitals)]
+    pub fn get_gp_hospitals(&self) -> Result<String, JsValue> {
+        // TODO Some kind of caching would make this nicer
+        let roads = self.get_reachable_network();
+
+        serde_json::to_string(&FeatureCollection {
+            bbox: None,
+            foreign_members: None,
+            features: self
+                .gp_hospitals
+                .iter()
+                .map(|x| x.to_gj(&self.graph.mercator, roads.covers(x.road)))
+                .collect(),
+        })
+        .map_err(err_to_js)
+    }
+
     #[wasm_bindgen(js_name = getNetworkBuffer)]
     pub fn get_network_buffer_wasm(&self) -> Result<String, JsValue> {
         serde_json::to_string(&FeatureCollection {

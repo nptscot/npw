@@ -1,6 +1,12 @@
 import init, { MapModel } from "backend";
 import type { Position, Feature, Polygon, FeatureCollection } from "geojson";
-import type { RouteGJ, EvaluateODOut, Stats, Schools } from "./stores";
+import type {
+  RouteGJ,
+  EvaluateODOut,
+  Stats,
+  Schools,
+  GPHospitals,
+} from "./stores";
 
 export class Backend {
   inner: MapModel | null;
@@ -124,6 +130,11 @@ export class Backend {
   getSchools(): Schools {
     this.checkReady();
     return JSON.parse(this.inner!.getSchools());
+  }
+
+  getGpHospitals(): GPHospitals {
+    this.checkReady();
+    return JSON.parse(this.inner!.getGPHospitals());
   }
 
   getNetworkBuffer(): FeatureCollection {

@@ -30,17 +30,17 @@ impl School {
 
     pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
         let mut schools = Vec::new();
-        for s in geojson::de::deserialize_feature_collection_str_to_vec::<SchoolGJ>(gj)? {
-            if boundary_wgs84.contains(&s.geometry) {
-                let point = graph.mercator.to_mercator(&s.geometry);
+        for x in geojson::de::deserialize_feature_collection_str_to_vec::<SchoolGJ>(gj)? {
+            if boundary_wgs84.contains(&x.geometry) {
+                let point = graph.mercator.to_mercator(&x.geometry);
                 let road = graph
                     .snap_to_road(point.into(), graph.profile_names["bicycle"])
                     .road;
                 schools.push(School {
                     point,
-                    kind: s.r#type,
-                    name: s.name,
-                    pupils: s.pupils as usize,
+                    kind: x.r#type,
+                    name: x.name,
+                    pupils: x.pupils as usize,
                     road,
                 });
             }
@@ -57,4 +57,56 @@ struct SchoolGJ {
     r#type: String,
     name: String,
     pupils: f64,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct GPHospital {
+    point: Point,
+    kind: String,
+    name: String,
+    pub road: RoadID,
+}
+
+impl GPHospital {
+    pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
+        let mut f = Feature::from(Geometry::from(&mercator.to_wgs84(&self.point)));
+        f.set_property("kind", self.kind.clone());
+        f.set_property("name", self.name.clone());
+        f.set_property("reachable", reachable);
+        f
+    }
+
+    pub fn from_gj(
+        gp_gj: &str,
+        hospitals_gj: &str,
+        boundary_wgs84: &MultiPolygon,
+        graph: &Graph,
+    ) -> Result<Vec<Self>> {
+        let mut gp_hospitals = Vec::new();
+        for (gj, kind) in [(gp_gj, "GP"), (hospitals_gj, "hospital")] {
+            for x in geojson::de::deserialize_feature_collection_str_to_vec::<GPHospitalGJ>(gj)? {
+                if boundary_wgs84.contains(&x.geometry) {
+                    let point = graph.mercator.to_mercator(&x.geometry);
+                    let road = graph
+                        .snap_to_road(point.into(), graph.profile_names["bicycle"])
+                        .road;
+                    gp_hospitals.push(GPHospital {
+                        point,
+                        kind: kind.to_string(),
+                        name: x.name,
+                        road,
+                    });
+                }
+            }
+        }
+        info!("Matched {} GPs/hospitals", gp_hospitals.len());
+        Ok(gp_hospitals)
+    }
+}
+
+#[derive(Deserialize)]
+struct GPHospitalGJ {
+    #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
+    geometry: Point,
+    name: String,
 }

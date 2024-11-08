@@ -70,6 +70,13 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         &boundary_wgs84,
         &graph,
     )?;
+    timer.step("loading GPs/hospitals");
+    let gp_hospitals = backend::places::GPHospital::from_gj(
+        &std::fs::read_to_string("../data_prep/tmp/gp_practices.geojson")?,
+        &std::fs::read_to_string("../data_prep/tmp/hospitals.geojson")?,
+        &boundary_wgs84,
+        &graph,
+    )?;
     let traffic_volumes = read_traffic_volumes("../data_prep/tmp/traffic.gpkg", &graph, timer)?;
 
     Ok(MapModel::create(
@@ -78,6 +85,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         zones,
         desire_lines,
         schools,
+        gp_hospitals,
         traffic_volumes,
     ))
 }
