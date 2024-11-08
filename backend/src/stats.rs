@@ -7,7 +7,20 @@ use crate::{InfraType, LevelOfService, MapModel};
 impl MapModel {
     /// After any edit, calculate summary stats. Returns JSON.
     pub fn recalculate_stats(&mut self, timer: &mut Timer) -> Result<String> {
+        let mut out = serde_json::Map::new();
+
         self.recalculate_router(timer);
+
+        timer.step("calculate reachable network");
+        let roads = self.get_reachable_network();
+        out.insert(
+            "percent_reachable_schools".to_string(),
+            percent(
+                self.schools.iter().filter(|s| roads.covers(s.road)).count(),
+                self.schools.len(),
+            )
+            .into(),
+        );
 
         timer.step("calculate OD routes and stats");
 
@@ -44,7 +57,6 @@ impl MapModel {
             od_percents_los.insert(format!("{los:?}"), percent(count, total_count).into());
         }
 
-        let mut out = serde_json::Map::new();
         out.insert(
             "od_percents_infra_type".to_string(),
             serde_json::Value::Object(od_percents_infra_type),

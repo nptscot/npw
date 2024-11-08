@@ -12,6 +12,12 @@ pub struct Reachability {
     pub reachable: HashSet<RoadID>,
 }
 
+impl Reachability {
+    pub fn covers(&self, r: RoadID) -> bool {
+        self.network.contains(&r) || self.reachable.contains(&r)
+    }
+}
+
 impl MapModel {
     pub fn get_reachable_network(&self) -> Reachability {
         let mut network: HashSet<RoadID> = HashSet::new();

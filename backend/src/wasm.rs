@@ -165,12 +165,7 @@ impl MapModel {
             features: self
                 .schools
                 .iter()
-                .map(|s| {
-                    s.to_gj(
-                        &self.graph.mercator,
-                        roads.network.contains(&s.road) || roads.reachable.contains(&s.road),
-                    )
-                })
+                .map(|s| s.to_gj(&self.graph.mercator, roads.covers(s.road)))
                 .collect(),
         })
         .map_err(err_to_js)

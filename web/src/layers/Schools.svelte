@@ -3,6 +3,7 @@
   import { Popup } from "svelte-utils/map";
   import LayerControls from "./LayerControls.svelte";
   import { backend, percent, type Schools } from "../stores";
+  import { QualitativeLegend } from "../common";
 
   let show = false;
 
@@ -38,6 +39,9 @@
         data.features.length,
       )}) reachable
     </p>
+    <QualitativeLegend
+      colors={{ Reachable: "purple", "Not reachable": "red" }}
+    />
   {/if}
 </LayerControls>
 
@@ -45,7 +49,7 @@
   <CircleLayer
     manageHoverState
     paint={{
-      "circle-color": ["case", ["get", "reachable"], "green", "red"],
+      "circle-color": ["case", ["get", "reachable"], "purple", "red"],
       "circle-radius": hoverStateFilter(5, 8),
     }}
     layout={{

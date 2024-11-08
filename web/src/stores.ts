@@ -89,6 +89,7 @@ export interface Stats {
   od_percents_infra_type: { [name: string]: number };
   od_percents_los: { [name: string]: number };
   average_weighted_directness: number;
+  percent_reachable_schools: number;
 }
 // For now, the user manually recalculates this
 export let stats: Writable<Stats | null> = writable(null);

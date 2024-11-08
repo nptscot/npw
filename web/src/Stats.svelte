@@ -11,6 +11,10 @@
       await recalc();
     }
   });
+
+  function percent(x: number): string {
+    return `${(100 * x).toFixed(1)}%`;
+  }
 </script>
 
 <button on:click={recalc}>Recalculate</button>
@@ -22,11 +26,15 @@
     )}x
   </p>
 
+  <p>
+    Schools: <b>{percent($stats.percent_reachable_schools)}</b>
+  </p>
+
   <details>
     <summary>Percent of demand by infrastructure type</summary>
     <ul>
-      {#each Object.entries($stats.od_percents_infra_type).toSorted((a, b) => b[1] - a[1]) as [key, percent]}
-        <li>{key}: {(100 * percent).toFixed(1)}%</li>
+      {#each Object.entries($stats.od_percents_infra_type).toSorted((a, b) => b[1] - a[1]) as [key, pct]}
+        <li>{key}: {percent(pct)}</li>
       {/each}
     </ul>
   </details>
@@ -34,8 +42,8 @@
   <details>
     <summary>Percent of demand by level of service:</summary>
     <ul>
-      {#each Object.entries($stats.od_percents_los).toSorted((a, b) => b[1] - a[1]) as [key, percent]}
-        <li>{key}: {(100 * percent).toFixed(1)}%</li>
+      {#each Object.entries($stats.od_percents_los).toSorted((a, b) => b[1] - a[1]) as [key, pct]}
+        <li>{key}: {percent(pct)}</li>
       {/each}
     </ul>
   </details>
