@@ -1,6 +1,7 @@
 <script lang="ts">
   import { backend, stats } from "./stores";
   import { onMount } from "svelte";
+  import { schools } from "./layers/stores";
 
   async function recalc() {
     $stats = await $backend!.recalculateStats();
@@ -27,7 +28,10 @@
   </p>
 
   <p>
-    Schools: <b>{percent($stats.percent_reachable_schools)}</b>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={() => ($schools = true)}>Schools</a>
+    :
+    <b>{percent($stats.percent_reachable_schools)}</b>
   </p>
 
   <details>

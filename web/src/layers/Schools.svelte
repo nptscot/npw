@@ -4,8 +4,7 @@
   import LayerControls from "./LayerControls.svelte";
   import { backend, percent, type Schools } from "../stores";
   import { QualitativeLegend } from "../common";
-
-  let show = false;
+  import { schools as show } from "./stores";
 
   let data: Schools = {
     type: "FeatureCollection",
@@ -18,7 +17,7 @@
     }
   }
 
-  $: if (show && data.features.length == 0) {
+  $: if ($show && data.features.length == 0) {
     recalc();
   }
 
@@ -27,11 +26,11 @@
 
 <LayerControls>
   <label>
-    <input type="checkbox" bind:checked={show} />
+    <input type="checkbox" bind:checked={$show} />
     Schools
   </label>
 
-  {#if show}
+  {#if $show}
     <button on:click={recalc}>Recalculate</button>
     <p>
       {reachable.toLocaleString()} / {data.features.length.toLocaleString()} ({percent(
@@ -53,7 +52,7 @@
       "circle-radius": hoverStateFilter(5, 8),
     }}
     layout={{
-      visibility: show ? "visible" : "none",
+      visibility: $show ? "visible" : "none",
     }}
   >
     <Popup openOn="hover" let:props>
