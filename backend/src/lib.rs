@@ -19,6 +19,7 @@ use crate::level_of_service::LevelOfService;
 mod costs;
 mod evaluate;
 pub mod existing;
+mod join_lines;
 mod level_of_service;
 mod mesh_density;
 pub mod od;
