@@ -12,7 +12,8 @@ export type Mode =
   | { kind: "evaluate-route" }
   | { kind: "evaluate-od" }
   | { kind: "debug-network" }
-  | { kind: "debug-mesh-density" };
+  | { kind: "debug-mesh-density" }
+  | { kind: "debug-worst-routes"; routes: WorstRoutes };
 
 export let boundaryName = writable("");
 export let mode: Writable<Mode> = writable({ kind: "main" });
@@ -85,12 +86,18 @@ export type EvaluateODOut = FeatureCollection & {
   percent_on_network: { [name: string]: number };
 };
 
+export type WorstRoutes = [
+  { x: number; y: number },
+  { x: number; y: number },
+][];
+
 export interface Stats {
   od_percents_infra_type: { [name: string]: number };
   od_percents_los: { [name: string]: number };
   average_weighted_directness: number;
   percent_reachable_schools: number;
   percent_reachable_gp_hospitals: number;
+  worst_directness_routes: WorstRoutes;
 }
 // For now, the user manually recalculates this
 export let stats: Writable<Stats | null> = writable(null);

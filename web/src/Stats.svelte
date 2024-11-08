@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { backend, stats } from "./stores";
+  import { notNull } from "svelte-utils";
+  import { backend, stats, mode } from "./stores";
   import { onMount } from "svelte";
   import { schools, gpHospitals } from "./layers/stores";
 
@@ -22,9 +23,18 @@
 
 {#if $stats}
   <p>
-    Average weighted directness: {$stats.average_weighted_directness.toFixed(
-      1,
-    )}x
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a
+      href="#"
+      on:click|preventDefault={() =>
+        ($mode = {
+          kind: "debug-worst-routes",
+          routes: notNull($stats).worst_directness_routes,
+        })}
+    >
+      Average weighted directness
+    </a>
+    : {$stats.average_weighted_directness.toFixed(1)}x
   </p>
 
   <p>

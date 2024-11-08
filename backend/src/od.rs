@@ -16,10 +16,14 @@ pub struct CountsOD {
     pub succeeded: usize,
     pub failed: usize,
     pub average_weighted_directness: f64,
+
+    pub worst_directness_routes: Vec<(Coord, Coord)>,
 }
 
 impl MapModel {
     pub fn od_counts(&self) -> Result<CountsOD> {
+        let keep_directness_routes = 10;
+
         let mut rng = WyRand::new_seed(42);
 
         let mut counts = HashMap::new();
@@ -27,6 +31,8 @@ impl MapModel {
         let mut failed = 0;
         let mut sum_directness = 0.0;
         let mut sum_count = 0;
+
+        let mut worst_directness_routes = Vec::new();
 
         info!("Evaluating {} desire lines", self.desire_lines.len());
 
@@ -65,6 +71,15 @@ impl MapModel {
                 let directness = route_length / direct_length;
                 sum_directness += (*count as f64) * directness;
                 sum_count += *count;
+
+                if worst_directness_routes.len() < keep_directness_routes {
+                    worst_directness_routes.push((pt1, pt2, directness));
+                    worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
+                } else if worst_directness_routes.last().as_ref().unwrap().2 < directness {
+                    worst_directness_routes.pop();
+                    worst_directness_routes.push((pt1, pt2, directness));
+                    worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
+                }
             }
         }
 
@@ -73,6 +88,15 @@ impl MapModel {
             succeeded,
             failed,
             average_weighted_directness: sum_directness / (sum_count as f64),
+            worst_directness_routes: worst_directness_routes
+                .into_iter()
+                .map(|(start, end, _)| {
+                    (
+                        self.graph.mercator.pt_to_wgs84(start),
+                        self.graph.mercator.pt_to_wgs84(end),
+                    )
+                })
+                .collect(),
         })
     }
 

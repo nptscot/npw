@@ -12,6 +12,7 @@
   } from "svelte-utils/three_column_layout";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
+  import DebugWorstRoutesMode from "./DebugWorstRoutesMode.svelte";
   import MainMode from "./MainMode.svelte";
   import InfraTypeLegend from "./common/InfraTypeLegend.svelte";
   import EditRouteMode from "./EditRouteMode.svelte";
@@ -176,6 +177,8 @@
           <DebugNetworkMode />
         {:else if $mode.kind == "debug-mesh-density"}
           <DebugMeshDensityMode />
+        {:else if $mode.kind == "debug-worst-routes"}
+          <DebugWorstRoutesMode routes={$mode.routes} />
         {/if}
       {/if}
     </MapLibre>

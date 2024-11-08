@@ -80,6 +80,10 @@ impl MapModel {
             "average_weighted_directness".to_string(),
             od.average_weighted_directness.into(),
         );
+        out.insert(
+            "worst_directness_routes".to_string(),
+            serde_json::to_value(&od.worst_directness_routes)?,
+        );
 
         Ok(serde_json::to_string(&out)?)
     }
