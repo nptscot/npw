@@ -8,7 +8,7 @@
   } from "../stores";
   import { colorByInraType } from "../common";
   import { Popup } from "svelte-utils/map";
-  import { Modal, notNull } from "svelte-utils";
+  import { Modal } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;
@@ -75,9 +75,6 @@
           "line-opacity": 0.8,
         }}
         manageHoverState
-        on:click={(e) =>
-          window.open(notNull(e.detail.features[0].properties).way, "_blank")}
-        hoverCursor="pointer"
       >
         <Popup openOn="hover" let:props>
           {infraTypeMapping[props.infra_type][0]}
