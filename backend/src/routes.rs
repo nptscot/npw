@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use anyhow::Result;
 use geo::LineString;
@@ -19,13 +19,16 @@ impl MapModel {
         }
 
         // Check for overlaps
-        let used_roads: HashSet<RoadID> = self
-            .routes
-            .values()
-            .flat_map(|route| route.roads.clone())
-            .collect();
-        if route.roads.iter().any(|r| used_roads.contains(r)) {
-            bail!("Another route already crosses the same road");
+        let mut used_roads = HashMap::new();
+        for (id, existing_route) in &self.routes {
+            for r in &existing_route.roads {
+                used_roads.insert(*r, *id);
+            }
+        }
+        for r in &route.roads {
+            if let Some(id) = used_roads.get(r) {
+                bail!("Another route {id} already crosses the same road {r:?}");
+            }
         }
 
         let id = match edit_id {
@@ -51,6 +54,7 @@ impl MapModel {
 
     pub fn clear_all_routes(&mut self) {
         self.routes.clear();
+        self.id_counter = 0;
         self.recalculate_after_edits();
     }
 
