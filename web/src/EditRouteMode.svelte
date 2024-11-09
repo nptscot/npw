@@ -19,7 +19,13 @@
   type RouteFeature = Feature<
     LineString,
     // TODO route props too
-    { waypoints: any[]; name: string; notes: string; infra_type: string }
+    {
+      waypoints: any[];
+      full_path: any[];
+      name: string;
+      notes: string;
+      infra_type: string;
+    }
   >;
 
   let name = "";
@@ -44,6 +50,30 @@
       infraType = feature.properties.infra_type;
 
       routeSnapper.editExisting(feature.properties.waypoints);
+
+      // TODO Debugging cases where auto-imported routes act oddly
+      if (false) {
+        let waypts1 = JSON.parse(JSON.stringify(feature.properties.waypoints));
+        let full_path1 = JSON.parse(
+          JSON.stringify(feature.properties.full_path),
+        );
+        let output = JSON.parse(routeSnapper.toFinalFeature()!);
+        let waypts2 = JSON.parse(JSON.stringify(output.properties.waypoints));
+        let full_path2 = JSON.parse(
+          JSON.stringify(output.properties.full_path),
+        );
+
+        if (JSON.stringify(waypts1) != JSON.stringify(waypts2)) {
+          console.log(`waypts changed`);
+          console.log(waypts1);
+          console.log(waypts2);
+        }
+        if (JSON.stringify(full_path1) != JSON.stringify(full_path2)) {
+          console.log(`full_path changed`);
+          console.log(full_path1);
+          console.log(full_path2);
+        }
+      }
     }
 
     redraw();

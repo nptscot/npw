@@ -27,6 +27,7 @@
       await autosave();
       $mainModeRoutesChanged += 1;
       window.alert(`Imported ${numChanges} ${noun}`);
+      show = false;
     }
   }
 </script>

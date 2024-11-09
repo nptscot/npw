@@ -160,8 +160,8 @@ fn make_route_snapper_feature(
         .map(|i| {
             let pt = graph.mercator.to_wgs84(&graph.intersections[i.0].point);
             serde_json::to_value(&RouteWaypoint {
-                lon: pt.x(),
-                lat: pt.y(),
+                lon: trim_lon_lat(pt.x()),
+                lat: trim_lon_lat(pt.y()),
                 snapped: true,
             })
             .unwrap()
@@ -193,4 +193,10 @@ struct RouteWaypoint {
 #[derive(Serialize)]
 struct JsonNode {
     snapped: u32,
+}
+
+// Per https://datatracker.ietf.org/doc/html/rfc7946#section-11.2, 6 decimal places (10cm) is
+// plenty of precision
+fn trim_lon_lat(x: f64) -> f64 {
+    (x * 10e6).round() / 10e6
 }
