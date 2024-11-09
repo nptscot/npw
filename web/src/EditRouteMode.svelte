@@ -170,25 +170,6 @@
     <button on:click={() => ($mode = { kind: "main" })}>Back</button>
     <button class="secondary" on:click={deleteRoute}>Delete</button>
 
-    <label>
-      Name:
-      <input type="text" bind:value={name} />
-    </label>
-
-    <label>
-      Infrastructure type:
-      <select bind:value={infraType}>
-        {#each infraTypes as [value, label, _]}
-          <option {value}>{label}</option>
-        {/each}
-      </select>
-    </label>
-
-    <label>
-      Notes:
-      <textarea rows="5" bind:value={notes} />
-    </label>
-
     <RouteControls {routeSnapper} />
   </div>
 
@@ -210,5 +191,26 @@
     {/if}
 
     <RouteSnapperLayer />
+  </div>
+
+  <div slot="right">
+    <label>
+      Name:
+      <input type="text" bind:value={name} />
+    </label>
+
+    <label>
+      Infrastructure type:
+      <select bind:value={infraType}>
+        {#each infraTypes as [value, label, _]}
+          <option {value}>{label}</option>
+        {/each}
+      </select>
+    </label>
+
+    <label>
+      Notes:
+      <textarea rows="5" bind:value={notes} />
+    </label>
   </div>
 </SplitComponent>

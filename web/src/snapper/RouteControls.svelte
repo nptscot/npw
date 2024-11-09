@@ -33,7 +33,17 @@
   nap to roads
 </label>
 
+<label>
+  <input type="checkbox" bind:checked={extendRoute} />
+  Add points to end
+</label>
+<label>
+  <input type="checkbox" bind:checked={$showAllNodes} />
+  Show all snappable points
+</label>
+
 <button
+  class="secondary"
   disabled={$undoLength == 0}
   on:click={() => routeSnapper.undo()}
   data-tooltip="Ctrl+Z"
@@ -45,16 +55,7 @@
   {/if}
 </button>
 
-<label>
-  <input type="checkbox" bind:checked={extendRoute} />
-  Add points to end
-</label>
-<label>
-  <input type="checkbox" bind:checked={$showAllNodes} />
-  Show all snappable points
-</label>
-
-<details open>
+<details>
   <summary>Help</summary>
   <ul>
     <li>
