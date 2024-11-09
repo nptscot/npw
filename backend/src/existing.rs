@@ -15,14 +15,20 @@ pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Dura
     // but the purpose is different -- unless a road can't be modified, then it still belongs in
     // the graph.
 
+    let exclude = (Direction::None, Duration::ZERO);
+
+    if tags.is("highway", "footway") && !tags.is_any("bicycle", vec!["yes", "designated"]) {
+        return exclude;
+    }
+
     // Exclude dedicated sidewalks; they're almost always parallel to a road that should be
     // edited instead
     if tags.is("footway", "sidewalk") {
-        return (Direction::None, Duration::ZERO);
+        return exclude;
     }
     // These don't have the potential to become part of a network
     if tags.is("highway", "steps") {
-        return (Direction::None, Duration::ZERO);
+        return exclude;
     }
 
     // 10mph
@@ -139,6 +145,34 @@ fn is_any_key(tags: &Tags, keys: Vec<&'static str>, value: &str) -> bool {
 mod tests {
     use super::*;
 
+    // Test if ways should be included in the model at all
+    #[test]
+    fn test_bicycle_profile() {
+        let mut ok = true;
+        for (input, should_include) in [
+            // https://www.openstreetmap.org/way/588483433
+            (vec!["highway=footway"], false),
+            (vec!["highway=footway", "footway=sidewalk"], false),
+            (vec!["highway=footway", "bicycle=designated"], true),
+            (vec!["highway=footway", "bicycle=yes"], true),
+            (vec!["highway=steps"], false),
+        ] {
+            let do_include =
+                bicycle_profile(&tags(&input), &LineString::new(Vec::new())).0 != Direction::None;
+            if should_include && !do_include {
+                println!("For {input:?}, we should include it, but don't\n");
+                ok = false;
+            } else if !should_include && do_include {
+                println!("For {input:?}, we shouldn't include it, but do\n");
+                ok = false;
+            }
+        }
+
+        if !ok {
+            panic!("Some cases failed");
+        }
+    }
+
     #[test]
     fn test_classify() {
         let mut ok = true;
@@ -220,12 +254,7 @@ mod tests {
                 Some(InfraType::OffRoad),
             ),
         ] {
-            let mut tags = Tags::empty();
-            for kv in &input {
-                let parts = kv.split("=").collect::<Vec<_>>();
-                tags.insert(parts[0], parts[1]);
-            }
-            let actual = classify(&tags);
+            let actual = classify(&tags(&input));
             if actual != expected {
                 println!("For {input:?}, expected {expected:?} but got {actual:?}\n");
                 ok = false;
@@ -235,5 +264,15 @@ mod tests {
         if !ok {
             panic!("Some cases failed");
         }
+    }
+
+    // TODO Upstream as a test utility
+    fn tags(input: &Vec<&'static str>) -> Tags {
+        let mut tags = Tags::empty();
+        for kv in input {
+            let parts = kv.split("=").collect::<Vec<_>>();
+            tags.insert(parts[0], parts[1]);
+        }
+        tags
     }
 }
