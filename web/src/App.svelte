@@ -39,7 +39,7 @@
   import maplibregl from "maplibre-gl";
 
   // TODO Remove later
-  let offlineMode = true;
+  let offlineMode = false;
   if (offlineMode) {
     let protocol = new pmtiles.Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
