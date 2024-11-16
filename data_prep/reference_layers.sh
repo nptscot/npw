@@ -27,12 +27,15 @@ function schools {
 
 function town_centres {
   # Manually register and download GeoJSON from https://data.spatialhub.scot/dataset/town_centres-is
-  ogr2ogr town_centres.geojson \
+  ogr2ogr tmp/town_centres.geojson \
           -t_srs EPSG:4326 \
           $1 \
+          -nlt PROMOTE_TO_MULTI \
           -sql 'SELECT site_name AS name FROM "Town_Centres_-_Scotland"'
-  tippecanoe --drop-densest-as-needed --generate-ids -zg town_centres.geojson -o ../web/public/town_centres.pmtiles
-  rm -f town_centres.geojson
+
+  # The bboxes or something else included are breaking parsing, so clean these up
+  jq '{ type: "FeatureCollection", features: [.features[] | { type: "Feature", geometry: .geometry, properties: { name: .properties.name } }] }' tmp/town_centres.geojson > tmp.gj
+  mv -f tmp.gj tmp/town_centres.geojson
 }
 
 function gp_and_hospitals {

@@ -1,5 +1,7 @@
+use std::collections::HashSet;
+
 use anyhow::Result;
-use geo::{Contains, MultiPolygon, Point};
+use geo::{Contains, Intersects, MultiPolygon, Point};
 use geojson::{Feature, Geometry};
 use graph::{Graph, RoadID};
 use serde::{Deserialize, Serialize};
@@ -109,4 +111,53 @@ struct GPHospitalGJ {
     #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
     geometry: Point,
     name: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct TownCentre {
+    polygon: MultiPolygon,
+    name: Option<String>,
+    pub roads: HashSet<RoadID>,
+}
+
+impl TownCentre {
+    pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
+        let mut f = Feature::from(Geometry::from(&mercator.to_wgs84(&self.polygon)));
+        f.set_property("name", self.name.clone());
+        f.set_property("reachable", reachable);
+        f
+    }
+
+    pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
+        let mut town_centres = Vec::new();
+        for x in geojson::de::deserialize_feature_collection_str_to_vec::<TownCentreGJ>(gj)? {
+            if boundary_wgs84.intersects(&x.geometry) {
+                let polygon = graph.mercator.to_mercator(&x.geometry);
+
+                // All intersecting roads
+                // TODO Could rtree to speed up
+                let mut roads: HashSet<RoadID> = HashSet::new();
+                for (idx, road) in graph.roads.iter().enumerate() {
+                    if polygon.intersects(&road.linestring) {
+                        roads.insert(RoadID(idx));
+                    }
+                }
+
+                town_centres.push(TownCentre {
+                    polygon,
+                    name: x.name,
+                    roads,
+                });
+            }
+        }
+        info!("Matched {} town centres", town_centres.len());
+        Ok(town_centres)
+    }
+}
+
+#[derive(Deserialize)]
+struct TownCentreGJ {
+    #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
+    geometry: MultiPolygon,
+    name: Option<String>,
 }

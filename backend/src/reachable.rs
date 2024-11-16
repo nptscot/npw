@@ -16,6 +16,10 @@ impl Reachability {
     pub fn covers(&self, r: RoadID) -> bool {
         self.network.contains(&r) || self.reachable.contains(&r)
     }
+
+    pub fn covers_any(&self, roads: &HashSet<RoadID>) -> bool {
+        !self.network.is_disjoint(roads) || !self.reachable.is_disjoint(roads)
+    }
 }
 
 impl MapModel {

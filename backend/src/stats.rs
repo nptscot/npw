@@ -32,6 +32,17 @@ impl MapModel {
             )
             .into(),
         );
+        out.insert(
+            "percent_reachable_town_centres".to_string(),
+            percent(
+                self.town_centres
+                    .iter()
+                    .filter(|x| roads.covers_any(&x.roads))
+                    .count(),
+                self.town_centres.len(),
+            )
+            .into(),
+        );
 
         timer.step("calculate OD routes and stats");
 

@@ -2,7 +2,7 @@ import type { Map } from "maplibre-gl";
 import { get, writable, type Writable } from "svelte/store";
 import { type Backend } from "./worker";
 import { JsRouteSnapper } from "route-snapper";
-import type { FeatureCollection, Point } from "geojson";
+import type { FeatureCollection, Point, MultiPolygon } from "geojson";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 
@@ -97,6 +97,7 @@ export interface Stats {
   average_weighted_directness: number;
   percent_reachable_schools: number;
   percent_reachable_gp_hospitals: number;
+  percent_reachable_town_centres: number;
   worst_directness_routes: WorstRoutes;
 }
 // For now, the user manually recalculates this
@@ -110,6 +111,11 @@ export type Schools = FeatureCollection<
 export type GPHospitals = FeatureCollection<
   Point,
   { kind: string; name: string; reachable: boolean }
+>;
+
+export type TownCentres = FeatureCollection<
+  MultiPolygon,
+  { name?: string; reachable: boolean }
 >;
 
 export function percent(x: number, total: number): string {

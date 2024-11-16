@@ -6,6 +6,7 @@ import type {
   Stats,
   Schools,
   GPHospitals,
+  TownCentres,
 } from "./stores";
 
 export class Backend {
@@ -135,6 +136,11 @@ export class Backend {
   getGpHospitals(): GPHospitals {
     this.checkReady();
     return JSON.parse(this.inner!.getGPHospitals());
+  }
+
+  getTownCentres(): TownCentres {
+    this.checkReady();
+    return JSON.parse(this.inner!.getTownCentres());
   }
 
   getNetworkBuffer(): FeatureCollection {
