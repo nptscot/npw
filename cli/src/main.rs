@@ -151,6 +151,13 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
     timer.step("match roads to traffic volumes");
     let mut output = Vec::new();
     for road in &graph.roads {
+        // The source data excludes these, so we often end up matching nearby main roads with high
+        // volume. Force them to 0, so they get a good LoS and don't appear as severances.
+        if road.osm_tags.is("highway", "service") {
+            output.push(0);
+            continue;
+        }
+
         if let Some(link) = rtree
             .locate_in_envelope_intersecting(&road.linestring.envelope())
             .min_by_key(|link| compare_road_geometry(&road.linestring, link.geom()))
