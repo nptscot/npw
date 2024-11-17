@@ -129,12 +129,3 @@ export type IMDZones = FeatureCollection<
     reachable: boolean;
   }
 >;
-
-export function percent(x: number, total: number): string {
-  if (total == 0) {
-    return "0%";
-  }
-
-  let p = Math.round((x / total) * 100);
-  return `${p}%`;
-}

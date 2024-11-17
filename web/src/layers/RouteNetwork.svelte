@@ -4,6 +4,7 @@
   import LayerControls from "./LayerControls.svelte";
   import { assetUrl } from "../stores";
   import type { ExpressionSpecification } from "maplibre-gl";
+  import { lineWidthForDemand, lineColorForDemand } from "../utils";
 
   let show = false;
   let purpose = "all";
@@ -36,106 +37,9 @@
     ["gradient", "Gradient"],
   ];
 
-  // Implements the formula y = (3 / (1 + exp(-3*(x/1000 - 1.6))) + 0.3)
-  $: lineWidth = [
-    "interpolate",
-    ["linear"],
-    ["zoom"],
-    12,
-    [
-      "*",
-      2.1,
-      [
-        "+",
-        0.3,
-        [
-          "/",
-          3,
-          ["+", 1, ["^", 2.718, ["-", 2.94, ["*", ["get", key], 0.0021]]]],
-        ],
-      ],
-    ],
-    14,
-    [
-      "*",
-      5.25,
-      [
-        "+",
-        0.3,
-        [
-          "/",
-          3,
-          ["+", 1, ["^", 2.718, ["-", 2.94, ["*", ["get", key], 0.0021]]]],
-        ],
-      ],
-    ],
-    15,
-    [
-      "*",
-      7.5,
-      [
-        "+",
-        0.3,
-        [
-          "/",
-          3,
-          ["+", 1, ["^", 2.718, ["-", 2.94, ["*", ["get", key], 0.0021]]]],
-        ],
-      ],
-    ],
-    16,
-    [
-      "*",
-      18,
-      [
-        "+",
-        0.3,
-        [
-          "/",
-          3,
-          ["+", 1, ["^", 2.718, ["-", 2.94, ["*", ["get", key], 0.0021]]]],
-        ],
-      ],
-    ],
-    18,
-    [
-      "*",
-      52.5,
-      [
-        "+",
-        0.3,
-        [
-          "/",
-          3,
-          ["+", 1, ["^", 2.718, ["-", 2.94, ["*", ["get", key], 0.0021]]]],
-        ],
-      ],
-    ],
-  ] as ExpressionSpecification;
-
   $: lineColor = {
     none: "#304ce7",
-    flow: [
-      "step",
-      ["get", key],
-      "rgba(0,0,0,0)",
-      1,
-      "#9C9C9C",
-      50,
-      "#FFFF73",
-      100,
-      "#AFFF00",
-      250,
-      "#00FFFF",
-      500,
-      "#30B0FF",
-      1000,
-      "#2E5FFF",
-      2000,
-      "#0000FF",
-      3000,
-      "#FF00C5",
-    ],
+    flow: lineColorForDemand(key),
     quietness: [
       "step",
       ["get", "quietness"],
@@ -217,7 +121,7 @@
     sourceLayer="rnet"
     paint={{
       "line-color": lineColor,
-      "line-width": lineWidth,
+      "line-width": lineWidthForDemand(key),
     }}
     layout={{
       visibility: show ? "visible" : "none",

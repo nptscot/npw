@@ -4,38 +4,13 @@
   import { Popup } from "svelte-utils/map";
   import { backend, mode, type EvaluateODOut } from "./stores";
   import { onMount } from "svelte";
-  import { colorByInfraType } from "./common";
-  import type {
-    ExpressionSpecification,
-    DataDrivenPropertyValueSpecification,
-  } from "maplibre-gl";
+  import { lineWidthForDemand, lineColorForDemand } from "./utils";
 
   let gj: EvaluateODOut | null = null;
 
   onMount(async () => {
     gj = await $backend!.evaluateOD();
   });
-
-  function lineWidth(
-    maxCount: number,
-  ): DataDrivenPropertyValueSpecification<number> {
-    let min = 0;
-
-    // Linearly interpolate between thin and thick, based on the percent each count is between min and max
-    let thin = 2;
-    let thick = 10;
-
-    let range_input = maxCount - min;
-    let range_output = thick - thin;
-    // min(1, (value - min) / range_input)
-    let calculatePercent: ExpressionSpecification = [
-      "min",
-      1.0,
-      ["/", ["-", ["get", "count"], min], range_input],
-    ];
-    // thin + range_output * percent
-    return ["+", thin, ["*", range_output, calculatePercent]];
-  }
 </script>
 
 <SplitComponent>
@@ -65,8 +40,8 @@
       <GeoJSON data={gj} generateId>
         <LineLayer
           paint={{
-            "line-width": lineWidth(gj.max_count),
-            "line-color": colorByInfraType,
+            "line-width": lineWidthForDemand("count"),
+            "line-color": lineColorForDemand("count"),
           }}
           manageHoverState
           eventsIfTopMost

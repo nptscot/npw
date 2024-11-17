@@ -8,7 +8,8 @@
   import { Popup, makeColorRamp } from "svelte-utils/map";
   import { SequentialLegend } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";
-  import { backend, percent, type IMDZones } from "../stores";
+  import { backend, type IMDZones } from "../stores";
+  import { percent, sum } from "../utils";
   import { imdZones as show } from "./stores";
 
   let data: IMDZones = {
@@ -33,10 +34,6 @@
       .filter((f) => f.properties.reachable)
       .map((f) => f.properties.population),
   );
-
-  function sum(list: number[]): number {
-    return list.reduce((total, x) => total + x, 0);
-  }
 
   // Color ramp from https://www.ons.gov.uk/census/maps/choropleth. Lowest value is the worst (darkest).
   let colorScale = ["#080C54", "#186290", "#1F9EB7", "#80C6A3", "#CDE594"];

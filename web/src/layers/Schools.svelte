@@ -2,7 +2,8 @@
   import { GeoJSON, hoverStateFilter, CircleLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import LayerControls from "./LayerControls.svelte";
-  import { backend, percent, type Schools } from "../stores";
+  import { backend, type Schools } from "../stores";
+  import { percent } from "../utils";
   import { QualitativeLegend } from "../common";
   import { schools as show } from "./stores";
 

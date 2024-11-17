@@ -12,6 +12,7 @@
   import { mode, backend, routeA, routeB, type RouteGJ } from "./stores";
   import { colorByInfraType } from "./common";
   import Directions from "./Directions.svelte";
+  import { currentNetwork } from "./layers/stores";
 
   let gj: RouteGJ | null = null;
   let err = "";
@@ -71,6 +72,9 @@
           paint={{
             "line-width": 5,
             "line-color": colorByInfraType,
+          }}
+          layout={{
+            visibility: $currentNetwork ? "visible" : "none",
           }}
         />
       </GeoJSON>
