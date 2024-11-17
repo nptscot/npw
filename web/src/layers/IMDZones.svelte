@@ -1,9 +1,14 @@
 <script lang="ts">
-  import { GeoJSON, hoverStateFilter, FillLayer } from "svelte-maplibre";
-  import { Popup } from "svelte-utils/map";
+  import {
+    GeoJSON,
+    hoverStateFilter,
+    FillLayer,
+    LineLayer,
+  } from "svelte-maplibre";
+  import { Popup, makeColorRamp } from "svelte-utils/map";
+  import { SequentialLegend } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";
   import { backend, percent, type IMDZones } from "../stores";
-  import { QualitativeLegend } from "../common";
   import { imdZones as show } from "./stores";
 
   let data: IMDZones = {
@@ -32,6 +37,12 @@
   function sum(list: number[]): number {
     return list.reduce((total, x) => total + x, 0);
   }
+
+  // Color ramp from https://www.ons.gov.uk/census/maps/choropleth. Lowest value is the worst (darkest).
+  let colorScale = ["#080C54", "#186290", "#1F9EB7", "#80C6A3", "#CDE594"];
+
+  // The percentiles are [1, 20]. The 5 colors cover 4 each.
+  let limits = [0, 4, 8, 12, 16, 20];
 </script>
 
 <LayerControls>
@@ -48,9 +59,11 @@
       reachable. That's {reachablePopulation.toLocaleString()} / {totalPopulation.toLocaleString()}
       ({percent(reachablePopulation, totalPopulation)}) of the population.
     </p>
-    <QualitativeLegend
-      colors={{ Reachable: "purple", "Not reachable": "red" }}
-    />
+    <SequentialLegend {colorScale} {limits} />
+    <p>
+      Darker colours are more deprived. Zones with a red outline are not
+      reachable by the current network.
+    </p>
   {/if}
 </LayerControls>
 
@@ -58,7 +71,7 @@
   <FillLayer
     manageHoverState
     paint={{
-      "fill-color": ["case", ["get", "reachable"], "purple", "red"],
+      "fill-color": makeColorRamp(["get", "percentile"], limits, colorScale),
       "fill-opacity": hoverStateFilter(0.7, 0.9),
     }}
     layout={{
@@ -74,4 +87,15 @@
       </p>
     </Popup>
   </FillLayer>
+
+  <LineLayer
+    filter={["!", ["get", "reachable"]]}
+    paint={{
+      "line-color": "red",
+      "line-width": 3,
+    }}
+    layout={{
+      visibility: $show ? "visible" : "none",
+    }}
+  />
 </GeoJSON>
