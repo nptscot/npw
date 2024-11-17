@@ -9,7 +9,7 @@ use nanorand::{Rng, WyRand};
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
 
-use crate::{InfraType, MapModel};
+use crate::{uptake, InfraType, MapModel};
 
 pub struct CountsOD {
     pub counts: HashMap<RoadID, usize>,
@@ -30,7 +30,7 @@ impl MapModel {
         let mut succeeded = 0;
         let mut failed = 0;
         let mut sum_directness = 0.0;
-        let mut sum_count = 0;
+        let mut sum_count = 0.0;
 
         let mut worst_directness_routes = Vec::new();
 
@@ -38,7 +38,7 @@ impl MapModel {
 
         // TODO TEMPORARILY, evaluate just one route from each desire line and weight it by the
         // count
-        for (zone1, zone2, count) in &self.desire_lines {
+        for (zone1, zone2, raw_count) in &self.desire_lines {
             let pt1 = self.zones[zone1].random_point(&mut rng);
             let pt2 = self.zones[zone2].random_point(&mut rng);
 
@@ -53,24 +53,31 @@ impl MapModel {
 
             // route.linestring() is more accurate, but slower, and then harder to find the snapped
             // position on the road for direct_length
-            let mut route_length = 0.0;
             let direct_length = Euclidean::distance(
                 self.graph.intersections[start.intersection.0].point,
                 self.graph.intersections[end.intersection.0].point,
             );
 
+            let mut route_length = 0.0;
             // TODO Use a lower-level API to squeeze out some speed
+            for step in &route.steps {
+                if let PathStep::Road { road, .. } = step {
+                    route_length += self.graph.roads[road.0].length_meters;
+                }
+            }
+
+            let count = uptake::pct_godutch_2020(route_length) * (*raw_count as f64);
+
             for step in route.steps {
                 if let PathStep::Road { road, .. } = step {
-                    *counts.entry(road).or_insert(0) += *count;
-                    route_length += self.graph.roads[road.0].length_meters;
+                    *counts.entry(road).or_insert(0.0) += count;
                 }
             }
 
             if direct_length > 0.0 {
                 let directness = route_length / direct_length;
-                sum_directness += (*count as f64) * directness;
-                sum_count += *count;
+                sum_directness += count * directness;
+                sum_count += count;
 
                 if worst_directness_routes.len() < keep_directness_routes {
                     worst_directness_routes.push((pt1, pt2, directness));
@@ -84,7 +91,11 @@ impl MapModel {
         }
 
         Ok(CountsOD {
-            counts,
+            // Round count after summing decimals
+            counts: counts
+                .into_iter()
+                .map(|(k, v)| (k, v.round() as usize))
+                .collect(),
             succeeded,
             failed,
             average_weighted_directness: sum_directness / (sum_count as f64),

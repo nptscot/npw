@@ -28,6 +28,7 @@ mod reachable;
 mod route_snapper;
 mod routes;
 mod stats;
+mod uptake;
 mod wasm;
 
 #[wasm_bindgen]
