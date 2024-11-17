@@ -6,7 +6,7 @@
     autosave,
     mainModeRoutesChanged,
   } from "../stores";
-  import { colorByInraType } from "../common";
+  import { colorByInfraType } from "../common";
   import { Popup } from "svelte-utils/map";
   import { Modal } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";
@@ -72,7 +72,7 @@
         }}
         paint={{
           "line-width": hoverStateFilter(5, 7),
-          "line-color": colorByInraType,
+          "line-color": colorByInfraType,
           "line-opacity": 0.8,
         }}
         manageHoverState

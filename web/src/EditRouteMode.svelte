@@ -5,7 +5,7 @@
   import { JsRouteSnapper } from "route-snapper";
   import type { Feature, FeatureCollection, LineString } from "geojson";
   import { onMount, onDestroy } from "svelte";
-  import { colorByInraType } from "./common";
+  import { colorByInfraType } from "./common";
   import RouteSnapperLayer from "./snapper/RouteSnapperLayer.svelte";
   import RouteControls from "./snapper/RouteControls.svelte";
   import { snapMode, undoLength, routeToolGj } from "./snapper/stores";
@@ -213,7 +213,7 @@
           filter={id == null ? undefined : ["!=", ["id"], id]}
           paint={{
             "line-width": 5,
-            "line-color": colorByInraType,
+            "line-color": colorByInfraType,
             "line-opacity": 0.5,
           }}
         />

@@ -18,7 +18,7 @@
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
-  import { colorByInraType } from "./common";
+  import { colorByInfraType } from "./common";
   import AllControls from "./layers/AllControls.svelte";
   import Stats from "./Stats.svelte";
   import ChangeArea from "./ChangeArea.svelte";
@@ -104,7 +104,7 @@
           id="routes"
           paint={{
             "line-width": hoverStateFilter(5, 7),
-            "line-color": colorByInraType,
+            "line-color": colorByInfraType,
           }}
           manageHoverState
           hoverCursor="pointer"

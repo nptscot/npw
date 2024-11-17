@@ -4,7 +4,7 @@
   import { Popup } from "svelte-utils/map";
   import { backend, mode, type EvaluateODOut } from "./stores";
   import { onMount } from "svelte";
-  import { colorByInraType } from "./common";
+  import { colorByInfraType } from "./common";
   import type {
     ExpressionSpecification,
     DataDrivenPropertyValueSpecification,
@@ -66,7 +66,7 @@
         <LineLayer
           paint={{
             "line-width": lineWidth(gj.max_count),
-            "line-color": colorByInraType,
+            "line-color": colorByInfraType,
           }}
           manageHoverState
           eventsIfTopMost

@@ -10,7 +10,7 @@
   import { SplitComponent } from "svelte-utils/three_column_layout";
   import { notNull } from "svelte-utils";
   import { mode, backend, routeA, routeB, type RouteGJ } from "./stores";
-  import { colorByInraType } from "./common";
+  import { colorByInfraType } from "./common";
   import Directions from "./Directions.svelte";
 
   let gj: RouteGJ | null = null;
@@ -70,7 +70,7 @@
           id="routes"
           paint={{
             "line-width": 5,
-            "line-color": colorByInraType,
+            "line-color": colorByInfraType,
           }}
         />
       </GeoJSON>
