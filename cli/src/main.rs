@@ -89,6 +89,13 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         &graph,
     )?;
 
+    timer.step("loading IMD zones");
+    let imd_zones = backend::places::IMDZone::from_gj(
+        &std::fs::read_to_string("../data_prep/tmp/simd.geojson")?,
+        &boundary_wgs84,
+        &graph,
+    )?;
+
     let traffic_volumes = read_traffic_volumes("../data_prep/tmp/traffic.gpkg", &graph, timer)?;
 
     Ok(MapModel::create(
@@ -99,6 +106,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         schools,
         gp_hospitals,
         town_centres,
+        imd_zones,
         traffic_volumes,
     ))
 }

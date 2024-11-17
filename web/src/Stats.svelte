@@ -2,7 +2,7 @@
   import { notNull } from "svelte-utils";
   import { backend, stats, mode } from "./stores";
   import { onMount } from "svelte";
-  import { schools, gpHospitals, townCentres } from "./layers/stores";
+  import { schools, gpHospitals, townCentres, imdZones } from "./layers/stores";
 
   async function recalc() {
     $stats = await $backend!.recalculateStats();
@@ -60,6 +60,13 @@
     </a>
     :
     <b>{percent($stats.percent_reachable_town_centres)}</b>
+  </p>
+
+  <p>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={() => ($imdZones = true)}>SIMD</a>
+    :
+    <b>{percent($stats.percent_reachable_imd_population)}</b>
   </p>
 
   <details>

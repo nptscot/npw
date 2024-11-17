@@ -98,6 +98,7 @@ export interface Stats {
   percent_reachable_schools: number;
   percent_reachable_gp_hospitals: number;
   percent_reachable_town_centres: number;
+  percent_reachable_imd_population: number;
   worst_directness_routes: WorstRoutes;
 }
 // For now, the user manually recalculates this
@@ -116,6 +117,17 @@ export type GPHospitals = FeatureCollection<
 export type TownCentres = FeatureCollection<
   MultiPolygon,
   { name?: string; reachable: boolean }
+>;
+
+export type IMDZones = FeatureCollection<
+  MultiPolygon,
+  {
+    id: string;
+    rank: number;
+    percentile: number;
+    population: number;
+    reachable: boolean;
+  }
 >;
 
 export function percent(x: number, total: number): string {

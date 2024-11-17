@@ -44,6 +44,20 @@ impl MapModel {
             .into(),
         );
 
+        // Weighted by population, not just count
+        let mut sum = 0;
+        let mut total = 0;
+        for zone in &self.imd_zones {
+            total += zone.population;
+            if roads.covers_any(&zone.roads) {
+                sum += zone.population;
+            }
+        }
+        out.insert(
+            "percent_reachable_imd_population".to_string(),
+            percent(sum, total).into(),
+        );
+
         timer.step("calculate OD routes and stats");
 
         let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();

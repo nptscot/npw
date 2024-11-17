@@ -91,11 +91,11 @@ function simd {
   # From https://www.data.gov.uk/dataset/1102bf85-ed49-440a-b211-da87e8d752eb/scottish-index-of-multiple-deprivation-simd-2020
   wget https://maps.gov.scot/ATOM/shapefiles/SG_SIMD_2020.zip
   unzip SG_SIMD_2020.zip
-  # TODO gpkg would be faster
   ogr2ogr tmp/simd.geojson \
           -t_srs EPSG:4326 \
           SG_SIMD_2020.shp \
-          -sql 'SELECT DataZone, Rankv2 as rank, Percentv2 as percentile FROM SG_SIMD_2020'
+          -nlt PROMOTE_TO_MULTI \
+          -sql 'SELECT DataZone, Rankv2 as rank, Percentv2 as percentile, SAPE2017 as population FROM SG_SIMD_2020 WHERE Quintilev2 = 1'
   rm -f SG_SIMD_2020* SIMD2020v2*xlsx
 }
 

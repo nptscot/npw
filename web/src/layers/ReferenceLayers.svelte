@@ -9,6 +9,7 @@
   import NetworkBuffer from "./NetworkBuffer.svelte";
   import ReachableNetwork from "./ReachableNetwork.svelte";
   import LevelOfService from "./LevelOfService.svelte";
+  import IMDZones from "./IMDZones.svelte";
 </script>
 
 <ExistingNetwork />
@@ -21,3 +22,4 @@
 <NetworkBuffer />
 <LevelOfService />
 <ReachableNetwork />
+<IMDZones />

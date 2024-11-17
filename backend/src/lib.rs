@@ -49,6 +49,7 @@ pub struct MapModel {
     schools: Vec<places::School>,
     gp_hospitals: Vec<places::GPHospital>,
     town_centres: Vec<places::TownCentre>,
+    imd_zones: Vec<places::IMDZone>,
 
     // Per RoadID
     traffic_volumes: Vec<usize>,
@@ -94,6 +95,7 @@ impl MapModel {
         schools: Vec<places::School>,
         gp_hospitals: Vec<places::GPHospital>,
         town_centres: Vec<places::TownCentre>,
+        imd_zones: Vec<places::IMDZone>,
         traffic_volumes: Vec<usize>,
     ) -> Self {
         let speeds = graph
@@ -115,6 +117,7 @@ impl MapModel {
             schools,
             gp_hospitals,
             town_centres,
+            imd_zones,
             traffic_volumes,
             speeds,
             infra_types,

@@ -6,3 +6,4 @@ export let allControls: Writable<HTMLDivElement[]> = writable([]);
 export let schools = writable(false);
 export let gpHospitals = writable(false);
 export let townCentres = writable(false);
+export let imdZones = writable(false);

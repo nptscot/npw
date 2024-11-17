@@ -161,3 +161,65 @@ struct TownCentreGJ {
     geometry: MultiPolygon,
     name: Option<String>,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct IMDZone {
+    polygon: MultiPolygon,
+    id: String,
+    rank: usize,
+    percentile: usize,
+    pub population: usize,
+    pub roads: HashSet<RoadID>,
+}
+
+impl IMDZone {
+    pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
+        let mut f = Feature::from(Geometry::from(&mercator.to_wgs84(&self.polygon)));
+        f.set_property("id", self.id.clone());
+        f.set_property("rank", self.rank);
+        f.set_property("percentile", self.percentile);
+        f.set_property("population", self.population);
+        f.set_property("reachable", reachable);
+        f
+    }
+
+    pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
+        let mut zones = Vec::new();
+        for x in geojson::de::deserialize_feature_collection_str_to_vec::<IMDZoneGJ>(gj)? {
+            if boundary_wgs84.intersects(&x.geometry) {
+                let polygon = graph.mercator.to_mercator(&x.geometry);
+
+                // All intersecting roads
+                // TODO Could rtree to speed up
+                let mut roads: HashSet<RoadID> = HashSet::new();
+                for (idx, road) in graph.roads.iter().enumerate() {
+                    if polygon.intersects(&road.linestring) {
+                        roads.insert(RoadID(idx));
+                    }
+                }
+
+                zones.push(IMDZone {
+                    polygon,
+                    id: x.id,
+                    rank: x.rank,
+                    percentile: x.percentile,
+                    population: x.population,
+                    roads,
+                });
+            }
+        }
+        info!("Matched {} IMD zones", zones.len());
+        Ok(zones)
+    }
+}
+
+#[derive(Deserialize)]
+struct IMDZoneGJ {
+    #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
+    geometry: MultiPolygon,
+    #[serde(rename = "DataZone")]
+    id: String,
+    rank: usize,
+    percentile: usize,
+    population: usize,
+}

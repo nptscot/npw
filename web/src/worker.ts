@@ -7,6 +7,7 @@ import type {
   Schools,
   GPHospitals,
   TownCentres,
+  IMDZones,
 } from "./stores";
 
 export class Backend {
@@ -141,6 +142,11 @@ export class Backend {
   getTownCentres(): TownCentres {
     this.checkReady();
     return JSON.parse(this.inner!.getTownCentres());
+  }
+
+  getIMDZones(): IMDZones {
+    this.checkReady();
+    return JSON.parse(this.inner!.getIMDZones());
   }
 
   getNetworkBuffer(): FeatureCollection {
