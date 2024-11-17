@@ -15,6 +15,7 @@
     mainModeRoutesChanged,
     autosave,
   } from "./stores";
+  import { currentNetwork } from "./layers/stores";
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
@@ -81,6 +82,10 @@
 
     <details open>
       <summary>Current network</summary>
+      <label>
+        <input type="checkbox" bind:checked={$currentNetwork} />
+        Show current network
+      </label>
 
       {#if gj}
         <ol>
@@ -105,6 +110,9 @@
           paint={{
             "line-width": hoverStateFilter(5, 7),
             "line-color": colorByInfraType,
+          }}
+          layout={{
+            visibility: $currentNetwork ? "visible" : "none",
           }}
           manageHoverState
           hoverCursor="pointer"
