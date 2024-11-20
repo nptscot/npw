@@ -1,5 +1,11 @@
 import init, { MapModel } from "backend";
-import type { Position, Feature, Polygon, FeatureCollection } from "geojson";
+import type {
+  LineString,
+  Position,
+  Feature,
+  Polygon,
+  FeatureCollection,
+} from "geojson";
 import type {
   RouteGJ,
   EvaluateODOut,
@@ -53,6 +59,11 @@ export class Backend {
   renderCoreNetwork(): FeatureCollection {
     this.checkReady();
     return JSON.parse(this.inner!.renderCoreNetwork());
+  }
+
+  renderPrecalculatedFlows(): FeatureCollection<LineString, { flow: number }> {
+    this.checkReady();
+    return JSON.parse(this.inner!.renderPrecalculatedFlows());
   }
 
   toRouteSnapper(): Uint8Array {

@@ -10,10 +10,12 @@
   import ReachableNetwork from "./ReachableNetwork.svelte";
   import LevelOfService from "./LevelOfService.svelte";
   import IMDZones from "./IMDZones.svelte";
+  import HighRouteCoverage from "./HighRouteCoverage.svelte";
 </script>
 
 <ExistingNetwork />
 <RouteNetwork />
+<HighRouteCoverage />
 <CoreNetwork />
 <Schools />
 <TownCentres />

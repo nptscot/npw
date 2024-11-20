@@ -55,6 +55,8 @@ pub struct MapModel {
     // Per RoadID
     traffic_volumes: Vec<usize>,
     core_network: Vec<bool>,
+    // Go Dutch totals for all purposes
+    precalculated_flows: Vec<usize>,
     // mph
     speeds: Vec<usize>,
     // Derived things maintained by recalculate_after_edits
@@ -100,6 +102,7 @@ impl MapModel {
         imd_zones: Vec<places::IMDZone>,
         traffic_volumes: Vec<usize>,
         core_network: Vec<bool>,
+        precalculated_flows: Vec<usize>,
     ) -> Self {
         let speeds = graph
             .roads
@@ -123,6 +126,7 @@ impl MapModel {
             imd_zones,
             traffic_volumes,
             core_network,
+            precalculated_flows,
             speeds,
             infra_types,
             los,

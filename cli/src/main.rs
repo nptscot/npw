@@ -100,6 +100,9 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
 
     let core_network = read_core_network("../data_prep/tmp/core_network.gpkg", &graph, timer)?;
 
+    let precalculated_flows =
+        read_precalculated_flows("../data_prep/tmp/combined_network.gpkg", &graph, timer)?;
+
     Ok(MapModel::create(
         graph,
         boundary_wgs84,
@@ -111,6 +114,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         imd_zones,
         traffic_volumes,
         core_network,
+        precalculated_flows,
     ))
 }
 
@@ -235,6 +239,46 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
                 .locate_in_envelope_intersecting(&road.linestring.envelope())
                 .any(|geom| road_geometry_similar(&road.linestring, geom)),
         );
+    }
+    Ok(output)
+}
+
+// The output is the Go Dutch totals for all purpose
+fn read_precalculated_flows(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<usize>> {
+    // Read all relevant lines and make an RTree
+    timer.step("read precalculated flows");
+    let dataset = Dataset::open(path)?;
+    let mut layer = dataset.layer(0)?;
+    let b = &graph.mercator.wgs84_bounds;
+    layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+
+    let mut links = Vec::new();
+    for input in layer.features() {
+        let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
+        graph.mercator.to_mercator_in_place(&mut geom);
+        // TODO Or quietest?
+        let Some(flow) = input.field_as_integer_by_name("all_fastest_bicycle_go_dutch")? else {
+            bail!("combined_network is missing all_fastest_bicycle_go_dutch");
+        };
+        links.push(GeomWithData::new(geom, flow as usize));
+    }
+    let rtree = RTree::bulk_load(links);
+
+    // Multiple roads might match to the same link -- dual carriageways, for example.
+    // Insist on finding a match for every road.
+    timer.step("match roads to precalculated flows");
+    let mut output = Vec::new();
+    for road in &graph.roads {
+        // TODO Skip service roads or similar? Check what's in the NPT rnet
+
+        if let Some(link) = rtree
+            .locate_in_envelope_intersecting(&road.linestring.envelope())
+            .min_by_key(|link| compare_road_geometry(&road.linestring, link.geom()))
+        {
+            output.push(link.data);
+        } else {
+            output.push(0);
+        }
     }
     Ok(output)
 }

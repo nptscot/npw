@@ -11,7 +11,12 @@ function core_net {
 
 function rnet {
   # From https://github.com/nptscot/outputdata/releases
+
+  # For visualization
   wget https://github.com/nptscot/outputdata/releases/download/v2024-10-01/rnet_2024-10-01.pmtiles -O ../web/public/route_network.pmtiles
+
+  # For analysis
+  wget https://github.com/nptscot/outputdata/releases/download/v2024-10-01/combined_network.gpkg -O tmp/combined_network.gpkg
 }
 
 function schools {

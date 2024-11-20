@@ -277,6 +277,25 @@ impl MapModel {
         .map_err(err_to_js)?)
     }
 
+    #[wasm_bindgen(js_name = renderPrecalculatedFlows)]
+    pub fn render_precalculated_flows(&self) -> Result<String, JsValue> {
+        let mut features = Vec::new();
+        for (road, flow) in self.graph.roads.iter().zip(self.precalculated_flows.iter()) {
+            let mut f = Feature::from(Geometry::from(
+                &self.graph.mercator.to_wgs84(&road.linestring),
+            ));
+            f.set_property("flow", *flow);
+            features.push(f);
+        }
+
+        Ok(serde_json::to_string(&FeatureCollection {
+            features,
+            bbox: None,
+            foreign_members: None,
+        })
+        .map_err(err_to_js)?)
+    }
+
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
         // TODO map_err?
         let route: InputRoute = match serde_wasm_bindgen::from_value(input) {
