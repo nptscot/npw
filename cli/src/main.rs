@@ -2,10 +2,10 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufWriter;
 
-use anyhow::Result;
+use anyhow::{bail, Result};
 use clap::Parser;
 use gdal::{vector::LayerAccess, Dataset};
-use geo::{Distance, Euclidean, LineString, MultiPolygon};
+use geo::{Distance, Euclidean, Geometry, LineString, MultiPolygon};
 use graph::{Graph, Timer};
 use log::info;
 use rstar::{primitives::GeomWithData, RTree, RTreeObject};
@@ -98,6 +98,8 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
 
     let traffic_volumes = read_traffic_volumes("../data_prep/tmp/traffic.gpkg", &graph, timer)?;
 
+    let core_network = read_core_network("../data_prep/tmp/core_network.gpkg", &graph, timer)?;
+
     Ok(MapModel::create(
         graph,
         boundary_wgs84,
@@ -108,6 +110,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         town_centres,
         imd_zones,
         traffic_volumes,
+        core_network,
     ))
 }
 
@@ -193,6 +196,49 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
     Ok(output)
 }
 
+// The output is whether each road is part of the core network or not
+fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<bool>> {
+    // Read all relevant lines and make an RTree
+    timer.step("read core network");
+    let dataset = Dataset::open(path)?;
+    let mut layer = dataset.layer(0)?;
+    let b = &graph.mercator.wgs84_bounds;
+    layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+
+    let mut segments = Vec::new();
+    for input in layer.features() {
+        let geo = input.geometry().unwrap().to_geo()?;
+        match geo {
+            Geometry::LineString(mut ls) => {
+                graph.mercator.to_mercator_in_place(&mut ls);
+                segments.push(ls);
+            }
+            Geometry::MultiLineString(mls) => {
+                for mut ls in mls {
+                    graph.mercator.to_mercator_in_place(&mut ls);
+                    segments.push(ls);
+                }
+            }
+            _ => bail!("read_core_network found something besides a LS or MLS"),
+        }
+    }
+    let rtree = RTree::bulk_load(segments);
+
+    // Multiple roads might match to the same segment -- dual carriageways, for example. For every
+    // road, see if there's any core network segment close enough to it. Note this assumes the core
+    // network is split into small segments!
+    timer.step("match roads to core network segments");
+    let mut output = Vec::new();
+    for road in &graph.roads {
+        output.push(
+            rtree
+                .locate_in_envelope_intersecting(&road.linestring.envelope())
+                .any(|geom| road_geometry_similar(&road.linestring, geom)),
+        );
+    }
+    Ok(output)
+}
+
 // Just sum distance between endpoints
 // TODO When the volume links are much longer than OSM, or vice versa, how well does this work?
 fn compare_road_geometry(ls1: &LineString, ls2: &LineString) -> usize {
@@ -200,4 +246,15 @@ fn compare_road_geometry(ls1: &LineString, ls2: &LineString) -> usize {
     let dist2 = Euclidean::distance(*ls1.coords().last().unwrap(), *ls2.coords().last().unwrap());
     // cm precision
     ((dist1 + dist2) * 100.0) as usize
+}
+
+// TODO Works poorly in many cases
+fn road_geometry_similar(ls1: &LineString, ls2: &LineString) -> bool {
+    // If both endpoints are within this threshold, accept it
+    let tolerance_per_endpt = 10.0;
+
+    let dist1 = Euclidean::distance(*ls1.coords().next().unwrap(), *ls2.coords().next().unwrap());
+    let dist2 = Euclidean::distance(*ls1.coords().last().unwrap(), *ls2.coords().last().unwrap());
+
+    dist1 <= tolerance_per_endpt && dist2 <= tolerance_per_endpt
 }

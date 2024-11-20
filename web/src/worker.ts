@@ -50,6 +50,11 @@ export class Backend {
     return JSON.parse(this.inner!.renderLevelOfService());
   }
 
+  renderCoreNetwork(): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.renderCoreNetwork());
+  }
+
   toRouteSnapper(): Uint8Array {
     this.checkReady();
     return this.inner!.toRouteSnapper();

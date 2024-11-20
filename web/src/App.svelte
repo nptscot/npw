@@ -72,7 +72,11 @@
     }
 
     let bytes = await resp.arrayBuffer();
-    await backendWorker.loadFile(new Uint8Array(bytes));
+    try {
+      await backendWorker.loadFile(new Uint8Array(bytes));
+    } catch (err) {
+      window.alert(`Couldn't load: ${err}`);
+    }
 
     // Load saved state?
     let item = window.localStorage.getItem(`tmp-npt-editor/${$boundaryName}`);

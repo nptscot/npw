@@ -253,6 +253,25 @@ impl MapModel {
         self.render_level_of_service().map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = renderCoreNetwork)]
+    pub fn render_core_network(&self) -> Result<String, JsValue> {
+        let mut features = Vec::new();
+        for (road, cn) in self.graph.roads.iter().zip(self.core_network.iter()) {
+            if *cn {
+                features.push(Feature::from(Geometry::from(
+                    &self.graph.mercator.to_wgs84(&road.linestring),
+                )));
+            }
+        }
+
+        Ok(serde_json::to_string(&FeatureCollection {
+            features,
+            bbox: None,
+            foreign_members: None,
+        })
+        .map_err(err_to_js)?)
+    }
+
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
         // TODO map_err?
         let route: InputRoute = match serde_wasm_bindgen::from_value(input) {
