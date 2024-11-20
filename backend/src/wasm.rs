@@ -154,6 +154,11 @@ impl MapModel {
         self.import_existing_routes()
     }
 
+    #[wasm_bindgen(js_name = importCoreNetwork)]
+    pub fn import_core_network_wasm(&mut self) -> usize {
+        self.import_core_network()
+    }
+
     #[wasm_bindgen(js_name = getSchools)]
     pub fn get_schools(&self) -> Result<String, JsValue> {
         // TODO Some kind of caching would make this nicer

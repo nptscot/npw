@@ -76,13 +76,12 @@ impl MapModel {
 
     /// Returns the number of edits
     pub fn import_existing_routes(&mut self) -> usize {
-        // Find individual segments to import
-        let mut pieces = Vec::new();
         let used_roads: HashSet<RoadID> = self
             .routes
             .values()
             .flat_map(|route| route.roads.clone())
             .collect();
+        let mut imports = Vec::new();
         for (idx, road) in self.graph.roads.iter().enumerate() {
             let road_id = RoadID(idx);
             if used_roads.contains(&road_id) {
@@ -97,10 +96,39 @@ impl MapModel {
             ) {
                 continue;
             }
+            imports.push((road_id, infra_type));
+        }
 
+        self.import_roads(imports)
+    }
+
+    /// Returns the number of edits
+    pub fn import_core_network(&mut self) -> usize {
+        let used_roads: HashSet<RoadID> = self
+            .routes
+            .values()
+            .flat_map(|route| route.roads.clone())
+            .collect();
+        let mut imports = Vec::new();
+        for idx in 0..self.graph.roads.len() {
+            let road_id = RoadID(idx);
+            if used_roads.contains(&road_id) || !self.core_network[idx] {
+                continue;
+            }
+            // TODO What type?
+            imports.push((road_id, InfraType::SegregatedNarrow));
+        }
+
+        self.import_roads(imports)
+    }
+
+    fn import_roads(&mut self, imports: Vec<(RoadID, InfraType)>) -> usize {
+        // Create individual segments to import
+        let mut pieces = Vec::new();
+        for (id, infra_type) in imports {
             pieces.push(KeyedLineString {
-                linestring: road.linestring.clone(),
-                ids: vec![(road_id, Dir::Forwards)],
+                linestring: self.graph.roads[id.0].linestring.clone(),
+                ids: vec![(id, Dir::Forwards)],
                 key: infra_type,
             });
         }

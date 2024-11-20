@@ -6,7 +6,12 @@
     GeoJSON,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { assetUrl, backend } from "../stores";
+  import {
+    assetUrl,
+    backend,
+    mainModeRoutesChanged,
+    autosave,
+  } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;
@@ -15,6 +20,16 @@
   $: if (show) {
     firstLoad = true;
   }
+
+  async function importExisting() {
+    if ($backend) {
+      let numChanges = $backend.importCoreNetwork();
+      let noun = numChanges == 1 ? "route segment" : "route segments";
+      await autosave();
+      $mainModeRoutesChanged += 1;
+      window.alert(`Imported ${numChanges} ${noun}`);
+    }
+  }
 </script>
 
 <LayerControls>
@@ -22,6 +37,10 @@
     <input type="checkbox" bind:checked={show} />
     Core network
   </label>
+
+  {#if show}
+    <button on:click={importExisting}>Import core network</button>
+  {/if}
 </LayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->

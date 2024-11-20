@@ -65,6 +65,7 @@ pub fn join_linestrings(mut lines: Vec<KeyedLineString>) -> Vec<KeyedLineString>
 
 /// Find all linestrings that meet at one end and join them. Only joins lines with a matching key.
 pub fn collapse_degree_2(mut lines: Vec<KeyedLineString>) -> Vec<KeyedLineString> {
+    info!("Collapsing degree 2 nodes in {} lines", lines.len());
     // TODO I think this is doable in one pass
     loop {
         let mut intersections: HashMap<HashedPoint, EdgeIdx> = HashMap::new();

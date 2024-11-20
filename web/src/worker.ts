@@ -124,6 +124,11 @@ export class Backend {
     return this.inner!.importExistingRoutes();
   }
 
+  importCoreNetwork(): number {
+    this.checkReady();
+    return this.inner!.importCoreNetwork();
+  }
+
   toSavefile(): string {
     this.checkReady();
     return this.inner!.toSavefile();
