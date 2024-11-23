@@ -62,7 +62,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bincode",
- "chrono",
  "console_error_panic_hook",
  "console_log",
  "enum-map",

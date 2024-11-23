@@ -227,24 +227,6 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
-    #[wasm_bindgen(js_name = getNetworkBuffer)]
-    pub fn get_network_buffer_wasm(&self) -> Result<String, JsValue> {
-        serde_json::to_string(&FeatureCollection {
-            bbox: None,
-            foreign_members: None,
-            features: self
-                .get_network_buffer()
-                .into_iter()
-                .map(|r| {
-                    self.graph
-                        .mercator
-                        .to_wgs84_gj(&self.graph.roads[r.0].linestring)
-                })
-                .collect(),
-        })
-        .map_err(err_to_js)
-    }
-
     #[wasm_bindgen(js_name = renderReachableNetwork)]
     pub fn render_reachable_network_wasm(&self) -> Result<String, JsValue> {
         self.render_reachable_network().map_err(err_to_js)

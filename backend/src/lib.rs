@@ -3,10 +3,8 @@ extern crate anyhow;
 #[macro_use]
 extern crate log;
 
-use std::collections::{HashMap, HashSet};
-use std::time::Duration;
+use std::collections::HashMap;
 
-use chrono::NaiveTime;
 use enum_map::Enum;
 use geo::MultiPolygon;
 use geojson::Feature;
@@ -152,31 +150,5 @@ impl MapModel {
 
     pub fn get_infra_type(&self, r: RoadID) -> InfraType {
         self.infra_types[r.0].unwrap_or(InfraType::MixedTraffic)
-    }
-
-    /// All roads within some predefined buffer of the defined (and maybe existing) network
-    pub fn get_network_buffer(&self) -> Vec<RoadID> {
-        let mut starts = HashSet::new();
-        for route in self.routes.values() {
-            for r in &route.roads {
-                let road = &self.graph.roads[r.0];
-                starts.insert(road.src_i);
-                starts.insert(road.dst_i);
-            }
-        }
-
-        let start_time = NaiveTime::from_hms_opt(7, 0, 0).unwrap();
-        // TODO Distance buffer?
-        let limit = Duration::from_secs(30);
-        let public_transit = false;
-        let cost_per_road = self.graph.get_costs(
-            starts.into_iter().collect(),
-            self.graph.profile_names["bicycle"],
-            public_transit,
-            start_time,
-            start_time + limit,
-        );
-
-        cost_per_road.into_keys().collect()
     }
 }

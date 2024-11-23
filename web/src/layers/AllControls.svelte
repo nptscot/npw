@@ -14,7 +14,6 @@
     "core network",
     "existing network",
     "level of service",
-    "network buffer",
     "reachable network",
   ]);
 

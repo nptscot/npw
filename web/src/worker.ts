@@ -165,11 +165,6 @@ export class Backend {
     return JSON.parse(this.inner!.getIMDZones());
   }
 
-  getNetworkBuffer(): FeatureCollection {
-    this.checkReady();
-    return JSON.parse(this.inner!.getNetworkBuffer());
-  }
-
   renderReachableNetwork(): FeatureCollection {
     this.checkReady();
     return JSON.parse(this.inner!.renderReachableNetwork());
