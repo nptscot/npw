@@ -9,7 +9,7 @@
     mapContents,
     leftSidebarContents,
     rightSidebarContents,
-  } from "svelte-utils/three_column_layout";
+  } from "./common/layout";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
   import DebugWorstRoutesMode from "./DebugWorstRoutesMode.svelte";
@@ -18,6 +18,7 @@
   import EditRouteMode from "./EditRouteMode.svelte";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
   import EvaluateODMode from "./EvaluateODMode.svelte";
+  import TopBar from "./TopBar.svelte";
   import {
     map as mapStore,
     mode,
@@ -136,10 +137,13 @@
 <Loading {loading} />
 
 <Layout>
+  <div slot="top">
+    <TopBar />
+  </div>
   <div slot="left">
     <div bind:this={leftSidebarDiv} />
   </div>
-  <div slot="main" style="position:relative; width: 100%; height: 100vh;">
+  <div slot="main" style="position:relative; width: 100%; height: 100%;">
     <MapLibre
       style={offlineMode
         ? "http://localhost:5173/offline/light_style.json"

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/three_column_layout";
+  import { SplitComponent } from "./common/layout";
   import { backend, mode, type WorstRoutes, type RouteGJ } from "./stores";
   import Directions from "./Directions.svelte";
 

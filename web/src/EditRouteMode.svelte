@@ -1,6 +1,6 @@
 <script lang="ts">
   import { GeoJSON, LineLayer, MapEvents } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/three_column_layout";
+  import { SplitComponent } from "./common/layout";
   import { backend, mode, infraTypes, autosave } from "./stores";
   import { JsRouteSnapper } from "route-snapper";
   import type { Feature, FeatureCollection, LineString } from "geojson";

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/three_column_layout";
+  import { SplitComponent } from "./common/layout";
   import { Popup } from "svelte-utils/map";
   import { backend, mode, type EvaluateODOut } from "./stores";
   import { onMount } from "svelte";

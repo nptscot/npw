@@ -6,7 +6,7 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { SplitComponent } from "svelte-utils/three_column_layout";
+  import { SplitComponent } from "./common/layout";
   import {
     backend,
     mode,

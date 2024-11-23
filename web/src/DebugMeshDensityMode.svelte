@@ -5,7 +5,7 @@
     FillLayer,
     LineLayer,
   } from "svelte-maplibre";
-  import { SplitComponent } from "svelte-utils/three_column_layout";
+  import { SplitComponent } from "./common/layout";
   import { notNull } from "svelte-utils";
   import { backend, mode } from "./stores";
 </script>
