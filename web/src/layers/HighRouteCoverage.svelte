@@ -42,7 +42,7 @@
   }
 </script>
 
-<LayerControls>
+<LayerControls name="high npt route coverage">
   <label>
     <input type="checkbox" bind:checked={$show} />
     High NPT route coverage
@@ -50,7 +50,7 @@
 
   {#if $show}
     <div style="border: 1px solid black; padding: 4px">
-      <button on:click={recalc}>Recalculate</button>
+      <button class="outline" on:click={recalc}>Recalculate</button>
 
       <label>
         <input type="checkbox" bind:checked={onlyCovered} />

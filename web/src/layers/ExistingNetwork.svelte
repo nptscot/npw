@@ -32,14 +32,14 @@
   }
 </script>
 
-<LayerControls>
+<LayerControls name="existing network">
   <label>
     <input type="checkbox" bind:checked={show} />
     Existing network
   </label>
 
   {#if show}
-    <button on:click={() => (showImportModal = true)}>
+    <button class="outline" on:click={() => (showImportModal = true)}>
       Import existing routes
     </button>
   {/if}
@@ -58,7 +58,9 @@
       and remove / adjust any errors.
 
       <button on:click={importExisting}>Import existing routes</button>
-      <button on:click={() => (showImportModal = false)}>Cancel</button>
+      <button class="secondary" on:click={() => (showImportModal = false)}>
+        Cancel
+      </button>
     </p>
   </Modal>
 {/if}

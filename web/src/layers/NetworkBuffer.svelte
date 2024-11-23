@@ -24,14 +24,14 @@
   }
 </script>
 
-<LayerControls>
+<LayerControls name="network buffer">
   <label>
     <input type="checkbox" bind:checked={show} />
     Network buffer
   </label>
 
   {#if show}
-    <button on:click={recalc}>Recalculate</button>
+    <button class="outline" on:click={recalc}>Recalculate</button>
   {/if}
 </LayerControls>
 

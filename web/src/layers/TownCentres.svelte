@@ -25,14 +25,14 @@
   $: reachable = data.features.filter((f) => f.properties.reachable).length;
 </script>
 
-<LayerControls>
+<LayerControls name="town centres">
   <label>
     <input type="checkbox" bind:checked={$show} />
     Town centres
   </label>
 
   {#if $show}
-    <button on:click={recalc}>Recalculate</button>
+    <button class="outline" on:click={recalc}>Recalculate</button>
     <p>
       {reachable.toLocaleString()} / {data.features.length.toLocaleString()} ({percent(
         reachable,

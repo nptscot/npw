@@ -63,29 +63,23 @@
 
 <SplitComponent>
   <div slot="left">
-    <h2>Network Planning Workspace</h2>
     <ChangeArea area={$boundaryName} />
 
-    <h4>Build network:</h4>
+    <div>
+      <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
+        Draw new <u>r</u>
+        oute line
+      </button>
 
-    <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
-      Draw new <u>r</u>
-      oute line
-    </button>
+      <button class="secondary" on:click={clearAll}>Clear all</button>
+    </div>
 
-    <button on:click={clearAll}>Clear current network</button>
-
-    <details open>
-      <summary>Reference layers</summary>
-      <AllControls />
-    </details>
-
-    <details open>
-      <summary>Current network</summary>
-      <label>
-        <input type="checkbox" bind:checked={$currentNetwork} />
-        Show current network
-      </label>
+    <label>
+      <input type="checkbox" bind:checked={$currentNetwork} />
+      Show current network
+    </label>
+    <details>
+      <summary>Current network routes</summary>
 
       {#if gj}
         <ol>
@@ -100,6 +94,10 @@
         </ol>
       {/if}
     </details>
+
+    <hr />
+
+    <AllControls />
   </div>
 
   <div slot="map">

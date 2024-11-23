@@ -42,14 +42,14 @@
   let limits = [0, 4, 8, 12, 16, 20];
 </script>
 
-<LayerControls>
+<LayerControls name="simd">
   <label>
     <input type="checkbox" bind:checked={$show} />
     SIMD
   </label>
 
   {#if $show}
-    <button on:click={recalc}>Recalculate</button>
+    <button class="outline" on:click={recalc}>Recalculate</button>
     <p>Only the top 20%ile most deprived zones are shown</p>
     <p>
       {numReachable.toLocaleString()} / {data.features.length.toLocaleString()} zones

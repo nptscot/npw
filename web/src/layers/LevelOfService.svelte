@@ -21,7 +21,7 @@
   };
 </script>
 
-<LayerControls>
+<LayerControls name="level of service">
   <label>
     <input type="checkbox" bind:checked={show} />
     Level of Service

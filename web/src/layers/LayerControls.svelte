@@ -1,12 +1,14 @@
 <script lang="ts">
   import { allControls } from "./stores";
 
+  export let name: string;
+
   let contents: HTMLDivElement | null = null;
 
   $: if (contents) {
-    allControls.update((list) => {
-      list.push(contents!);
-      return list;
+    allControls.update((map) => {
+      map.set(name, contents!);
+      return map;
     });
   }
 </script>

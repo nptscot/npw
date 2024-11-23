@@ -10,7 +10,7 @@
   let show = false;
 </script>
 
-<LayerControls>
+<LayerControls name="urban areas">
   <label>
     <input type="checkbox" bind:checked={show} />
     Urban areas

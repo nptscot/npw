@@ -1,6 +1,8 @@
 import { writable, type Writable } from "svelte/store";
 
-export let allControls: Writable<HTMLDivElement[]> = writable([]);
+export let allControls: Writable<Map<string, HTMLDivElement>> = writable(
+  new Map(),
+);
 
 // Only layers that need to be controlled remotely need to be here
 export let currentNetwork = writable(true);

@@ -71,7 +71,7 @@
   }[colorBy] as ExpressionSpecification;
 </script>
 
-<LayerControls>
+<LayerControls name="route network">
   <label>
     <input type="checkbox" bind:checked={show} />
     Route network

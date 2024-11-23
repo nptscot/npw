@@ -30,14 +30,14 @@
   };
 </script>
 
-<LayerControls>
+<LayerControls name="reachable network">
   <label>
     <input type="checkbox" bind:checked={show} />
     Reachable network
   </label>
 
   {#if show}
-    <button on:click={recalc}>Recalculate</button>
+    <button class="outline" on:click={recalc}>Recalculate</button>
     <QualitativeLegend {colors} />
   {/if}
 </LayerControls>

@@ -32,14 +32,16 @@
   }
 </script>
 
-<LayerControls>
+<LayerControls name="core network">
   <label>
     <input type="checkbox" bind:checked={show} />
     Core network
   </label>
 
   {#if show}
-    <button on:click={importExisting}>Import core network</button>
+    <button class="outline" on:click={importExisting}>
+      Import core network
+    </button>
   {/if}
 </LayerControls>
 
