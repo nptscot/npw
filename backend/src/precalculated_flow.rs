@@ -1,5 +1,5 @@
 use anyhow::Result;
-use geojson::{Feature, FeatureCollection, Geometry};
+use geojson::FeatureCollection;
 
 use crate::MapModel;
 
@@ -18,9 +18,7 @@ impl MapModel {
             .zip(self.precalculated_flows.iter())
             .enumerate()
         {
-            let mut f = Feature::from(Geometry::from(
-                &self.graph.mercator.to_wgs84(&road.linestring),
-            ));
+            let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
             f.set_property("flow", *flow);
             // TODO Check definition here -- should this look at LoS, so small high-flow roads are
             // fine?

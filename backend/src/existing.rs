@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use anyhow::Result;
 use geo::{Euclidean, Length, LineString};
-use geojson::{Feature, FeatureCollection, Geometry};
+use geojson::FeatureCollection;
 use graph::Direction;
 use utils::Tags;
 
@@ -42,9 +42,7 @@ impl MapModel {
         let mut features = Vec::new();
         for road in &self.graph.roads {
             if let Some(infra_type) = classify(&road.osm_tags) {
-                let mut f = Feature::from(Geometry::from(
-                    &self.graph.mercator.to_wgs84(&road.linestring),
-                ));
+                let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
                 f.set_property("infra_type", serde_json::to_value(infra_type)?);
                 f.set_property("way", format!("{}", road.way));
                 features.push(f);

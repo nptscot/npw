@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
-use geojson::{Feature, FeatureCollection, Geometry};
+use geojson::FeatureCollection;
 use graph::RoadID;
 
 use crate::{InfraType, LevelOfService, MapModel};
@@ -82,12 +82,10 @@ impl MapModel {
             ("reachable", out.reachable),
         ] {
             for r in list {
-                let mut f = Feature::from(Geometry::from(
-                    &self
-                        .graph
-                        .mercator
-                        .to_wgs84(&self.graph.roads[r.0].linestring),
-                ));
+                let mut f = self
+                    .graph
+                    .mercator
+                    .to_wgs84_gj(&self.graph.roads[r.0].linestring);
                 f.set_property("kind", kind);
                 features.push(f);
             }

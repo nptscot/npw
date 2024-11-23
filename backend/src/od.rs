@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use anyhow::Result;
 use enum_map::EnumMap;
 use geo::{BoundingRect, Contains, Coord, Distance, Euclidean, Intersects, MultiPolygon};
-use geojson::{Feature, FeatureCollection, Geometry, Value};
+use geojson::{FeatureCollection, Value};
 use graph::{PathStep, RoadID};
 use nanorand::{Rng, WyRand};
 use serde::{Deserialize, Serialize};
@@ -123,12 +123,10 @@ impl MapModel {
         let mut features = Vec::new();
         for (r, count) in out.counts {
             max_count = max_count.max(count);
-            let mut f = Feature::from(Geometry::from(
-                &self
-                    .graph
-                    .mercator
-                    .to_wgs84(&self.graph.roads[r.0].linestring),
-            ));
+            let mut f = self
+                .graph
+                .mercator
+                .to_wgs84_gj(&self.graph.roads[r.0].linestring);
             f.set_property("count", count);
             f.set_property(
                 "infra_type",

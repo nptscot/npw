@@ -236,12 +236,9 @@ impl MapModel {
                 .get_network_buffer()
                 .into_iter()
                 .map(|r| {
-                    Feature::from(Geometry::from(
-                        &self
-                            .graph
-                            .mercator
-                            .to_wgs84(&self.graph.roads[r.0].linestring),
-                    ))
+                    self.graph
+                        .mercator
+                        .to_wgs84_gj(&self.graph.roads[r.0].linestring)
                 })
                 .collect(),
         })
@@ -263,9 +260,7 @@ impl MapModel {
         let mut features = Vec::new();
         for (road, cn) in self.graph.roads.iter().zip(self.core_network.iter()) {
             if *cn {
-                features.push(Feature::from(Geometry::from(
-                    &self.graph.mercator.to_wgs84(&road.linestring),
-                )));
+                features.push(self.graph.mercator.to_wgs84_gj(&road.linestring));
             }
         }
 

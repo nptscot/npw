@@ -1,6 +1,6 @@
 use anyhow::Result;
 use enum_map::Enum;
-use geojson::{Feature, FeatureCollection, Geometry};
+use geojson::FeatureCollection;
 use graph::{Road, RoadID};
 use serde::Serialize;
 
@@ -20,9 +20,7 @@ impl MapModel {
         for (idx, road) in self.graph.roads.iter().enumerate() {
             let id = RoadID(idx);
 
-            let mut f = Feature::from(Geometry::from(
-                &self.graph.mercator.to_wgs84(&road.linestring),
-            ));
+            let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
             f.set_property("los", serde_json::to_value(self.los[idx])?);
             f.set_property("infra_type", serde_json::to_value(self.get_infra_type(id))?);
             f.set_property("traffic", self.traffic_volumes[idx]);

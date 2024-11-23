@@ -1,6 +1,6 @@
 use anyhow::Result;
 use geo::{Coord, LineString, Polygon};
-use geojson::{Feature, FeatureCollection, Geometry};
+use geojson::FeatureCollection;
 use i_float::f64_point::F64Point;
 use i_overlay::core::fill_rule::FillRule;
 use i_overlay::f64::string::F64StringOverlay;
@@ -16,9 +16,7 @@ impl MapModel {
 
         let mut features = Vec::new();
         for ls in polygons {
-            features.push(Feature::from(Geometry::from(
-                &self.graph.mercator.to_wgs84(&ls),
-            )));
+            features.push(self.graph.mercator.to_wgs84_gj(&ls));
         }
 
         Ok(serde_json::to_string(&FeatureCollection {

@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use anyhow::Result;
 use geo::LineString;
-use geojson::{feature::Id, Feature, GeoJson, Geometry};
+use geojson::{feature::Id, Feature, GeoJson};
 use graph::{Graph, RoadID};
 use serde::Serialize;
 
@@ -183,7 +183,7 @@ fn make_route_snapper_feature(
     }
     intersections.dedup();
 
-    let mut f = Feature::from(Geometry::from(&graph.mercator.to_wgs84(linestring)));
+    let mut f = graph.mercator.to_wgs84_gj(linestring);
 
     // We don't know what waypoints we could leave out without doing some kind of iterative
     // approach. For now, just include all of them.

@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use anyhow::Result;
 use geo::{Contains, Intersects, MultiPolygon, Point};
-use geojson::{Feature, Geometry};
+use geojson::Feature;
 use graph::{Graph, RoadID};
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
@@ -22,7 +22,7 @@ pub struct School {
 
 impl School {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
-        let mut f = Feature::from(Geometry::from(&mercator.to_wgs84(&self.point)));
+        let mut f = mercator.to_wgs84_gj(&self.point);
         f.set_property("kind", self.kind.clone());
         f.set_property("name", self.name.clone());
         f.set_property("pupils", self.pupils);
@@ -71,7 +71,7 @@ pub struct GPHospital {
 
 impl GPHospital {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
-        let mut f = Feature::from(Geometry::from(&mercator.to_wgs84(&self.point)));
+        let mut f = mercator.to_wgs84_gj(&self.point);
         f.set_property("kind", self.kind.clone());
         f.set_property("name", self.name.clone());
         f.set_property("reachable", reachable);
@@ -122,7 +122,7 @@ pub struct TownCentre {
 
 impl TownCentre {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
-        let mut f = Feature::from(Geometry::from(&mercator.to_wgs84(&self.polygon)));
+        let mut f = mercator.to_wgs84_gj(&self.polygon);
         f.set_property("name", self.name.clone());
         f.set_property("reachable", reachable);
         f
@@ -174,7 +174,7 @@ pub struct IMDZone {
 
 impl IMDZone {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
-        let mut f = Feature::from(Geometry::from(&mercator.to_wgs84(&self.polygon)));
+        let mut f = mercator.to_wgs84_gj(&self.polygon);
         f.set_property("id", self.id.clone());
         f.set_property("rank", self.rank);
         f.set_property("percentile", self.percentile);

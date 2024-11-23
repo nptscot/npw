@@ -1,6 +1,6 @@
 use anyhow::Result;
 use geo::{Coord, Euclidean, Length, LineString};
-use geojson::{Feature, FeatureCollection, Geometry};
+use geojson::FeatureCollection;
 use graph::PathStep;
 use serde::Serialize;
 
@@ -33,9 +33,7 @@ impl MapModel {
             self.graph.intersections[end.intersection.0].point.into(),
         ]);
         Ok(serde_json::to_string(&FeatureCollection {
-            features: vec![Feature::from(Geometry::from(
-                &self.graph.mercator.to_wgs84(&route_linestring),
-            ))],
+            features: vec![self.graph.mercator.to_wgs84_gj(&route_linestring)],
             bbox: None,
             foreign_members: Some(
                 serde_json::json!({

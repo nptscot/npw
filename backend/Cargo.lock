@@ -937,12 +937,13 @@ checksum = "e91b56cd4cadaeb79bbf1a5645f6b4f8dc5bde8834ad5894a8db35fda9efa1fe"
 [[package]]
 name = "utils"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/utils#b4addd630b398009381b1e9da8f04faa06d300c3"
+source = "git+https://github.com/a-b-street/utils#e64d09a48276280f895840c15370764b58e13dac"
 dependencies = [
  "anyhow",
  "fast_paths",
  "geo",
  "geo-types",
+ "geojson",
  "log",
  "osm-reader",
  "serde",
