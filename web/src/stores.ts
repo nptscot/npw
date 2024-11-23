@@ -137,5 +137,8 @@ export type IMDZones = FeatureCollection<
 
 export type PrecalculatedFlows = FeatureCollection<
   LineString,
-  { flow: number; covered: boolean }
->;
+  { flow: number; covered: boolean; quintile: number }
+> & {
+  quintile_sums: number[];
+  covered_quintile_sums: number[];
+};

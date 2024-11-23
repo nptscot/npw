@@ -278,31 +278,8 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = renderPrecalculatedFlows)]
-    pub fn render_precalculated_flows(&self) -> Result<String, JsValue> {
-        let mut features = Vec::new();
-        for (idx, (road, flow)) in self
-            .graph
-            .roads
-            .iter()
-            .zip(self.precalculated_flows.iter())
-            .enumerate()
-        {
-            let mut f = Feature::from(Geometry::from(
-                &self.graph.mercator.to_wgs84(&road.linestring),
-            ));
-            f.set_property("flow", *flow);
-            // TODO Check definition here -- should this look at LoS, so small high-flow roads are
-            // fine?
-            f.set_property("covered", self.infra_types[idx].is_some());
-            features.push(f);
-        }
-
-        Ok(serde_json::to_string(&FeatureCollection {
-            features,
-            bbox: None,
-            foreign_members: None,
-        })
-        .map_err(err_to_js)?)
+    pub fn render_precalculated_flows_wasm(&self) -> Result<String, JsValue> {
+        self.render_precalculated_flows().map_err(err_to_js)
     }
 
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {

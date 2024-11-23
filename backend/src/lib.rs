@@ -24,6 +24,7 @@ mod level_of_service;
 mod mesh_density;
 pub mod od;
 pub mod places;
+mod precalculated_flow;
 mod reachable;
 mod route_snapper;
 mod routes;
