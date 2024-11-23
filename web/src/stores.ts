@@ -2,7 +2,12 @@ import type { Map } from "maplibre-gl";
 import { get, writable, type Writable } from "svelte/store";
 import { type Backend } from "./worker";
 import { JsRouteSnapper } from "route-snapper";
-import type { FeatureCollection, Point, MultiPolygon } from "geojson";
+import type {
+  FeatureCollection,
+  LineString,
+  Point,
+  MultiPolygon,
+} from "geojson";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 
@@ -128,4 +133,9 @@ export type IMDZones = FeatureCollection<
     population: number;
     reachable: boolean;
   }
+>;
+
+export type PrecalculatedFlows = FeatureCollection<
+  LineString,
+  { flow: number; covered: boolean }
 >;

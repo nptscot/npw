@@ -1,11 +1,5 @@
 import init, { MapModel } from "backend";
-import type {
-  LineString,
-  Position,
-  Feature,
-  Polygon,
-  FeatureCollection,
-} from "geojson";
+import type { Position, Feature, Polygon, FeatureCollection } from "geojson";
 import type {
   RouteGJ,
   EvaluateODOut,
@@ -14,6 +8,7 @@ import type {
   GPHospitals,
   TownCentres,
   IMDZones,
+  PrecalculatedFlows,
 } from "./stores";
 
 export class Backend {
@@ -61,7 +56,7 @@ export class Backend {
     return JSON.parse(this.inner!.renderCoreNetwork());
   }
 
-  renderPrecalculatedFlows(): FeatureCollection<LineString, { flow: number }> {
+  renderPrecalculatedFlows(): PrecalculatedFlows {
     this.checkReady();
     return JSON.parse(this.inner!.renderPrecalculatedFlows());
   }
