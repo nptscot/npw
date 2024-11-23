@@ -67,7 +67,7 @@ impl Stats {
         let mut sorted = flows.clone();
         sorted.sort();
         sorted.reverse();
-        let n = sorted.len() / 5;
+        let n = ((sorted.len() as f64) / 5.0).ceil() as usize;
 
         let mut quintile_sums = [0; 5];
         for (idx, x) in sorted.iter().enumerate() {
