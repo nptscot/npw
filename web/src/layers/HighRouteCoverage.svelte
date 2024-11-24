@@ -13,8 +13,8 @@
   let data: PrecalculatedFlows = {
     type: "FeatureCollection",
     features: [],
-    quintile_sums: [],
     covered_quintile_sums: [],
+    total_quintile_sums: [],
   };
 
   async function recalc() {
@@ -69,37 +69,37 @@
         </select>
       </label>
 
-      {#if data.quintile_sums.length > 0}
+      {#if data.total_quintile_sums.length > 0}
         <p>Flow covered by current edits</p>
         <ul>
           <li>
             Quintile 1: {percent(
               data.covered_quintile_sums[0],
-              data.quintile_sums[0],
+              data.total_quintile_sums[0],
             )}
           </li>
           <li>
             Quintile 2: {percent(
               data.covered_quintile_sums[1],
-              data.quintile_sums[1],
+              data.total_quintile_sums[1],
             )}
           </li>
           <li>
             Quintile 3: {percent(
               data.covered_quintile_sums[2],
-              data.quintile_sums[2],
+              data.total_quintile_sums[2],
             )}
           </li>
           <li>
             Quintile 4: {percent(
               data.covered_quintile_sums[3],
-              data.quintile_sums[3],
+              data.total_quintile_sums[3],
             )}
           </li>
           <li>
             Quintile 5: {percent(
               data.covered_quintile_sums[4],
-              data.quintile_sums[4],
+              data.total_quintile_sums[4],
             )}
           </li>
         </ul>

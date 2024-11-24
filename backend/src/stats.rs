@@ -2,7 +2,7 @@ use anyhow::Result;
 use enum_map::EnumMap;
 use graph::Timer;
 
-use crate::{InfraType, LevelOfService, MapModel};
+use crate::{precalculated_flow::FlowStats, InfraType, LevelOfService, MapModel};
 
 impl MapModel {
     /// After any edit, calculate summary stats. Returns JSON.
@@ -108,6 +108,26 @@ impl MapModel {
         out.insert(
             "worst_directness_routes".to_string(),
             serde_json::to_value(&od.worst_directness_routes)?,
+        );
+
+        let flow_stats = FlowStats::new(&self.precalculated_flows);
+        let mut covered_quintile_sums = [0; 5];
+        for (idx, flow) in self.precalculated_flows.iter().enumerate() {
+            // TODO Check definition here -- should this look at LoS, so small high-flow roads are
+            // fine?
+            let covered = self.infra_types[idx].is_some();
+            if covered {
+                let quintile = flow_stats.quintile(*flow);
+                covered_quintile_sums[quintile - 1] += *flow;
+            }
+        }
+        out.insert(
+            "covered_flow_quintile_sums".to_string(),
+            covered_quintile_sums.to_vec().into(),
+        );
+        out.insert(
+            "total_flow_quintile_sums".to_string(),
+            flow_stats.total_quintile_sums.to_vec().into(),
         );
 
         Ok(serde_json::to_string(&out)?)

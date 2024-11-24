@@ -105,6 +105,8 @@ export interface Stats {
   percent_reachable_town_centres: number;
   percent_reachable_imd_population: number;
   worst_directness_routes: WorstRoutes;
+  covered_flow_quintile_sums: number[];
+  total_flow_quintile_sums: number[];
 }
 // For now, the user manually recalculates this
 export let stats: Writable<Stats | null> = writable(null);
@@ -139,6 +141,6 @@ export type PrecalculatedFlows = FeatureCollection<
   LineString,
   { flow: number; covered: boolean; quintile: number }
 > & {
-  quintile_sums: number[];
   covered_quintile_sums: number[];
+  total_quintile_sums: number[];
 };

@@ -2,7 +2,14 @@
   import { notNull } from "svelte-utils";
   import { backend, stats, mode } from "./stores";
   import { onMount } from "svelte";
-  import { schools, gpHospitals, townCentres, imdZones } from "./layers/stores";
+  import {
+    schools,
+    gpHospitals,
+    townCentres,
+    imdZones,
+    highRouteCoverage,
+  } from "./layers/stores";
+  import { percent as percent2 } from "./utils";
 
   async function recalc() {
     $stats = await $backend!.recalculateStats();
@@ -67,6 +74,46 @@
     <a href="#" on:click|preventDefault={() => ($imdZones = true)}>SIMD</a>
     :
     <b>{percent($stats.percent_reachable_imd_population)}</b>
+  </p>
+
+  <p>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={() => ($highRouteCoverage = true)}>
+      High cycling flow coverage
+    </a>
+    :
+    <b>
+      {percent2(
+        $stats.covered_flow_quintile_sums[0],
+        $stats.total_flow_quintile_sums[0],
+      )}
+    </b>
+  </p>
+  <p>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={() => ($highRouteCoverage = true)}>
+      Medium cycling flow coverage
+    </a>
+    :
+    <b>
+      {percent2(
+        $stats.covered_flow_quintile_sums[1],
+        $stats.total_flow_quintile_sums[1],
+      )}
+    </b>
+  </p>
+  <p>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={() => ($highRouteCoverage = true)}>
+      Low cycling flow coverage
+    </a>
+    :
+    <b>
+      {percent2(
+        $stats.covered_flow_quintile_sums[2],
+        $stats.total_flow_quintile_sums[2],
+      )}
+    </b>
   </p>
 
   <details>

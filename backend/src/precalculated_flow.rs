@@ -6,8 +6,7 @@ use crate::MapModel;
 impl MapModel {
     pub fn render_precalculated_flows(&self) -> Result<String> {
         // TODO Could cache
-        let stats = Stats::new(&self.precalculated_flows);
-
+        let stats = FlowStats::new(&self.precalculated_flows);
         let mut covered_quintile_sums = [0; 5];
 
         let mut features = Vec::new();
@@ -40,7 +39,7 @@ impl MapModel {
             bbox: None,
             foreign_members: Some(
                 serde_json::json!({
-                    "quintile_sums": stats.quintile_sums,
+                    "total_quintile_sums": stats.total_quintile_sums,
                     "covered_quintile_sums": covered_quintile_sums,
                 })
                 .as_object()
@@ -51,7 +50,7 @@ impl MapModel {
     }
 }
 
-struct Stats {
+pub struct FlowStats {
     // 20% of flows are >= this value
     quintile1: usize,
     // 40% of flows are >= this value
@@ -59,19 +58,19 @@ struct Stats {
     quintile3: usize,
     quintile4: usize,
     // quintile5 is the minimum flow
-    quintile_sums: [usize; 5],
+    pub total_quintile_sums: [usize; 5],
 }
 
-impl Stats {
-    fn new(flows: &Vec<usize>) -> Self {
+impl FlowStats {
+    pub fn new(flows: &Vec<usize>) -> Self {
         let mut sorted = flows.clone();
         sorted.sort();
         sorted.reverse();
         let n = ((sorted.len() as f64) / 5.0).ceil() as usize;
 
-        let mut quintile_sums = [0; 5];
+        let mut total_quintile_sums = [0; 5];
         for (idx, x) in sorted.iter().enumerate() {
-            quintile_sums[idx / n] += *x;
+            total_quintile_sums[idx / n] += *x;
         }
 
         Self {
@@ -79,12 +78,12 @@ impl Stats {
             quintile2: sorted[n * 2],
             quintile3: sorted[n * 3],
             quintile4: sorted[n * 4],
-            quintile_sums,
+            total_quintile_sums,
         }
     }
 
     // Returns [1, 5]
-    fn quintile(&self, flow: usize) -> usize {
+    pub fn quintile(&self, flow: usize) -> usize {
         if flow >= self.quintile1 {
             1
         } else if flow >= self.quintile2 {
