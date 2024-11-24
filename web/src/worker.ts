@@ -170,6 +170,16 @@ export class Backend {
     return JSON.parse(this.inner!.renderReachableNetwork());
   }
 
+  debugReachablePath(pt: number[]): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.debugReachablePath(pt[0], pt[1]));
+  }
+
+  debugUnreachablePath(pt: number[]): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.debugUnreachablePath(pt[0], pt[1]));
+  }
+
   private checkReady() {
     if (!this.inner) {
       throw new Error("Backend used without a file loaded");

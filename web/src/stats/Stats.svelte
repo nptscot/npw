@@ -35,7 +35,7 @@
 {#if $stats}
   <Metric
     label="High cycling flow coverage"
-    showLayer={$highRouteCoverage}
+    bind:showLayer={$highRouteCoverage}
     pct={percent(
       $stats.covered_flow_quintile_sums[0],
       $stats.total_flow_quintile_sums[0],
@@ -46,7 +46,7 @@
 
   <Metric
     label="Medium cycling flow coverage"
-    showLayer={$highRouteCoverage}
+    bind:showLayer={$highRouteCoverage}
     pct={percent(
       $stats.covered_flow_quintile_sums[1],
       $stats.total_flow_quintile_sums[1],
@@ -55,7 +55,7 @@
 
   <Metric
     label="Town centres"
-    showLayer={$townCentres}
+    bind:showLayer={$townCentres}
     pct={$stats.percent_reachable_town_centres}
   />
 
@@ -63,7 +63,7 @@
 
   <Metric
     label="Low cycling flow coverage"
-    showLayer={$highRouteCoverage}
+    bind:showLayer={$highRouteCoverage}
     pct={percent(
       $stats.covered_flow_quintile_sums[2],
       $stats.total_flow_quintile_sums[2],
@@ -72,19 +72,19 @@
 
   <Metric
     label="Schools"
-    showLayer={$schools}
+    bind:showLayer={$schools}
     pct={$stats.percent_reachable_schools}
   />
 
   <Metric
     label="GPs and hospitals"
-    showLayer={$gpHospitals}
+    bind:showLayer={$gpHospitals}
     pct={$stats.percent_reachable_gp_hospitals}
   />
 
   <Metric
     label="Deprived neighbourhood coverage"
-    showLayer={$imdZones}
+    bind:showLayer={$imdZones}
     pct={$stats.percent_reachable_imd_population}
   />
 

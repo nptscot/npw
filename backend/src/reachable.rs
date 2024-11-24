@@ -1,6 +1,7 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use anyhow::Result;
+use geo::Coord;
 use geojson::FeatureCollection;
 use graph::RoadID;
 
@@ -88,6 +89,118 @@ impl MapModel {
                     .to_wgs84_gj(&self.graph.roads[r.0].linestring);
                 f.set_property("kind", kind);
                 features.push(f);
+            }
+        }
+
+        Ok(serde_json::to_string(&FeatureCollection {
+            features,
+            bbox: None,
+            foreign_members: None,
+        })?)
+    }
+
+    /// Show any path from the point to part of the network. (Not necessarily the best path)
+    pub fn debug_reachable_path(&self, pt: Coord) -> Result<String> {
+        let start_road = self
+            .graph
+            .snap_to_road(pt, self.graph.profile_names["bicycle"])
+            .road;
+        let mut visited: HashSet<RoadID> = HashSet::new();
+        let mut backrefs: HashMap<RoadID, RoadID> = HashMap::new();
+        let mut queue: Vec<RoadID> = Vec::new();
+        queue.push(start_road);
+
+        let mut features = Vec::new();
+
+        while let Some(r) = queue.pop() {
+            if visited.contains(&r) {
+                continue;
+            }
+            visited.insert(r);
+
+            if let Some(infra_type) = self.infra_types[r.0] {
+                if infra_type != InfraType::MixedTraffic {
+                    // We don't even need the path in order; just draw all of the roads part of the
+                    // path
+                    features.push(
+                        self.graph
+                            .mercator
+                            .to_wgs84_gj(&self.graph.roads[r.0].linestring),
+                    );
+                    let mut current = r;
+                    while let Some(next) = backrefs.get(&current) {
+                        features.push(
+                            self.graph
+                                .mercator
+                                .to_wgs84_gj(&self.graph.roads[next.0].linestring),
+                        );
+                        current = *next;
+                    }
+                    break;
+                }
+            }
+
+            if self.los[r.0] != LevelOfService::High {
+                continue;
+            }
+
+            let road = &self.graph.roads[r.0];
+            for i in [road.src_i, road.dst_i] {
+                for r2 in &self.graph.intersections[i.0].roads {
+                    if *r2 == start_road {
+                        continue;
+                    }
+                    if !backrefs.contains_key(&r2) {
+                        backrefs.insert(*r2, r);
+                        queue.push(*r2);
+                    }
+                }
+            }
+        }
+
+        if features.is_empty() {
+            warn!("debug_reachable_path failed!");
+        }
+
+        Ok(serde_json::to_string(&FeatureCollection {
+            features,
+            bbox: None,
+            foreign_members: None,
+        })?)
+    }
+
+    /// Flood from the point, showing reachable roads and severances
+    pub fn debug_unreachable_path(&self, pt: Coord) -> Result<String> {
+        let start = self
+            .graph
+            .snap_to_road(pt, self.graph.profile_names["bicycle"])
+            .road;
+        let mut features = Vec::new();
+
+        let mut visited: HashSet<RoadID> = HashSet::new();
+        let mut queue: Vec<RoadID> = Vec::new();
+        queue.push(start);
+
+        while let Some(r) = queue.pop() {
+            if visited.contains(&r) {
+                continue;
+            }
+            visited.insert(r);
+
+            let road = &self.graph.roads[r.0];
+            let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
+
+            if self.los[r.0] != LevelOfService::High {
+                f.set_property("kind", "severance");
+                features.push(f);
+                continue;
+            }
+
+            f.set_property("kind", "reachable");
+            features.push(f);
+
+            for i in [road.src_i, road.dst_i] {
+                queue.extend(self.graph.intersections[i.0].roads.clone());
             }
         }
 

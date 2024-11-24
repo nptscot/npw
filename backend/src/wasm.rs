@@ -108,6 +108,18 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = debugReachablePath)]
+    pub fn debug_reachable_path_wasm(&self, x: f64, y: f64) -> Result<String, JsValue> {
+        self.debug_reachable_path(self.graph.mercator.pt_to_mercator(Coord { x, y }))
+            .map_err(err_to_js)
+    }
+
+    #[wasm_bindgen(js_name = debugUnreachablePath)]
+    pub fn debug_unrreachable_path_wasm(&self, x: f64, y: f64) -> Result<String, JsValue> {
+        self.debug_unreachable_path(self.graph.mercator.pt_to_mercator(Coord { x, y }))
+            .map_err(err_to_js)
+    }
+
     #[wasm_bindgen(js_name = evaluateOD)]
     pub fn evaluate_od_wasm(&self) -> Result<String, JsValue> {
         self.evaluate_od().map_err(err_to_js)
