@@ -1,7 +1,6 @@
 use std::collections::{BinaryHeap, HashMap, HashSet};
 
 use anyhow::Result;
-use geo::Coord;
 use geojson::FeatureCollection;
 use graph::RoadID;
 use utils::PriorityQueueItem;
@@ -100,16 +99,14 @@ impl MapModel {
         })?)
     }
 
-    /// Show the shortest distance path from the point to any part of the network.
-    pub fn debug_reachable_path(&self, pt: Coord) -> Result<String> {
-        let start_road = self
-            .graph
-            .snap_to_road(pt, self.graph.profile_names["bicycle"])
-            .road;
+    /// Show the shortest distance path from any of the start roads to any part of the network.
+    pub fn debug_reachable_path(&self, start_roads: HashSet<RoadID>) -> Result<String> {
         let mut visited: HashSet<RoadID> = HashSet::new();
         let mut backrefs: HashMap<RoadID, RoadID> = HashMap::new();
         let mut queue: BinaryHeap<PriorityQueueItem<usize, RoadID>> = BinaryHeap::new();
-        queue.push(PriorityQueueItem::new(0, start_road));
+        for r in &start_roads {
+            queue.push(PriorityQueueItem::new(0, *r));
+        }
 
         let mut features = Vec::new();
 
@@ -149,7 +146,7 @@ impl MapModel {
             let road = &self.graph.roads[r.0];
             for i in [road.src_i, road.dst_i] {
                 for r2 in &self.graph.intersections[i.0].roads {
-                    if *r2 == start_road {
+                    if start_roads.contains(r2) {
                         continue;
                     }
                     if !backrefs.contains_key(&r2) {
@@ -174,17 +171,13 @@ impl MapModel {
         })?)
     }
 
-    /// Flood from the point, showing reachable roads and severances
-    pub fn debug_unreachable_path(&self, pt: Coord) -> Result<String> {
-        let start = self
-            .graph
-            .snap_to_road(pt, self.graph.profile_names["bicycle"])
-            .road;
+    /// Flood from all of the start roads, showing reachable roads and severances
+    pub fn debug_unreachable_path(&self, start_roads: HashSet<RoadID>) -> Result<String> {
         let mut features = Vec::new();
 
         let mut visited: HashSet<RoadID> = HashSet::new();
         let mut queue: Vec<RoadID> = Vec::new();
-        queue.push(start);
+        queue.extend(start_roads);
 
         while let Some(r) = queue.pop() {
             if visited.contains(&r) {

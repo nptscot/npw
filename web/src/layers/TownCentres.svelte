@@ -6,11 +6,17 @@
   import { percent } from "../utils";
   import { QualitativeLegend } from "../common";
   import { townCentres as show } from "./stores";
+  import type { Feature, MultiPolygon } from "geojson";
+  import DebugReachability from "./DebugReachability.svelte";
 
   let data: TownCentres = {
     type: "FeatureCollection",
     features: [],
   };
+  let hovered: Feature<
+    MultiPolygon,
+    { reachable: boolean; idx: number }
+  > | null;
 
   async function recalc() {
     if ($backend) {
@@ -55,6 +61,7 @@
     layout={{
       visibility: $show ? "visible" : "none",
     }}
+    bind:hovered
   >
     <Popup openOn="hover" let:props>
       Town centre {props.name || ""}
@@ -62,3 +69,5 @@
     </Popup>
   </FillLayer>
 </GeoJSON>
+
+<DebugReachability kind="town_centres" {hovered} />

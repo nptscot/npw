@@ -109,15 +109,33 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = debugReachablePath)]
-    pub fn debug_reachable_path_wasm(&self, x: f64, y: f64) -> Result<String, JsValue> {
-        self.debug_reachable_path(self.graph.mercator.pt_to_mercator(Coord { x, y }))
-            .map_err(err_to_js)
+    pub fn debug_reachable_path_wasm(&self, kind: &str, idx: usize) -> Result<String, JsValue> {
+        let roads = match kind {
+            "schools" => [self.schools[idx].road].into(),
+            "gp_hospitals" => [self.gp_hospitals[idx].road].into(),
+            "town_centres" => self.town_centres[idx].roads.clone(),
+            _ => {
+                return Err(err_to_js(format!(
+                    "debug_reachable_path_wasm got bad kind {kind}"
+                )));
+            }
+        };
+        self.debug_reachable_path(roads).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = debugUnreachablePath)]
-    pub fn debug_unrreachable_path_wasm(&self, x: f64, y: f64) -> Result<String, JsValue> {
-        self.debug_unreachable_path(self.graph.mercator.pt_to_mercator(Coord { x, y }))
-            .map_err(err_to_js)
+    pub fn debug_unrreachable_path_wasm(&self, kind: &str, idx: usize) -> Result<String, JsValue> {
+        let roads = match kind {
+            "schools" => [self.schools[idx].road].into(),
+            "gp_hospitals" => [self.gp_hospitals[idx].road].into(),
+            "town_centres" => self.town_centres[idx].roads.clone(),
+            _ => {
+                return Err(err_to_js(format!(
+                    "debug_reachable_path_wasm got bad kind {kind}"
+                )));
+            }
+        };
+        self.debug_unreachable_path(roads).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = evaluateOD)]
@@ -182,7 +200,8 @@ impl MapModel {
             features: self
                 .schools
                 .iter()
-                .map(|s| s.to_gj(&self.graph.mercator, roads.covers(s.road)))
+                .enumerate()
+                .map(|(idx, s)| s.to_gj(&self.graph.mercator, roads.covers(s.road), idx))
                 .collect(),
         })
         .map_err(err_to_js)
@@ -199,7 +218,8 @@ impl MapModel {
             features: self
                 .gp_hospitals
                 .iter()
-                .map(|x| x.to_gj(&self.graph.mercator, roads.covers(x.road)))
+                .enumerate()
+                .map(|(idx, x)| x.to_gj(&self.graph.mercator, roads.covers(x.road), idx))
                 .collect(),
         })
         .map_err(err_to_js)
@@ -216,7 +236,8 @@ impl MapModel {
             features: self
                 .town_centres
                 .iter()
-                .map(|x| x.to_gj(&self.graph.mercator, roads.covers_any(&x.roads)))
+                .enumerate()
+                .map(|(idx, x)| x.to_gj(&self.graph.mercator, roads.covers_any(&x.roads), idx))
                 .collect(),
         })
         .map_err(err_to_js)

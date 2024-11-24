@@ -13,7 +13,7 @@
     type: "FeatureCollection",
     features: [],
   };
-  let hovered: Feature<Point, { reachable: boolean }> | null;
+  let hovered: Feature<Point, { reachable: boolean; idx: number }> | null;
 
   async function recalc() {
     if ($backend) {
@@ -68,4 +68,4 @@
   </CircleLayer>
 </GeoJSON>
 
-<DebugReachability {hovered} />
+<DebugReachability kind="schools" {hovered} />

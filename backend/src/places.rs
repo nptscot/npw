@@ -21,12 +21,13 @@ pub struct School {
 }
 
 impl School {
-    pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
+    pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.point);
         f.set_property("kind", self.kind.clone());
         f.set_property("name", self.name.clone());
         f.set_property("pupils", self.pupils);
         f.set_property("reachable", reachable);
+        f.set_property("idx", idx);
         f
     }
 
@@ -70,11 +71,12 @@ pub struct GPHospital {
 }
 
 impl GPHospital {
-    pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
+    pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.point);
         f.set_property("kind", self.kind.clone());
         f.set_property("name", self.name.clone());
         f.set_property("reachable", reachable);
+        f.set_property("idx", idx);
         f
     }
 
@@ -121,10 +123,11 @@ pub struct TownCentre {
 }
 
 impl TownCentre {
-    pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
+    pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.polygon);
         f.set_property("name", self.name.clone());
         f.set_property("reachable", reachable);
+        f.set_property("idx", idx);
         f
     }
 

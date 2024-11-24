@@ -1,9 +1,18 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { backend } from "../stores";
-  import type { Feature, Point, FeatureCollection } from "geojson";
+  import type {
+    Feature,
+    Point,
+    MultiPolygon,
+    FeatureCollection,
+  } from "geojson";
 
-  export let hovered: Feature<Point, { reachable: boolean }> | null;
+  export let kind: string;
+  export let hovered: Feature<
+    Point | MultiPolygon,
+    { reachable: boolean; idx: number }
+  > | null;
 
   let debug: FeatureCollection = {
     type: "FeatureCollection",
@@ -12,14 +21,18 @@
   $: updateDebug(hovered);
 
   async function updateDebug(
-    hovered: Feature<Point, { reachable: boolean }> | null,
+    hovered: Feature<
+      Point | MultiPolygon,
+      { reachable: boolean; idx: number }
+    > | null,
   ) {
     if ($backend && hovered) {
       if (hovered.properties.reachable) {
-        debug = await $backend.debugReachablePath(hovered.geometry.coordinates);
+        debug = await $backend.debugReachablePath(kind, hovered.properties.idx);
       } else {
         debug = await $backend.debugUnreachablePath(
-          hovered.geometry.coordinates,
+          kind,
+          hovered.properties.idx,
         );
       }
     } else {

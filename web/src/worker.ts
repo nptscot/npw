@@ -170,14 +170,14 @@ export class Backend {
     return JSON.parse(this.inner!.renderReachableNetwork());
   }
 
-  debugReachablePath(pt: number[]): FeatureCollection {
+  debugReachablePath(kind: string, idx: number): FeatureCollection {
     this.checkReady();
-    return JSON.parse(this.inner!.debugReachablePath(pt[0], pt[1]));
+    return JSON.parse(this.inner!.debugReachablePath(kind, idx));
   }
 
-  debugUnreachablePath(pt: number[]): FeatureCollection {
+  debugUnreachablePath(kind: string, idx: number): FeatureCollection {
     this.checkReady();
-    return JSON.parse(this.inner!.debugUnreachablePath(pt[0], pt[1]));
+    return JSON.parse(this.inner!.debugUnreachablePath(kind, idx));
   }
 
   private checkReady() {

@@ -113,17 +113,23 @@ export let stats: Writable<Stats | null> = writable(null);
 
 export type Schools = FeatureCollection<
   Point,
-  { kind: string; name: string; pupils: number; reachable: boolean }
+  {
+    kind: string;
+    name: string;
+    pupils: number;
+    reachable: boolean;
+    idx: number;
+  }
 >;
 
 export type GPHospitals = FeatureCollection<
   Point,
-  { kind: string; name: string; reachable: boolean }
+  { kind: string; name: string; reachable: boolean; idx: number }
 >;
 
 export type TownCentres = FeatureCollection<
   MultiPolygon,
-  { name?: string; reachable: boolean }
+  { name?: string; reachable: boolean; idx: number }
 >;
 
 export type IMDZones = FeatureCollection<
