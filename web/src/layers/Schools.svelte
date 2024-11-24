@@ -1,22 +1,19 @@
 <script lang="ts">
-  import {
-    GeoJSON,
-    hoverStateFilter,
-    CircleLayer,
-    LineLayer,
-  } from "svelte-maplibre";
+  import { GeoJSON, hoverStateFilter, CircleLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import LayerControls from "./LayerControls.svelte";
   import { backend, type Schools } from "../stores";
   import { percent } from "../utils";
   import { QualitativeLegend } from "../common";
   import { schools as show } from "./stores";
-  import type { Feature, Point, FeatureCollection } from "geojson";
+  import type { Feature, Point } from "geojson";
+  import DebugReachability from "./DebugReachability.svelte";
 
   let data: Schools = {
     type: "FeatureCollection",
     features: [],
   };
+  let hovered: Feature<Point, { reachable: boolean }> | null;
 
   async function recalc() {
     if ($backend) {
@@ -29,32 +26,6 @@
   }
 
   $: reachable = data.features.filter((f) => f.properties.reachable).length;
-
-  let hovered: Feature<Point, { reachable: boolean }> | null;
-  let debug: FeatureCollection = {
-    type: "FeatureCollection",
-    features: [],
-  };
-  $: updateDebug(hovered);
-
-  async function updateDebug(
-    hovered: Feature<Point, { reachable: boolean }> | null,
-  ) {
-    if ($backend && hovered) {
-      if (hovered.properties.reachable) {
-        debug = await $backend.debugReachablePath(hovered.geometry.coordinates);
-      } else {
-        debug = await $backend.debugUnreachablePath(
-          hovered.geometry.coordinates,
-        );
-      }
-    } else {
-      debug = {
-        type: "FeatureCollection",
-        features: [],
-      };
-    }
-  }
 </script>
 
 <LayerControls name="schools">
@@ -97,16 +68,4 @@
   </CircleLayer>
 </GeoJSON>
 
-<GeoJSON data={debug} generateId>
-  <LineLayer
-    paint={{
-      "line-width": 3,
-      "line-color": [
-        "case",
-        ["==", ["get", "kind"], "severance"],
-        "red",
-        "blue",
-      ],
-    }}
-  />
-</GeoJSON>
+<DebugReachability {hovered} />

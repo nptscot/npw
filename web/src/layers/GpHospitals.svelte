@@ -6,11 +6,14 @@
   import { percent } from "../utils";
   import { QualitativeLegend } from "../common";
   import { gpHospitals as show } from "./stores";
+  import type { Feature, Point } from "geojson";
+  import DebugReachability from "./DebugReachability.svelte";
 
   let data: GPHospitals = {
     type: "FeatureCollection",
     features: [],
   };
+  let hovered: Feature<Point, { reachable: boolean }> | null;
 
   async function recalc() {
     if ($backend) {
@@ -55,9 +58,12 @@
     layout={{
       visibility: $show ? "visible" : "none",
     }}
+    bind:hovered
   >
     <Popup openOn="hover" let:props>
       {props.name} is a {props.kind}. It {props.reachable ? "is" : "is not"} reachable.
     </Popup>
   </CircleLayer>
 </GeoJSON>
+
+<DebugReachability {hovered} />
