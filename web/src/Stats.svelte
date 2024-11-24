@@ -31,17 +31,57 @@
 {#if $stats}
   <p>
     <!-- svelte-ignore a11y-invalid-attribute -->
-    <a
-      href="#"
-      on:click|preventDefault={() =>
-        ($mode = {
-          kind: "debug-worst-routes",
-          routes: notNull($stats).worst_directness_routes,
-        })}
-    >
-      Average weighted directness
+    <a href="#" on:click|preventDefault={() => ($highRouteCoverage = true)}>
+      High cycling flow coverage
     </a>
-    : {$stats.average_weighted_directness.toFixed(1)}x
+    :
+    <b>
+      {percent2(
+        $stats.covered_flow_quintile_sums[0],
+        $stats.total_flow_quintile_sums[0],
+      )}
+    </b>
+  </p>
+
+  <hr />
+
+  <p>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={() => ($highRouteCoverage = true)}>
+      Medium cycling flow coverage
+    </a>
+    :
+    <b>
+      {percent2(
+        $stats.covered_flow_quintile_sums[1],
+        $stats.total_flow_quintile_sums[1],
+      )}
+    </b>
+  </p>
+
+  <p>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={() => ($townCentres = true)}>
+      Town Centres
+    </a>
+    :
+    <b>{percent($stats.percent_reachable_town_centres)}</b>
+  </p>
+
+  <hr />
+
+  <p>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={() => ($highRouteCoverage = true)}>
+      Low cycling flow coverage
+    </a>
+    :
+    <b>
+      {percent2(
+        $stats.covered_flow_quintile_sums[2],
+        $stats.total_flow_quintile_sums[2],
+      )}
+    </b>
   </p>
 
   <p>
@@ -62,58 +102,26 @@
 
   <p>
     <!-- svelte-ignore a11y-invalid-attribute -->
-    <a href="#" on:click|preventDefault={() => ($townCentres = true)}>
-      Town Centres
-    </a>
-    :
-    <b>{percent($stats.percent_reachable_town_centres)}</b>
-  </p>
-
-  <p>
-    <!-- svelte-ignore a11y-invalid-attribute -->
     <a href="#" on:click|preventDefault={() => ($imdZones = true)}>SIMD</a>
     :
     <b>{percent($stats.percent_reachable_imd_population)}</b>
   </p>
 
+  <hr />
+
   <p>
     <!-- svelte-ignore a11y-invalid-attribute -->
-    <a href="#" on:click|preventDefault={() => ($highRouteCoverage = true)}>
-      High cycling flow coverage
+    <a
+      href="#"
+      on:click|preventDefault={() =>
+        ($mode = {
+          kind: "debug-worst-routes",
+          routes: notNull($stats).worst_directness_routes,
+        })}
+    >
+      Average weighted directness
     </a>
-    :
-    <b>
-      {percent2(
-        $stats.covered_flow_quintile_sums[0],
-        $stats.total_flow_quintile_sums[0],
-      )}
-    </b>
-  </p>
-  <p>
-    <!-- svelte-ignore a11y-invalid-attribute -->
-    <a href="#" on:click|preventDefault={() => ($highRouteCoverage = true)}>
-      Medium cycling flow coverage
-    </a>
-    :
-    <b>
-      {percent2(
-        $stats.covered_flow_quintile_sums[1],
-        $stats.total_flow_quintile_sums[1],
-      )}
-    </b>
-  </p>
-  <p>
-    <!-- svelte-ignore a11y-invalid-attribute -->
-    <a href="#" on:click|preventDefault={() => ($highRouteCoverage = true)}>
-      Low cycling flow coverage
-    </a>
-    :
-    <b>
-      {percent2(
-        $stats.covered_flow_quintile_sums[2],
-        $stats.total_flow_quintile_sums[2],
-      )}
-    </b>
+    : {$stats.average_weighted_directness.toFixed(1)}x
   </p>
 
   <details>
