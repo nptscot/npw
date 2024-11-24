@@ -1,9 +1,10 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BinaryHeap, HashMap, HashSet};
 
 use anyhow::Result;
 use geo::Coord;
 use geojson::FeatureCollection;
 use graph::RoadID;
+use utils::PriorityQueueItem;
 
 use crate::{InfraType, LevelOfService, MapModel};
 
@@ -99,7 +100,7 @@ impl MapModel {
         })?)
     }
 
-    /// Show any path from the point to part of the network. (Not necessarily the best path)
+    /// Show the shortest distance path from the point to any part of the network.
     pub fn debug_reachable_path(&self, pt: Coord) -> Result<String> {
         let start_road = self
             .graph
@@ -107,12 +108,13 @@ impl MapModel {
             .road;
         let mut visited: HashSet<RoadID> = HashSet::new();
         let mut backrefs: HashMap<RoadID, RoadID> = HashMap::new();
-        let mut queue: Vec<RoadID> = Vec::new();
-        queue.push(start_road);
+        let mut queue: BinaryHeap<PriorityQueueItem<usize, RoadID>> = BinaryHeap::new();
+        queue.push(PriorityQueueItem::new(0, start_road));
 
         let mut features = Vec::new();
 
-        while let Some(r) = queue.pop() {
+        while let Some(item) = queue.pop() {
+            let r = item.value;
             if visited.contains(&r) {
                 continue;
             }
@@ -152,7 +154,10 @@ impl MapModel {
                     }
                     if !backrefs.contains_key(&r2) {
                         backrefs.insert(*r2, r);
-                        queue.push(*r2);
+                        queue.push(PriorityQueueItem::new(
+                            item.cost + meters(road.length_meters),
+                            *r2,
+                        ));
                     }
                 }
             }
@@ -210,4 +215,9 @@ impl MapModel {
             foreign_members: None,
         })?)
     }
+}
+
+// to cm
+fn meters(x: f64) -> usize {
+    (x * 100.0).round() as usize
 }
