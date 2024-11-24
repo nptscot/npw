@@ -1,0 +1,125 @@
+<script lang="ts">
+  import { notNull } from "svelte-utils";
+  import { backend, stats, mode } from "../stores";
+  import { onMount } from "svelte";
+  import {
+    schools,
+    gpHospitals,
+    townCentres,
+    imdZones,
+    highRouteCoverage,
+  } from "../layers/stores";
+  import Metric from "./Metric.svelte";
+
+  async function recalc() {
+    $stats = await $backend!.recalculateStats();
+  }
+
+  onMount(async () => {
+    if ($stats == null) {
+      await recalc();
+    }
+  });
+
+  // Returns something [0, 1]
+  function percent(x: number, total: number): number {
+    if (total == 0) {
+      return 0;
+    }
+    return x / total;
+  }
+</script>
+
+<button on:click={recalc}>Recalculate</button>
+
+{#if $stats}
+  <Metric
+    label="High cycling flow coverage"
+    showLayer={$highRouteCoverage}
+    pct={percent(
+      $stats.covered_flow_quintile_sums[0],
+      $stats.total_flow_quintile_sums[0],
+    )}
+  />
+
+  <hr />
+
+  <Metric
+    label="Medium cycling flow coverage"
+    showLayer={$highRouteCoverage}
+    pct={percent(
+      $stats.covered_flow_quintile_sums[1],
+      $stats.total_flow_quintile_sums[1],
+    )}
+  />
+
+  <Metric
+    label="Town centres"
+    showLayer={$townCentres}
+    pct={$stats.percent_reachable_town_centres}
+  />
+
+  <hr />
+
+  <Metric
+    label="Low cycling flow coverage"
+    showLayer={$highRouteCoverage}
+    pct={percent(
+      $stats.covered_flow_quintile_sums[2],
+      $stats.total_flow_quintile_sums[2],
+    )}
+  />
+
+  <Metric
+    label="Schools"
+    showLayer={$schools}
+    pct={$stats.percent_reachable_schools}
+  />
+
+  <Metric
+    label="GPs and hospitals"
+    showLayer={$gpHospitals}
+    pct={$stats.percent_reachable_gp_hospitals}
+  />
+
+  <Metric
+    label="Deprived neighbourhood coverage"
+    showLayer={$imdZones}
+    pct={$stats.percent_reachable_imd_population}
+  />
+
+  <hr />
+
+  <p>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a
+      href="#"
+      on:click|preventDefault={() =>
+        ($mode = {
+          kind: "debug-worst-routes",
+          routes: notNull($stats).worst_directness_routes,
+        })}
+    >
+      Average weighted directness
+    </a>
+    : {$stats.average_weighted_directness.toFixed(1)}x
+  </p>
+
+  <details>
+    <summary>Percent of demand by infrastructure type</summary>
+    <ul>
+      {#each Object.entries($stats.od_percents_infra_type).toSorted((a, b) => b[1] - a[1]) as [key, pct]}
+        <li>{key}: {Math.round(pct * 100)}%</li>
+      {/each}
+    </ul>
+  </details>
+
+  <details>
+    <summary>Percent of demand by level of service:</summary>
+    <ul>
+      {#each Object.entries($stats.od_percents_los).toSorted((a, b) => b[1] - a[1]) as [key, pct]}
+        <li>{key}: {Math.round(pct * 100)}%</li>
+      {/each}
+    </ul>
+  </details>
+{/if}

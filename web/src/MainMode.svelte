@@ -21,7 +21,7 @@
   import Link from "./common/Link.svelte";
   import { colorByInfraType } from "./common";
   import AllControls from "./layers/AllControls.svelte";
-  import Stats from "./Stats.svelte";
+  import Stats from "./stats/Stats.svelte";
   import ChangeArea from "./ChangeArea.svelte";
 
   let gj: FeatureCollection | null = null;
