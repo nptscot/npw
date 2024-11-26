@@ -1,6 +1,6 @@
 <script lang="ts">
   import { notNull } from "svelte-utils";
-  import { backend, stats, mode } from "../stores";
+  import { backend, stats, mode, tier } from "../stores";
   import { onMount } from "svelte";
   import {
     schools,
@@ -42,51 +42,53 @@
     )}
   />
 
-  <hr />
+  {#if $tier == "secondary" || $tier == "local access" || $tier == "long distance"}
+    <hr />
+    <Metric
+      label="Medium cycling flow coverage"
+      bind:showLayer={$highRouteCoverage}
+      pct={percent(
+        $stats.covered_flow_quintile_sums[1],
+        $stats.total_flow_quintile_sums[1],
+      )}
+    />
 
-  <Metric
-    label="Medium cycling flow coverage"
-    bind:showLayer={$highRouteCoverage}
-    pct={percent(
-      $stats.covered_flow_quintile_sums[1],
-      $stats.total_flow_quintile_sums[1],
-    )}
-  />
+    <Metric
+      label="Town centres"
+      bind:showLayer={$townCentres}
+      pct={$stats.percent_reachable_town_centres}
+    />
+  {/if}
 
-  <Metric
-    label="Town centres"
-    bind:showLayer={$townCentres}
-    pct={$stats.percent_reachable_town_centres}
-  />
+  {#if $tier == "local access" || $tier == "long distance"}
+    <hr />
+    <Metric
+      label="Low cycling flow coverage"
+      bind:showLayer={$highRouteCoverage}
+      pct={percent(
+        $stats.covered_flow_quintile_sums[2],
+        $stats.total_flow_quintile_sums[2],
+      )}
+    />
 
-  <hr />
+    <Metric
+      label="Schools"
+      bind:showLayer={$schools}
+      pct={$stats.percent_reachable_schools}
+    />
 
-  <Metric
-    label="Low cycling flow coverage"
-    bind:showLayer={$highRouteCoverage}
-    pct={percent(
-      $stats.covered_flow_quintile_sums[2],
-      $stats.total_flow_quintile_sums[2],
-    )}
-  />
+    <Metric
+      label="GPs and hospitals"
+      bind:showLayer={$gpHospitals}
+      pct={$stats.percent_reachable_gp_hospitals}
+    />
 
-  <Metric
-    label="Schools"
-    bind:showLayer={$schools}
-    pct={$stats.percent_reachable_schools}
-  />
-
-  <Metric
-    label="GPs and hospitals"
-    bind:showLayer={$gpHospitals}
-    pct={$stats.percent_reachable_gp_hospitals}
-  />
-
-  <Metric
-    label="Deprived neighbourhood coverage"
-    bind:showLayer={$imdZones}
-    pct={$stats.percent_reachable_imd_population}
-  />
+    <Metric
+      label="Deprived neighbourhood coverage"
+      bind:showLayer={$imdZones}
+      pct={$stats.percent_reachable_imd_population}
+    />
+  {/if}
 
   <hr />
 
