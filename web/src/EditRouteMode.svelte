@@ -1,17 +1,14 @@
 <script lang="ts">
-  import { GeoJSON, LineLayer, MapEvents } from "svelte-maplibre";
+  import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { SplitComponent } from "./common/layout";
   import { backend, mode, infraTypes, autosave } from "./stores";
-  import { JsRouteSnapper } from "route-snapper";
   import type { Feature, FeatureCollection, LineString } from "geojson";
-  import { onMount, onDestroy } from "svelte";
+  import { onMount } from "svelte";
   import { colorByInfraType } from "./common";
-  import RouteSnapperLayer from "./snapper/RouteSnapperLayer.svelte";
   import RouteControls from "./snapper/RouteControls.svelte";
-  import { snapMode, undoLength, routeToolGj } from "./snapper/stores";
-  import type { Map, MapMouseEvent } from "maplibre-gl";
+  import { routeTool, waypoints } from "./snapper/stores";
+  import type { Map } from "maplibre-gl";
 
-  export let routeSnapper: JsRouteSnapper;
   export let map: Map;
   export let id: number | null;
 
@@ -37,10 +34,7 @@
   onMount(async () => {
     existingGj = await $backend!.renderRoutes();
 
-    // TODO Add to MapEvents
-    map.on("dragstart", onDragStart);
-    map.on("mouseup", onMouseUp);
-
+    $waypoints = [];
     if (id != null) {
       let feature = existingGj.features.find(
         (f) => f.id == id,
@@ -49,7 +43,13 @@
       notes = feature.properties.notes;
       infraType = feature.properties.infra_type;
 
-      routeSnapper.editExisting(feature.properties.waypoints);
+      // Transform into the correct format
+      $waypoints = feature.properties.waypoints.map((waypt) => {
+        return {
+          point: [waypt.lon, waypt.lat],
+          snapped: waypt.snapped,
+        };
+      });
 
       // TODO Debugging cases where auto-imported routes act oddly
       if (false) {
@@ -57,7 +57,7 @@
         let full_path1 = JSON.parse(
           JSON.stringify(feature.properties.full_path),
         );
-        let output = JSON.parse(routeSnapper.toFinalFeature()!);
+        let output = JSON.parse($routeTool!.inner.calculateRoute($waypoints));
         let waypts2 = JSON.parse(JSON.stringify(output.properties.waypoints));
         let full_path2 = JSON.parse(
           JSON.stringify(output.properties.full_path),
@@ -75,35 +75,6 @@
         }
       }
     }
-
-    redraw();
-  });
-
-  onDestroy(async () => {
-    map.off("dragstart", onDragStart);
-    map.off("mouseup", onMouseUp);
-
-    let output = routeSnapper.toFinalFeature();
-    routeSnapper.clearState();
-
-    if (!output) {
-      window.alert("No route drawn");
-      return;
-    }
-    let feature = JSON.parse(output);
-
-    try {
-      await $backend!.setRoute(id, {
-        feature,
-        name,
-        notes,
-        nodes: feature.properties.full_path,
-        infra_type: infraType,
-      });
-    } catch (err) {
-      window.alert(err);
-    }
-    await autosave();
   });
 
   async function deleteRoute() {
@@ -114,97 +85,43 @@
     $mode = { kind: "main" };
   }
 
-  // TODO Maybe group this code elsewhere
+  async function finish() {
+    try {
+      let feature = JSON.parse($routeTool!.inner.calculateRoute($waypoints));
+      // TODO Is this possible still?
+      if (!feature) {
+        window.alert("No route drawn");
+        return;
+      }
 
-  function onKeyDown(e: KeyboardEvent) {
-    // Ignore keypresses if we're not focused on the map
-    if ((e.target as HTMLElement).tagName == "INPUT") {
-      return;
+      await $backend!.setRoute(id, {
+        feature,
+        name,
+        notes,
+        nodes: feature.properties.full_path,
+        infra_type: infraType,
+      });
+      await autosave();
+    } catch (err) {
+      window.alert(err);
     }
-
-    if (e.key == "Escape") {
-      e.preventDefault();
-      $mode = { kind: "main" };
-    }
+    $mode = { kind: "main" };
   }
 
-  function onKeyPress(e: KeyboardEvent) {
-    // Ignore keypresses if we're not focused on the map
-    if ((e.target as HTMLElement).tagName == "INPUT") {
-      return;
-    }
-
-    if (e.key == "Enter") {
-      e.preventDefault();
-      $mode = { kind: "main" };
-    } else if (e.key == "s" || e.key == "S") {
-      e.preventDefault();
-      routeSnapper.toggleSnapMode();
-      redraw();
-    } else if (e.key == "z" && e.ctrlKey) {
-      e.preventDefault();
-      routeSnapper.undo();
-      redraw();
-    }
-  }
-
-  function redraw() {
-    let gj = JSON.parse(routeSnapper.renderGeojson());
-    map.getCanvas().style.cursor = gj.cursor;
-    $snapMode = gj.snap_mode;
-    $undoLength = gj.undo_length;
-    $routeToolGj = gj;
-  }
-
-  function onMouseMove(ev: CustomEvent<MapMouseEvent>) {
-    let snapDistancePixels = 30;
-    let e = ev.detail;
-    let nearbyPoint: [number, number] = [
-      e.point.x - snapDistancePixels,
-      e.point.y,
-    ];
-    let circleRadiusMeters = map
-      .unproject(e.point)
-      .distanceTo(map.unproject(nearbyPoint));
-    if (
-      routeSnapper.onMouseMove(e.lngLat.lng, e.lngLat.lat, circleRadiusMeters)
-    ) {
-      redraw();
-    }
-  }
-
-  function onClick() {
-    routeSnapper.onClick();
-    redraw();
-  }
-
-  function onDragStart() {
-    if (routeSnapper.onDragStart()) {
-      map.dragPan.disable();
-    }
-  }
-
-  function onMouseUp() {
-    if (routeSnapper.onMouseUp()) {
-      map.dragPan.enable();
-    }
+  function cancel() {
+    $mode = { kind: "main" };
   }
 </script>
-
-<svelte:window on:keydown={onKeyDown} on:keypress={onKeyPress} />
 
 <SplitComponent>
   <div slot="left">
     <h2>Editing a route</h2>
 
-    <button on:click={() => ($mode = { kind: "main" })}>Back</button>
     <button class="secondary" on:click={deleteRoute}>Delete</button>
-
-    <RouteControls {routeSnapper} />
   </div>
 
   <div slot="map">
-    <MapEvents on:mousemove={onMouseMove} on:click={onClick} />
+    <RouteControls {map} {finish} {cancel} />
 
     {#if existingGj}
       <GeoJSON data={existingGj}>
@@ -219,8 +136,6 @@
         />
       </GeoJSON>
     {/if}
-
-    <RouteSnapperLayer />
   </div>
 
   <div slot="right">

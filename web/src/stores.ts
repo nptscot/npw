@@ -1,7 +1,6 @@
 import type { Map } from "maplibre-gl";
 import { get, writable, type Writable } from "svelte/store";
 import { type Backend } from "./worker";
-import { JsRouteSnapper } from "route-snapper";
 import type {
   FeatureCollection,
   LineString,
@@ -31,7 +30,6 @@ export let mainModeRoutesChanged = writable(0);
 
 // TODO Does this need to be a store?
 export let backend: Writable<Backend | null> = writable(null);
-export let routeSnapper: Writable<JsRouteSnapper | null> = writable(null);
 
 export let routeA: Writable<{ lng: number; lat: number } | null> =
   writable(null);

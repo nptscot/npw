@@ -1,8 +1,9 @@
 <script lang="ts">
   import "@picocss/pico/css/pico.jade.min.css";
-  import { Geocoder } from "svelte-utils/map";
+  import { Geocoder, emptyGeojson } from "svelte-utils/map";
   import type { Map } from "maplibre-gl";
   import { onMount } from "svelte";
+  import { writable } from "svelte/store";
   import { FillLayer, GeoJSON, MapLibre } from "svelte-maplibre";
   import {
     Layout,
@@ -24,15 +25,15 @@
     mode,
     backend,
     maptilerApiKey,
-    routeSnapper,
     routeA,
     routeB,
     remoteStorage,
     assetUrl,
     boundaryName,
   } from "./stores";
+  import { routeTool } from "./snapper/stores";
   import { Backend } from "./worker";
-  import init, { JsRouteSnapper } from "route-snapper";
+  import { init, RouteTool } from "route-snapper-ts";
   import { Loading } from "svelte-utils";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
   // TODO Indirect dependencies
@@ -101,7 +102,14 @@
       lat: lerp(0.6, bbox[1], bbox[3]),
     };
 
-    $routeSnapper = new JsRouteSnapper(backendWorker.toRouteSnapper());
+    // The stores are unused; the WASM API is used directly. This TS wrapper is unused.
+    $routeTool = new RouteTool(
+      map,
+      backendWorker.toRouteSnapper(),
+      writable(emptyGeojson()),
+      writable(true),
+      writable(0),
+    );
 
     backend.set(backendWorker);
     await zoomToFit();
@@ -175,8 +183,8 @@
 
         {#if $mode.kind == "main"}
           <MainMode />
-        {:else if $mode.kind == "edit-route" && $routeSnapper && map}
-          <EditRouteMode id={$mode.id} {map} routeSnapper={$routeSnapper} />
+        {:else if $mode.kind == "edit-route" && map}
+          <EditRouteMode id={$mode.id} {map} />
         {:else if $mode.kind == "evaluate-route"}
           <EvaluateRouteMode />
         {:else if $mode.kind == "evaluate-od"}
