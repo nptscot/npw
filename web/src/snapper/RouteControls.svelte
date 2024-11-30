@@ -1,5 +1,6 @@
 <script lang="ts">
   import { HelpButton } from "../common";
+  import { SplitComponent } from "../common/layout";
   import { routeTool, waypoints, type Waypoint } from "./stores";
   import { Marker, MapEvents, GeoJSON, LineLayer } from "svelte-maplibre";
   import type { MapMouseEvent, Map } from "maplibre-gl";
@@ -9,9 +10,9 @@
   import { emptyGeojson } from "svelte-utils/map";
 
   export let map: Map;
-
   export let finish: () => void;
   export let cancel: () => void;
+  export let deleteRoute: () => void;
 
   onDestroy(() => {
     $waypoints = [];
@@ -20,7 +21,7 @@
   });
 
   let drawMode: "append-start" | "append-end" | "adjust" = "append-end";
-  let snapMode = true;
+  let snapMode: "snap" | "free" = "snap";
   let undoStates: Waypoint[][] = [];
 
   interface ExtraNode {
@@ -65,9 +66,9 @@
   }
 
   function toggleSnap() {
-    snapMode = !snapMode;
+    snapMode = snapMode == "snap" ? "free" : "snap";
     if (cursor) {
-      cursor.snapped = snapMode;
+      cursor.snapped = snapMode == "snap";
     }
   }
 
@@ -77,12 +78,12 @@
       if (drawMode == "append-start") {
         w.splice(0, 0, {
           point: e.detail.lngLat.toArray(),
-          snapped: snapMode,
+          snapped: snapMode == "snap",
         });
       } else if (drawMode == "append-end") {
         w.push({
           point: e.detail.lngLat.toArray(),
-          snapped: snapMode,
+          snapped: snapMode == "snap",
         });
       }
       return w;
@@ -92,7 +93,7 @@
   function onMouseMove(e: CustomEvent<MapMouseEvent>) {
     cursor = {
       point: e.detail.lngLat.toArray(),
-      snapped: snapMode,
+      snapped: snapMode == "snap",
     };
   }
 
@@ -240,8 +241,75 @@
   }
 </script>
 
-<div style="display: flex">
-  <div style="display: flex; flex-direction: row">
+<svelte:window on:keydown={keyDown} />
+
+<SplitComponent>
+  <div slot="left">
+    <h2>Editing a route</h2>
+
+    <button on:click={finish} disabled={$waypoints.length < 2}>Finish</button>
+    <button class="secondary" disabled={undoStates.length == 0} on:click={undo}>
+      {#if undoStates.length == 0}
+        Undo
+      {:else}
+        Undo ({undoStates.length})
+      {/if}
+    </button>
+    <button class="secondary" on:click={deleteRoute}>Delete</button>
+    <button class="secondary" on:click={cancel}>Cancel</button>
+    <HelpButton>
+      <ul>
+        <li>
+          <b>Click</b>
+          the map to add new points, while extending from the start or end
+        </li>
+        <li>
+          <b>Click and drag</b>
+          any point to move it
+        </li>
+        <li>
+          <b>Click</b>
+          a waypoint to toggle snapping
+        </li>
+        <li>
+          <b>Right click</b>
+          a waypoint to delete it
+        </li>
+      </ul>
+
+      <p>Keyboard shortcuts:</p>
+      <ul>
+        <li>
+          <b>1</b>
+          to extend from start
+        </li>
+        <li>
+          <b>2</b>
+          to extend from end
+        </li>
+        <li>
+          <b>3</b>
+          to drag middle points
+        </li>
+        <li>
+          <b>s</b>
+          to switch between snapping to roads and drawing anywhere
+        </li>
+        <li>
+          <b>Control+Z</b>
+          to undo your last change
+        </li>
+        <li>
+          <b>Enter</b>
+          to finish
+        </li>
+        <li>
+          <b>Escape</b>
+          to cancel
+        </li>
+      </ul>
+    </HelpButton>
+
     <fieldset>
       <label>
         <input
@@ -266,145 +334,87 @@
     <fieldset>
       <label>
         <input type="radio" value="append-start" bind:group={drawMode} />
-        Extend from start
+        Extend from start (
+        <b>1</b>
+        )
       </label>
       <label>
         <input type="radio" value="append-end" bind:group={drawMode} />
-        Extend from end
+        Extend from end (
+        <b>2</b>
+        )
       </label>
       <label>
         <input type="radio" value="adjust" bind:group={drawMode} />
-        Adjust middle points
+        Adjust middle points (
+        <b>3</b>
+        )
       </label>
     </fieldset>
   </div>
 
-  <div style="margin-left: auto">
-    <div role="group">
-      <button on:click={finish} disabled={$waypoints.length < 2}>Finish</button>
-      <button
-        class="secondary"
-        disabled={undoStates.length == 0}
-        on:click={undo}
+  <div slot="map">
+    <MapEvents on:click={onMapClick} on:mousemove={onMouseMove} />
+
+    {#each extraNodes as node}
+      <Marker
+        draggable
+        bind:lngLat={node.point}
+        on:dragstart={() => addNode(node)}
+        on:drag={() => updateDrag(node)}
+        on:dragend={finalizeDrag}
+        zIndex={0}
       >
-        {#if undoStates.length == 0}
-          Undo
-        {:else}
-          Undo ({undoStates.length})
-        {/if}
-      </button>
-      <button class="secondary" on:click={cancel}>Cancel</button>
-      <HelpButton>
-        <ul>
-          <li>
-            <b>Click</b>
-            the map to add new points, while extending from the start or end
-          </li>
-          <li>
-            <b>Click and drag</b>
-            any point to move it
-          </li>
-          <li>
-            <b>Click</b>
-            a waypoint to toggle snapping
-          </li>
-          <li>
-            <b>Right click</b>
-            a waypoint to delete it
-          </li>
-        </ul>
+        <span
+          class="dot"
+          class:snapped-node={node.snapped}
+          class:free-node={!node.snapped}
+          class:hide={draggingExtraNode}
+        />
+      </Marker>
+    {/each}
 
-        <p>Keyboard shortcuts:</p>
-        <ul>
-          <li>
-            <b>1</b>
-            to extend from start
-          </li>
-          <li>
-            <b>2</b>
-            to extend from end
-          </li>
-          <li>
-            <b>3</b>
-            to drag middle points
-          </li>
-          <li>
-            <b>s</b>
-            to switch between snapping to roads and drawing anywhere
-          </li>
-          <li>
-            <b>Control+Z</b>
-            to undo your last change
-          </li>
-          <li>
-            <b>Enter</b>
-            to finish
-          </li>
-          <li>
-            <b>Escape</b>
-            to cancel
-          </li>
-        </ul>
-      </HelpButton>
-    </div>
+    {#each $waypoints as waypt, idx}
+      <Marker
+        draggable
+        bind:lngLat={waypt.point}
+        on:click={() => toggleSnapped(idx)}
+        on:contextmenu={() => removeWaypoint(idx)}
+        on:mouseenter={() => (hoveringOnMarker = true)}
+        on:mouseleave={() => (hoveringOnMarker = false)}
+        on:dragstart={startDraggingWaypoint}
+        on:dragend={() => (draggingMarker = false)}
+        zIndex={1}
+      >
+        <span class="dot" class:snapped={waypt.snapped}>{idx + 1}</span>
+      </Marker>
+    {/each}
+
+    <GeoJSON data={calculateRoutes($routeTool, $waypoints)} generateId>
+      <LineLayer
+        paint={{
+          "line-color": "black",
+          "line-width": 10,
+        }}
+      />
+    </GeoJSON>
+
+    <GeoJSON data={previewGj}>
+      <LineLayer
+        paint={{
+          "line-color": "black",
+          "line-width": 3,
+        }}
+      />
+    </GeoJSON>
+
+    <slot name="extra-map" />
   </div>
-</div>
 
-<svelte:window on:keydown={keyDown} />
-
-<MapEvents on:click={onMapClick} on:mousemove={onMouseMove} />
-
-{#each extraNodes as node}
-  <Marker
-    draggable
-    bind:lngLat={node.point}
-    on:dragstart={() => addNode(node)}
-    on:drag={() => updateDrag(node)}
-    on:dragend={finalizeDrag}
-    zIndex={0}
-  >
-    <span
-      class="dot"
-      class:snapped-node={node.snapped}
-      class:free-node={!node.snapped}
-      class:hide={draggingExtraNode}
-    />
-  </Marker>
-{/each}
-
-{#each $waypoints as waypt, idx}
-  <Marker
-    draggable
-    bind:lngLat={waypt.point}
-    on:click={() => toggleSnapped(idx)}
-    on:contextmenu={() => removeWaypoint(idx)}
-    on:mouseenter={() => (hoveringOnMarker = true)}
-    on:mouseleave={() => (hoveringOnMarker = false)}
-    on:dragstart={startDraggingWaypoint}
-    on:dragend={() => (draggingMarker = false)}
-    zIndex={1}
-  >
-    <span class="dot" class:snapped={waypt.snapped}>{idx + 1}</span>
-  </Marker>
-{/each}
-
-<GeoJSON data={calculateRoutes($routeTool, $waypoints)} generateId>
-  <LineLayer
-    paint={{
-      "line-color": "black",
-      "line-width": 10,
-    }}
-  />
-</GeoJSON>
-
-<GeoJSON data={previewGj}>
-  <LineLayer
-    paint={{
-      "line-color": "black",
-      "line-width": 3,
-    }}
-  />
-</GeoJSON>
+  <div slot="right">
+    <slot name="extra-right" />
+  </div>
+</SplitComponent>
 
 <style>
   .dot {

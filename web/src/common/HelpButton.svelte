@@ -15,7 +15,6 @@
   <Modal on:close={() => (show = false)}>
     <h2>Help</h2>
     <slot />
-    <button class="secondary" on:click={() => (show = false)}>OK</button>
   </Modal>
 {/if}
 

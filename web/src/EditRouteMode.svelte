@@ -1,6 +1,5 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { SplitComponent } from "./common/layout";
   import { backend, mode, infraTypes, autosave } from "./stores";
   import type { Feature, FeatureCollection, LineString } from "geojson";
   import { onMount } from "svelte";
@@ -113,16 +112,8 @@
   }
 </script>
 
-<SplitComponent>
-  <div slot="left">
-    <h2>Editing a route</h2>
-
-    <button class="secondary" on:click={deleteRoute}>Delete</button>
-  </div>
-
-  <div slot="map">
-    <RouteControls {map} {finish} {cancel} />
-
+<RouteControls {map} {finish} {cancel} {deleteRoute}>
+  <span slot="extra-map">
     {#if existingGj}
       <GeoJSON data={existingGj}>
         <LineLayer
@@ -136,9 +127,9 @@
         />
       </GeoJSON>
     {/if}
-  </div>
+  </span>
 
-  <div slot="right">
+  <div slot="extra-right">
     <label>
       Name:
       <input type="text" bind:value={name} />
@@ -158,4 +149,4 @@
       <textarea rows="5" bind:value={notes} />
     </label>
   </div>
-</SplitComponent>
+</RouteControls>
