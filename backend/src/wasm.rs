@@ -7,7 +7,7 @@ use graph::{IntersectionID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-use crate::{InfraType, MapModel, Route};
+use crate::{evaluate::Breakdown, InfraType, MapModel, Route};
 
 static START: Once = Once::new();
 
@@ -104,6 +104,14 @@ impl MapModel {
                 x: req.x2,
                 y: req.y2,
             }),
+            match req.breakdown.as_str() {
+                "" => Breakdown::None,
+                "los" => Breakdown::LevelOfService,
+                "infra_type" => Breakdown::InfraType,
+                x => {
+                    return Err(err_to_js(format!("evaluateRoute got bad breakdown {x}")));
+                }
+            },
         )
         .map_err(err_to_js)
     }
@@ -393,6 +401,7 @@ struct EvaluateRouteRequest {
     y1: f64,
     x2: f64,
     y2: f64,
+    breakdown: String,
 }
 
 // TODO This is an odd, repetitive format. Redesign later.

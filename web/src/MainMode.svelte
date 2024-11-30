@@ -19,7 +19,7 @@
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
-  import { colorByInfraType } from "./common";
+  import { colorByInfraType } from "./colors";
   import AllControls from "./layers/AllControls.svelte";
   import Stats from "./stats/Stats.svelte";
   import ChangeArea from "./ChangeArea.svelte";

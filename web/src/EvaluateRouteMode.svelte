@@ -10,21 +10,25 @@
   import { SplitComponent } from "./common/layout";
   import { notNull } from "svelte-utils";
   import { mode, backend, routeA, routeB, type RouteGJ } from "./stores";
-  import { colorByInfraType } from "./common";
+  import { colorByInfraType, colorByLoS, levelOfServiceColors } from "./colors";
+  import { QualitativeLegend } from "./common";
   import Directions from "./Directions.svelte";
   import { currentNetwork } from "./layers/stores";
 
   let gj: RouteGJ | null = null;
   let err = "";
+  let breakdown: "" | "los" | "infra_type" = "los";
 
   async function update(
     start: { lng: number; lat: number },
     end: { lng: number; lat: number },
+    breakdown: "" | "los" | "infra_type" = "",
   ) {
     try {
       gj = await $backend!.evaluateRoute({
         start,
         end: [end.lng, end.lat],
+        breakdown,
       });
       err = "";
     } catch (error: any) {
@@ -32,7 +36,7 @@
       err = error.toString();
     }
   }
-  $: update($routeA!, $routeB!);
+  $: update($routeA!, $routeB!, breakdown);
 
   function onRightClick(e: CustomEvent<MapMouseEvent>) {
     // Move the first marker, for convenience
@@ -55,6 +59,19 @@
 
     {#if err}
       <p>{err}</p>
+    {/if}
+
+    <label>
+      Show details along route
+      <select bind:value={breakdown}>
+        <option value="">Just show route</option>
+        <option value="los">Level of service</option>
+        <option value="infra_type">Infrastructure type</option>
+      </select>
+    </label>
+
+    {#if breakdown == "los"}
+      <QualitativeLegend colors={levelOfServiceColors} />
     {/if}
 
     {#if gj}
@@ -95,7 +112,12 @@
           id="eval-route"
           paint={{
             "line-width": 20,
-            "line-color": "red",
+            "line-color":
+              breakdown == ""
+                ? "red"
+                : breakdown == "los"
+                  ? colorByLoS
+                  : colorByInfraType,
             "line-opacity": hoverStateFilter(0.5, 1.0),
           }}
           manageHoverState

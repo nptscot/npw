@@ -3,7 +3,7 @@
   import { backend, mode, infraTypes, autosave } from "./stores";
   import type { Feature, FeatureCollection, LineString } from "geojson";
   import { onMount } from "svelte";
-  import { colorByInfraType } from "./common";
+  import { colorByInfraType } from "./colors";
   import RouteControls from "./snapper/RouteControls.svelte";
   import { routeTool, waypoints } from "./snapper/stores";
   import type { Map } from "maplibre-gl";

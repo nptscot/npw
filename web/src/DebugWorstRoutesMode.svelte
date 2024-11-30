@@ -17,6 +17,7 @@
       gj = await $backend!.evaluateRoute({
         start: { lng: route[0].x, lat: route[0].y },
         end: [route[1].x, route[1].y],
+        breakdown: "",
       });
       err = "";
     } catch (error: any) {

@@ -6,7 +6,7 @@
     autosave,
     mainModeRoutesChanged,
   } from "../stores";
-  import { colorByInfraType } from "../common";
+  import { colorByInfraType } from "../colors";
   import { Popup } from "svelte-utils/map";
   import { Modal } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";

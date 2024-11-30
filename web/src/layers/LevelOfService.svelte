@@ -3,8 +3,8 @@
   import { backend, infraTypeMapping } from "../stores";
   import { Popup } from "svelte-utils/map";
   import LayerControls from "./LayerControls.svelte";
-  import { constructMatchExpression } from "svelte-utils/map";
   import { QualitativeLegend } from "../common";
+  import { levelOfServiceColors, colorByLoS } from "../colors";
 
   let show = false;
   let firstLoad = false;
@@ -12,13 +12,6 @@
   $: if (show) {
     firstLoad = true;
   }
-
-  let colors = {
-    High: "mediumseagreen",
-    Medium: "orange",
-    Low: "red",
-    ShouldNotBeUsed: "brown",
-  };
 </script>
 
 <LayerControls name="level of service">
@@ -28,7 +21,7 @@
   </label>
 
   {#if show}
-    <QualitativeLegend {colors} />
+    <QualitativeLegend colors={levelOfServiceColors} />
   {/if}
 </LayerControls>
 
@@ -41,11 +34,7 @@
         }}
         paint={{
           "line-width": hoverStateFilter(5, 7),
-          "line-color": constructMatchExpression(
-            ["get", "los"],
-            colors,
-            "black",
-          ),
+          "line-color": colorByLoS,
           "line-opacity": 0.8,
         }}
         manageHoverState

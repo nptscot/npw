@@ -1,6 +1,6 @@
 <script lang="ts">
   import { allControls } from "./stores";
-  import { colors } from "../colors";
+  import { tierColors } from "../colors";
 
   let basic: HTMLDivElement | null = null;
   let primary: HTMLDivElement | null = null;
@@ -47,22 +47,22 @@
   <div bind:this={basic} />
 </details>
 
-<details open style:border="2px solid {colors.primaryRoutes}">
+<details open style:border="2px solid {tierColors.primaryRoutes}">
   <summary>Primary Route Reference Layers</summary>
   <div bind:this={primary} />
 </details>
 
-<details open style:border="2px solid {colors.secondaryRoutes}">
+<details open style:border="2px solid {tierColors.secondaryRoutes}">
   <summary>Secondary Route Reference Layers</summary>
   <div bind:this={secondary} />
 </details>
 
-<details open style:border="2px solid {colors.localAccessRoutes}">
+<details open style:border="2px solid {tierColors.localAccessRoutes}">
   <summary>Local Access Route Reference Layers</summary>
   <div bind:this={localAccess} />
 </details>
 
-<details open style:border="2px solid {colors.longDistanceRoutes}">
+<details open style:border="2px solid {tierColors.longDistanceRoutes}">
   <summary>Long Disance Route Reference Layers</summary>
   <div bind:this={longDistance} />
 </details>

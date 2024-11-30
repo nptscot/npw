@@ -6,13 +6,21 @@ use serde::Serialize;
 
 use crate::{InfraType, LevelOfService, MapModel};
 
+pub enum Breakdown {
+    None,
+    LevelOfService,
+    InfraType,
+}
+
 impl MapModel {
-    pub fn evaluate_route(&self, pt1: Coord, pt2: Coord) -> Result<String> {
+    pub fn evaluate_route(&self, pt1: Coord, pt2: Coord, breakdown: Breakdown) -> Result<String> {
         let profile = self.graph.profile_names["bicycle"];
         let start = self.graph.snap_to_road(pt1, profile);
         let end = self.graph.snap_to_road(pt2, profile);
         let route = self.graph.routers[profile.0].route(&self.graph, start, end)?;
         let route_linestring = route.linestring(&self.graph);
+
+        let mut features = Vec::new();
 
         let mut directions = Vec::new();
         for step in route.steps {
@@ -25,15 +33,38 @@ impl MapModel {
                     infra_type: self.get_infra_type(id),
                     los: self.los[id.0],
                 });
+
+                // TODO Glue together adjacent pieces, so it looks nicer
+                match breakdown {
+                    Breakdown::None => {}
+                    Breakdown::LevelOfService => {
+                        let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
+                        f.set_property("los", serde_json::to_value(self.los[id.0]).unwrap());
+                        features.push(f);
+                    }
+                    Breakdown::InfraType => {
+                        let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
+                        f.set_property(
+                            "infra_type",
+                            serde_json::to_value(self.get_infra_type(id)).unwrap(),
+                        );
+                        features.push(f);
+                    }
+                }
             }
+        }
+
+        if matches!(breakdown, Breakdown::None) {
+            features.push(self.graph.mercator.to_wgs84_gj(&route_linestring));
         }
 
         let direct_line = LineString::new(vec![
             self.graph.intersections[start.intersection.0].point.into(),
             self.graph.intersections[end.intersection.0].point.into(),
         ]);
+
         Ok(serde_json::to_string(&FeatureCollection {
-            features: vec![self.graph.mercator.to_wgs84_gj(&route_linestring)],
+            features,
             bbox: None,
             foreign_members: Some(
                 serde_json::json!({
