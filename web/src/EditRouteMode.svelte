@@ -101,10 +101,10 @@
         infra_type: infraType,
       });
       await autosave();
+      $mode = { kind: "main" };
     } catch (err) {
       window.alert(err);
     }
-    $mode = { kind: "main" };
   }
 
   function cancel() {

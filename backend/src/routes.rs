@@ -12,11 +12,14 @@ use crate::{InfraType, MapModel, Route};
 impl MapModel {
     /// Returns the route ID
     pub fn set_route(&mut self, edit_id: Option<usize>, route: Route) -> Result<usize> {
-        if let Some(id) = edit_id {
-            if self.routes.remove(&id).is_none() {
-                bail!("Unknown route {id}");
+        let original = if let Some(id) = edit_id {
+            match self.routes.remove(&id) {
+                Some(route) => Some(route),
+                None => bail!("Unknown route {id}"),
             }
-        }
+        } else {
+            None
+        };
 
         // Check for overlaps
         let mut used_roads = HashMap::new();
@@ -27,6 +30,11 @@ impl MapModel {
         }
         for r in &route.roads {
             if let Some(id) = used_roads.get(r) {
+                // Restore the original
+                if let (Some(id), Some(route)) = (edit_id, original) {
+                    self.routes.insert(id, route);
+                }
+
                 bail!("Another route {id} already crosses the same road {r:?}");
             }
         }

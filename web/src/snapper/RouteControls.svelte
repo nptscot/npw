@@ -217,7 +217,9 @@
 
     if (e.key === "Enter" && !formFocused) {
       e.stopPropagation();
-      finish();
+      if ($waypoints.length >= 2) {
+        finish();
+      }
     } else if (e.key === "Escape") {
       e.stopPropagation();
       cancel();
