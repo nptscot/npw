@@ -292,6 +292,45 @@ impl MapModel {
         self.render_precalculated_flows().map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = getMajorJunctions)]
+    pub fn get_major_junctions(&self) -> Result<String, JsValue> {
+        let major_roads = vec![
+            "motorway",
+            "motorway_link",
+            "trunk",
+            "trunk_link",
+            "primary",
+            "primary_link",
+            "secondary",
+            "secondary_link",
+            "tertiary",
+            "tertiary_link",
+        ];
+
+        let mut features = Vec::new();
+        for i in &self.graph.intersections {
+            if i.roads
+                .iter()
+                .filter(|r| {
+                    self.graph.roads[r.0]
+                        .osm_tags
+                        .is_any("highway", major_roads.clone())
+                })
+                .count()
+                >= 3
+            {
+                features.push(self.graph.mercator.to_wgs84_gj(&i.point));
+            }
+        }
+
+        serde_json::to_string(&FeatureCollection {
+            bbox: None,
+            foreign_members: None,
+            features,
+        })
+        .map_err(err_to_js)
+    }
+
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
         // TODO map_err?
         let route: InputRoute = match serde_wasm_bindgen::from_value(input) {

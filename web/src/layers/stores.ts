@@ -11,3 +11,4 @@ export let gpHospitals = writable(false);
 export let townCentres = writable(false);
 export let imdZones = writable(false);
 export let highRouteCoverage = writable(false);
+export let majorJunctions = writable(true);

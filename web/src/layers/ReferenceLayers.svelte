@@ -10,6 +10,7 @@
   import LevelOfService from "./LevelOfService.svelte";
   import IMDZones from "./IMDZones.svelte";
   import HighRouteCoverage from "./HighRouteCoverage.svelte";
+  import MajorJunctions from "./MajorJunctions.svelte";
 </script>
 
 <ExistingNetwork />
@@ -23,3 +24,4 @@
 <LevelOfService />
 <ReachableNetwork />
 <IMDZones />
+<MajorJunctions />

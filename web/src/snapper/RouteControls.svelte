@@ -8,6 +8,7 @@
   import { RouteTool } from "route-snapper-ts";
   import { onDestroy } from "svelte";
   import { emptyGeojson } from "svelte-utils/map";
+  import { majorJunctions } from "../layers/stores";
 
   export let map: Map;
   export let finish: () => void;
@@ -353,6 +354,11 @@
         )
       </label>
     </fieldset>
+
+    <label>
+      <input type="checkbox" bind:checked={$majorJunctions} />
+      Show major junctions
+    </label>
   </div>
 
   <div slot="map">
