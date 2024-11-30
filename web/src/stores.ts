@@ -104,6 +104,7 @@ export interface Stats {
   percent_reachable_gp_hospitals: number;
   percent_reachable_town_centres: number;
   percent_reachable_imd_population: number;
+  percent_reachable_population: number;
   worst_directness_routes: WorstRoutes;
   covered_flow_quintile_sums: number[];
   total_flow_quintile_sums: number[];
@@ -132,13 +133,14 @@ export type TownCentres = FeatureCollection<
   { name?: string; reachable: boolean; idx: number }
 >;
 
-export type IMDZones = FeatureCollection<
+export type DataZones = FeatureCollection<
   MultiPolygon,
   {
     id: string;
-    rank: number;
-    percentile: number;
+    imd_rank: number;
+    imd_percentile: number;
     population: number;
+    area: number;
     reachable: boolean;
   }
 >;

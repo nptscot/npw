@@ -8,18 +8,23 @@
   import { Popup, makeColorRamp } from "svelte-utils/map";
   import { SequentialLegend } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";
-  import { backend, type IMDZones } from "../stores";
+  import { backend, type DataZones } from "../stores";
   import { percent, sum } from "../utils";
-  import { imdZones as show } from "./stores";
+  import { deprivedPopulation as show } from "./stores";
 
-  let data: IMDZones = {
+  let data: DataZones = {
     type: "FeatureCollection",
     features: [],
   };
 
   async function recalc() {
     if ($backend) {
-      data = await $backend.getIMDZones();
+      let gj = await $backend.getDataZones();
+      // Filter for the top quintile only
+      gj.features = gj.features.filter(
+        (f) => f.properties.imd_percentile <= 20,
+      );
+      data = gj;
     }
   }
 
@@ -68,7 +73,11 @@
   <FillLayer
     manageHoverState
     paint={{
-      "fill-color": makeColorRamp(["get", "percentile"], limits, colorScale),
+      "fill-color": makeColorRamp(
+        ["get", "imd_percentile"],
+        limits,
+        colorScale,
+      ),
       "fill-opacity": hoverStateFilter(0.7, 0.9),
     }}
     layout={{
@@ -79,7 +88,7 @@
       <p>
         Data zone {props.id}
         {props.reachable ? "is" : "is not"} reachable. It has {props.population.toLocaleString()}
-        people, and a SIMD rank of {props.rank}, putting it in the {props.percentile}
+        people, and a SIMD rank of {props.imd_rank}, putting it in the {props.imd_percentile}
         percentile.
       </p>
     </Popup>

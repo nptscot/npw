@@ -6,7 +6,8 @@
     schools,
     gpHospitals,
     townCentres,
-    imdZones,
+    deprivedPopulation,
+    allPopulation,
     highRouteCoverage,
   } from "../layers/stores";
   import Metric from "./Metric.svelte";
@@ -84,9 +85,15 @@
     />
 
     <Metric
-      label="Deprived neighbourhood coverage"
-      bind:showLayer={$imdZones}
+      label="Deprived population coverage"
+      bind:showLayer={$deprivedPopulation}
       pct={$stats.percent_reachable_imd_population}
+    />
+
+    <Metric
+      label="Population coverage"
+      bind:showLayer={$allPopulation}
+      pct={$stats.percent_reachable_population}
     />
   {/if}
 

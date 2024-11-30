@@ -7,7 +7,7 @@ import type {
   Schools,
   GPHospitals,
   TownCentres,
-  IMDZones,
+  DataZones,
   PrecalculatedFlows,
 } from "./stores";
 
@@ -162,9 +162,9 @@ export class Backend {
     return JSON.parse(this.inner!.getTownCentres());
   }
 
-  getIMDZones(): IMDZones {
+  getDataZones(): DataZones {
     this.checkReady();
-    return JSON.parse(this.inner!.getIMDZones());
+    return JSON.parse(this.inner!.getDataZones());
   }
 
   renderReachableNetwork(): FeatureCollection {

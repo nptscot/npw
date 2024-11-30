@@ -39,8 +39,8 @@ impl MapModel {
         // TODO TEMPORARILY, evaluate just one route from each desire line and weight it by the
         // count
         for (zone1, zone2, raw_count) in &self.desire_lines {
-            let pt1 = self.zones[zone1].random_point(&mut rng);
-            let pt2 = self.zones[zone2].random_point(&mut rng);
+            let pt1 = self.od_zones[zone1].random_point(&mut rng);
+            let pt2 = self.od_zones[zone2].random_point(&mut rng);
 
             let profile = self.graph.profile_names["bicycle"];
             let start = self.graph.snap_to_road(pt1, profile);

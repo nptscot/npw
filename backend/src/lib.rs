@@ -42,14 +42,14 @@ pub struct MapModel {
 
     boundary_wgs84: MultiPolygon,
 
-    zones: HashMap<String, od::Zone>,
+    od_zones: HashMap<String, od::Zone>,
     // TODO Use more compact encoding for zone names
     desire_lines: Vec<(String, String, usize)>,
 
     schools: Vec<places::School>,
     gp_hospitals: Vec<places::GPHospital>,
     town_centres: Vec<places::TownCentre>,
-    imd_zones: Vec<places::IMDZone>,
+    data_zones: Vec<places::DataZone>,
 
     // Per RoadID
     traffic_volumes: Vec<usize>,
@@ -93,12 +93,12 @@ impl MapModel {
     pub fn create(
         graph: Graph,
         boundary_wgs84: MultiPolygon,
-        zones: HashMap<String, od::Zone>,
+        od_zones: HashMap<String, od::Zone>,
         desire_lines: Vec<(String, String, usize)>,
         schools: Vec<places::School>,
         gp_hospitals: Vec<places::GPHospital>,
         town_centres: Vec<places::TownCentre>,
-        imd_zones: Vec<places::IMDZone>,
+        data_zones: Vec<places::DataZone>,
         traffic_volumes: Vec<usize>,
         core_network: Vec<bool>,
         precalculated_flows: Vec<usize>,
@@ -117,12 +117,12 @@ impl MapModel {
             routes: HashMap::new(),
             id_counter: 0,
             boundary_wgs84,
-            zones,
+            od_zones,
             desire_lines,
             schools,
             gp_hospitals,
             town_centres,
-            imd_zones,
+            data_zones,
             traffic_volumes,
             core_network,
             precalculated_flows,

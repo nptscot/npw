@@ -11,6 +11,7 @@
   $: update(basic, $allControls, [
     "route network",
     "simd",
+    "population density",
     "core network",
     "existing network",
     "level of service",

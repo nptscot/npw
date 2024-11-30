@@ -166,29 +166,32 @@ struct TownCentreGJ {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct IMDZone {
+pub struct DataZone {
     polygon: MultiPolygon,
     id: String,
-    rank: usize,
-    percentile: usize,
+    imd_rank: usize,
+    pub imd_percentile: usize,
     pub population: usize,
     pub roads: HashSet<RoadID>,
+    // TODO unit?
+    area: f64,
 }
 
-impl IMDZone {
+impl DataZone {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.polygon);
         f.set_property("id", self.id.clone());
-        f.set_property("rank", self.rank);
-        f.set_property("percentile", self.percentile);
+        f.set_property("imd_rank", self.imd_rank);
+        f.set_property("imd_percentile", self.imd_percentile);
         f.set_property("population", self.population);
+        f.set_property("area", self.area);
         f.set_property("reachable", reachable);
         f
     }
 
     pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
         let mut zones = Vec::new();
-        for x in geojson::de::deserialize_feature_collection_str_to_vec::<IMDZoneGJ>(gj)? {
+        for x in geojson::de::deserialize_feature_collection_str_to_vec::<DataZoneGJ>(gj)? {
             if boundary_wgs84.intersects(&x.geometry) {
                 let polygon = graph.mercator.to_mercator(&x.geometry);
 
@@ -201,23 +204,24 @@ impl IMDZone {
                     }
                 }
 
-                zones.push(IMDZone {
+                zones.push(DataZone {
                     polygon,
                     id: x.id,
-                    rank: x.rank,
-                    percentile: x.percentile,
+                    imd_rank: x.rank,
+                    imd_percentile: x.percentile,
                     population: x.population,
+                    area: x.area,
                     roads,
                 });
             }
         }
-        info!("Matched {} IMD zones", zones.len());
+        info!("Matched {} data zones", zones.len());
         Ok(zones)
     }
 }
 
 #[derive(Deserialize)]
-struct IMDZoneGJ {
+struct DataZoneGJ {
     #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
     geometry: MultiPolygon,
     #[serde(rename = "DataZone")]
@@ -225,4 +229,5 @@ struct IMDZoneGJ {
     rank: usize,
     percentile: usize,
     population: usize,
+    area: f64,
 }

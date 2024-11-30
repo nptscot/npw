@@ -8,7 +8,8 @@
   import UrbanAreas from "./UrbanAreas.svelte";
   import ReachableNetwork from "./ReachableNetwork.svelte";
   import LevelOfService from "./LevelOfService.svelte";
-  import IMDZones from "./IMDZones.svelte";
+  import DeprivedPopulation from "./DeprivedPopulation.svelte";
+  import AllPopulation from "./AllPopulation.svelte";
   import HighRouteCoverage from "./HighRouteCoverage.svelte";
   import MajorJunctions from "./MajorJunctions.svelte";
 </script>
@@ -23,5 +24,6 @@
 <UrbanAreas />
 <LevelOfService />
 <ReachableNetwork />
-<IMDZones />
+<DeprivedPopulation />
+<AllPopulation />
 <MajorJunctions />

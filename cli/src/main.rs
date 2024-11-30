@@ -57,15 +57,15 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
     )?;
     let boundary_wgs84 = read_multipolygon(boundary_gj)?;
 
-    timer.step("loading zones");
-    let zones = backend::od::Zone::parse_zones(
+    timer.step("loading OD zones");
+    let od_zones = backend::od::Zone::parse_zones(
         std::fs::read_to_string("../data_prep/tmp/zones.geojson")?,
         &boundary_wgs84,
         &graph.mercator,
     )?;
 
     timer.step("loading desire lines");
-    let desire_lines = read_desire_lines_csv("../data_prep/tmp/od.csv", &zones)?;
+    let desire_lines = read_desire_lines_csv("../data_prep/tmp/od.csv", &od_zones)?;
 
     timer.step("loading schools");
     let schools = backend::places::School::from_gj(
@@ -89,9 +89,9 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         &graph,
     )?;
 
-    timer.step("loading IMD zones");
-    let imd_zones = backend::places::IMDZone::from_gj(
-        &std::fs::read_to_string("../data_prep/tmp/simd.geojson")?,
+    timer.step("loading data zones");
+    let data_zones = backend::places::DataZone::from_gj(
+        &std::fs::read_to_string("../data_prep/tmp/population.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
@@ -106,12 +106,12 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
     Ok(MapModel::create(
         graph,
         boundary_wgs84,
-        zones,
+        od_zones,
         desire_lines,
         schools,
         gp_hospitals,
         town_centres,
-        imd_zones,
+        data_zones,
         traffic_volumes,
         core_network,
         precalculated_flows,

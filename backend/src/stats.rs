@@ -45,17 +45,31 @@ impl MapModel {
         );
 
         // Weighted by population, not just count
-        let mut sum = 0;
-        let mut total = 0;
-        for zone in &self.imd_zones {
-            total += zone.population;
+        let mut deprived_sum = 0;
+        let mut deprived_total = 0;
+        let mut population_sum = 0;
+        let mut population_total = 0;
+        for zone in &self.data_zones {
+            // Only the first quintile
+            if zone.imd_percentile <= 20 {
+                deprived_total += zone.population;
+                if roads.covers_any(&zone.roads) {
+                    deprived_sum += zone.population;
+                }
+            }
+
+            population_total += zone.population;
             if roads.covers_any(&zone.roads) {
-                sum += zone.population;
+                population_sum += zone.population;
             }
         }
         out.insert(
             "percent_reachable_imd_population".to_string(),
-            percent(sum, total).into(),
+            percent(deprived_sum, deprived_total).into(),
+        );
+        out.insert(
+            "percent_reachable_population".to_string(),
+            percent(population_sum, population_total).into(),
         );
 
         timer.step("calculate OD routes and stats");

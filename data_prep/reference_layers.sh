@@ -92,15 +92,15 @@ function traffic {
   cp $1 tmp/traffic.gpkg
 }
 
-function simd {
+function population {
   # From https://www.data.gov.uk/dataset/1102bf85-ed49-440a-b211-da87e8d752eb/scottish-index-of-multiple-deprivation-simd-2020
   wget https://maps.gov.scot/ATOM/shapefiles/SG_SIMD_2020.zip
   unzip SG_SIMD_2020.zip
-  ogr2ogr tmp/simd.geojson \
+  ogr2ogr tmp/population.geojson \
           -t_srs EPSG:4326 \
           SG_SIMD_2020.shp \
           -nlt PROMOTE_TO_MULTI \
-          -sql 'SELECT DataZone, Rankv2 as rank, Percentv2 as percentile, SAPE2017 as population FROM SG_SIMD_2020 WHERE Quintilev2 = 1'
+          -sql 'SELECT DataZone, Rankv2 as rank, Percentv2 as percentile, SAPE2017 as population, OGR_GEOM_AREA as area FROM SG_SIMD_2020'
   rm -f SG_SIMD_2020* SIMD2020v2*xlsx
 }
 
@@ -112,4 +112,4 @@ gp_and_hospitals ~/Downloads/GP_Practices_-_Scotland.json ~/Downloads/NHS_Hospit
 urban_rural
 od_and_zones ~/Downloads/desire_lines_scotland.csv
 traffic ~/Downloads/final_estimates_Scotland.gpkg
-simd
+population
