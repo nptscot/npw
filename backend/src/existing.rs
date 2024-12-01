@@ -8,26 +8,84 @@ use utils::Tags;
 
 use crate::{level_of_service::get_speed_mph, InfraType, MapModel};
 
-/// This determines what's in the graph. The cost function is just based on distance.
-pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration) {
+/// All of the OSM highway types used anywhere. This forces exhaustive matching of all cases.
+pub enum Highway {
+    Motorway,
+    Trunk,
+    Primary,
+    Secondary,
+    Tertiary,
+    Residential,
+    Service,
+    Unclassified,
+
+    Footway,
+    Cycleway,
+    Pedestrian,
+    Path,
+}
+
+impl Highway {
     // This is somewhat based on
     // https://github.com/nptscot/osmactive/blob/b08d91b310187c6b344d3682e040e47ce2519be1/R/osmactive.R#L133-L316,
     // but the purpose is different -- unless a road can't be modified, then it still belongs in
     // the graph.
+    pub fn classify(tags: &Tags) -> Option<Self> {
+        if tags.is_any("highway", vec!["motorway", "motorway_link"]) {
+            return Some(Highway::Motorway);
+        }
+        if tags.is_any("highway", vec!["trunk", "trunk_link"]) {
+            return Some(Highway::Trunk);
+        }
+        if tags.is_any("highway", vec!["primary", "primary_link"]) {
+            return Some(Highway::Primary);
+        }
+        if tags.is_any("highway", vec!["secondary", "secondary_link"]) {
+            return Some(Highway::Secondary);
+        }
+        if tags.is_any("highway", vec!["tertiary", "tertiary_link"]) {
+            return Some(Highway::Tertiary);
+        }
+        if tags.is("highway", "residential") {
+            return Some(Highway::Residential);
+        }
+        if tags.is("highway", "service") {
+            return Some(Highway::Service);
+        }
+        if tags.is("highway", "unclassified") {
+            return Some(Highway::Unclassified);
+        }
 
+        // Exclude dedicated sidewalks; they're almost always parallel to a road that should be
+        // edited instead
+        if tags.is("highway", "footway")
+            && tags.is_any("bicycle", vec!["yes", "designated"])
+            && !tags.is("footway", "sidewalk")
+        {
+            return Some(Highway::Footway);
+        }
+        if tags.is("highway", "cycleway") {
+            return Some(Highway::Cycleway);
+        }
+        if tags.is("highway", "pedestrian") {
+            return Some(Highway::Pedestrian);
+        }
+        if tags.is("highway", "path") {
+            return Some(Highway::Path);
+        }
+
+        // TODO Make sure we got all cases; print stuff
+        // steps, construction
+
+        None
+    }
+}
+
+/// This determines what's in the graph. The cost function is just based on distance.
+pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration) {
     let exclude = (Direction::None, Duration::ZERO);
 
-    if tags.is("highway", "footway") && !tags.is_any("bicycle", vec!["yes", "designated"]) {
-        return exclude;
-    }
-
-    // Exclude dedicated sidewalks; they're almost always parallel to a road that should be
-    // edited instead
-    if tags.is("footway", "sidewalk") {
-        return exclude;
-    }
-    // These don't have the potential to become part of a network
-    if tags.is("highway", "steps") {
+    if Highway::classify(tags).is_none() {
         return exclude;
     }
 
@@ -42,17 +100,14 @@ pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Dura
 pub fn car_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration) {
     let exclude = (Direction::None, Duration::ZERO);
 
-    if tags.is_any(
-        "highway",
-        vec![
-            "cycleway",
-            "pedestrian",
-            "footway",
-            "path",
-            "steps",
-            "construction",
-        ],
-    ) {
+    if let Some(hwy) = Highway::classify(tags) {
+        if matches!(
+            hwy,
+            Highway::Footway | Highway::Cycleway | Highway::Pedestrian | Highway::Path
+        ) {
+            return exclude;
+        }
+    } else {
         return exclude;
     }
 
@@ -95,62 +150,89 @@ impl MapModel {
 //
 // TODO This is only a partial implementation
 pub fn classify(tags: &Tags) -> Option<InfraType> {
-    if tags.is_any("highway", vec!["cycleway", "pedestrian", "footway", "path"]) {
-        // TODO maybe regex
-        if let Some(name) = tags.get("name") {
-            // TODO case sensitivity?
-            if ["Path", "Towpath", "Railway", "Trail"]
-                .iter()
-                .any(|x| name.contains(x))
-            {
-                return Some(InfraType::OffRoad);
+    match Highway::classify(tags).unwrap() {
+        Highway::Motorway
+        | Highway::Trunk
+        | Highway::Primary
+        | Highway::Secondary
+        | Highway::Tertiary
+        | Highway::Residential
+        | Highway::Service
+        | Highway::Unclassified => {
+            if is_any_key(
+                tags,
+                vec![
+                    "cycleway",
+                    "cycleway:left",
+                    "cycleway:right",
+                    "cycleway:both",
+                ],
+                "track",
+            ) {
+                if is_wide_track(tags) {
+                    return Some(InfraType::SegregatedWide);
+                } else {
+                    return Some(InfraType::SegregatedNarrow);
+                }
             }
-        }
-    }
 
-    if tags.is("highway", "cycleway")
-        || is_any_key(
-            tags,
-            vec![
+            // TODO combo is_any method for keys and values?
+            for key in [
                 "cycleway",
                 "cycleway:left",
                 "cycleway:right",
                 "cycleway:both",
-            ],
-            "track",
-        )
-    {
-        return Some(if is_wide_track(tags) {
-            InfraType::SegregatedWide
-        } else {
-            InfraType::SegregatedNarrow
-        });
-    }
+            ] {
+                if tags.is_any(key, vec!["lane", "share_busway"]) {
+                    return Some(InfraType::CycleLane);
+                }
+            }
 
-    if tags.is_any("highway", vec!["footway", "path"])
-        && tags.is_any("bicycle", vec!["yes", "designated"])
-    {
-        if tags.is("segregated", "yes") {
-            // TODO Not sure
-            return Some(InfraType::OffRoad);
-        } else {
-            return Some(InfraType::SharedFootway);
+            None
+        }
+
+        Highway::Footway | Highway::Path => {
+            if is_off_road(tags) {
+                return Some(InfraType::OffRoad);
+            }
+
+            if tags.is("segregated", "yes") {
+                // TODO Not sure
+                return Some(InfraType::OffRoad);
+            } else {
+                return Some(InfraType::SharedFootway);
+            }
+        }
+        Highway::Cycleway => {
+            if is_off_road(tags) {
+                return Some(InfraType::OffRoad);
+            }
+
+            if is_wide_track(tags) {
+                Some(InfraType::SegregatedWide)
+            } else {
+                Some(InfraType::SegregatedNarrow)
+            }
+        }
+        Highway::Pedestrian => {
+            if is_off_road(tags) {
+                return Some(InfraType::OffRoad);
+            }
+
+            None
         }
     }
+}
 
-    // TODO combo is_any method for keys and values?
-    for key in [
-        "cycleway",
-        "cycleway:left",
-        "cycleway:right",
-        "cycleway:both",
-    ] {
-        if tags.is_any(key, vec!["lane", "share_busway"]) {
-            return Some(InfraType::CycleLane);
-        }
+fn is_off_road(tags: &Tags) -> bool {
+    // TODO maybe regex
+    if let Some(name) = tags.get("name") {
+        // TODO case sensitivity?
+        return ["Path", "Towpath", "Railway", "Trail"]
+            .iter()
+            .any(|x| name.contains(x));
     }
-
-    None
+    false
 }
 
 // Over 2m?

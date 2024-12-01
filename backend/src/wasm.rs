@@ -7,7 +7,7 @@ use graph::{IntersectionID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-use crate::{evaluate::Breakdown, InfraType, MapModel, Route};
+use crate::{evaluate::Breakdown, Highway, InfraType, MapModel, Route};
 
 static START: Once = Once::new();
 
@@ -171,6 +171,8 @@ impl MapModel {
     #[wasm_bindgen(js_name = loadSavefile)]
     pub fn load_savefile(&mut self, input: String) -> Result<(), JsValue> {
         let savefile: Savefile = serde_json::from_str(&input).map_err(err_to_js)?;
+        // TODO Detect if the savefile is incompatible with the current model (too big RoadIDs) and
+        // bail cleanly
         self.routes = savefile.routes;
         self.id_counter = savefile.id_counter;
         self.recalculate_after_edits();
@@ -302,27 +304,19 @@ impl MapModel {
 
     #[wasm_bindgen(js_name = getMajorJunctions)]
     pub fn get_major_junctions(&self) -> Result<String, JsValue> {
-        let major_roads = vec![
-            "motorway",
-            "motorway_link",
-            "trunk",
-            "trunk_link",
-            "primary",
-            "primary_link",
-            "secondary",
-            "secondary_link",
-            "tertiary",
-            "tertiary_link",
-        ];
-
         let mut features = Vec::new();
         for i in &self.graph.intersections {
             if i.roads
                 .iter()
                 .filter(|r| {
-                    self.graph.roads[r.0]
-                        .osm_tags
-                        .is_any("highway", major_roads.clone())
+                    matches!(
+                        Highway::classify(&self.graph.roads[r.0].osm_tags).unwrap(),
+                        Highway::Motorway
+                            | Highway::Trunk
+                            | Highway::Primary
+                            | Highway::Secondary
+                            | Highway::Tertiary
+                    )
                 })
                 .count()
                 >= 3

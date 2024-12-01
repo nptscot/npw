@@ -6,7 +6,7 @@ use i_overlay::core::fill_rule::FillRule;
 use i_overlay::f64::string::F64StringOverlay;
 use i_overlay::string::rule::StringRule;
 
-use crate::MapModel;
+use crate::{Highway, MapModel};
 
 impl MapModel {
     pub fn calculate_mesh_density(&self) -> Result<String> {
@@ -31,16 +31,9 @@ impl MapModel {
         // likely to be complete enough yet)
         let mut linestrings = Vec::new();
         for road in &self.graph.roads {
-            if road.osm_tags.is_any(
-                "highway",
-                vec![
-                    "motorway",
-                    "motorway_link",
-                    "primary",
-                    "primary_link",
-                    "secondary",
-                    "secondary_link",
-                ],
+            if matches!(
+                Highway::classify(&road.osm_tags).unwrap(),
+                Highway::Motorway | Highway::Primary | Highway::Secondary
             ) {
                 linestrings.push(road.linestring.clone());
             }

@@ -12,7 +12,7 @@ use graph::{Graph, RoadID};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-use crate::level_of_service::LevelOfService;
+use crate::{existing::Highway, level_of_service::LevelOfService};
 
 mod costs;
 mod evaluate;

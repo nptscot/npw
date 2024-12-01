@@ -5,7 +5,7 @@ use graph::RoadID;
 use serde::Serialize;
 use utils::Tags;
 
-use crate::{InfraType, MapModel};
+use crate::{Highway, InfraType, MapModel};
 
 #[derive(Clone, Copy, Debug, PartialEq, Enum, Serialize)]
 pub enum LevelOfService {
@@ -79,8 +79,10 @@ impl MapModel {
 
 // TODO Unit test
 pub fn get_speed_mph(tags: &Tags) -> usize {
+    let hwy = Highway::classify(tags).unwrap();
+
     if tags.is("maxspeed", "national") {
-        return if tags.is_any("highway", vec!["motorway", "motorway_link"]) {
+        return if matches!(hwy, Highway::Motorway) {
             70
         } else {
             60
@@ -96,14 +98,14 @@ pub fn get_speed_mph(tags: &Tags) -> usize {
         }
     }
 
-    match tags.get("highway").unwrap().as_str() {
-        "residential" | "service" | "unclassified" => 20,
-        "tertiary" | "tertiary_link" | "secondary" | "secondary_link" => 30,
-        "primary" | "primary_link" => 40,
-        "trunk" | "trunk_link" => 60,
-        x => {
-            error!("get_speed_mph hit unknown highway {x}");
-            30
-        }
+    // TODO Check these against osmactive
+    match hwy {
+        Highway::Motorway => 70,
+        Highway::Trunk => 60,
+        Highway::Primary => 40,
+        Highway::Secondary | Highway::Tertiary => 30,
+        Highway::Residential | Highway::Service | Highway::Unclassified => 20,
+        // TODO What should these do?
+        Highway::Footway | Highway::Cycleway | Highway::Pedestrian | Highway::Path => 10,
     }
 }

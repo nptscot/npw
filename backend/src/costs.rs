@@ -3,7 +3,7 @@ use std::time::Duration;
 use geo::{Euclidean, Length};
 use graph::{Road, RoadID, Timer};
 
-use crate::{InfraType, LevelOfService, MapModel};
+use crate::{Highway, InfraType, LevelOfService, MapModel};
 
 impl MapModel {
     /// After some kind of edit, recalculate edge costs. Overwrites the only router.
@@ -35,59 +35,25 @@ fn edge_cost(road: &Road, infra_type: InfraType, los: LevelOfService) -> Duratio
         InfraType::OffRoad => 100,
         InfraType::SegregatedNarrow => 80,
         InfraType::SharedFootway => 80,
-        InfraType::CycleLane => {
-            if road
-                .osm_tags
-                .is_any("highway", vec!["primary", "primary_link"])
-            {
-                40
-            } else if road
-                .osm_tags
-                .is_any("highway", vec!["secondary", "secondary_link"])
-            {
-                50
-            } else if road
-                .osm_tags
-                .is_any("highway", vec!["tertiary", "tertiary_link"])
-            {
-                60
-            } else {
-                // TODO Assume worst case
-                40
-            }
-        }
-        InfraType::MixedTraffic => {
-            if road
-                .osm_tags
-                .is_any("highway", vec!["primary", "primary_link"])
-            {
-                20
-            } else if road
-                .osm_tags
-                .is_any("highway", vec!["secondary", "secondary_link"])
-            {
-                30
-            } else if road
-                .osm_tags
-                .is_any("highway", vec!["tertiary", "tertiary_link"])
-            {
-                40
-            } else if road.osm_tags.is("highway", "unclassified") {
-                70
-            } else if road
-                .osm_tags
-                .is_any("highway", vec!["residential", "service"])
-            {
-                // See special case: https://github.com/nptscot/npw/issues/29#issuecomment-2508180511
-                60
-            } else if road.osm_tags.is("highway", "cycleway") {
-                // TODO What does MixedTraffic mean in this case?
-                85
-            } else {
-                // TODO Assume worst case
-                40
-            }
-        }
+        InfraType::CycleLane => match Highway::classify(&road.osm_tags).unwrap() {
+            Highway::Primary => 40,
+            Highway::Secondary => 50,
+            Highway::Tertiary => 60,
+            // TODO Assume worst case. That's clearly wrong; need to revisit all of these cases.
+            _ => 40,
+        },
+        InfraType::MixedTraffic => match Highway::classify(&road.osm_tags).unwrap() {
+            // TODO Guessing for these
+            Highway::Motorway | Highway::Trunk => 10,
+            Highway::Primary => 20,
+            Highway::Secondary => 30,
+            Highway::Tertiary => 40,
+            Highway::Unclassified => 70,
+            // See special case: https://github.com/nptscot/npw/issues/29#issuecomment-2508180511
+            Highway::Residential | Highway::Service => 60,
+            // TODO Check these assumptions. What does MixedTraffic even mean in this case?
+            Highway::Cycleway | Highway::Footway | Highway::Pedestrian | Highway::Path => 85,
+        },
         // TODO Some kind of infrastructure, but unspecified. Make up a value for now.
         InfraType::Unknown => 50,
     };
