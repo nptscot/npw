@@ -1,7 +1,14 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { SplitComponent } from "./common/layout";
-  import { backend, mode, type WorstRoutes, type RouteGJ } from "./stores";
+  import {
+    backend,
+    mode,
+    routeA,
+    routeB,
+    type WorstRoutes,
+    type RouteGJ,
+  } from "./stores";
   import Directions from "./Directions.svelte";
 
   export let routes: WorstRoutes;
@@ -26,6 +33,13 @@
     }
   }
   $: update(current);
+
+  function seeDetail() {
+    let route = routes[current];
+    $routeA = { lng: route[0].x, lat: route[0].y };
+    $routeB = { lng: route[1].x, lat: route[1].y };
+    $mode = { kind: "evaluate-route" };
+  }
 </script>
 
 <SplitComponent>
@@ -37,11 +51,16 @@
     </p>
 
     <div>
-      <button on:click={() => current--} disabled={current == 0}>
+      <button
+        class="secondary"
+        on:click={() => current--}
+        disabled={current == 0}
+      >
         Previous
       </button>
       {current + 1} / {routes.length}
       <button
+        class="secondary"
         on:click={() => current++}
         disabled={current == routes.length - 1}
       >
@@ -54,6 +73,8 @@
     {/if}
 
     {#if gj}
+      <button on:click={seeDetail}>See detail</button>
+
       <Directions {gj} />
     {/if}
   </div>
@@ -64,7 +85,7 @@
         <LineLayer
           paint={{
             "line-width": 10,
-            "line-color": "red",
+            "line-color": "cyan",
           }}
           manageHoverState
         />
