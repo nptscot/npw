@@ -31,53 +31,32 @@ impl Highway {
     // but the purpose is different -- unless a road can't be modified, then it still belongs in
     // the graph.
     pub fn classify(tags: &Tags) -> Option<Self> {
-        if tags.is_any("highway", vec!["motorway", "motorway_link"]) {
-            return Some(Highway::Motorway);
+        match tags.get("highway")?.as_str() {
+            "motorway" | "motorway_link" => Some(Highway::Motorway),
+            "trunk" | "trunk_link" => Some(Highway::Trunk),
+            "primary" | "primary_link" => Some(Highway::Primary),
+            "secondary" | "secondary_link" => Some(Highway::Secondary),
+            "tertiary" | "tertiary_link" => Some(Highway::Tertiary),
+            "residential" => Some(Highway::Residential),
+            "service" => Some(Highway::Service),
+            "unclassified" => Some(Highway::Unclassified),
+            "cycleway" => Some(Highway::Cycleway),
+            "pedestrian" => Some(Highway::Pedestrian),
+            "path" => Some(Highway::Path),
+            "footway" => {
+                // Exclude dedicated sidewalks; they're almost always parallel to a road that
+                // should be edited instead
+                if tags.is_any("bicycle", vec!["yes", "designated"])
+                    && !tags.is("footway", "sidewalk")
+                {
+                    Some(Highway::Footway)
+                } else {
+                    None
+                }
+            }
+            // TODO Make sure we got all cases; print stuff. (steps, construction...)
+            _ => None,
         }
-        if tags.is_any("highway", vec!["trunk", "trunk_link"]) {
-            return Some(Highway::Trunk);
-        }
-        if tags.is_any("highway", vec!["primary", "primary_link"]) {
-            return Some(Highway::Primary);
-        }
-        if tags.is_any("highway", vec!["secondary", "secondary_link"]) {
-            return Some(Highway::Secondary);
-        }
-        if tags.is_any("highway", vec!["tertiary", "tertiary_link"]) {
-            return Some(Highway::Tertiary);
-        }
-        if tags.is("highway", "residential") {
-            return Some(Highway::Residential);
-        }
-        if tags.is("highway", "service") {
-            return Some(Highway::Service);
-        }
-        if tags.is("highway", "unclassified") {
-            return Some(Highway::Unclassified);
-        }
-
-        // Exclude dedicated sidewalks; they're almost always parallel to a road that should be
-        // edited instead
-        if tags.is("highway", "footway")
-            && tags.is_any("bicycle", vec!["yes", "designated"])
-            && !tags.is("footway", "sidewalk")
-        {
-            return Some(Highway::Footway);
-        }
-        if tags.is("highway", "cycleway") {
-            return Some(Highway::Cycleway);
-        }
-        if tags.is("highway", "pedestrian") {
-            return Some(Highway::Pedestrian);
-        }
-        if tags.is("highway", "path") {
-            return Some(Highway::Path);
-        }
-
-        // TODO Make sure we got all cases; print stuff
-        // steps, construction
-
-        None
     }
 }
 
