@@ -105,8 +105,8 @@
       href="#"
       on:click|preventDefault={() =>
         ($mode = {
-          kind: "debug-worst-routes",
-          routes: notNull($stats).worst_directness_routes,
+          kind: "evaluate-route",
+          browse: notNull($stats).worst_directness_routes,
         })}
     >
       Average weighted directness

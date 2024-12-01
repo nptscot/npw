@@ -9,11 +9,21 @@
   } from "svelte-maplibre";
   import { SplitComponent } from "./common/layout";
   import { notNull } from "svelte-utils";
-  import { mode, backend, routeA, routeB, type RouteGJ } from "./stores";
+  import {
+    mode,
+    backend,
+    routeA,
+    routeB,
+    type RouteGJ,
+    type WorstRoutes,
+  } from "./stores";
   import { colorByInfraType, colorByLoS, levelOfServiceColors } from "./colors";
   import { QualitativeLegend } from "./common";
   import Directions from "./Directions.svelte";
   import { currentNetwork } from "./layers/stores";
+
+  export let browse: WorstRoutes;
+  let currentBrowse = 0;
 
   let gj: RouteGJ | null = null;
   let err = "";
@@ -42,7 +52,28 @@
     // Move the first marker, for convenience
     $routeA = e.detail.lngLat;
   }
+
+  async function updateBrowse(currentBrowse: number) {
+    if (browse.length == 0) {
+      return;
+    }
+    let route = browse[currentBrowse];
+    $routeA = { lng: route[0].x, lat: route[0].y };
+    $routeB = { lng: route[1].x, lat: route[1].y };
+    // Reactivity not working for some reason
+    update($routeA, $routeB, breakdown);
+  }
+  $: updateBrowse(currentBrowse);
+
+  function keyDown(e: KeyboardEvent) {
+    if (e.key === "Escape") {
+      e.stopPropagation();
+      $mode = { kind: "main" };
+    }
+  }
 </script>
+
+<svelte:window on:keydown={keyDown} />
 
 <SplitComponent>
   <div slot="left">
@@ -133,6 +164,32 @@
           manageHoverState
         />
       </GeoJSON>
+    {/if}
+  </div>
+
+  <div slot="right">
+    {#if browse.length > 0}
+      <p>
+        These routes, from a sample of the OD data, have the worst directness.
+      </p>
+
+      <div>
+        <button
+          class="secondary"
+          on:click={() => currentBrowse--}
+          disabled={currentBrowse == 0}
+        >
+          Previous
+        </button>
+        {currentBrowse + 1} / {browse.length}
+        <button
+          class="secondary"
+          on:click={() => currentBrowse++}
+          disabled={currentBrowse == browse.length - 1}
+        >
+          Next
+        </button>
+      </div>
     {/if}
   </div>
 </SplitComponent>

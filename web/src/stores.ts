@@ -13,11 +13,10 @@ export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 export type Mode =
   | { kind: "main" }
   | { kind: "edit-route"; id: number | null }
-  | { kind: "evaluate-route" }
+  | { kind: "evaluate-route"; browse: WorstRoutes }
   | { kind: "evaluate-od" }
   | { kind: "debug-network" }
-  | { kind: "debug-mesh-density" }
-  | { kind: "debug-worst-routes"; routes: WorstRoutes };
+  | { kind: "debug-mesh-density" };
 export type Tier = "primary" | "secondary" | "local access" | "long distance";
 
 export let boundaryName = writable("");

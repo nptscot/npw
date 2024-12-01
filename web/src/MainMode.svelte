@@ -132,7 +132,7 @@
     <div>
       <button
         class="secondary"
-        on:click={() => ($mode = { kind: "evaluate-route" })}
+        on:click={() => ($mode = { kind: "evaluate-route", browse: [] })}
       >
         Evaluate a route
       </button>

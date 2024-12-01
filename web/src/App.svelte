@@ -13,7 +13,6 @@
   } from "./common/layout";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
-  import DebugWorstRoutesMode from "./DebugWorstRoutesMode.svelte";
   import MainMode from "./MainMode.svelte";
   import InfraTypeLegend from "./common/InfraTypeLegend.svelte";
   import EditRouteMode from "./EditRouteMode.svelte";
@@ -186,15 +185,13 @@
         {:else if $mode.kind == "edit-route" && map}
           <EditRouteMode id={$mode.id} {map} />
         {:else if $mode.kind == "evaluate-route"}
-          <EvaluateRouteMode />
+          <EvaluateRouteMode browse={$mode.browse} />
         {:else if $mode.kind == "evaluate-od"}
           <EvaluateODMode />
         {:else if $mode.kind == "debug-network"}
           <DebugNetworkMode />
         {:else if $mode.kind == "debug-mesh-density"}
           <DebugMeshDensityMode />
-        {:else if $mode.kind == "debug-worst-routes"}
-          <DebugWorstRoutesMode routes={$mode.routes} />
         {/if}
       {/if}
     </MapLibre>
