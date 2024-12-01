@@ -140,8 +140,9 @@ export type DataZones = FeatureCollection<
     imd_rank: number;
     imd_percentile: number;
     population: number;
-    area: number;
+    area_km2: number;
     reachable: boolean;
+    density_quintile: number;
   }
 >;
 

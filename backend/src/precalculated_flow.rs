@@ -1,12 +1,12 @@
 use anyhow::Result;
 use geojson::FeatureCollection;
 
-use crate::MapModel;
+use crate::{utils::Quintiles, MapModel};
 
 impl MapModel {
     pub fn render_precalculated_flows(&self) -> Result<String> {
         // TODO Could cache
-        let stats = FlowStats::new(&self.precalculated_flows);
+        let stats = Quintiles::new(&self.precalculated_flows);
         let mut covered_quintile_sums = [0; 5];
 
         let mut features = Vec::new();
@@ -47,53 +47,5 @@ impl MapModel {
                 .clone(),
             ),
         })?)
-    }
-}
-
-pub struct FlowStats {
-    // 20% of flows are >= this value
-    quintile1: usize,
-    // 40% of flows are >= this value
-    quintile2: usize,
-    quintile3: usize,
-    quintile4: usize,
-    // quintile5 is the minimum flow
-    pub total_quintile_sums: [usize; 5],
-}
-
-impl FlowStats {
-    pub fn new(flows: &Vec<usize>) -> Self {
-        let mut sorted = flows.clone();
-        sorted.sort();
-        sorted.reverse();
-        let n = ((sorted.len() as f64) / 5.0).ceil() as usize;
-
-        let mut total_quintile_sums = [0; 5];
-        for (idx, x) in sorted.iter().enumerate() {
-            total_quintile_sums[idx / n] += *x;
-        }
-
-        Self {
-            quintile1: sorted[n],
-            quintile2: sorted[n * 2],
-            quintile3: sorted[n * 3],
-            quintile4: sorted[n * 4],
-            total_quintile_sums,
-        }
-    }
-
-    // Returns [1, 5]
-    pub fn quintile(&self, flow: usize) -> usize {
-        if flow >= self.quintile1 {
-            1
-        } else if flow >= self.quintile2 {
-            2
-        } else if flow >= self.quintile3 {
-            3
-        } else if flow >= self.quintile4 {
-            4
-        } else {
-            5
-        }
     }
 }

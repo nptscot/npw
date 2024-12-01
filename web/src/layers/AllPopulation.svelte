@@ -38,8 +38,14 @@
   // Color ramp from https://www.ons.gov.uk/census/maps/choropleth. TODO redo for density
   let colorScale = ["#080C54", "#186290", "#1F9EB7", "#80C6A3", "#CDE594"];
 
-  // TODO density ranks
-  let limits = [0, 4, 8, 12, 16, 20];
+  // For density_quintile
+  let limits = [0, 1, 2, 3, 4, 5];
+
+  let fillOpacity = hoverStateFilter(
+    // @ts-expect-error This really does work
+    ["case", ["<", ["get", "density_quintile"], 4], 0.5, 0.0],
+    0.9,
+  );
 </script>
 
 <LayerControls name="population density">
@@ -58,7 +64,7 @@
     <SequentialLegend {colorScale} {limits} />
     <p>
       Darker colours are denser. Zones with a red outline are not reachable by
-      the current network.
+      the current network. Only the top 3 densest quintiles are shown.
     </p>
   {/if}
 </LayerControls>
@@ -68,21 +74,24 @@
     manageHoverState
     paint={{
       "fill-color": makeColorRamp(
-        ["get", "imd_percentile"],
+        ["get", "density_quintile"],
         limits,
         colorScale,
       ),
-      "fill-opacity": hoverStateFilter(0.7, 0.9),
+      "fill-opacity": fillOpacity,
     }}
     layout={{
       visibility: $show ? "visible" : "none",
     }}
   >
     <Popup openOn="hover" let:props>
-      <p>
+      <p style:max-width="30vw">
         Data zone {props.id}
         {props.reachable ? "is" : "is not"} reachable. It has {props.population.toLocaleString()}
-        people. TODO density info.
+        people, with a density of {Math.round(
+          props.population / props.area_km2,
+        ).toLocaleString()} people per square kilometer, putting it in quintile {props.density_quintile}
+        for this study area.
       </p>
     </Popup>
   </FillLayer>

@@ -7,6 +7,8 @@ use graph::{Graph, RoadID};
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
 
+use crate::utils::Quintiles;
+
 // TODO We can't use geojson::ser::to_feature_collection_string and similar magic, because bincode
 // doesn't work with it, and we need to do the CRS transform
 
@@ -173,8 +175,9 @@ pub struct DataZone {
     pub imd_percentile: usize,
     pub population: usize,
     pub roads: HashSet<RoadID>,
-    // TODO unit?
-    area: f64,
+    area_km2: f64,
+    // Relative to the study area, not all of Scotland
+    density_quintile: usize,
 }
 
 impl DataZone {
@@ -184,13 +187,15 @@ impl DataZone {
         f.set_property("imd_rank", self.imd_rank);
         f.set_property("imd_percentile", self.imd_percentile);
         f.set_property("population", self.population);
-        f.set_property("area", self.area);
+        f.set_property("area_km2", self.area_km2);
+        f.set_property("density_quintile", self.density_quintile);
         f.set_property("reachable", reachable);
         f
     }
 
     pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
         let mut zones = Vec::new();
+        let mut densities = Vec::new();
         for x in geojson::de::deserialize_feature_collection_str_to_vec::<DataZoneGJ>(gj)? {
             if boundary_wgs84.intersects(&x.geometry) {
                 let polygon = graph.mercator.to_mercator(&x.geometry);
@@ -204,17 +209,27 @@ impl DataZone {
                     }
                 }
 
+                let area_km2 = x.area / 10.0e6;
                 zones.push(DataZone {
                     polygon,
                     id: x.id,
                     imd_rank: x.rank,
                     imd_percentile: x.percentile,
                     population: x.population,
-                    area: x.area,
+                    area_km2,
                     roads,
+                    density_quintile: 0,
                 });
+
+                densities.push(((x.population as f64) / area_km2) as usize);
             }
         }
+
+        let stats = Quintiles::new(&densities);
+        for zone in &mut zones {
+            zone.density_quintile = stats.quintile(((zone.population as f64) / zone.area_km2) as usize);
+        }
+
         info!("Matched {} data zones", zones.len());
         Ok(zones)
     }

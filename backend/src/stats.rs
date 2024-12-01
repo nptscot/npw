@@ -2,7 +2,7 @@ use anyhow::Result;
 use enum_map::EnumMap;
 use graph::Timer;
 
-use crate::{precalculated_flow::FlowStats, InfraType, LevelOfService, MapModel};
+use crate::{utils::Quintiles, InfraType, LevelOfService, MapModel};
 
 impl MapModel {
     /// After any edit, calculate summary stats. Returns JSON.
@@ -124,7 +124,7 @@ impl MapModel {
             serde_json::to_value(&od.worst_directness_routes)?,
         );
 
-        let flow_stats = FlowStats::new(&self.precalculated_flows);
+        let flow_stats = Quintiles::new(&self.precalculated_flows);
         let mut covered_quintile_sums = [0; 5];
         for (idx, flow) in self.precalculated_flows.iter().enumerate() {
             // TODO Check definition here -- should this look at LoS, so small high-flow roads are
