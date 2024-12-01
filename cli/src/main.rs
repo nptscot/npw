@@ -236,6 +236,7 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
     for road in &graph.roads {
         output.push(
             rtree
+                // TODO Plus a buffer?
                 .locate_in_envelope_intersecting(&road.linestring.envelope())
                 .any(|geom| road_geometry_similar(&road.linestring, geom)),
         );

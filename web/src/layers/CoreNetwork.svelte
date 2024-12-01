@@ -1,10 +1,5 @@
 <script lang="ts">
-  import {
-    VectorTileSource,
-    hoverStateFilter,
-    LineLayer,
-    GeoJSON,
-  } from "svelte-maplibre";
+  import { VectorTileSource, LineLayer, GeoJSON } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import {
     assetUrl,
@@ -20,6 +15,9 @@
   $: if (show) {
     firstLoad = true;
   }
+
+  let showTruth = true;
+  let showMatched = true;
 
   async function importExisting() {
     if ($backend) {
@@ -42,6 +40,16 @@
     <button class="outline" on:click={importExisting}>
       Import core network
     </button>
+
+    <label>
+      <input type="checkbox" bind:checked={showTruth} />
+      Show actual core network
+    </label>
+
+    <label style:color="red">
+      <input type="checkbox" bind:checked={showMatched} />
+      Show map-matched core network
+    </label>
   {/if}
 </LayerControls>
 
@@ -49,13 +57,12 @@
 <VectorTileSource url={`pmtiles://${assetUrl("core_network.pmtiles")}`}>
   <LineLayer
     sourceLayer="coherent_networks"
-    manageHoverState
     paint={{
       "line-color": "black",
       "line-width": 2,
     }}
     layout={{
-      visibility: show ? "visible" : "none",
+      visibility: show && showTruth ? "visible" : "none",
     }}
   >
     <Popup openOn="hover" let:props>
@@ -68,13 +75,13 @@
   {#await $backend.renderCoreNetwork() then data}
     <GeoJSON {data} generateId>
       <LineLayer
-        manageHoverState
         paint={{
           "line-color": "red",
-          "line-width": hoverStateFilter(2, 3),
+          "line-width": 10,
+          "line-opacity": 0.5,
         }}
         layout={{
-          visibility: show ? "visible" : "none",
+          visibility: show && showMatched ? "visible" : "none",
         }}
       />
     </GeoJSON>
