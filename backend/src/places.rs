@@ -227,7 +227,8 @@ impl DataZone {
 
         let stats = Quintiles::new(&densities);
         for zone in &mut zones {
-            zone.density_quintile = stats.quintile(((zone.population as f64) / zone.area_km2) as usize);
+            zone.density_quintile =
+                stats.quintile(((zone.population as f64) / zone.area_km2) as usize);
         }
 
         info!("Matched {} data zones", zones.len());
