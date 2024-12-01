@@ -62,7 +62,6 @@
     {#if gj}
       <GeoJSON data={gj} generateId>
         <LineLayer
-          id="eval-route"
           paint={{
             "line-width": 10,
             "line-color": "red",

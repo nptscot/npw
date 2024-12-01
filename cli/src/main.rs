@@ -49,10 +49,13 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
     let graph = Graph::new(
         input_bytes,
         &mut utils::osm2graph::NullReader,
-        vec![(
-            "bicycle".to_string(),
-            Box::new(backend::existing::bicycle_profile),
-        )],
+        vec![
+            (
+                "bicycle".to_string(),
+                Box::new(backend::existing::bicycle_profile),
+            ),
+            ("car".to_string(), Box::new(backend::existing::car_profile)),
+        ],
         timer,
     )?;
     let boundary_wgs84 = read_multipolygon(boundary_gj)?;

@@ -1,8 +1,9 @@
 use anyhow::Result;
 use enum_map::Enum;
 use geojson::FeatureCollection;
-use graph::{Road, RoadID};
+use graph::RoadID;
 use serde::Serialize;
+use utils::Tags;
 
 use crate::{InfraType, MapModel};
 
@@ -77,19 +78,16 @@ impl MapModel {
 }
 
 // TODO Unit test
-pub fn get_speed_mph(road: &Road) -> usize {
-    if road.osm_tags.is("maxspeed", "national") {
-        return if road
-            .osm_tags
-            .is_any("highway", vec!["motorway", "motorway_link"])
-        {
+pub fn get_speed_mph(tags: &Tags) -> usize {
+    if tags.is("maxspeed", "national") {
+        return if tags.is_any("highway", vec!["motorway", "motorway_link"]) {
             70
         } else {
             60
         };
     }
 
-    if let Some(maxspeed) = road.osm_tags.get("maxspeed") {
+    if let Some(maxspeed) = tags.get("maxspeed") {
         if let Some(mph) = maxspeed
             .strip_suffix(" mph")
             .and_then(|x| x.parse::<usize>().ok())
@@ -98,7 +96,7 @@ pub fn get_speed_mph(road: &Road) -> usize {
         }
     }
 
-    match road.osm_tags.get("highway").unwrap().as_str() {
+    match tags.get("highway").unwrap().as_str() {
         "residential" | "service" | "unclassified" => 20,
         "tertiary" | "tertiary_link" | "secondary" | "secondary_link" => 30,
         "primary" | "primary_link" => 40,

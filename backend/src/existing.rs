@@ -6,7 +6,7 @@ use geojson::FeatureCollection;
 use graph::Direction;
 use utils::Tags;
 
-use crate::{InfraType, MapModel};
+use crate::{level_of_service::get_speed_mph, InfraType, MapModel};
 
 /// This determines what's in the graph. The cost function is just based on distance.
 pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration) {
@@ -35,6 +35,38 @@ pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Dura
     let speed = 4.4704;
     let cost = Duration::from_secs_f64(linestring.length::<Euclidean>() / speed);
     (Direction::Both, cost)
+}
+
+/// This is used for the directness metric. It looks at one-ways and speed limit, but not turn
+/// restrictions.
+pub fn car_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration) {
+    let exclude = (Direction::None, Duration::ZERO);
+
+    if tags.is_any(
+        "highway",
+        vec![
+            "cycleway",
+            "pedestrian",
+            "footway",
+            "path",
+            "steps",
+            "construction",
+        ],
+    ) {
+        return exclude;
+    }
+
+    // TODO Handle private access, modal filters, etc
+
+    let dir = if tags.is("oneway", "yes") {
+        Direction::Forwards
+    } else {
+        Direction::Both
+    };
+    // mph to m/s
+    let speed = (get_speed_mph(tags) as f64) / 0.44704;
+    let cost = Duration::from_secs_f64(linestring.length::<Euclidean>() / speed);
+    (dir, cost)
 }
 
 impl MapModel {

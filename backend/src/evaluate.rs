@@ -62,12 +62,24 @@ impl MapModel {
             self.graph.intersections[end.intersection.0].point.into(),
         ]);
 
+        let car_profile = self.graph.profile_names["car"];
+        let car_start = self.graph.snap_to_road(pt1, car_profile);
+        let car_end = self.graph.snap_to_road(pt2, car_profile);
+        let car_route = self.graph.routers[car_profile.0].route(&self.graph, car_start, car_end)?;
+        let car_linestring = car_route.linestring(&self.graph);
+        {
+            let mut f = self.graph.mercator.to_wgs84_gj(&car_linestring);
+            f.set_property("car_route", true);
+            features.push(f);
+        }
+
         Ok(serde_json::to_string(&FeatureCollection {
             features,
             bbox: None,
             foreign_members: Some(
                 serde_json::json!({
                     "direct_length": direct_line.length::<Euclidean>(),
+                    "car_length": car_linestring.length::<Euclidean>(),
                     "route_length": full_route_linestring.length::<Euclidean>(),
                     "directions": directions,
                 })

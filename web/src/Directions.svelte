@@ -48,6 +48,12 @@
   Detour factor: <b>{(gj.route_length / gj.direct_length).toFixed(1)}x</b>
   longer than straight line
 </p>
+<p>
+  <b>{(gj.route_length / gj.car_length).toFixed(1)}x</b>
+  longer than the driving route (in
+  <span style:color="red">red</span>
+  )
+</p>
 
 <hr />
 

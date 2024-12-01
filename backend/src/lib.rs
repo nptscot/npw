@@ -107,7 +107,7 @@ impl MapModel {
         let speeds = graph
             .roads
             .iter()
-            .map(level_of_service::get_speed_mph)
+            .map(|r| level_of_service::get_speed_mph(&r.osm_tags))
             .collect();
         let infra_types = std::iter::repeat(None).take(graph.roads.len()).collect();
         let los = std::iter::repeat(LevelOfService::ShouldNotBeUsed)

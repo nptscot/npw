@@ -109,15 +109,25 @@
     {#if gj}
       <GeoJSON data={gj} generateId>
         <LineLayer
-          id="eval-route"
+          filter={["!", ["has", "car_route"]]}
           paint={{
             "line-width": 20,
             "line-color":
               breakdown == ""
-                ? "red"
+                ? "cyan"
                 : breakdown == "los"
                   ? colorByLoS
                   : colorByInfraType,
+            "line-opacity": hoverStateFilter(0.5, 1.0),
+          }}
+          manageHoverState
+        />
+
+        <LineLayer
+          filter={["has", "car_route"]}
+          paint={{
+            "line-width": 10,
+            "line-color": "red",
             "line-opacity": hoverStateFilter(0.5, 1.0),
           }}
           manageHoverState
