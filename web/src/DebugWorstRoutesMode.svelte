@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import { GeoJSON, LineLayer, hoverStateFilter } from "svelte-maplibre";
   import { SplitComponent } from "./common/layout";
   import {
     backend,
@@ -10,6 +10,7 @@
     type RouteGJ,
   } from "./stores";
   import Directions from "./Directions.svelte";
+  import { colorByLoS } from "./colors";
 
   export let routes: WorstRoutes;
 
@@ -24,7 +25,7 @@
       gj = await $backend!.evaluateRoute({
         start: { lng: route[0].x, lat: route[0].y },
         end: [route[1].x, route[1].y],
-        breakdown: "",
+        breakdown: "los",
       });
       err = "";
     } catch (error: any) {
@@ -83,9 +84,21 @@
     {#if gj}
       <GeoJSON data={gj} generateId>
         <LineLayer
+          filter={["!", ["has", "car_route"]]}
+          paint={{
+            "line-width": 20,
+            "line-color": colorByLoS,
+            "line-opacity": hoverStateFilter(0.5, 1.0),
+          }}
+          manageHoverState
+        />
+
+        <LineLayer
+          filter={["has", "car_route"]}
           paint={{
             "line-width": 10,
-            "line-color": "cyan",
+            "line-color": "red",
+            "line-opacity": hoverStateFilter(0.5, 1.0),
           }}
           manageHoverState
         />

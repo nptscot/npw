@@ -57,6 +57,8 @@ impl MapModel {
             }
         }
 
+        // TODO We should use the snapped position on the roads, for a fair comparison with
+        // full_route_linestring
         let direct_line = LineString::new(vec![
             self.graph.intersections[start.intersection.0].point.into(),
             self.graph.intersections[end.intersection.0].point.into(),

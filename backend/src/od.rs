@@ -51,13 +51,36 @@ impl MapModel {
             };
             succeeded += 1;
 
-            // route.linestring() is more accurate, but slower, and then harder to find the snapped
-            // position on the road for direct_length
-            let direct_length = Euclidean::distance(
-                self.graph.intersections[start.intersection.0].point,
-                self.graph.intersections[end.intersection.0].point,
-            );
+            // TODO Still deciding which to use
+            let compare_length = if true {
+                // Compare with the car route
+                let car_profile = self.graph.profile_names["car"];
+                let car_start = self.graph.snap_to_road(pt1, car_profile);
+                let car_end = self.graph.snap_to_road(pt2, car_profile);
+                if let Ok(car_route) =
+                    self.graph.routers[car_profile.0].route(&self.graph, car_start, car_end)
+                {
+                    let mut car_length = 0.0;
+                    for step in &car_route.steps {
+                        if let PathStep::Road { road, .. } = step {
+                            car_length += self.graph.roads[road.0].length_meters;
+                        }
+                    }
+                    car_length
+                } else {
+                    // Skip this one
+                    0.0
+                }
+            } else {
+                // Straight line distance.
+                Euclidean::distance(
+                    self.graph.intersections[start.intersection.0].point,
+                    self.graph.intersections[end.intersection.0].point,
+                )
+            };
 
+            // TODO route.linestring() is more accurate, but slower, and then we have to do the
+            // same for comparisons
             let mut route_length = 0.0;
             // TODO Use a lower-level API to squeeze out some speed
             for step in &route.steps {
@@ -74,8 +97,8 @@ impl MapModel {
                 }
             }
 
-            if direct_length > 0.0 {
-                let directness = route_length / direct_length;
+            if compare_length > 0.0 {
+                let directness = route_length / compare_length;
                 sum_directness += count * directness;
                 sum_count += count;
 
