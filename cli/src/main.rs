@@ -357,15 +357,10 @@ impl CompareLineStrings {
     }
 }
 
-// TODO Works poorly in many cases
 fn cn_road_geometry_similar(ls1: &LineString, ls2: &LineString) -> bool {
-    // If both endpoints are within this threshold, accept it
-    let tolerance_per_endpt = 10.0;
-
-    let dist1 = Euclidean::distance(*ls1.coords().next().unwrap(), *ls2.coords().next().unwrap());
-    let dist2 = Euclidean::distance(*ls1.coords().last().unwrap(), *ls2.coords().last().unwrap());
-
-    dist1 <= tolerance_per_endpt && dist2 <= tolerance_per_endpt
+    // TODO Ignore distance between endpoints for now
+    let cmp = CompareLineStrings::new(ls1, ls2);
+    cmp.angle_diff <= 10.0 && cmp.length_ratio <= 1.1
 }
 
 // Angle in degrees from first to last point. Ignores the "direction" of the line; returns [0,
