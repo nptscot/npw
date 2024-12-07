@@ -5,7 +5,7 @@
     FillLayer,
     LineLayer,
   } from "svelte-maplibre";
-  import { Popup, makeColorRamp } from "svelte-utils/map";
+  import { Popup, makeRamp } from "svelte-utils/map";
   import { SequentialLegend } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";
   import { backend, type DataZones } from "../stores";
@@ -73,11 +73,7 @@
   <FillLayer
     manageHoverState
     paint={{
-      "fill-color": makeColorRamp(
-        ["get", "density_quintile"],
-        limits,
-        colorScale,
-      ),
+      "fill-color": makeRamp(["get", "density_quintile"], limits, colorScale),
       "fill-opacity": fillOpacity,
     }}
     layout={{

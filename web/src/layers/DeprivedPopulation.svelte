@@ -5,7 +5,7 @@
     FillLayer,
     LineLayer,
   } from "svelte-maplibre";
-  import { Popup, makeColorRamp } from "svelte-utils/map";
+  import { Popup, makeRamp } from "svelte-utils/map";
   import { SequentialLegend } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";
   import { backend, type DataZones } from "../stores";
@@ -73,11 +73,7 @@
   <FillLayer
     manageHoverState
     paint={{
-      "fill-color": makeColorRamp(
-        ["get", "imd_percentile"],
-        limits,
-        colorScale,
-      ),
+      "fill-color": makeRamp(["get", "imd_percentile"], limits, colorScale),
       "fill-opacity": hoverStateFilter(0.7, 0.9),
     }}
     layout={{

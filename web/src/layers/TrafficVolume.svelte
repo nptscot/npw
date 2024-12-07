@@ -1,7 +1,7 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { backend } from "../stores";
-  import { Popup, makeColorRamp } from "svelte-utils/map";
+  import { Popup, makeRamp } from "svelte-utils/map";
   import { SequentialLegend } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";
 
@@ -35,8 +35,8 @@
           visibility: show ? "visible" : "none",
         }}
         paint={{
-          "line-width": makeColorRamp(["get", "traffic"], limits, [1, 2, 3]),
-          "line-color": makeColorRamp(["get", "traffic"], limits, colorScale),
+          "line-width": makeRamp(["get", "traffic"], limits, [1, 2, 3]),
+          "line-color": makeRamp(["get", "traffic"], limits, colorScale),
           "line-opacity": 0.8,
         }}
         manageHoverState
