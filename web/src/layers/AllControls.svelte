@@ -44,7 +44,7 @@
   }
 </script>
 
-<details open>
+<details open style:border="2px solid black">
   <summary>Basic Reference Layers</summary>
   <div bind:this={basic} />
 </details>

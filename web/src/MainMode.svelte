@@ -125,8 +125,6 @@
   </div>
 
   <div slot="right">
-    <h4>Evaluate:</h4>
-
     <Stats />
 
     <div>

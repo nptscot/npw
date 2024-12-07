@@ -122,36 +122,38 @@
     </div>
   {/if}
 
-  <p>
-    <!-- svelte-ignore a11y-invalid-attribute -->
-    <a
-      href="#"
-      on:click|preventDefault={() =>
-        ($mode = {
-          kind: "evaluate-route",
-          browse: notNull($stats).worst_directness_routes,
-        })}
-    >
-      Average weighted directness
-    </a>
-    : {$stats.average_weighted_directness.toFixed(1)}x
-  </p>
+  <div style:margin-top="4px" style:border="2px solid black">
+    <p>
+      <!-- svelte-ignore a11y-invalid-attribute -->
+      <a
+        href="#"
+        on:click|preventDefault={() =>
+          ($mode = {
+            kind: "evaluate-route",
+            browse: notNull($stats).worst_directness_routes,
+          })}
+      >
+        Average weighted directness
+      </a>
+      : {$stats.average_weighted_directness.toFixed(1)}x
+    </p>
 
-  <details>
-    <summary>Percent of demand by infrastructure type</summary>
-    <ul>
-      {#each Object.entries($stats.od_percents_infra_type).toSorted((a, b) => b[1] - a[1]) as [key, pct]}
-        <li>{key}: {Math.round(pct * 100)}%</li>
-      {/each}
-    </ul>
-  </details>
+    <details>
+      <summary>Percent of demand by infrastructure type</summary>
+      <ul>
+        {#each Object.entries($stats.od_percents_infra_type).toSorted((a, b) => b[1] - a[1]) as [key, pct]}
+          <li>{key}: {Math.round(pct * 100)}%</li>
+        {/each}
+      </ul>
+    </details>
 
-  <details>
-    <summary>Percent of demand by level of service:</summary>
-    <ul>
-      {#each Object.entries($stats.od_percents_los).toSorted((a, b) => b[1] - a[1]) as [key, pct]}
-        <li>{key}: {Math.round(pct * 100)}%</li>
-      {/each}
-    </ul>
-  </details>
+    <details>
+      <summary>Percent of demand by level of service:</summary>
+      <ul>
+        {#each Object.entries($stats.od_percents_los).toSorted((a, b) => b[1] - a[1]) as [key, pct]}
+          <li>{key}: {Math.round(pct * 100)}%</li>
+        {/each}
+      </ul>
+    </details>
+  </div>
 {/if}
