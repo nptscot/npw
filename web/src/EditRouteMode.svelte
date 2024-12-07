@@ -1,12 +1,13 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { backend, mode, infraTypes, autosave } from "./stores";
+  import { backend, mode, autosave } from "./stores";
   import type { Feature, FeatureCollection, LineString } from "geojson";
   import { onMount } from "svelte";
   import { colorByInfraType } from "./colors";
   import RouteControls from "./snapper/RouteControls.svelte";
   import { routeTool, waypoints } from "./snapper/stores";
   import type { Map } from "maplibre-gl";
+  import PickInfraType from "./PickInfraType.svelte";
 
   export let map: Map;
   export let id: number | null;
@@ -135,14 +136,7 @@
       <input type="text" bind:value={name} />
     </label>
 
-    <label>
-      Infrastructure type:
-      <select bind:value={infraType}>
-        {#each infraTypes as [value, label, _]}
-          <option {value}>{label}</option>
-        {/each}
-      </select>
-    </label>
+    <PickInfraType bind:current={infraType} />
 
     <label>
       Notes:

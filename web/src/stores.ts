@@ -45,6 +45,7 @@ export let infraTypes: [string, string, string][] = [
   ["Unknown", "Unknown", "blue"],
 ];
 
+// Map the name to [label, color]
 export let infraTypeMapping: { [name: string]: [string, string] } =
   Object.fromEntries(
     infraTypes.map(([name, label, color]) => [name, [label, color]]),
