@@ -5,11 +5,11 @@ use std::io::BufWriter;
 use anyhow::{bail, Result};
 use clap::Parser;
 use gdal::{vector::LayerAccess, Dataset};
-use geo::{Distance, Euclidean, Geometry, LineString, MultiPolygon};
+use geo::{Distance, Euclidean, Geometry, Length, LineString, MultiPolygon};
 use graph::{Graph, Timer};
 use log::info;
 use rstar::{primitives::GeomWithData, RTree, RTreeObject};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use backend::MapModel;
 
@@ -189,6 +189,7 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
             continue;
         }
 
+        // TODO May need a buffer here too
         if let Some(link) = rtree
             .locate_in_envelope_intersecting(&road.linestring.envelope())
             .min_by_key(|link| compare_road_geometry(&road.linestring, link.geom()))
@@ -236,13 +237,33 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
     // network is split into small segments!
     timer.step("match roads to core network segments");
     let mut output = Vec::new();
-    for road in &graph.roads {
-        output.push(
-            rtree
-                // TODO Plus a buffer?
-                .locate_in_envelope_intersecting(&road.linestring.envelope())
-                .any(|geom| road_geometry_similar(&road.linestring, geom)),
-        );
+    for (idx, road) in graph.roads.iter().enumerate() {
+        // TODO Plus a buffer?
+        let candidates = rtree
+            .locate_in_envelope_intersecting(&road.linestring.envelope())
+            .collect::<Vec<_>>();
+        let any_hits = candidates
+            .iter()
+            .any(|geom| cn_road_geometry_similar(&road.linestring, geom));
+
+        // Enable for debugging
+        if false && !any_hits && !candidates.is_empty() {
+            let mut out = geojson::FeatureWriter::from_writer(std::fs::File::create(format!(
+                "debug{idx}.geojson"
+            ))?);
+            let mut f = graph.mercator.to_wgs84_gj(&road.linestring);
+            f.set_property("kind", "road");
+            out.write_feature(&f)?;
+
+            for x in candidates {
+                let cmp = CompareLineStrings::new(&road.linestring, x);
+                let mut f = graph.mercator.to_wgs84_gj(x);
+                f.properties = Some(serde_json::to_value(&cmp)?.as_object().unwrap().clone());
+                out.write_feature(&f)?;
+            }
+        }
+
+        output.push(any_hits);
     }
     Ok(output)
 }
@@ -296,8 +317,48 @@ fn compare_road_geometry(ls1: &LineString, ls2: &LineString) -> usize {
     ((dist1 + dist2) * 100.0) as usize
 }
 
+#[derive(Serialize)]
+struct CompareLineStrings {
+    angle_main: f64,
+    angle_candidate: f64,
+    angle_diff: f64,
+
+    length_main: f64,
+    length_candidate: f64,
+    length_ratio: f64,
+
+    dist1: f64,
+    dist2: f64,
+}
+
+impl CompareLineStrings {
+    fn new(main: &LineString, candidate: &LineString) -> Self {
+        let angle_main = angle_ls(main);
+        let angle_candidate = angle_ls(candidate);
+        let length_main = main.length::<Euclidean>();
+        let length_candidate = candidate.length::<Euclidean>();
+        let (dist1, dist2) = endpoint_distances(main, candidate);
+
+        Self {
+            angle_main,
+            angle_candidate,
+            angle_diff: (angle_main - angle_candidate).abs(),
+            length_main,
+            length_candidate,
+            // Always >= 1
+            length_ratio: if length_main >= length_candidate {
+                length_main / length_candidate
+            } else {
+                length_candidate / length_main
+            },
+            dist1,
+            dist2,
+        }
+    }
+}
+
 // TODO Works poorly in many cases
-fn road_geometry_similar(ls1: &LineString, ls2: &LineString) -> bool {
+fn cn_road_geometry_similar(ls1: &LineString, ls2: &LineString) -> bool {
     // If both endpoints are within this threshold, accept it
     let tolerance_per_endpt = 10.0;
 
@@ -305,4 +366,27 @@ fn road_geometry_similar(ls1: &LineString, ls2: &LineString) -> bool {
     let dist2 = Euclidean::distance(*ls1.coords().last().unwrap(), *ls2.coords().last().unwrap());
 
     dist1 <= tolerance_per_endpt && dist2 <= tolerance_per_endpt
+}
+
+// Angle in degrees from first to last point. Ignores the "direction" of the line; returns [0,
+// 180].
+fn angle_ls(ls: &LineString) -> f64 {
+    let pt1 = ls.coords().next().unwrap();
+    let pt2 = ls.coords().last().unwrap();
+    let a1 = (pt2.y - pt1.y).atan2(pt2.x - pt1.x).to_degrees();
+    // Normalize to [0, 360]
+    let a2 = if a1 < 0.0 { a1 + 360.0 } else { a1 };
+    // Ignore direction
+    if a2 > 180.0 {
+        a2 - 180.0
+    } else {
+        a2
+    }
+}
+
+// Distance in meters between start points and between end points
+fn endpoint_distances(ls1: &LineString, ls2: &LineString) -> (f64, f64) {
+    let dist1 = Euclidean::distance(*ls1.coords().next().unwrap(), *ls2.coords().next().unwrap());
+    let dist2 = Euclidean::distance(*ls1.coords().last().unwrap(), *ls2.coords().last().unwrap());
+    (dist1, dist2)
 }

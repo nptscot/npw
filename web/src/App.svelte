@@ -156,7 +156,6 @@
         ? "http://localhost:5173/offline/light_style.json"
         : `https://api.maptiler.com/maps/uk-openzoomstack-light/style.json?key=${maptilerApiKey}`}
       standardControls
-      hash
       bind:map
       on:error={(e) => {
         // @ts-expect-error ErrorEvent isn't exported
