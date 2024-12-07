@@ -1,5 +1,6 @@
 <script lang="ts">
   import { allControls } from "./stores";
+  import { tier } from "../stores";
   import { tierColors } from "../colors";
 
   let basic: HTMLDivElement | null = null;
@@ -49,22 +50,30 @@
   <div bind:this={basic} />
 </details>
 
-<details open style:border="2px solid {tierColors.primaryRoutes}">
-  <summary>Primary Route Reference Layers</summary>
-  <div bind:this={primary} />
-</details>
+{#if $tier == "primary"}
+  <details open style:border="2px solid {tierColors.primaryRoutes}">
+    <summary>Primary Route Reference Layers</summary>
+    <div bind:this={primary} />
+  </details>
+{/if}
 
-<details open style:border="2px solid {tierColors.secondaryRoutes}">
-  <summary>Secondary Route Reference Layers</summary>
-  <div bind:this={secondary} />
-</details>
+{#if $tier == "secondary"}
+  <details open style:border="2px solid {tierColors.secondaryRoutes}">
+    <summary>Secondary Route Reference Layers</summary>
+    <div bind:this={secondary} />
+  </details>
+{/if}
 
-<details open style:border="2px solid {tierColors.localAccessRoutes}">
-  <summary>Local Access Route Reference Layers</summary>
-  <div bind:this={localAccess} />
-</details>
+{#if $tier == "local access"}
+  <details open style:border="2px solid {tierColors.localAccessRoutes}">
+    <summary>Local Access Route Reference Layers</summary>
+    <div bind:this={localAccess} />
+  </details>
+{/if}
 
-<details open style:border="2px solid {tierColors.longDistanceRoutes}">
-  <summary>Long Disance Route Reference Layers</summary>
-  <div bind:this={longDistance} />
-</details>
+{#if $tier == "long distance"}
+  <details open style:border="2px solid {tierColors.longDistanceRoutes}">
+    <summary>Long Disance Route Reference Layers</summary>
+    <div bind:this={longDistance} />
+  </details>
+{/if}
