@@ -1,6 +1,7 @@
 <script lang="ts">
   import { notNull } from "svelte-utils";
   import { backend, stats, mode, tier } from "../stores";
+  import { tierColors } from "../colors";
   import { onMount } from "svelte";
   import {
     schools,
@@ -9,6 +10,7 @@
     deprivedPopulation,
     allPopulation,
     highRouteCoverage,
+    settlementsCoverage,
   } from "../layers/stores";
   import Metric from "./Metric.svelte";
 
@@ -34,70 +36,91 @@
 <button on:click={recalc}>Recalculate</button>
 
 {#if $stats}
-  <Metric
-    label="High cycling flow coverage"
-    bind:showLayer={$highRouteCoverage}
-    pct={percent(
-      $stats.covered_flow_quintile_sums[0],
-      $stats.total_flow_quintile_sums[0],
-    )}
-  />
-
-  {#if $tier == "secondary" || $tier == "local access" || $tier == "long distance"}
-    <hr />
+  <div style:border="2px solid {tierColors.primaryRoutes}">
     <Metric
-      label="Medium cycling flow coverage"
+      label="High cycling flow coverage"
       bind:showLayer={$highRouteCoverage}
       pct={percent(
-        $stats.covered_flow_quintile_sums[1],
-        $stats.total_flow_quintile_sums[1],
+        $stats.covered_flow_quintile_sums[0],
+        $stats.total_flow_quintile_sums[0],
       )}
     />
+  </div>
 
-    <Metric
-      label="Town centres"
-      bind:showLayer={$townCentres}
-      pct={$stats.percent_reachable_town_centres}
-    />
+  {#if $tier == "secondary" || $tier == "local access" || $tier == "long distance"}
+    <div
+      style:margin-top="4px"
+      style:border="2px solid {tierColors.secondaryRoutes}"
+    >
+      <Metric
+        label="Medium cycling flow coverage"
+        bind:showLayer={$highRouteCoverage}
+        pct={percent(
+          $stats.covered_flow_quintile_sums[1],
+          $stats.total_flow_quintile_sums[1],
+        )}
+      />
+
+      <Metric
+        label="Town centres"
+        bind:showLayer={$townCentres}
+        pct={$stats.percent_reachable_town_centres}
+      />
+    </div>
   {/if}
 
   {#if $tier == "local access" || $tier == "long distance"}
-    <hr />
-    <Metric
-      label="Low cycling flow coverage"
-      bind:showLayer={$highRouteCoverage}
-      pct={percent(
-        $stats.covered_flow_quintile_sums[2],
-        $stats.total_flow_quintile_sums[2],
-      )}
-    />
+    <div
+      style:margin-top="4px"
+      style:border="2px solid {tierColors.localAccessRoutes}"
+    >
+      <Metric
+        label="Low cycling flow coverage"
+        bind:showLayer={$highRouteCoverage}
+        pct={percent(
+          $stats.covered_flow_quintile_sums[2],
+          $stats.total_flow_quintile_sums[2],
+        )}
+      />
 
-    <Metric
-      label="Schools"
-      bind:showLayer={$schools}
-      pct={$stats.percent_reachable_schools}
-    />
+      <Metric
+        label="Schools"
+        bind:showLayer={$schools}
+        pct={$stats.percent_reachable_schools}
+      />
 
-    <Metric
-      label="GPs and hospitals"
-      bind:showLayer={$gpHospitals}
-      pct={$stats.percent_reachable_gp_hospitals}
-    />
+      <Metric
+        label="GPs and hospitals"
+        bind:showLayer={$gpHospitals}
+        pct={$stats.percent_reachable_gp_hospitals}
+      />
 
-    <Metric
-      label="Deprived population coverage"
-      bind:showLayer={$deprivedPopulation}
-      pct={$stats.percent_reachable_imd_population}
-    />
+      <Metric
+        label="Deprived population coverage"
+        bind:showLayer={$deprivedPopulation}
+        pct={$stats.percent_reachable_imd_population}
+      />
 
-    <Metric
-      label="Population coverage"
-      bind:showLayer={$allPopulation}
-      pct={$stats.percent_reachable_population}
-    />
+      <Metric
+        label="Population coverage"
+        bind:showLayer={$allPopulation}
+        pct={$stats.percent_reachable_population}
+      />
+    </div>
   {/if}
 
-  <hr />
+  {#if $tier == "long distance"}
+    <div
+      style:margin-top="4px"
+      style:border="2px solid {tierColors.longDistanceRoutes}"
+    >
+      <Metric
+        label="Reachable settlements (TODO)"
+        bind:showLayer={$settlementsCoverage}
+        pct={0}
+      />
+    </div>
+  {/if}
 
   <p>
     <!-- svelte-ignore a11y-invalid-attribute -->

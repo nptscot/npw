@@ -13,3 +13,5 @@ export let deprivedPopulation = writable(false);
 export let allPopulation = writable(false);
 export let highRouteCoverage = writable(false);
 export let majorJunctions = writable(true);
+// TODO not wired up yet
+export let settlementsCoverage = writable(false);
