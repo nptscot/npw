@@ -113,7 +113,13 @@
   }
 </script>
 
-<RouteControls {map} {finish} {cancel} {deleteRoute}>
+<RouteControls
+  {map}
+  {finish}
+  {cancel}
+  {deleteRoute}
+  editingExisting={id != null}
+>
   <span slot="extra-map">
     {#if existingGj}
       <GeoJSON data={existingGj}>
