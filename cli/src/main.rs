@@ -172,6 +172,9 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
         };
         traffic_links.push(GeomWithData::new(geom, flows as usize));
     }
+    if traffic_links.is_empty() {
+        bail!("No traffic volumes detected; input is broken");
+    }
     info!("{} links have pred_flows", traffic_links.len());
     let rtree = RTree::bulk_load(traffic_links);
 

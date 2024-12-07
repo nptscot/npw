@@ -54,7 +54,7 @@
               <td>{props.speed}</td>
             </tr>
             <tr>
-              <th>Average daily motor traffic</th>
+              <th>Estimated daily traffic volume</th>
               <td>{props.traffic.toLocaleString()}</td>
             </tr>
           </table>

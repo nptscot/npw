@@ -88,7 +88,7 @@ function od_and_zones {
 }
 
 function traffic {
-  # Manually download https://github.com/nptscot/scottraffic/releases/download/v6/final_estimates_Scotland.gpkg from internal GH repo
+  # Manually download https://github.com/nptscot/scottraffic/releases/download/v7/final_estimates_Scotland_20241202_crs4326.gpkg from internal GH repo
   cp $1 tmp/traffic.gpkg
 }
 

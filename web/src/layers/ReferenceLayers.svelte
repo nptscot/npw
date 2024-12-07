@@ -8,6 +8,7 @@
   import UrbanAreas from "./UrbanAreas.svelte";
   import ReachableNetwork from "./ReachableNetwork.svelte";
   import LevelOfService from "./LevelOfService.svelte";
+  import TrafficVolume from "./TrafficVolume.svelte";
   import DeprivedPopulation from "./DeprivedPopulation.svelte";
   import AllPopulation from "./AllPopulation.svelte";
   import HighRouteCoverage from "./HighRouteCoverage.svelte";
@@ -23,6 +24,7 @@
 <GpHospitals />
 <UrbanAreas />
 <LevelOfService />
+<TrafficVolume />
 <ReachableNetwork />
 <DeprivedPopulation />
 <AllPopulation />
