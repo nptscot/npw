@@ -15,6 +15,7 @@
     mainModeRoutesChanged,
     autosave,
     colorRoutesBy,
+    tier,
   } from "./stores";
   import { currentNetwork } from "./layers/stores";
   import type { FeatureCollection } from "geojson";
@@ -115,7 +116,12 @@
         <LineLayer
           id="routes"
           paint={{
-            "line-width": hoverStateFilter(5, 7),
+            "line-width": [
+              "case",
+              ["==", ["get", "tier"], $tier],
+              hoverStateFilter(5, 7),
+              hoverStateFilter(3, 5),
+            ],
             "line-color":
               $colorRoutesBy == "infra_type" ? colorByInfraType : colorByTier,
           }}

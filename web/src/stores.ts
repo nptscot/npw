@@ -35,7 +35,8 @@ export let routeA: Writable<{ lng: number; lat: number } | null> =
 export let routeB: Writable<{ lng: number; lat: number } | null> =
   writable(null);
 
-export let colorRoutesBy: Writable<"infra_type" | "tier"> = writable("infra_type");
+export let colorRoutesBy: Writable<"infra_type" | "tier"> =
+  writable("infra_type");
 
 export let infraTypes: [string, string, string][] = [
   ["SegregatedWide", "Segregated Track (wide)", "#054d05"],
