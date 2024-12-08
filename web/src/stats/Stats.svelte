@@ -47,7 +47,7 @@
     />
   </div>
 
-  {#if $tier == "secondary" || $tier == "local access" || $tier == "long distance"}
+  {#if $tier == "Secondary" || $tier == "LocalAccess" || $tier == "LongDistance"}
     <div
       style:margin-top="4px"
       style:border="2px solid {tierColors.secondaryRoutes}"
@@ -69,7 +69,7 @@
     </div>
   {/if}
 
-  {#if $tier == "local access" || $tier == "long distance"}
+  {#if $tier == "LocalAccess" || $tier == "LongDistance"}
     <div
       style:margin-top="4px"
       style:border="2px solid {tierColors.localAccessRoutes}"
@@ -109,7 +109,7 @@
     </div>
   {/if}
 
-  {#if $tier == "long distance"}
+  {#if $tier == "LongDistance"}
     <div
       style:margin-top="4px"
       style:border="2px solid {tierColors.longDistanceRoutes}"

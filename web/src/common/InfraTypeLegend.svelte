@@ -3,7 +3,7 @@
 </script>
 
 <div>
-  <details open>
+  <details>
     <summary>Legend</summary>
     {#each infraTypes as [_, label, color]}
       <span style:color>{label}</span>

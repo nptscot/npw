@@ -74,6 +74,7 @@ pub struct Route {
     notes: String,
     roads: Vec<RoadID>,
     infra_type: InfraType,
+    tier: Tier,
 }
 
 #[derive(
@@ -87,6 +88,14 @@ pub enum InfraType {
     CycleLane,
     MixedTraffic,
     Unknown,
+}
+
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+pub enum Tier {
+    Primary,
+    Secondary,
+    LocalAccess,
+    LongDistance,
 }
 
 impl MapModel {

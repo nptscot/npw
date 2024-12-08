@@ -1,6 +1,12 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { backend, mode, autosave } from "./stores";
+  import {
+    backend,
+    mode,
+    autosave,
+    tier as currentTier,
+    type Tier,
+  } from "./stores";
   import type { Feature, FeatureCollection, LineString } from "geojson";
   import { onMount } from "svelte";
   import { colorByInfraType } from "./colors";
@@ -22,12 +28,14 @@
       name: string;
       notes: string;
       infra_type: string;
+      tier: Tier;
     }
   >;
 
   let name = "";
   let notes = "";
   let infraType = "Unknown";
+  let tier = $currentTier;
 
   let existingGj: FeatureCollection | null = null;
 
@@ -42,6 +50,7 @@
       name = feature.properties.name;
       notes = feature.properties.notes;
       infraType = feature.properties.infra_type;
+      tier = feature.properties.tier;
 
       // Transform into the correct format
       $waypoints = feature.properties.waypoints.map((waypt) => {
@@ -100,6 +109,7 @@
         notes,
         nodes: feature.properties.full_path,
         infra_type: infraType,
+        tier,
       });
       await autosave();
       $mode = { kind: "main" };
@@ -120,6 +130,18 @@
   {deleteRoute}
   editingExisting={id != null}
 >
+  <div slot="extra-left">
+    <label>
+      Tier:
+      <select bind:value={tier}>
+        <option value="Primary">Primary routes</option>
+        <option value="Secondary">Secondary routes</option>
+        <option value="LocalAccess">Local access routes</option>
+        <option value="LongDistance">Long distance routes</option>
+      </select>
+    </label>
+  </div>
+
   <span slot="extra-map">
     {#if existingGj}
       <GeoJSON data={existingGj}>

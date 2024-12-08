@@ -117,7 +117,8 @@
           on:click={editRouteMap}
         >
           <Popup openOn="hover" let:props>
-            {props.name || "Untitled"} ({infraTypeMapping[props.infra_type][0]})
+            {props.name || "Untitled"} ({infraTypeMapping[props.infra_type][0]},
+            {props.tier})
           </Popup>
         </LineLayer>
       </GeoJSON>

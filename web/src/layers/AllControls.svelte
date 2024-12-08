@@ -50,28 +50,28 @@
   <div bind:this={basic} />
 </details>
 
-{#if $tier == "primary"}
+{#if $tier == "Primary"}
   <details open style:border="2px solid {tierColors.primaryRoutes}">
     <summary>Primary Route Reference Layers</summary>
     <div bind:this={primary} />
   </details>
 {/if}
 
-{#if $tier == "secondary"}
+{#if $tier == "Secondary"}
   <details open style:border="2px solid {tierColors.secondaryRoutes}">
     <summary>Secondary Route Reference Layers</summary>
     <div bind:this={secondary} />
   </details>
 {/if}
 
-{#if $tier == "local access"}
+{#if $tier == "LocalAccess"}
   <details open style:border="2px solid {tierColors.localAccessRoutes}">
     <summary>Local Access Route Reference Layers</summary>
     <div bind:this={localAccess} />
   </details>
 {/if}
 
-{#if $tier == "long distance"}
+{#if $tier == "LongDistance"}
   <details open style:border="2px solid {tierColors.longDistanceRoutes}">
     <summary>Long Disance Route Reference Layers</summary>
     <div bind:this={longDistance} />

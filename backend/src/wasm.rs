@@ -7,7 +7,7 @@ use graph::{IntersectionID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-use crate::{evaluate::Breakdown, Highway, InfraType, MapModel, Route};
+use crate::{evaluate::Breakdown, Highway, InfraType, MapModel, Route, Tier};
 
 static START: Once = Once::new();
 
@@ -370,6 +370,7 @@ impl MapModel {
             notes: route.notes,
             roads,
             infra_type: route.infra_type,
+            tier: route.tier,
         })
     }
 }
@@ -381,6 +382,7 @@ struct InputRoute {
     notes: String,
     nodes: Vec<RouteNode>,
     infra_type: InfraType,
+    tier: Tier,
 }
 
 #[derive(Deserialize)]

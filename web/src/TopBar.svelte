@@ -6,59 +6,59 @@
 
 <div>
   <button
-    style:background={$tier == "primary" ? tierColors.primaryRoutes : "grey"}
-    on:click={() => ($tier = "primary")}
+    style:background={$tier == "Primary" ? tierColors.primaryRoutes : "grey"}
+    on:click={() => ($tier = "Primary")}
   >
     Primary routes
   </button>
 
   <button
-    style:background={$tier == "secondary"
+    style:background={$tier == "Secondary"
       ? tierColors.secondaryRoutes
       : "grey"}
-    on:click={() => ($tier = "secondary")}
+    on:click={() => ($tier = "Secondary")}
   >
     Secondary routes
   </button>
 
   <button
-    style:background={$tier == "local access"
+    style:background={$tier == "LocalAccess"
       ? tierColors.localAccessRoutes
       : "grey"}
-    on:click={() => ($tier = "local access")}
+    on:click={() => ($tier = "LocalAccess")}
   >
     Local access routes
   </button>
 
   <button
-    style:background={$tier == "long distance"
+    style:background={$tier == "LongDistance"
       ? tierColors.longDistanceRoutes
       : "grey"}
-    on:click={() => ($tier = "long distance")}
+    on:click={() => ($tier = "LongDistance")}
   >
     Long distance routes
   </button>
 
   <HelpButton>
-    {#if $tier == "primary"}
+    {#if $tier == "Primary"}
       <p>
         The primary route should be direct, coherent, meet high demand, and
         potentially connect settlements. Key primary routes will form Active
         Freeways. To draw the primary route, connect the high cycling flow
         routes on the base map.
       </p>
-    {:else if $tier == "secondary"}
+    {:else if $tier == "Secondary"}
       <p>
         To draw the secondary route, please connect town centres and cover
         medium cycling flow routes on the base map.
       </p>
-    {:else if $tier == "local access"}
+    {:else if $tier == "LocalAccess"}
       <p>
         To draw the local access route, connect schools, GPs, hospitals, green
         spaces, neighbourhoods (especially deprived and densely populated ones),
         and above-minimum cycling flow routes on the base map.
       </p>
-    {:else if $tier == "long distance"}
+    {:else if $tier == "LongDistance"}
       <ul>
         <li>
           Long distance routes connect EDJ reachable settlements out with main

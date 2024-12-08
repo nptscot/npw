@@ -362,6 +362,8 @@
       <input type="checkbox" bind:checked={$majorJunctions} />
       Show major junctions
     </label>
+
+    <slot name="extra-left" />
   </div>
 
   <div slot="map">

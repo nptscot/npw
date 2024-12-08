@@ -17,11 +17,11 @@ export type Mode =
   | { kind: "evaluate-od" }
   | { kind: "debug-network" }
   | { kind: "debug-mesh-density" };
-export type Tier = "primary" | "secondary" | "local access" | "long distance";
+export type Tier = "Primary" | "Secondary" | "LocalAccess" | "LongDistance";
 
 export let boundaryName = writable("");
 export let mode: Writable<Mode> = writable({ kind: "main" });
-export let tier: Writable<Tier> = writable("primary");
+export let tier: Writable<Tier> = writable("Primary");
 export let map: Writable<Map | null> = writable(null);
 
 // When the state is modified in main mode, trigger it to refresh the routes

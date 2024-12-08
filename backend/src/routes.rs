@@ -7,7 +7,7 @@ use graph::{Graph, RoadID};
 use serde::Serialize;
 
 use crate::join_lines::{Dir, KeyedLineString};
-use crate::{InfraType, MapModel, Route};
+use crate::{InfraType, MapModel, Route, Tier};
 
 impl MapModel {
     /// Returns the route ID
@@ -77,6 +77,7 @@ impl MapModel {
                 "infra_type",
                 serde_json::to_value(&route.infra_type).unwrap(),
             );
+            f.set_property("tier", serde_json::to_value(&route.tier).unwrap());
             features.push(f);
         }
         GeoJson::from(features)
@@ -107,7 +108,9 @@ impl MapModel {
             imports.push((road_id, infra_type));
         }
 
-        self.import_roads(imports)
+        // TODO Can we detect the tier, or should this entire "import" feature go away and be
+        // user-driven?
+        self.import_roads(imports, Tier::LocalAccess)
     }
 
     /// Returns the number of edits
@@ -127,10 +130,12 @@ impl MapModel {
             imports.push((road_id, InfraType::SegregatedNarrow));
         }
 
-        self.import_roads(imports)
+        // TODO Can we detect the tier, or should this entire "import" feature go away and be
+        // user-driven?
+        self.import_roads(imports, Tier::LocalAccess)
     }
 
-    fn import_roads(&mut self, imports: Vec<(RoadID, InfraType)>) -> usize {
+    fn import_roads(&mut self, imports: Vec<(RoadID, InfraType)>, tier: Tier) -> usize {
         // Create individual segments to import
         let mut pieces = Vec::new();
         for (id, infra_type) in imports {
@@ -161,6 +166,7 @@ impl MapModel {
                 notes: "imported from existing network".to_string(),
                 roads: line.ids.into_iter().map(|(r, _)| r).collect(),
                 infra_type: line.key,
+                tier,
             };
             let route_id = self.id_counter;
             self.id_counter += 1;
