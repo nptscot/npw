@@ -59,6 +59,8 @@ pub struct MapModel {
     precalculated_flows: Vec<usize>,
     // mph
     speeds: Vec<usize>,
+    // A percent. Positive if uphill in the forwards direction, negative if downhill
+    gradients: Vec<f64>,
     // Derived things maintained by recalculate_after_edits
     #[serde(skip_serializing, skip_deserializing, default)]
     infra_types: Vec<Option<InfraType>>,
@@ -112,6 +114,7 @@ impl MapModel {
         traffic_volumes: Vec<usize>,
         core_network: Vec<bool>,
         precalculated_flows: Vec<usize>,
+        gradients: Vec<f64>,
     ) -> Self {
         let speeds = graph
             .roads
@@ -137,6 +140,7 @@ impl MapModel {
             core_network,
             precalculated_flows,
             speeds,
+            gradients,
             infra_types,
             los,
         }

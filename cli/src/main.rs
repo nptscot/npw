@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::BufWriter;
+use std::io::{BufReader, BufWriter};
 
 use anyhow::{bail, Result};
 use clap::Parser;
+use elevation::GeoTiffElevation;
 use gdal::{vector::LayerAccess, Dataset};
 use geo::{Distance, Euclidean, Geometry, Length, LineString, MultiPolygon};
 use graph::{Graph, Timer};
@@ -106,6 +107,8 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
     let precalculated_flows =
         read_precalculated_flows("../data_prep/tmp/combined_network.gpkg", &graph, timer)?;
 
+    let gradients = read_gradients("../data_prep/tmp/UK-dem-50m-4326.tif", &graph, timer)?;
+
     Ok(MapModel::create(
         graph,
         boundary_wgs84,
@@ -118,6 +121,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         traffic_volumes,
         core_network,
         precalculated_flows,
+        gradients,
     ))
 }
 
@@ -309,6 +313,32 @@ fn read_precalculated_flows(path: &str, graph: &Graph, timer: &mut Timer) -> Res
         }
     }
     Ok(output)
+}
+
+fn read_gradients(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<f64>> {
+    timer.step("read gradients");
+    let mut geotiff = GeoTiffElevation::new(BufReader::new(File::open(path)?));
+    let mut gradients = Vec::new();
+    for road in &graph.roads {
+        // TODO This only checks the start and end point
+        let pt1 = graph
+            .mercator
+            .pt_to_wgs84(*road.linestring.coords().next().unwrap());
+        let pt2 = graph
+            .mercator
+            .pt_to_wgs84(*road.linestring.coords().last().unwrap());
+
+        let Some(height1) = geotiff.get_height_for_lon_lat(pt1.x as f32, pt1.y as f32) else {
+            bail!("Couldn't get height for {pt1:?}");
+        };
+        let Some(height2) = geotiff.get_height_for_lon_lat(pt2.x as f32, pt2.y as f32) else {
+            bail!("Couldn't get height for {pt2:?}");
+        };
+
+        let slope = (height2 - height1) / (road.length_meters as f32) * 100.0;
+        gradients.push(slope.into());
+    }
+    Ok(gradients)
 }
 
 // Just sum distance between endpoints

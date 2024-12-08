@@ -104,6 +104,13 @@ function population {
   rm -f SG_SIMD_2020* SIMD2020v2*xlsx
 }
 
+function elevation {
+  # TODO Switch to https://osdatahub.os.uk/downloads/open/Terrain50 directly
+  wget https://play.abstreet.org/dev/data/input/shared/elevation/UK-dem-50m-4326.tif.gz
+  gunzip UK-dem-50m-4326.tif.gz
+  mv UK-dem-50m-4326.tif tmp
+}
+
 core_net
 rnet
 schools
@@ -113,3 +120,4 @@ urban_rural
 od_and_zones ~/Downloads/desire_lines_scotland.csv
 traffic ~/Downloads/final_estimates_Scotland.gpkg
 population
+elevation

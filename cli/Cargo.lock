@@ -226,6 +226,7 @@ dependencies = [
  "bincode",
  "clap",
  "csv",
+ "elevation",
  "gdal",
  "geo",
  "geojson",
@@ -353,6 +354,14 @@ name = "either"
 version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60b1af1c220855b6ceac025d3f6ecdd2b7c4894bfe9cd9bda4fbb4bc7c0d4cf0"
+
+[[package]]
+name = "elevation"
+version = "0.1.0"
+source = "git+https://github.com/dabreegster/elevation#e8d0fd4e11774b6204474be2ecb5ad7d05636f2e"
+dependencies = [
+ "georaster",
+]
 
 [[package]]
 name = "enum-map"
@@ -532,6 +541,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "georaster"
+version = "0.1.0"
+source = "git+https://github.com/pka/georaster#2b26710efdef976d6a5733bb758237444156b458"
+dependencies = [
+ "tiff",
+]
+
+[[package]]
 name = "graph"
 version = "0.1.0"
 source = "git+https://github.com/a-b-street/15m#b2729afa8c7f2d39792014212eba46b313980496"
@@ -688,6 +705,12 @@ name = "itoa"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
+
+[[package]]
+name = "jpeg-decoder"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f5d4a7da358eff58addd2877a45865158f0d78c911d43a5784ceb7bbf52833b0"
 
 [[package]]
 name = "js-sys"
@@ -1165,6 +1188,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tiff"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba1310fcea54c6a9a4fd1aad794ecc02c31682f6bfbecdf460bf19533eed1e3e"
+dependencies = [
+ "flate2",
+ "jpeg-decoder",
+ "weezl",
+]
+
+[[package]]
 name = "time"
 version = "0.3.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1316,6 +1350,12 @@ dependencies = [
  "js-sys",
  "wasm-bindgen",
 ]
+
+[[package]]
+name = "weezl"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "53a85b86a771b1c87058196170769dd264f66c0782acf1ae6cc51bfd64b39082"
 
 [[package]]
 name = "which"
