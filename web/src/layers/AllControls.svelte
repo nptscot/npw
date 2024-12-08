@@ -17,6 +17,7 @@
     "existing network",
     "level of service",
     "traffic volume",
+    "gradient",
     "reachable network",
   ]);
 

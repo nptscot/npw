@@ -4,7 +4,11 @@
   import LayerControls from "./LayerControls.svelte";
   import { assetUrl } from "../stores";
   import type { ExpressionSpecification } from "maplibre-gl";
-  import { lineWidthForDemand, lineColorForDemand } from "../utils";
+  import {
+    lineWidthForDemand,
+    lineColorForDemand,
+    lineColorForGradient,
+  } from "../utils";
 
   let show = false;
   let purpose = "all";
@@ -53,21 +57,7 @@
       101,
       "#000000",
     ],
-    gradient: [
-      "step",
-      ["get", "gradient"],
-      "#59ee19",
-      3,
-      "#37a009",
-      5,
-      "#FFC300",
-      7,
-      "#C70039",
-      10,
-      "#581845",
-      100,
-      "#000000",
-    ],
+    gradient: lineColorForGradient,
   }[colorBy] as ExpressionSpecification;
 </script>
 

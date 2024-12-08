@@ -9,6 +9,7 @@
   import ReachableNetwork from "./ReachableNetwork.svelte";
   import LevelOfService from "./LevelOfService.svelte";
   import TrafficVolume from "./TrafficVolume.svelte";
+  import Gradient from "./Gradient.svelte";
   import DeprivedPopulation from "./DeprivedPopulation.svelte";
   import AllPopulation from "./AllPopulation.svelte";
   import HighRouteCoverage from "./HighRouteCoverage.svelte";
@@ -25,6 +26,7 @@
 <UrbanAreas />
 <LevelOfService />
 <TrafficVolume />
+<Gradient />
 <ReachableNetwork />
 <DeprivedPopulation />
 <AllPopulation />

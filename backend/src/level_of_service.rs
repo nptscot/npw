@@ -26,6 +26,8 @@ impl MapModel {
             f.set_property("infra_type", serde_json::to_value(self.get_infra_type(id))?);
             f.set_property("traffic", self.traffic_volumes[idx]);
             f.set_property("speed", self.speeds[idx]);
+            // TODO Abusing this here; need to consolidate the output layers
+            f.set_property("gradient", self.gradients[idx]);
             features.push(f);
         }
 
