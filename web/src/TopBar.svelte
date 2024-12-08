@@ -6,25 +6,21 @@
 
 <div>
   <button
-    style:background={$tier == "Primary" ? tierColors.primaryRoutes : "grey"}
+    style:background={$tier == "Primary" ? tierColors.Primary : "grey"}
     on:click={() => ($tier = "Primary")}
   >
     Primary routes
   </button>
 
   <button
-    style:background={$tier == "Secondary"
-      ? tierColors.secondaryRoutes
-      : "grey"}
+    style:background={$tier == "Secondary" ? tierColors.Secondary : "grey"}
     on:click={() => ($tier = "Secondary")}
   >
     Secondary routes
   </button>
 
   <button
-    style:background={$tier == "LocalAccess"
-      ? tierColors.localAccessRoutes
-      : "grey"}
+    style:background={$tier == "LocalAccess" ? tierColors.LocalAccess : "grey"}
     on:click={() => ($tier = "LocalAccess")}
   >
     Local access routes
@@ -32,7 +28,7 @@
 
   <button
     style:background={$tier == "LongDistance"
-      ? tierColors.longDistanceRoutes
+      ? tierColors.LongDistance
       : "grey"}
     on:click={() => ($tier = "LongDistance")}
   >

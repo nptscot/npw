@@ -2,10 +2,10 @@ import { constructMatchExpression } from "svelte-utils/map";
 import { infraTypes } from "./stores";
 
 export let tierColors = {
-  primaryRoutes: "#c00000",
-  secondaryRoutes: "#e97132",
-  localAccessRoutes: "#ffc000",
-  longDistanceRoutes: "#4ea72e",
+  Primary: "#c00000",
+  Secondary: "#e97132",
+  LocalAccess: "#ffc000",
+  LongDistance: "#4ea72e",
 };
 
 export let levelOfServiceColors = {
@@ -19,6 +19,12 @@ export let colorByInfraType = constructMatchExpression(
   ["get", "infra_type"],
   Object.fromEntries(infraTypes.map((x) => [x[0], x[2]])),
   "red",
+);
+
+export let colorByTier = constructMatchExpression(
+  ["get", "tier"],
+  tierColors,
+  "cyan",
 );
 
 export let colorByLoS = constructMatchExpression(

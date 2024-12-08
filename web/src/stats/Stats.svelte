@@ -36,7 +36,7 @@
 <button on:click={recalc}>Recalculate</button>
 
 {#if $stats}
-  <div style:border="2px solid {tierColors.primaryRoutes}">
+  <div style:border="2px solid {tierColors.Primary}">
     <Metric
       label="High cycling flow coverage"
       bind:showLayer={$highRouteCoverage}
@@ -48,10 +48,7 @@
   </div>
 
   {#if $tier == "Secondary" || $tier == "LocalAccess" || $tier == "LongDistance"}
-    <div
-      style:margin-top="4px"
-      style:border="2px solid {tierColors.secondaryRoutes}"
-    >
+    <div style:margin-top="4px" style:border="2px solid {tierColors.Secondary}">
       <Metric
         label="Medium cycling flow coverage"
         bind:showLayer={$highRouteCoverage}
@@ -72,7 +69,7 @@
   {#if $tier == "LocalAccess" || $tier == "LongDistance"}
     <div
       style:margin-top="4px"
-      style:border="2px solid {tierColors.localAccessRoutes}"
+      style:border="2px solid {tierColors.LocalAccess}"
     >
       <Metric
         label="Low cycling flow coverage"
@@ -112,7 +109,7 @@
   {#if $tier == "LongDistance"}
     <div
       style:margin-top="4px"
-      style:border="2px solid {tierColors.longDistanceRoutes}"
+      style:border="2px solid {tierColors.LongDistance}"
     >
       <Metric
         label="Reachable settlements (TODO)"

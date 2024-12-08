@@ -14,12 +14,13 @@
     boundaryName,
     mainModeRoutesChanged,
     autosave,
+    colorRoutesBy,
   } from "./stores";
   import { currentNetwork } from "./layers/stores";
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
-  import { colorByInfraType } from "./colors";
+  import { colorByInfraType, colorByTier } from "./colors";
   import AllControls from "./layers/AllControls.svelte";
   import Stats from "./stats/Stats.svelte";
   import ChangeArea from "./ChangeArea.svelte";
@@ -81,6 +82,14 @@
     <details>
       <summary>Current network routes</summary>
 
+      <label>
+        Show routes by:
+        <select bind:value={$colorRoutesBy}>
+          <option value="infra_type">Infrastructure type</option>
+          <option value="tier">Tier</option>
+        </select>
+      </label>
+
       {#if gj}
         <ol>
           {#each gj.features as f}
@@ -107,7 +116,8 @@
           id="routes"
           paint={{
             "line-width": hoverStateFilter(5, 7),
-            "line-color": colorByInfraType,
+            "line-color":
+              $colorRoutesBy == "infra_type" ? colorByInfraType : colorByTier,
           }}
           layout={{
             visibility: $currentNetwork ? "visible" : "none",

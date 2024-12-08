@@ -14,7 +14,7 @@
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
   import MainMode from "./MainMode.svelte";
-  import InfraTypeLegend from "./common/InfraTypeLegend.svelte";
+  import RouteLegend from "./common/RouteLegend.svelte";
   import EditRouteMode from "./EditRouteMode.svelte";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
   import EvaluateODMode from "./EvaluateODMode.svelte";
@@ -166,7 +166,7 @@
         <Geocoder {map} apiKey={maptilerApiKey} />
       {/if}
 
-      <InfraTypeLegend />
+      <RouteLegend />
 
       <div bind:this={mapDiv} />
 
