@@ -6,7 +6,7 @@ mkdir -p tmp
 
 function core_net {
   # From https://github.com/nptscot/outputdata/releases
-  wget https://github.com/nptscot/outputdata/releases/download/v2024-10-01/core_network.gpkg -O tmp/core_network.gpkg
+  wget https://github.com/nptscot/outputdata/releases/download/v2024-12-01/combined_CN_4_2024-12-01_OS.gpkg -O tmp/core_network.gpkg
 }
 
 function rnet {

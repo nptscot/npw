@@ -8,6 +8,7 @@
     autosave,
   } from "../stores";
   import LayerControls from "./LayerControls.svelte";
+  import { colorByTier } from "../colors";
 
   let show = false;
   let firstLoad = false;
@@ -46,7 +47,7 @@
       Show actual core network
     </label>
 
-    <label style:color="red">
+    <label>
       <input type="checkbox" bind:checked={showMatched} />
       Show map-matched core network
     </label>
@@ -76,7 +77,7 @@
     <GeoJSON {data} generateId>
       <LineLayer
         paint={{
-          "line-color": "red",
+          "line-color": colorByTier,
           "line-width": 10,
           "line-opacity": 0.5,
         }}

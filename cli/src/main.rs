@@ -12,7 +12,7 @@ use log::info;
 use rstar::{primitives::GeomWithData, RTree, RTreeObject};
 use serde::{Deserialize, Serialize};
 
-use backend::MapModel;
+use backend::{MapModel, Tier};
 
 #[derive(Parser)]
 struct Args {
@@ -211,8 +211,8 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
     Ok(output)
 }
 
-// The output is whether each road is part of the core network or not
-fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<bool>> {
+// The output is per road. If the road is part of the core network, what tier is it?
+fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<Option<Tier>>> {
     // Read all relevant lines and make an RTree
     timer.step("read core network");
     let dataset = Dataset::open(path)?;
@@ -222,16 +222,26 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
 
     let mut segments = Vec::new();
     for input in layer.features() {
+        let Some(function) = input.field_as_string_by_name("road_function")? else {
+            bail!("Missing road_function");
+        };
+        let tier = match function.as_str() {
+            "Primary" => Tier::Primary,
+            "Secondary" => Tier::Secondary,
+            "Local Access" => Tier::LocalAccess,
+            x => bail!("Unknown road_function {x}"),
+        };
+
         let geo = input.geometry().unwrap().to_geo()?;
         match geo {
             Geometry::LineString(mut ls) => {
                 graph.mercator.to_mercator_in_place(&mut ls);
-                segments.push(ls);
+                segments.push(GeomWithData::new(ls, tier));
             }
             Geometry::MultiLineString(mls) => {
                 for mut ls in mls {
                     graph.mercator.to_mercator_in_place(&mut ls);
-                    segments.push(ls);
+                    segments.push(GeomWithData::new(ls, tier));
                 }
             }
             _ => bail!("read_core_network found something besides a LS or MLS"),
@@ -249,12 +259,14 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
         let candidates = rtree
             .locate_in_envelope_intersecting(&road.linestring.envelope())
             .collect::<Vec<_>>();
-        let any_hits = candidates
+        // TODO If there are multiple hits, pick the best to get the right tier
+        let best_hit = candidates
             .iter()
-            .any(|geom| cn_road_geometry_similar(&road.linestring, geom));
+            .find(|obj| cn_road_geometry_similar(&road.linestring, obj.geom()))
+            .map(|obj| obj.data);
 
         // Enable for debugging
-        if false && !any_hits && !candidates.is_empty() {
+        if false && best_hit.is_none() && !candidates.is_empty() {
             let mut out = geojson::FeatureWriter::from_writer(std::fs::File::create(format!(
                 "debug{idx}.geojson"
             ))?);
@@ -262,15 +274,15 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
             f.set_property("kind", "road");
             out.write_feature(&f)?;
 
-            for x in candidates {
-                let cmp = CompareLineStrings::new(&road.linestring, x);
-                let mut f = graph.mercator.to_wgs84_gj(x);
+            for obj in candidates {
+                let cmp = CompareLineStrings::new(&road.linestring, obj.geom());
+                let mut f = graph.mercator.to_wgs84_gj(obj.geom());
                 f.properties = Some(serde_json::to_value(&cmp)?.as_object().unwrap().clone());
                 out.write_feature(&f)?;
             }
         }
 
-        output.push(any_hits);
+        output.push(best_hit);
     }
     Ok(output)
 }

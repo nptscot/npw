@@ -54,7 +54,7 @@ pub struct MapModel {
 
     // Per RoadID
     traffic_volumes: Vec<usize>,
-    core_network: Vec<bool>,
+    core_network: Vec<Option<Tier>>,
     // Go Dutch totals for all purposes
     precalculated_flows: Vec<usize>,
     // mph
@@ -92,7 +92,7 @@ pub enum InfraType {
     Unknown,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Enum, Serialize, Deserialize)]
 pub enum Tier {
     Primary,
     Secondary,
@@ -112,7 +112,7 @@ impl MapModel {
         town_centres: Vec<places::TownCentre>,
         data_zones: Vec<places::DataZone>,
         traffic_volumes: Vec<usize>,
-        core_network: Vec<bool>,
+        core_network: Vec<Option<Tier>>,
         precalculated_flows: Vec<usize>,
         gradients: Vec<f64>,
     ) -> Self {

@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use anyhow::Result;
+use enum_map::EnumMap;
 use geo::LineString;
 use geojson::{feature::Id, Feature, GeoJson};
 use graph::{Graph, RoadID};
@@ -120,19 +121,24 @@ impl MapModel {
             .values()
             .flat_map(|route| route.roads.clone())
             .collect();
-        let mut imports = Vec::new();
+        let mut imports: EnumMap<Tier, Vec<(RoadID, InfraType)>> = EnumMap::default();
+
         for idx in 0..self.graph.roads.len() {
             let road_id = RoadID(idx);
-            if used_roads.contains(&road_id) || !self.core_network[idx] {
+            if used_roads.contains(&road_id) {
                 continue;
             }
-            // TODO What type?
-            imports.push((road_id, InfraType::SegregatedNarrow));
+            if let Some(tier) = self.core_network[idx] {
+                // TODO What type?
+                imports[tier].push((road_id, InfraType::SegregatedNarrow));
+            }
         }
 
-        // TODO Can we detect the tier, or should this entire "import" feature go away and be
-        // user-driven?
-        self.import_roads(imports, Tier::LocalAccess)
+        let mut edits = 0;
+        for (tier, roads) in imports {
+            edits += self.import_roads(roads, tier)
+        }
+        edits
     }
 
     fn import_roads(&mut self, imports: Vec<(RoadID, InfraType)>, tier: Tier) -> usize {

@@ -283,9 +283,11 @@ impl MapModel {
     #[wasm_bindgen(js_name = renderCoreNetwork)]
     pub fn render_core_network(&self) -> Result<String, JsValue> {
         let mut features = Vec::new();
-        for (road, cn) in self.graph.roads.iter().zip(self.core_network.iter()) {
-            if *cn {
-                features.push(self.graph.mercator.to_wgs84_gj(&road.linestring));
+        for (road, tier) in self.graph.roads.iter().zip(self.core_network.iter()) {
+            if let Some(tier) = tier {
+                let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
+                f.set_property("tier", serde_json::to_value(tier).map_err(err_to_js)?);
+                features.push(f);
             }
         }
 
