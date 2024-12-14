@@ -50,6 +50,14 @@ pub fn read_core_network(
     }
     let rtree = RTree::bulk_load(segments);
 
+    let mut debug_all = if false {
+        Some(geojson::FeatureWriter::from_writer(std::fs::File::create(
+            "debug_all.geojson",
+        )?))
+    } else {
+        None
+    };
+
     // Multiple roads might match to the same segment -- dual carriageways, for example. For every
     // road, see if there's any core network segment close enough to it.
     timer.step("match roads to core network segments");
@@ -63,28 +71,34 @@ pub fn read_core_network(
             .iter()
             .find(|obj| {
                 slice_line_to_match(obj.geom(), &road.linestring)
-                    .map(|compare| cn_road_geometry_similar(&road.linestring, &compare))
+                    .map(|small| cn_road_geometry_similar(&road.linestring, &small))
                     .unwrap_or(false)
             })
             .map(|obj| obj.data);
 
         // Enable for debugging
-        if false && best_hit.is_none() && !candidates.is_empty() {
+        if true && idx == 675 && best_hit.is_none() && !candidates.is_empty() {
             let mut out = geojson::FeatureWriter::from_writer(std::fs::File::create(format!(
                 "debug{idx}.geojson"
             ))?);
+            //let out = debug_all.as_mut().unwrap();
+
             let mut f = graph.mercator.to_wgs84_gj(&road.linestring);
             f.set_property("kind", "road");
+            f.set_property("idx", idx);
             out.write_feature(&f)?;
 
             for obj in candidates {
                 let cmp = CompareLineStrings::new(&road.linestring, obj.geom());
                 let mut f = graph.mercator.to_wgs84_gj(obj.geom());
                 f.properties = Some(serde_json::to_value(&cmp)?.as_object().unwrap().clone());
-                out.write_feature(&f)?;
+                f.set_property("kind", "full candidate");
+                //out.write_feature(&f)?;
 
                 if let Some(small) = slice_line_to_match(obj.geom(), &road.linestring) {
+                    let cmp = CompareLineStrings::new(&road.linestring, &small);
                     f = graph.mercator.to_wgs84_gj(&small);
+                    f.properties = Some(serde_json::to_value(&cmp)?.as_object().unwrap().clone());
                     f.set_property("kind", "sliced candidate");
                     out.write_feature(&f)?;
                 }
@@ -137,9 +151,8 @@ impl CompareLineStrings {
 }
 
 fn cn_road_geometry_similar(ls1: &LineString, ls2: &LineString) -> bool {
-    // TODO Ignore distance between endpoints for now
     let cmp = CompareLineStrings::new(ls1, ls2);
-    cmp.angle_diff <= 10.0 && cmp.length_ratio <= 1.1
+    cmp.angle_diff <= 10.0 && cmp.length_ratio <= 1.1 && cmp.dist1.max(cmp.dist2) <= 15.0
 }
 
 // Angle in degrees from first to last point. Ignores the "direction" of the line; returns [0,
