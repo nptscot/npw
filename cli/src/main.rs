@@ -6,15 +6,15 @@ use anyhow::{bail, Result};
 use clap::Parser;
 use elevation::GeoTiffElevation;
 use gdal::{vector::LayerAccess, Dataset};
-use geo::{Distance, Euclidean, LineString, MultiPolygon};
+use geo::{Distance, Euclidean, Geometry, LineString, MultiPolygon};
 use graph::{Graph, Timer};
 use log::info;
 use rstar::{primitives::GeomWithData, RTree, RTreeObject};
 use serde::Deserialize;
 
-use backend::MapModel;
+use backend::{MapModel, Tier};
 
-mod cn;
+mod match_lines;
 
 #[derive(Parser)]
 struct Args {
@@ -104,7 +104,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
 
     let traffic_volumes = read_traffic_volumes("../data_prep/tmp/traffic.gpkg", &graph, timer)?;
 
-    let core_network = cn::read_core_network("../data_prep/tmp/core_network.gpkg", &graph, timer)?;
+    let core_network = read_core_network("../data_prep/tmp/core_network.gpkg", &graph, timer)?;
 
     let precalculated_flows =
         read_precalculated_flows("../data_prep/tmp/combined_network.gpkg", &graph, timer)?;
@@ -286,4 +286,69 @@ fn compare_road_geometry(ls1: &LineString, ls2: &LineString) -> usize {
     let dist2 = Euclidean::distance(*ls1.coords().last().unwrap(), *ls2.coords().last().unwrap());
     // cm precision
     ((dist1 + dist2) * 100.0) as usize
+}
+
+// The output is per road. If the road is part of the core network, what tier is it?
+fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<Option<Tier>>> {
+    // Read all relevant lines and make an RTree
+    timer.step("read core network");
+    let dataset = Dataset::open(path)?;
+    let mut layer = dataset.layer(0)?;
+    let b = &graph.mercator.wgs84_bounds;
+    layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+
+    let mut segments = Vec::new();
+    for input in layer.features() {
+        let Some(function) = input.field_as_string_by_name("road_function")? else {
+            bail!("Missing road_function");
+        };
+        let tier = match function.as_str() {
+            "Primary" => Tier::Primary,
+            "Secondary" => Tier::Secondary,
+            "Local Access" => Tier::LocalAccess,
+            x => bail!("Unknown road_function {x}"),
+        };
+
+        let geo = input.geometry().unwrap().to_geo()?;
+        match geo {
+            Geometry::LineString(mut ls) => {
+                graph.mercator.to_mercator_in_place(&mut ls);
+                segments.push(GeomWithData::new(ls, tier));
+            }
+            Geometry::MultiLineString(mls) => {
+                for mut ls in mls {
+                    graph.mercator.to_mercator_in_place(&mut ls);
+                    segments.push(GeomWithData::new(ls, tier));
+                }
+            }
+            _ => bail!("read_core_network found something besides a LS or MLS"),
+        }
+    }
+
+    timer.step("match core network");
+    let rtree: RTree<GeomWithData<LineString, Tier>> = RTree::bulk_load(segments);
+    let opts = match_lines::Options {
+        buffer_meters: 20.0,
+        angle_diff_threshold: 10.0,
+        length_ratio_threshold: 1.1,
+        midpt_dist_threshold: 15.0,
+    };
+    if true {
+        Ok(match_lines::match_linestrings(
+            &rtree,
+            graph.roads.iter().map(|r| &r.linestring),
+            &opts,
+        ))
+    } else {
+        let one_file = true;
+        let only_debug_idx = None;
+        match_lines::debug_match_linestrings(
+            &rtree,
+            graph.roads.iter().map(|r| &r.linestring),
+            &opts,
+            &graph.mercator,
+            one_file,
+            only_debug_idx,
+        )
+    }
 }

@@ -1,59 +1,72 @@
-use anyhow::{bail, Result};
-use gdal::{vector::LayerAccess, Dataset};
-use geo::{
-    Distance, Euclidean, Geometry, Length, LineInterpolatePoint, LineLocatePoint, LineString, Point,
-};
-use graph::{Graph, Timer};
+use anyhow::Result;
+use geo::{Distance, Euclidean, Length, LineInterpolatePoint, LineLocatePoint, LineString, Point};
 use rstar::{primitives::GeomWithData, RTree, RTreeObject, AABB};
 use serde::Serialize;
-use utils::LineSplit;
+use utils::{LineSplit, Mercator};
 
-use backend::Tier;
+// TODO Compare to rnetmmatch
+// TODO Standalone crate?
+// TODO Web app to quickly tune params
 
-// The output is per road. If the road is part of the core network, what tier is it?
-pub fn read_core_network(
-    path: &str,
-    graph: &Graph,
-    timer: &mut Timer,
-) -> Result<Vec<Option<Tier>>> {
-    // Read all relevant lines and make an RTree
-    timer.step("read core network");
-    let dataset = Dataset::open(path)?;
-    let mut layer = dataset.layer(0)?;
-    let b = &graph.mercator.wgs84_bounds;
-    layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+pub struct Options {
+    /// Expand the bounding box around each target by this amount in all directions
+    pub buffer_meters: f64,
+    /// How many degrees difference allowed
+    pub angle_diff_threshold: f64,
+    pub length_ratio_threshold: f64,
+    pub midpt_dist_threshold: f64,
+}
 
-    let mut segments = Vec::new();
-    for input in layer.features() {
-        let Some(function) = input.field_as_string_by_name("road_function")? else {
-            bail!("Missing road_function");
-        };
-        let tier = match function.as_str() {
-            "Primary" => Tier::Primary,
-            "Secondary" => Tier::Secondary,
-            "Local Access" => Tier::LocalAccess,
-            x => bail!("Unknown road_function {x}"),
-        };
-
-        let geo = input.geometry().unwrap().to_geo()?;
-        match geo {
-            Geometry::LineString(mut ls) => {
-                graph.mercator.to_mercator_in_place(&mut ls);
-                segments.push(GeomWithData::new(ls, tier));
-            }
-            Geometry::MultiLineString(mls) => {
-                for mut ls in mls {
-                    graph.mercator.to_mercator_in_place(&mut ls);
-                    segments.push(GeomWithData::new(ls, tier));
-                }
-            }
-            _ => bail!("read_core_network found something besides a LS or MLS"),
-        }
+impl Options {
+    fn accept(&self, ls1: &LineString, ls2: &LineString) -> bool {
+        let cmp = CompareLineStrings::new(ls1, ls2);
+        cmp.angle_diff <= self.angle_diff_threshold
+            && cmp.length_ratio <= self.length_ratio_threshold
+            && cmp.midpt_dist <= self.midpt_dist_threshold
     }
-    let rtree = RTree::bulk_load(segments);
+}
 
-    #[allow(unused, unused_mut)]
-    let mut debug_all = if false {
+/// For every target LineString, look for the best matching source LineString and copy its
+/// associated data. All geometry must be Euclidean.
+pub fn match_linestrings<'a, T: Copy>(
+    rtree: &RTree<GeomWithData<LineString, T>>,
+    targets: impl Iterator<Item = &'a LineString>,
+    opts: &Options,
+) -> Vec<Option<T>> {
+    let mut output = Vec::new();
+    for target in targets {
+        let candidates = rtree
+            .locate_in_envelope_intersecting(&buffer_aabb(target.envelope(), opts.buffer_meters))
+            .collect::<Vec<_>>();
+        // TODO If there are multiple hits, pick the best
+        let best_hit = candidates
+            .iter()
+            .find(|obj| {
+                slice_line_to_match(obj.geom(), target)
+                    .map(|small| opts.accept(target, &small))
+                    .unwrap_or(false)
+            })
+            .map(|obj| obj.data);
+
+        output.push(best_hit);
+    }
+    output
+}
+
+/// Same as `match_linestrings`, but for every target with no successful matches, write some
+/// GeoJSON output to manually debug.
+pub fn debug_match_linestrings<'a, T: Copy>(
+    rtree: &RTree<GeomWithData<LineString, T>>,
+    targets: impl Iterator<Item = &'a LineString>,
+    opts: &Options,
+    mercator: &Mercator,
+    // If true, produce just one "debug_all.geojson". Otherwise, produce a "debug{idx}.geojson"
+    // file for each failure.
+    one_file: bool,
+    // If this is set, only debug the given target index
+    only_debug_idx: Option<usize>,
+) -> Result<Vec<Option<T>>> {
+    let mut all_out = if one_file {
         Some(geojson::FeatureWriter::from_writer(std::fs::File::create(
             "debug_all.geojson",
         )?))
@@ -61,46 +74,49 @@ pub fn read_core_network(
         None
     };
 
-    // Multiple roads might match to the same segment -- dual carriageways, for example. For every
-    // road, see if there's any core network segment close enough to it.
-    timer.step("match roads to core network segments");
     let mut output = Vec::new();
-    for (idx, road) in graph.roads.iter().enumerate() {
+    for (idx, target) in targets.enumerate() {
         let candidates = rtree
-            .locate_in_envelope_intersecting(&buffer_aabb(road.linestring.envelope(), 20.0))
+            .locate_in_envelope_intersecting(&buffer_aabb(target.envelope(), opts.buffer_meters))
             .collect::<Vec<_>>();
-        // TODO If there are multiple hits, pick the best to get the right tier
+        // TODO If there are multiple hits, pick the best
         let best_hit = candidates
             .iter()
             .find(|obj| {
-                slice_line_to_match(obj.geom(), &road.linestring)
-                    .map(|small| cn_road_geometry_similar(&road.linestring, &small))
+                slice_line_to_match(obj.geom(), target)
+                    .map(|small| opts.accept(target, &small))
                     .unwrap_or(false)
             })
             .map(|obj| obj.data);
 
-        // Enable for debugging
-        if false && best_hit.is_none() && !candidates.is_empty() {
-            let mut out = geojson::FeatureWriter::from_writer(std::fs::File::create(format!(
-                "debug{idx}.geojson"
-            ))?);
-            //let out = debug_all.as_mut().unwrap();
+        if best_hit.is_none()
+            && !candidates.is_empty()
+            && only_debug_idx.map(|i| idx == i).unwrap_or(true)
+        {
+            let mut one_out = if one_file {
+                None
+            } else {
+                Some(geojson::FeatureWriter::from_writer(std::fs::File::create(
+                    format!("debug{idx}.geojson"),
+                )?))
+            };
+            let out = all_out.as_mut().or_else(|| one_out.as_mut()).unwrap();
 
-            let mut f = graph.mercator.to_wgs84_gj(&road.linestring);
-            f.set_property("kind", "road");
+            let mut f = mercator.to_wgs84_gj(target);
+            f.set_property("kind", "target");
             f.set_property("idx", idx);
             out.write_feature(&f)?;
 
             for obj in candidates {
-                let cmp = CompareLineStrings::new(&road.linestring, obj.geom());
-                let mut f = graph.mercator.to_wgs84_gj(obj.geom());
+                let cmp = CompareLineStrings::new(target, obj.geom());
+                let mut f = mercator.to_wgs84_gj(obj.geom());
                 f.properties = Some(serde_json::to_value(&cmp)?.as_object().unwrap().clone());
                 f.set_property("kind", "full candidate");
                 //out.write_feature(&f)?;
 
-                if let Some(small) = slice_line_to_match(obj.geom(), &road.linestring) {
-                    let cmp = CompareLineStrings::new(&road.linestring, &small);
-                    f = graph.mercator.to_wgs84_gj(&small);
+                if let Some(small) = slice_line_to_match(obj.geom(), target) {
+                    let cmp = CompareLineStrings::new(target, &small);
+                    f = mercator.to_wgs84_gj(&small);
                     f.properties = Some(serde_json::to_value(&cmp)?.as_object().unwrap().clone());
                     f.set_property("kind", "sliced candidate");
                     out.write_feature(&f)?;
@@ -149,11 +165,6 @@ impl CompareLineStrings {
             midpt_dist,
         }
     }
-}
-
-fn cn_road_geometry_similar(ls1: &LineString, ls2: &LineString) -> bool {
-    let cmp = CompareLineStrings::new(ls1, ls2);
-    cmp.angle_diff <= 10.0 && cmp.length_ratio <= 1.1 && cmp.midpt_dist <= 15.0
 }
 
 // Angle in degrees from first to last point. Ignores the "direction" of the line; returns [0,
