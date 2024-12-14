@@ -13,7 +13,7 @@ export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 export type Mode =
   | { kind: "main" }
   | { kind: "edit-route"; id: number | null }
-  | { kind: "evaluate-route"; browse: WorstRoutes }
+  | { kind: "evaluate-route"; prevMode: Mode; browse: WorstRoutes }
   | { kind: "evaluate-od" }
   | { kind: "debug-network" }
   | { kind: "debug-mesh-density" };

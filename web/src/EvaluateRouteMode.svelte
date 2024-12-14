@@ -14,6 +14,7 @@
     backend,
     routeA,
     routeB,
+    type Mode,
     type RouteGJ,
     type WorstRoutes,
   } from "./stores";
@@ -28,6 +29,7 @@
   import Directions from "./Directions.svelte";
   import { currentNetwork } from "./layers/stores";
 
+  export let prevMode: Mode;
   export let browse: WorstRoutes;
   let currentBrowse = 0;
 
@@ -85,7 +87,7 @@
   <div slot="left">
     <h2>Evaluate a route mode</h2>
 
-    <button on:click={() => ($mode = { kind: "main" })}>Back</button>
+    <button on:click={() => ($mode = prevMode)}>Back</button>
 
     <p>
       Move the <b>A</b>

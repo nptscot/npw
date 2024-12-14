@@ -127,6 +127,7 @@
         on:click|preventDefault={() =>
           ($mode = {
             kind: "evaluate-route",
+            prevMode: { kind: "main" },
             browse: notNull($stats).worst_directness_routes,
           })}
       >

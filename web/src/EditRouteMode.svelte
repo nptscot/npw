@@ -6,6 +6,8 @@
     autosave,
     tier as currentTier,
     type Tier,
+    routeA,
+    routeB,
   } from "./stores";
   import type { Feature, FeatureCollection, LineString } from "geojson";
   import { onMount } from "svelte";
@@ -121,6 +123,21 @@
   function cancel() {
     $mode = { kind: "main" };
   }
+
+  // TODO Unless we recalculate immediately, this will be very misleading!
+  function evalRoute() {
+    let feature = JSON.parse($routeTool!.inner.calculateRoute($waypoints));
+    let pt1 = feature.geometry.coordinates[0];
+    let pt2 =
+      feature.geometry.coordinates[feature.geometry.coordinates.length - 1];
+    $routeA = { lng: pt1[0], lat: pt1[1] };
+    $routeB = { lng: pt2[0], lat: pt2[1] };
+    $mode = {
+      kind: "evaluate-route",
+      prevMode: { kind: "edit-route", id },
+      browse: [],
+    };
+  }
 </script>
 
 <RouteControls
@@ -140,6 +157,14 @@
         <option value="LongDistance">Long distance routes</option>
       </select>
     </label>
+
+    <button
+      class="secondary"
+      on:click={evalRoute}
+      disabled={$waypoints.length < 2}
+    >
+      Evaluate this route
+    </button>
   </div>
 
   <span slot="extra-map">
