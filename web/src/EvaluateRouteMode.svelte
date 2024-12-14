@@ -17,7 +17,13 @@
     type RouteGJ,
     type WorstRoutes,
   } from "./stores";
-  import { colorByInfraType, colorByLoS, levelOfServiceColors } from "./colors";
+  import {
+    colorByInfraType,
+    colorByLoS,
+    levelOfServiceColors,
+    gradientColors,
+    colorByGradientGroup,
+  } from "./colors";
   import { QualitativeLegend } from "./common";
   import Directions from "./Directions.svelte";
   import { currentNetwork } from "./layers/stores";
@@ -27,12 +33,12 @@
 
   let gj: RouteGJ | null = null;
   let err = "";
-  let breakdown: "" | "los" | "infra_type" = "los";
+  let breakdown: "" | "los" | "infra_type" | "gradient" = "los";
 
   async function update(
     start: { lng: number; lat: number },
     end: { lng: number; lat: number },
-    breakdown: "" | "los" | "infra_type" = "",
+    breakdown: "" | "los" | "infra_type" | "gradient" = "",
   ) {
     try {
       gj = await $backend!.evaluateRoute({
@@ -98,11 +104,14 @@
         <option value="">Just show route</option>
         <option value="los">Level of service</option>
         <option value="infra_type">Infrastructure type</option>
+        <option value="gradient">Gradient</option>
       </select>
     </label>
 
     {#if breakdown == "los"}
       <QualitativeLegend colors={levelOfServiceColors} />
+    {:else if breakdown == "gradient"}
+      <QualitativeLegend colors={gradientColors} />
     {/if}
 
     {#if gj}
@@ -143,12 +152,12 @@
           filter={["!", ["has", "car_route"]]}
           paint={{
             "line-width": 20,
-            "line-color":
-              breakdown == ""
-                ? "cyan"
-                : breakdown == "los"
-                  ? colorByLoS
-                  : colorByInfraType,
+            "line-color": {
+              "": "cyan",
+              los: colorByLoS,
+              infra_type: colorByInfraType,
+              gradient: colorByGradientGroup,
+            }[breakdown],
             "line-opacity": hoverStateFilter(0.5, 1.0),
           }}
           manageHoverState

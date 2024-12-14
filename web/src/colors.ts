@@ -15,6 +15,14 @@ export let levelOfServiceColors = {
   ShouldNotBeUsed: "brown",
 };
 
+export let gradientColors = {
+  "<= 3%": "#59ee19",
+  "3 - 5%": "#37a009",
+  "5 - 7%": "#FFC300",
+  "7 - 10%": "#C70039",
+  "> 10%": "#581845",
+};
+
 export let colorByInfraType = constructMatchExpression(
   ["get", "infra_type"],
   Object.fromEntries(infraTypes.map((x) => [x[0], x[2]])),
@@ -30,5 +38,11 @@ export let colorByTier = constructMatchExpression(
 export let colorByLoS = constructMatchExpression(
   ["get", "los"],
   levelOfServiceColors,
+  "black",
+);
+
+export let colorByGradientGroup = constructMatchExpression(
+  ["get", "gradient_group"],
+  gradientColors,
   "black",
 );

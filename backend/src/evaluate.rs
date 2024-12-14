@@ -10,6 +10,7 @@ pub enum Breakdown {
     None,
     LevelOfService,
     InfraType,
+    Gradient,
 }
 
 impl MapModel {
@@ -52,6 +53,15 @@ impl MapModel {
                 {
                     let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
                     f.set_property("infra_type", serde_json::to_value(infra_type).unwrap());
+                    features.push(f);
+                }
+            }
+            Breakdown::Gradient => {
+                for (linestring, gradient) in
+                    route.split_linestrings(&self.graph, |r| gradient_group(self.gradients[r.0]))
+                {
+                    let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
+                    f.set_property("gradient_group", gradient);
                     features.push(f);
                 }
             }
@@ -100,4 +110,19 @@ struct Step {
     way: String,
     infra_type: InfraType,
     los: LevelOfService,
+}
+
+fn gradient_group(gradient: f64) -> &'static str {
+    let g = gradient.abs();
+    if g <= 3.0 {
+        "<= 3%"
+    } else if g <= 5.0 {
+        "3 - 5%"
+    } else if g <= 7.0 {
+        "5 - 7%"
+    } else if g <= 10.0 {
+        "7 - 10%"
+    } else {
+        "> 10%"
+    }
 }

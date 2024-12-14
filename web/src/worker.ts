@@ -93,7 +93,7 @@ export class Backend {
     // TODO LngLatLike doesn't work?
     start: { lng: number; lat: number };
     end: Position;
-    breakdown: "" | "los" | "infra_type";
+    breakdown: "" | "los" | "infra_type" | "gradient";
   }): RouteGJ {
     this.checkReady();
     return JSON.parse(

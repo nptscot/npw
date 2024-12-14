@@ -108,6 +108,7 @@ impl MapModel {
                 "" => Breakdown::None,
                 "los" => Breakdown::LevelOfService,
                 "infra_type" => Breakdown::InfraType,
+                "gradient" => Breakdown::Gradient,
                 x => {
                     return Err(err_to_js(format!("evaluateRoute got bad breakdown {x}")));
                 }
