@@ -163,7 +163,7 @@
       }}
     >
       {#if !offlineMode}
-        <Geocoder {map} apiKey={maptilerApiKey} />
+        <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
       {/if}
 
       <RouteLegend />
