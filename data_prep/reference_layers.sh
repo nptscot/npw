@@ -7,6 +7,8 @@ mkdir -p tmp
 function core_net {
   # From https://github.com/nptscot/outputdata/releases
   wget https://github.com/nptscot/outputdata/releases/download/v2024-12-01/combined_CN_4_2024-12-01_OS.gpkg -O tmp/core_network.gpkg
+  # While we're still comparing map-matched results, include this too
+  wget https://github.com/nptscot/outputdata/releases/download/v2024-12-01/combined_CN_4_2024-12-01_OS.pmtiles -O tmp/core_network.pmtiles
 }
 
 function rnet {

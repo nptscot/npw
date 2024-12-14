@@ -1,6 +1,6 @@
 <script lang="ts">
   import { VectorTileSource, LineLayer, GeoJSON } from "svelte-maplibre";
-  import { Popup } from "svelte-utils/map";
+  import { Popup, constructMatchExpression } from "svelte-utils/map";
   import {
     assetUrl,
     backend,
@@ -59,7 +59,16 @@
   <LineLayer
     sourceLayer="coherent_networks"
     paint={{
-      "line-color": "black",
+      "line-color": constructMatchExpression(
+        ["get", "road_function"],
+        {
+          Primary: "#c00000",
+          Secondary: "#e97132",
+          "Local Access": "#ffc000",
+          "Long Distance": "#4ea72e",
+        },
+        "cyan",
+      ),
       "line-width": 2,
     }}
     layout={{
