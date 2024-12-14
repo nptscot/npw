@@ -1,9 +1,10 @@
 use anyhow::{bail, Result};
 use gdal::{vector::LayerAccess, Dataset};
-use geo::{Distance, Euclidean, Geometry, Length, LineString, Point};
+use geo::{Distance, Euclidean, Geometry, Length, LineLocatePoint, LineString, Point};
 use graph::{Graph, Timer};
 use rstar::{primitives::GeomWithData, RTree, RTreeObject, AABB};
 use serde::Serialize;
+use utils::LineSplit;
 
 use backend::Tier;
 
@@ -60,7 +61,11 @@ pub fn read_core_network(
         // TODO If there are multiple hits, pick the best to get the right tier
         let best_hit = candidates
             .iter()
-            .find(|obj| cn_road_geometry_similar(&road.linestring, obj.geom()))
+            .find(|obj| {
+                slice_line_to_match(obj.geom(), &road.linestring)
+                    .map(|compare| cn_road_geometry_similar(&road.linestring, &compare))
+                    .unwrap_or(false)
+            })
             .map(|obj| obj.data);
 
         // Enable for debugging
@@ -77,6 +82,12 @@ pub fn read_core_network(
                 let mut f = graph.mercator.to_wgs84_gj(obj.geom());
                 f.properties = Some(serde_json::to_value(&cmp)?.as_object().unwrap().clone());
                 out.write_feature(&f)?;
+
+                if let Some(small) = slice_line_to_match(obj.geom(), &road.linestring) {
+                    f = graph.mercator.to_wgs84_gj(&small);
+                    f.set_property("kind", "sliced candidate");
+                    out.write_feature(&f)?;
+                }
             }
         }
 
@@ -165,4 +176,12 @@ fn buffer_aabb(aabb: AABB<Point>, buffer_meters: f64) -> AABB<Point> {
             aabb.upper().y() + buffer_meters,
         ),
     )
+}
+
+/// Slice `source` to correspond to `target`, by finding the closest point along `source` matching
+/// `target`'s start and end point.
+fn slice_line_to_match(source: &LineString, target: &LineString) -> Option<LineString> {
+    let start = source.line_locate_point(&target.points().next().unwrap())?;
+    let end = source.line_locate_point(&target.points().last().unwrap())?;
+    source.line_split_twice(start, end)?.into_second()
 }
