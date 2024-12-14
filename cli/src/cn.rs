@@ -1,8 +1,8 @@
 use anyhow::{bail, Result};
 use gdal::{vector::LayerAccess, Dataset};
-use geo::{Distance, Euclidean, Geometry, Length, LineString};
+use geo::{Distance, Euclidean, Geometry, Length, LineString, Point};
 use graph::{Graph, Timer};
-use rstar::{primitives::GeomWithData, RTree, RTreeObject};
+use rstar::{primitives::GeomWithData, RTree, RTreeObject, AABB};
 use serde::Serialize;
 
 use backend::Tier;
@@ -50,14 +50,12 @@ pub fn read_core_network(
     let rtree = RTree::bulk_load(segments);
 
     // Multiple roads might match to the same segment -- dual carriageways, for example. For every
-    // road, see if there's any core network segment close enough to it. Note this assumes the core
-    // network is split into small segments!
+    // road, see if there's any core network segment close enough to it.
     timer.step("match roads to core network segments");
     let mut output = Vec::new();
     for (idx, road) in graph.roads.iter().enumerate() {
-        // TODO Plus a buffer?
         let candidates = rtree
-            .locate_in_envelope_intersecting(&road.linestring.envelope())
+            .locate_in_envelope_intersecting(&buffer_aabb(road.linestring.envelope(), 20.0))
             .collect::<Vec<_>>();
         // TODO If there are multiple hits, pick the best to get the right tier
         let best_hit = candidates
@@ -154,4 +152,17 @@ fn endpoint_distances(ls1: &LineString, ls2: &LineString) -> (f64, f64) {
     let dist1 = Euclidean::distance(*ls1.coords().next().unwrap(), *ls2.coords().next().unwrap());
     let dist2 = Euclidean::distance(*ls1.coords().last().unwrap(), *ls2.coords().last().unwrap());
     (dist1, dist2)
+}
+
+fn buffer_aabb(aabb: AABB<Point>, buffer_meters: f64) -> AABB<Point> {
+    AABB::from_corners(
+        Point::new(
+            aabb.lower().x() - buffer_meters,
+            aabb.lower().y() - buffer_meters,
+        ),
+        Point::new(
+            aabb.upper().x() + buffer_meters,
+            aabb.upper().y() + buffer_meters,
+        ),
+    )
 }
