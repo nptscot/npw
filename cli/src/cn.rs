@@ -1,6 +1,8 @@
 use anyhow::{bail, Result};
 use gdal::{vector::LayerAccess, Dataset};
-use geo::{Distance, Euclidean, Geometry, Length, LineLocatePoint, LineString, Point};
+use geo::{
+    Distance, Euclidean, Geometry, Length, LineInterpolatePoint, LineLocatePoint, LineString, Point,
+};
 use graph::{Graph, Timer};
 use rstar::{primitives::GeomWithData, RTree, RTreeObject, AABB};
 use serde::Serialize;
@@ -50,6 +52,7 @@ pub fn read_core_network(
     }
     let rtree = RTree::bulk_load(segments);
 
+    #[allow(unused, unused_mut)]
     let mut debug_all = if false {
         Some(geojson::FeatureWriter::from_writer(std::fs::File::create(
             "debug_all.geojson",
@@ -77,7 +80,7 @@ pub fn read_core_network(
             .map(|obj| obj.data);
 
         // Enable for debugging
-        if true && idx == 675 && best_hit.is_none() && !candidates.is_empty() {
+        if false && best_hit.is_none() && !candidates.is_empty() {
             let mut out = geojson::FeatureWriter::from_writer(std::fs::File::create(format!(
                 "debug{idx}.geojson"
             ))?);
@@ -120,8 +123,7 @@ struct CompareLineStrings {
     length_candidate: f64,
     length_ratio: f64,
 
-    dist1: f64,
-    dist2: f64,
+    midpt_dist: f64,
 }
 
 impl CompareLineStrings {
@@ -130,7 +132,7 @@ impl CompareLineStrings {
         let angle_candidate = angle_ls(candidate);
         let length_main = main.length::<Euclidean>();
         let length_candidate = candidate.length::<Euclidean>();
-        let (dist1, dist2) = endpoint_distances(main, candidate);
+        let midpt_dist = midpoint_distance(main, candidate);
 
         Self {
             angle_main,
@@ -144,15 +146,14 @@ impl CompareLineStrings {
             } else {
                 length_candidate / length_main
             },
-            dist1,
-            dist2,
+            midpt_dist,
         }
     }
 }
 
 fn cn_road_geometry_similar(ls1: &LineString, ls2: &LineString) -> bool {
     let cmp = CompareLineStrings::new(ls1, ls2);
-    cmp.angle_diff <= 10.0 && cmp.length_ratio <= 1.1 && cmp.dist1.max(cmp.dist2) <= 15.0
+    cmp.angle_diff <= 10.0 && cmp.length_ratio <= 1.1 && cmp.midpt_dist <= 15.0
 }
 
 // Angle in degrees from first to last point. Ignores the "direction" of the line; returns [0,
@@ -171,11 +172,12 @@ fn angle_ls(ls: &LineString) -> f64 {
     }
 }
 
-// Distance in meters between start points and between end points
-fn endpoint_distances(ls1: &LineString, ls2: &LineString) -> (f64, f64) {
-    let dist1 = Euclidean::distance(*ls1.coords().next().unwrap(), *ls2.coords().next().unwrap());
-    let dist2 = Euclidean::distance(*ls1.coords().last().unwrap(), *ls2.coords().last().unwrap());
-    (dist1, dist2)
+// Distance in meters between the middle of each linestring. Because ls1 and ls2 might point
+// opposite directions, using the start/end is unnecessarily trickier.
+fn midpoint_distance(ls1: &LineString, ls2: &LineString) -> f64 {
+    let pt1 = ls1.line_interpolate_point(0.5).unwrap();
+    let pt2 = ls2.line_interpolate_point(0.5).unwrap();
+    Euclidean::distance(pt1, pt2)
 }
 
 fn buffer_aabb(aabb: AABB<Point>, buffer_meters: f64) -> AABB<Point> {
