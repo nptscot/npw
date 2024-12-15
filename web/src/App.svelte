@@ -141,6 +141,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Network Planning Workspace - {$boundaryName}</title>
+</svelte:head>
+
 <Loading {loading} />
 
 <Layout>
