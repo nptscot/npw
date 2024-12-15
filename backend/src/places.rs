@@ -1,9 +1,10 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
-use geo::{Contains, Intersects, MultiPolygon, Point};
+use geo::{BoundingRect, Contains, Intersects, MultiPolygon, Point, Rect};
 use geojson::Feature;
 use graph::{Graph, RoadID};
+use rstar::AABB;
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
 
@@ -194,20 +195,27 @@ impl DataZone {
     }
 
     pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
+        let profile = graph.profile_names["bicycle"];
+
         let mut zones = Vec::new();
         let mut densities = Vec::new();
         for x in geojson::de::deserialize_feature_collection_str_to_vec::<DataZoneGJ>(gj)? {
             if boundary_wgs84.intersects(&x.geometry) {
                 let polygon = graph.mercator.to_mercator(&x.geometry);
 
+                // TODO rstar can't directly calculate a MultiPolygon envelope
+                let bbox: Rect = polygon.bounding_rect().unwrap().into();
+                let envelope = AABB::from_corners(
+                    Point::new(bbox.min().x, bbox.min().y),
+                    Point::new(bbox.max().x, bbox.max().y),
+                );
+
                 // All intersecting roads
-                // TODO Could rtree to speed up
-                let mut roads: HashSet<RoadID> = HashSet::new();
-                for (idx, road) in graph.roads.iter().enumerate() {
-                    if polygon.intersects(&road.linestring) {
-                        roads.insert(RoadID(idx));
-                    }
-                }
+                let roads: HashSet<RoadID> = graph.routers[profile.0]
+                    .closest_road
+                    .locate_in_envelope_intersecting(&envelope)
+                    .map(|obj| obj.data)
+                    .collect();
 
                 let area_km2 = x.area / 10.0e6;
                 zones.push(DataZone {
