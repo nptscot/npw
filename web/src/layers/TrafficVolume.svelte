@@ -44,6 +44,7 @@
 <VectorTileSource url={`pmtiles://${assetUrl("cbd.pmtiles")}`}>
   <LineLayer
     sourceLayer="cbd_layer"
+    filter={["has", "Traffic volume category"]}
     paint={{
       "line-color": constructMatchExpression(
         ["get", "Traffic volume category"],
@@ -67,7 +68,7 @@
     <GeoJSON {data} generateId>
       <LineLayer
         layout={{
-          visibility: show ? "visible" : "none",
+          visibility: show && showMatched ? "visible" : "none",
         }}
         paint={{
           "line-width": makeRamp(["get", "traffic"], limits, [1, 2, 3]),

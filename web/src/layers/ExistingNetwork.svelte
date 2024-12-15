@@ -1,13 +1,19 @@
 <script lang="ts">
-  import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
+  import {
+    VectorTileSource,
+    GeoJSON,
+    hoverStateFilter,
+    LineLayer,
+  } from "svelte-maplibre";
   import {
     backend,
     infraTypeMapping,
     autosave,
     mainModeRoutesChanged,
+    assetUrl,
   } from "../stores";
   import { colorByInfraType } from "../colors";
-  import { Popup } from "svelte-utils/map";
+  import { Popup, constructMatchExpression } from "svelte-utils/map";
   import { Modal } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";
 
@@ -30,6 +36,9 @@
       show = false;
     }
   }
+
+  let showTruth = true;
+  let showCalculated = true;
 </script>
 
 <LayerControls name="existing network">
@@ -42,6 +51,16 @@
     <button class="outline" on:click={() => (showImportModal = true)}>
       Import existing routes
     </button>
+
+    <label>
+      <input type="checkbox" bind:checked={showTruth} />
+      Show osmactive data
+    </label>
+
+    <label>
+      <input type="checkbox" bind:checked={showCalculated} />
+      Show calculated data
+    </label>
   {/if}
 </LayerControls>
 
@@ -65,12 +84,37 @@
   </Modal>
 {/if}
 
+<!-- TODO For debugging -->
+<VectorTileSource url={`pmtiles://${assetUrl("cbd.pmtiles")}`}>
+  <LineLayer
+    sourceLayer="cbd_layer"
+    filter={["!=", ["get", "Infrastructure type"], "Mixed Traffic Street"]}
+    paint={{
+      "line-color": constructMatchExpression(
+        ["get", "Infrastructure type"],
+        {
+          "Segregated Track (wide)": "#054d05",
+          "Off Road Cycleway": "#3a9120",
+          "Segregated Track (narrow)": "#87d668",
+          "Shared Footway": "#ffbf00",
+          "Painted Cycle Lane": "#FF0000",
+        },
+        "cyan",
+      ),
+      "line-width": 3,
+    }}
+    layout={{
+      visibility: show && showTruth ? "visible" : "none",
+    }}
+  />
+</VectorTileSource>
+
 {#if $backend && firstLoad}
   {#await $backend.classifyExistingNetwork() then data}
     <GeoJSON {data} generateId>
       <LineLayer
         layout={{
-          visibility: show ? "visible" : "none",
+          visibility: show && showCalculated ? "visible" : "none",
         }}
         paint={{
           "line-width": hoverStateFilter(5, 7),
