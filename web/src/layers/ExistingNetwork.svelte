@@ -122,6 +122,9 @@
           "line-opacity": 0.8,
         }}
         manageHoverState
+        on:click={(e) =>
+          window.open(e.detail.features[0].properties.way, "_blank")}
+        hoverCursor="pointer"
       >
         <Popup openOn="hover" let:props>
           {infraTypeMapping[props.infra_type][0]}

@@ -26,12 +26,11 @@ pub enum Highway {
 }
 
 impl Highway {
-    // This is somewhat based on
-    // https://github.com/nptscot/osmactive/blob/b08d91b310187c6b344d3682e040e47ce2519be1/R/osmactive.R#L133-L316,
-    // but the purpose is different -- unless a road can't be modified, then it still belongs in
-    // the graph.
+    // This is mostly based on `get_cycling_network` from
+    // https://github.com/nptscot/osmactive/blob/main/R/osmactive.R. The purpose is a bit
+    // different, because unless a road can't be modified, then it still belongs in the graph.
     pub fn classify(tags: &Tags) -> Option<Self> {
-        match tags.get("highway")?.as_str() {
+        let hwy = match tags.get("highway")?.as_str() {
             "motorway" | "motorway_link" => Some(Highway::Motorway),
             "trunk" | "trunk_link" => Some(Highway::Trunk),
             "primary" | "primary_link" => Some(Highway::Primary),
@@ -56,7 +55,18 @@ impl Highway {
             }
             // TODO Make sure we got all cases; print stuff. (steps, construction...)
             _ => None,
+        }?;
+
+        // Be stricter about some cases
+        if matches!(hwy, Highway::Footway | Highway::Pedestrian | Highway::Path) {
+            if !tags.is_any("bicycle", vec!["yes", "designated"]) {
+                return None;
+            }
+            // Unlike osmactive, don't require surface or smoothness tags. If they're bad today,
+            // somebody might want to propose improvements.
         }
+
+        Some(hwy)
     }
 }
 
