@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { backend } from "../stores";
-  import { Popup, makeRamp } from "svelte-utils/map";
+  import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
+  import { backend, assetUrl } from "../stores";
+  import { Popup, makeRamp, constructMatchExpression } from "svelte-utils/map";
   import { SequentialLegend } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";
 
@@ -14,6 +14,9 @@
 
   let colorScale = ["#27918d", "#ffaa33", "#440154"];
   let limits = [0, 2000, 4000, 10000];
+
+  let showTruth = true;
+  let showMatched = true;
 </script>
 
 <LayerControls name="traffic volume">
@@ -24,8 +27,40 @@
 
   {#if show}
     <SequentialLegend {colorScale} {limits} />
+
+    <label>
+      <input type="checkbox" bind:checked={showTruth} />
+      Show actual data
+    </label>
+
+    <label>
+      <input type="checkbox" bind:checked={showMatched} />
+      Show map-matched data
+    </label>
   {/if}
 </LayerControls>
+
+<!-- TODO Continue showing this for debugging the map matching -->
+<VectorTileSource url={`pmtiles://${assetUrl("cbd.pmtiles")}`}>
+  <LineLayer
+    sourceLayer="cbd_layer"
+    paint={{
+      "line-color": constructMatchExpression(
+        ["get", "Traffic volume category"],
+        {
+          "0 to 1999": "#27918d",
+          "2000 to 3999": "#ffaa33",
+          "4000+": "#440154",
+        },
+        "cyan",
+      ),
+      "line-width": 5,
+    }}
+    layout={{
+      visibility: show && showTruth ? "visible" : "none",
+    }}
+  />
+</VectorTileSource>
 
 {#if $backend && firstLoad}
   {#await $backend.renderLevelOfService() then data}

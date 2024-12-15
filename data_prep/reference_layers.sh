@@ -92,6 +92,9 @@ function od_and_zones {
 function traffic {
   # Manually download https://github.com/nptscot/scottraffic/releases/download/v7/final_estimates_Scotland_20241202_crs4326.gpkg from internal GH repo
   cp $1 tmp/traffic.gpkg
+
+  # While we're still comparing map-matched results, include this too
+  wget https://nptscot.blob.core.windows.net/pmtiles/cbd_layer_2024-12-01.pmtiles -O ../web/public/cbd.pmtiles
 }
 
 function population {

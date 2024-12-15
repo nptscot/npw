@@ -184,33 +184,22 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
     info!("{} links have pred_flows", traffic_links.len());
     let rtree = RTree::bulk_load(traffic_links);
 
-    // Multiple roads might match to the same traffic link -- dual carriageways, for example.
-    // Insist on finding a match for every road.
-    //
-    // TODO Check results carefully. npt build.R does more work.
-    timer.step("match roads to traffic volumes");
-    let mut output = Vec::new();
-    for road in &graph.roads {
-        // The source data excludes these, so we often end up matching nearby main roads with high
-        // volume. Force them to 0, so they get a good LoS and don't appear as severances.
-        if road.osm_tags.is("highway", "service") {
-            output.push(0);
-            continue;
-        }
+    timer.step("match traffic volumes");
+    // TODO Share if they're the same for all cases
+    let opts = match_lines::Options {
+        buffer_meters: 20.0,
+        angle_diff_threshold: 10.0,
+        length_ratio_threshold: 1.1,
+        midpt_dist_threshold: 15.0,
+    };
+    let results =
+        match_lines::match_linestrings(&rtree, graph.roads.iter().map(|r| &r.linestring), &opts);
 
-        // TODO May need a buffer here too
-        if let Some(link) = rtree
-            .locate_in_envelope_intersecting(&road.linestring.envelope())
-            .min_by_key(|link| compare_road_geometry(&road.linestring, link.geom()))
-        {
-            //info!("{} got flow {} with score {} cm", road.way, link.data, compare_road_geometry(&road.linestring, link.geom()));
-            output.push(link.data);
-        } else {
-            //info!("{} didn't match a traffic volume link", road.way);
-            output.push(0);
-        }
-    }
-    Ok(output)
+    // TODO Filter out service roads manually?
+    Ok(results
+        .into_iter()
+        .map(|volume| volume.unwrap_or(0))
+        .collect())
 }
 
 // The output is the Go Dutch totals for all purpose
@@ -326,7 +315,7 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
     }
 
     timer.step("match core network");
-    let rtree: RTree<GeomWithData<LineString, Tier>> = RTree::bulk_load(segments);
+    let rtree = RTree::bulk_load(segments);
     let opts = match_lines::Options {
         buffer_meters: 20.0,
         angle_diff_threshold: 10.0,
