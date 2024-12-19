@@ -62,10 +62,6 @@ let streets = (x: string) => x;
 // https://docs.maptiler.com/schema/planet/
 // https://cloud.maptiler.com/maps/streets-v2/
 const layerZorder = [
-  streets("Background"),
-
-  "fade-study-area",
-
   streets("Ferry line"),
 
   // Reference layers (areas)
@@ -89,7 +85,9 @@ const layerZorder = [
   "los",
   "rnet",
   "reachability",
-  "debug-reachability",
+  "debug-reachability-town_centres",
+  "debug-reachability-schools",
+  "debug-reachability-gp_hospitals",
 
   // Reference layers (points or small polygons)
   "gp-hospitals",
@@ -100,7 +98,7 @@ const layerZorder = [
   // Edit mode
   "snapper-lines",
   "snapper-preview",
-  "edit-existing-routes",
+  "edit-current-routes",
   "edit-route-sections",
 
   // Special modes
@@ -108,9 +106,11 @@ const layerZorder = [
   "debug-mode",
   "mesh-density",
   "mesh-density-outline",
-  "eval-existing-routes",
+  "eval-current-routes",
   "eval-route-breakdown",
   "eval-car-route",
 
-  streets("road_label"),
+  streets("Road labels"),
+
+  "fade-study-area",
 ];

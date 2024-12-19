@@ -27,17 +27,17 @@
   let infraType = "Unknown";
   let tier = $currentTier;
 
-  let existingGj: FeatureCollection<LineString, RouteProps> | null = null;
+  let currentGj: FeatureCollection<LineString, RouteProps> | null = null;
 
   let sectionsGj = emptyGeojson();
   $: recalculateSections($waypoints);
 
   onMount(async () => {
-    existingGj = await $backend!.renderRoutes();
+    currentGj = await $backend!.renderRoutes();
 
     $waypoints = [];
     if (id != null) {
-      let feature = existingGj.features.find((f) => f.id == id)!;
+      let feature = currentGj.features.find((f) => f.id == id)!;
       name = feature.properties.name;
       notes = feature.properties.notes;
       infraType = feature.properties.infra_type;
@@ -167,10 +167,10 @@
   </div>
 
   <span slot="extra-map">
-    {#if existingGj}
-      <GeoJSON data={existingGj}>
+    {#if currentGj}
+      <GeoJSON data={currentGj}>
         <LineLayer
-          {...layerId("edit-existing-routes")}
+          {...layerId("edit-current-routes")}
           filter={id == null ? undefined : ["!=", ["id"], id]}
           paint={{
             "line-width": 5,
