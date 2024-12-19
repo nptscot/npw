@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { layerId } from "../common";
   import { VectorTileSource, LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import LayerControls from "./LayerControls.svelte";
@@ -108,6 +109,7 @@
 
 <VectorTileSource url={`pmtiles://${assetUrl("route_network.pmtiles")}`}>
   <LineLayer
+    {...layerId("rnet")}
     sourceLayer="rnet"
     paint={{
       "line-color": lineColor,

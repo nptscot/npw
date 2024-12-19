@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { layerId } from "../common";
   import { GeoJSON, LineLayer, hoverStateFilter } from "svelte-maplibre";
   import { backend } from "../stores";
   import { Popup } from "svelte-utils/map";
@@ -26,6 +27,7 @@
   {#await $backend.renderLevelOfService() then data}
     <GeoJSON {data} generateId>
       <LineLayer
+        {...layerId("gradients")}
         layout={{
           visibility: show ? "visible" : "none",
         }}

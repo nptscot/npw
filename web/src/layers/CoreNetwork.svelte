@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { layerId } from "../common";
   import { VectorTileSource, LineLayer, GeoJSON } from "svelte-maplibre";
   import { Popup, constructMatchExpression } from "svelte-utils/map";
   import {
@@ -57,6 +58,7 @@
 <!-- TODO Continue showing this for debugging the map matching -->
 <VectorTileSource url={`pmtiles://${assetUrl("core_network.pmtiles")}`}>
   <LineLayer
+    {...layerId("cn-debug")}
     sourceLayer="coherent_networks"
     paint={{
       "line-color": constructMatchExpression(
@@ -85,6 +87,7 @@
   {#await $backend.renderCoreNetwork() then data}
     <GeoJSON {data} generateId>
       <LineLayer
+        {...layerId("cn")}
         paint={{
           "line-color": colorByTier,
           "line-width": 10,

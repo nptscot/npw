@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { HelpButton } from "../common";
+  import { HelpButton, layerId } from "../common";
   import { SplitComponent } from "../common/layout";
   import { routeTool, waypoints, type Waypoint } from "./stores";
   import { Marker, MapEvents, GeoJSON, LineLayer } from "svelte-maplibre";
@@ -409,6 +409,7 @@
 
     <GeoJSON data={calculateRoutes($routeTool, $waypoints)} generateId>
       <LineLayer
+        {...layerId("snapper-lines")}
         paint={{
           "line-color": "black",
           "line-width": 10,
@@ -418,6 +419,7 @@
 
     <GeoJSON data={previewGj}>
       <LineLayer
+        {...layerId("snapper-preview")}
         paint={{
           "line-color": "black",
           "line-width": 3,

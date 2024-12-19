@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { layerId } from "../common";
   import { notNull } from "svelte-utils";
   import {
     VectorTileSource,
@@ -88,6 +89,7 @@
 <!-- TODO For debugging -->
 <VectorTileSource url={`pmtiles://${assetUrl("cbd.pmtiles")}`}>
   <LineLayer
+    {...layerId("existing-infra-debug")}
     sourceLayer="cbd_layer"
     filter={["!=", ["get", "Infrastructure type"], "Mixed Traffic Street"]}
     paint={{
@@ -118,6 +120,7 @@
   {#await $backend.classifyExistingNetwork() then data}
     <GeoJSON {data} generateId>
       <LineLayer
+        {...layerId("existing-infra")}
         layout={{
           visibility: show && showCalculated ? "visible" : "none",
         }}

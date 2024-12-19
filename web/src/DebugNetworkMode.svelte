@@ -4,6 +4,7 @@
   import { PropertiesTable, notNull } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
   import { backend, mode } from "./stores";
+  import { layerId } from "./common";
 </script>
 
 <SplitComponent>
@@ -17,6 +18,7 @@
     {#await notNull($backend).renderDebug() then data}
       <GeoJSON {data} generateId>
         <LineLayer
+          {...layerId("debug-mode")}
           paint={{
             "line-width": hoverStateFilter(5, 7),
             "line-color": "black",

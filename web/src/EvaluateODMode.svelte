@@ -1,5 +1,6 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import { layerId } from "./common";
   import { SplitComponent } from "./common/layout";
   import { Popup } from "svelte-utils/map";
   import { backend, mode, type EvaluateODOut } from "./stores";
@@ -39,6 +40,7 @@
     {#if gj}
       <GeoJSON data={gj} generateId>
         <LineLayer
+          {...layerId("eval-od-mode")}
           paint={{
             "line-width": lineWidthForDemand("count"),
             "line-color": lineColorForDemand("count"),

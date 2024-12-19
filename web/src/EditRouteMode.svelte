@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { layerId } from "./common";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import {
     backend,
@@ -169,6 +170,7 @@
     {#if existingGj}
       <GeoJSON data={existingGj}>
         <LineLayer
+          {...layerId("edit-existing-routes")}
           filter={id == null ? undefined : ["!=", ["id"], id]}
           paint={{
             "line-width": 5,
@@ -181,6 +183,7 @@
 
     <GeoJSON data={sectionsGj}>
       <LineLayer
+        {...layerId("edit-route-sections")}
         filter={["==", ["get", "kind"], "new"]}
         paint={{
           "line-width": 3,

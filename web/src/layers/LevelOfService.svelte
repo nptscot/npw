@@ -4,7 +4,7 @@
   import { backend, infraTypeMapping } from "../stores";
   import { Popup } from "svelte-utils/map";
   import LayerControls from "./LayerControls.svelte";
-  import { QualitativeLegend } from "../common";
+  import { layerId, QualitativeLegend } from "../common";
   import { levelOfServiceColors, colorByLoS } from "../colors";
 
   let data: FeatureCollection = {
@@ -38,6 +38,7 @@
 
 <GeoJSON {data} generateId>
   <LineLayer
+    {...layerId("los")}
     layout={{
       visibility: show ? "visible" : "none",
     }}

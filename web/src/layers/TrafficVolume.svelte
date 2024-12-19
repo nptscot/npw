@@ -3,6 +3,7 @@
   import { backend, assetUrl } from "../stores";
   import { Popup, makeRamp, constructMatchExpression } from "svelte-utils/map";
   import { SequentialLegend } from "svelte-utils";
+  import { layerId } from "../common";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;
@@ -43,6 +44,7 @@
 <!-- TODO Continue showing this for debugging the map matching -->
 <VectorTileSource url={`pmtiles://${assetUrl("cbd.pmtiles")}`}>
   <LineLayer
+    {...layerId("traffic-debug")}
     sourceLayer="cbd_layer"
     filter={["has", "Traffic volume category"]}
     paint={{
@@ -67,6 +69,7 @@
   {#await $backend.renderLevelOfService() then data}
     <GeoJSON {data} generateId>
       <LineLayer
+        {...layerId("traffic")}
         layout={{
           visibility: show && showMatched ? "visible" : "none",
         }}

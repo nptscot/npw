@@ -7,6 +7,7 @@
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { SplitComponent } from "./common/layout";
+  import { layerId } from "./common";
   import {
     backend,
     mode,
@@ -114,6 +115,7 @@
     {#if gj}
       <GeoJSON data={gj}>
         <LineLayer
+          {...layerId("main-mode")}
           paint={{
             "line-width": [
               "case",

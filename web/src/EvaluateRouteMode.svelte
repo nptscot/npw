@@ -25,7 +25,7 @@
     gradientColors,
     colorByGradientGroup,
   } from "./colors";
-  import { QualitativeLegend } from "./common";
+  import { layerId, QualitativeLegend } from "./common";
   import Directions from "./Directions.svelte";
   import { currentNetwork } from "./layers/stores";
 
@@ -127,6 +127,7 @@
     {#await notNull($backend).renderRoutes() then data}
       <GeoJSON {data}>
         <LineLayer
+          {...layerId("eval-existing-routes")}
           paint={{
             "line-width": 5,
             "line-color": colorByInfraType,
@@ -150,6 +151,7 @@
     {#if gj}
       <GeoJSON data={gj} generateId>
         <LineLayer
+          {...layerId("eval-route-breakdown")}
           filter={["!", ["has", "car_route"]]}
           paint={{
             "line-width": 20,
@@ -165,6 +167,7 @@
         />
 
         <LineLayer
+          {...layerId("eval-car-route")}
           filter={["has", "car_route"]}
           paint={{
             "line-width": 10,

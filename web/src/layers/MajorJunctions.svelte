@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { layerId } from "../common";
   import { GeoJSON, CircleLayer } from "svelte-maplibre";
   import { mode, backend } from "../stores";
   import { majorJunctions as show } from "./stores";
@@ -22,6 +23,7 @@
 
 <GeoJSON {data}>
   <CircleLayer
+    {...layerId("major-junctions")}
     paint={{
       "circle-color": "purple",
       "circle-radius": 5,

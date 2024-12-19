@@ -11,6 +11,7 @@
     leftSidebarContents,
     rightSidebarContents,
   } from "./common/layout";
+  import { layerId } from "./common";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
   import MainMode from "./MainMode.svelte";
@@ -177,7 +178,10 @@
       {#if $backend}
         {#await $backend.getInvertedBoundary() then data}
           <GeoJSON {data}>
-            <FillLayer paint={{ "fill-color": "black", "fill-opacity": 0.3 }} />
+            <FillLayer
+              {...layerId("fade-study-area")}
+              paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
+            />
           </GeoJSON>
         {/await}
 

@@ -4,7 +4,7 @@
   import LayerControls from "./LayerControls.svelte";
   import { backend, type Schools } from "../stores";
   import { percent } from "../utils";
-  import { QualitativeLegend } from "../common";
+  import { layerId, QualitativeLegend } from "../common";
   import { schools as show } from "./stores";
   import type { Feature, Point } from "geojson";
   import DebugReachability from "./DebugReachability.svelte";
@@ -50,6 +50,7 @@
 
 <GeoJSON {data} generateId>
   <CircleLayer
+    {...layerId("schools")}
     manageHoverState
     paint={{
       "circle-color": ["case", ["get", "reachable"], "purple", "red"],

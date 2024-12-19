@@ -4,7 +4,7 @@
   import LayerControls from "./LayerControls.svelte";
   import { backend, type TownCentres } from "../stores";
   import { percent } from "../utils";
-  import { QualitativeLegend } from "../common";
+  import { layerId, QualitativeLegend } from "../common";
   import { townCentres as show } from "./stores";
   import type { Feature, MultiPolygon } from "geojson";
   import DebugReachability from "./DebugReachability.svelte";
@@ -53,6 +53,7 @@
 
 <GeoJSON {data} generateId>
   <FillLayer
+    {...layerId("town-centres")}
     manageHoverState
     paint={{
       "fill-color": ["case", ["get", "reachable"], "purple", "red"],

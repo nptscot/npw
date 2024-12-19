@@ -6,6 +6,7 @@
   } from "svelte-maplibre";
   import LayerControls from "./LayerControls.svelte";
   import { assetUrl } from "../stores";
+  import { layerId } from "../common";
 
   let show = false;
 </script>
@@ -19,6 +20,7 @@
 
 <VectorTileSource url={`pmtiles://${assetUrl("urban_areas.pmtiles")}`}>
   <FillLayer
+    {...layerId("urban-areas")}
     sourceLayer="urban_areas"
     manageHoverState
     paint={{

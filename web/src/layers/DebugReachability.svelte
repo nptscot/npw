@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { layerId } from "../common";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { backend } from "../stores";
   import type {
@@ -46,6 +47,7 @@
 
 <GeoJSON data={debug} generateId>
   <LineLayer
+    {...layerId("debug-reachability")}
     paint={{
       "line-width": 3,
       "line-color": [

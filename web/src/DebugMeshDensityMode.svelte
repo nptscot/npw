@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { layerId } from "./common";
   import {
     GeoJSON,
     hoverStateFilter,
@@ -19,18 +20,20 @@
   <div slot="map">
     {#await notNull($backend).meshDensity() then data}
       <GeoJSON {data} generateId>
-        <LineLayer
-          paint={{
-            "line-color": "black",
-          }}
-        />
-
         <FillLayer
+          {...layerId("mesh-density")}
           paint={{
             "fill-color": "grey",
             "fill-opacity": hoverStateFilter(0.5, 1.0),
           }}
           manageHoverState
+        />
+
+        <LineLayer
+          {...layerId("mesh-density-outline")}
+          paint={{
+            "line-color": "black",
+          }}
         />
       </GeoJSON>
     {/await}

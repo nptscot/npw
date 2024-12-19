@@ -4,7 +4,7 @@
   import LayerControls from "./LayerControls.svelte";
   import type { FeatureCollection } from "geojson";
   import { constructMatchExpression } from "svelte-utils/map";
-  import { QualitativeLegend } from "../common";
+  import { layerId, QualitativeLegend } from "../common";
 
   // TODO Does this belong as a layer like this, or a debug mode, in the short term?
 
@@ -44,6 +44,7 @@
 
 <GeoJSON {data} generateId>
   <LineLayer
+    {...layerId("reachability")}
     layout={{
       visibility: show ? "visible" : "none",
     }}

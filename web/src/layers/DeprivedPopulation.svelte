@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { layerId } from "../common";
   import {
     GeoJSON,
     hoverStateFilter,
@@ -71,6 +72,7 @@
 
 <GeoJSON {data} generateId>
   <FillLayer
+    {...layerId("simd")}
     manageHoverState
     paint={{
       "fill-color": makeRamp(["get", "imd_percentile"], limits, colorScale),
@@ -91,6 +93,7 @@
   </FillLayer>
 
   <LineLayer
+    {...layerId("simd-outline")}
     filter={["!", ["get", "reachable"]]}
     paint={{
       "line-color": "red",

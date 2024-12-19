@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { layerId } from "../common";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { backend, type PrecalculatedFlows } from "../stores";
   import { Popup } from "svelte-utils/map";
@@ -110,6 +111,7 @@
 
 <GeoJSON {data}>
   <LineLayer
+    {...layerId("npt-coverage")}
     layout={{
       visibility: $show ? "visible" : "none",
     }}
