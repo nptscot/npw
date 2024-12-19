@@ -251,7 +251,11 @@
 
 <SplitComponent>
   <div slot="left">
-    <h2>Editing a route</h2>
+    {#if editingExisting}
+      <h2>Editing a route</h2>
+    {:else}
+      <h2>Drawing a new route</h2>
+    {/if}
 
     <button on:click={finish} disabled={$waypoints.length < 2}>Finish</button>
     <button class="secondary" disabled={undoStates.length == 0} on:click={undo}>

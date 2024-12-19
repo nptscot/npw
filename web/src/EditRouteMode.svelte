@@ -1,6 +1,5 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import type { ExpressionSpecification } from "maplibre-gl";
   import {
     backend,
     mode,
@@ -16,7 +15,7 @@
   import RouteControls from "./snapper/RouteControls.svelte";
   import { routeTool, waypoints, type Waypoint } from "./snapper/stores";
   import type { Map } from "maplibre-gl";
-  import PickInfraType from "./PickInfraType.svelte";
+  import { notNull } from "svelte-utils";
   import { emptyGeojson, Popup } from "svelte-utils/map";
 
   export let map: Map;
@@ -29,9 +28,8 @@
 
   let existingGj: FeatureCollection<LineString, RouteProps> | null = null;
 
-  let showSections = true;
   let sectionsGj = emptyGeojson();
-  $: recalculateSections(showSections, $waypoints);
+  $: recalculateSections($waypoints);
 
   onMount(async () => {
     existingGj = await $backend!.renderRoutes();
@@ -129,28 +127,15 @@
     };
   }
 
-  async function recalculateSections(
-    showSections: boolean,
-    waypts: Waypoint[],
-  ) {
-    sectionsGj = emptyGeojson();
-    if (showSections) {
-      try {
-        // TODO Wasteful; should RouteControls export a read-only view of this?
-        let feature = JSON.parse($routeTool!.inner.calculateRoute(waypts));
-        sectionsGj = await $backend!.autosplitRoute(
-          feature.properties.full_path,
-        );
-      } catch (err) {}
+  async function recalculateSections(waypts: Waypoint[]) {
+    try {
+      // TODO Wasteful; should RouteControls export a read-only view of this?
+      let feature = JSON.parse($routeTool!.inner.calculateRoute(waypts));
+      sectionsGj = await $backend!.autosplitRoute(feature.properties.full_path);
+    } catch (err) {
+      sectionsGj = emptyGeojson();
     }
   }
-
-  let sectionsLineColor = [
-    "case",
-    ["==", ["get", "kind"], "overlap"],
-    "red",
-    colorByInfraType,
-  ] as ExpressionSpecification;
 </script>
 
 <RouteControls
@@ -169,11 +154,6 @@
         <option value="LocalAccess">Local access routes</option>
         <option value="LongDistance">Long distance routes</option>
       </select>
-    </label>
-
-    <label>
-      <input type="checkbox" bind:checked={showSections} />
-      Show sections
     </label>
 
     <button
@@ -201,13 +181,14 @@
 
     <GeoJSON data={sectionsGj}>
       <LineLayer
+        filter={["==", ["get", "kind"], "new"]}
         paint={{
           "line-width": 3,
-          "line-color": sectionsLineColor,
+          "line-color": colorByInfraType,
         }}
       >
         <Popup openOn="hover" let:props>
-          <p>{props.kind}, {props.infra_type}</p>
+          <p>This section will be {props.infra_type}</p>
         </Popup>
       </LineLayer>
     </GeoJSON>
@@ -219,11 +200,25 @@
       <input type="text" bind:value={name} />
     </label>
 
-    <PickInfraType bind:current={infraType} />
-
+    <!--<PickInfraType bind:current={infraType} />-->
     <label>
       Notes:
       <textarea rows="5" bind:value={notes} />
     </label>
+
+    {#if sectionsGj.features.length > 0}
+      <p>The route you've drawn has been split into sections:</p>
+      <ol>
+        {#each sectionsGj.features as f}
+          {#if notNull(f.properties).kind == "new"}
+            <li>
+              A section where {notNull(f.properties).infra_type} is most appropriate
+            </li>
+          {:else}
+            <li>An existing section from another route</li>
+          {/if}
+        {/each}
+      </ol>
+    {/if}
   </div>
 </RouteControls>
