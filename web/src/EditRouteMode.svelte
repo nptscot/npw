@@ -13,9 +13,10 @@
   import { onMount } from "svelte";
   import { colorByInfraType } from "./colors";
   import RouteControls from "./snapper/RouteControls.svelte";
-  import { routeTool, waypoints } from "./snapper/stores";
+  import { routeTool, waypoints, type Waypoint } from "./snapper/stores";
   import type { Map } from "maplibre-gl";
   import PickInfraType from "./PickInfraType.svelte";
+  import { emptyGeojson, Popup } from "svelte-utils/map";
 
   export let map: Map;
   export let id: number | null;
@@ -40,6 +41,10 @@
   let tier = $currentTier;
 
   let existingGj: FeatureCollection | null = null;
+
+  let showSections = true;
+  let sectionsGj = emptyGeojson();
+  $: recalculateSections(showSections, $waypoints);
 
   onMount(async () => {
     existingGj = await $backend!.renderRoutes();
@@ -138,6 +143,22 @@
       browse: [],
     };
   }
+
+  async function recalculateSections(
+    showSections: boolean,
+    waypts: Waypoint[],
+  ) {
+    sectionsGj = emptyGeojson();
+    if (showSections) {
+      try {
+        // TODO Wasteful; should RouteControls export a read-only view of this?
+        let feature = JSON.parse($routeTool!.inner.calculateRoute(waypts));
+        sectionsGj = await $backend!.autosplitRoute(
+          feature.properties.full_path,
+        );
+      } catch (err) {}
+    }
+  }
 </script>
 
 <RouteControls
@@ -158,6 +179,11 @@
       </select>
     </label>
 
+    <label>
+      <input type="checkbox" bind:checked={showSections} />
+      Show sections
+    </label>
+
     <button
       class="secondary"
       on:click={evalRoute}
@@ -171,7 +197,6 @@
     {#if existingGj}
       <GeoJSON data={existingGj}>
         <LineLayer
-          id="routes"
           filter={id == null ? undefined : ["!=", ["id"], id]}
           paint={{
             "line-width": 5,
@@ -181,6 +206,25 @@
         />
       </GeoJSON>
     {/if}
+
+    <GeoJSON data={sectionsGj}>
+      <LineLayer
+        paint={{
+          "line-width": 10,
+          "line-color": [
+            "case",
+            ["==", ["get", "kind"], "overlap"],
+            "red",
+            "cyan",
+          ],
+          "line-opacity": 0.5,
+        }}
+      >
+        <Popup openOn="hover" let:props>
+          <p>{props.kind}, {props.infra_type}</p>
+        </Popup>
+      </LineLayer>
+    </GeoJSON>
   </span>
 
   <div slot="extra-right">

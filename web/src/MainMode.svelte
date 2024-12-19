@@ -114,7 +114,6 @@
     {#if gj}
       <GeoJSON data={gj}>
         <LineLayer
-          id="routes"
           paint={{
             "line-width": [
               "case",

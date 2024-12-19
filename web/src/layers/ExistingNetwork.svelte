@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { notNull } from "svelte-utils";
   import {
     VectorTileSource,
     GeoJSON,
@@ -106,7 +107,11 @@
     layout={{
       visibility: show && showTruth ? "visible" : "none",
     }}
-  />
+  >
+    <Popup openOn="hover" let:props>
+      osmactive: {props["Infrastructure type"]}
+    </Popup>
+  </LineLayer>
 </VectorTileSource>
 
 {#if $backend && firstLoad}
@@ -123,7 +128,7 @@
         }}
         manageHoverState
         on:click={(e) =>
-          window.open(e.detail.features[0].properties.way, "_blank")}
+          window.open(notNull(e.detail.features[0].properties).way, "_blank")}
         hoverCursor="pointer"
       >
         <Popup openOn="hover" let:props>

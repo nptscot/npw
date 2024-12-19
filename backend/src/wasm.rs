@@ -3,7 +3,7 @@ use std::sync::Once;
 
 use geo::{Coord, LineString, Polygon};
 use geojson::{Feature, FeatureCollection, Geometry};
-use graph::{IntersectionID, Timer};
+use graph::{IntersectionID, RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
@@ -84,6 +84,15 @@ impl MapModel {
     #[wasm_bindgen(js_name = clearAllRoutes)]
     pub fn clear_all_routes_wasm(&mut self) {
         self.clear_all_routes()
+    }
+
+    /// Splits a route into sections, returning a FeatureCollection
+    #[wasm_bindgen(js_name = autosplitRoute)]
+    pub fn autosplit_route_wasm(&self, input: JsValue) -> Result<String, JsValue> {
+        // TODO Or take a full Route as input and reuse parse_route?
+        let full_path: Vec<RouteNode> = serde_wasm_bindgen::from_value(input)?;
+        let roads = self.full_path_to_roads(full_path).map_err(err_to_js)?;
+        self.autosplit_route(roads).map_err(err_to_js)
     }
 
     /// Returns a GeoJSON string showing all routes
@@ -342,9 +351,25 @@ impl MapModel {
             Ok(r) => r,
             Err(err) => bail!("{err}"),
         };
+        let roads = self
+            .full_path_to_roads(route.nodes)?
+            .into_iter()
+            .map(|(r, _)| r)
+            .collect();
+        Ok(Route {
+            feature: route.feature,
+            name: route.name,
+            notes: route.notes,
+            roads,
+            infra_type: route.infra_type,
+            tier: route.tier,
+        })
+    }
 
+    // Returns (Road, forwards) pairs
+    fn full_path_to_roads(&self, full_path: Vec<RouteNode>) -> anyhow::Result<Vec<(RoadID, bool)>> {
         let mut intersections = Vec::new();
-        for node in route.nodes {
+        for node in full_path {
             if let Some(id) = node.snapped {
                 intersections.push(IntersectionID(id as usize));
             } else if node.free.is_some() {
@@ -358,7 +383,7 @@ impl MapModel {
         for pair in intersections.windows(2) {
             match self.graph.find_edge(pair[0], pair[1]) {
                 Some(road) => {
-                    roads.push(road.id);
+                    roads.push((road.id, road.src_i == pair[0]));
                 }
                 None => {
                     // TODO Change route snapper behavior here? Or treat as a freehand line?
@@ -366,15 +391,7 @@ impl MapModel {
                 }
             }
         }
-
-        Ok(Route {
-            feature: route.feature,
-            name: route.name,
-            notes: route.notes,
-            roads,
-            infra_type: route.infra_type,
-            tier: route.tier,
-        })
+        Ok(roads)
     }
 }
 

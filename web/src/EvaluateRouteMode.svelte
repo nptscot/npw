@@ -127,7 +127,6 @@
     {#await notNull($backend).renderRoutes() then data}
       <GeoJSON {data}>
         <LineLayer
-          id="routes"
           paint={{
             "line-width": 5,
             "line-color": colorByInfraType,

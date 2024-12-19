@@ -1,5 +1,11 @@
 import init, { MapModel } from "backend";
-import type { Position, Feature, Polygon, FeatureCollection } from "geojson";
+import type {
+  LineString,
+  Position,
+  Feature,
+  Polygon,
+  FeatureCollection,
+} from "geojson";
 import type {
   RouteGJ,
   EvaluateODOut,
@@ -89,6 +95,12 @@ export class Backend {
     this.inner!.clearAllRoutes();
   }
 
+  // TODO types, along with setRoute
+  autosplitRoute(full_path: any[]): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.autosplitRoute(full_path));
+  }
+
   evaluateRoute(req: {
     // TODO LngLatLike doesn't work?
     start: { lng: number; lat: number };
@@ -122,7 +134,10 @@ export class Backend {
     return JSON.parse(this.inner!.meshDensity());
   }
 
-  classifyExistingNetwork(): FeatureCollection {
+  classifyExistingNetwork(): FeatureCollection<
+    LineString,
+    { infra_type: string; way: string }
+  > {
     this.checkReady();
     return JSON.parse(this.inner!.classifyExistingNetwork());
   }

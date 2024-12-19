@@ -17,7 +17,6 @@
     {#await notNull($backend).renderDebug() then data}
       <GeoJSON {data} generateId>
         <LineLayer
-          id="network"
           paint={{
             "line-width": hoverStateFilter(5, 7),
             "line-color": "black",

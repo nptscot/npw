@@ -1,14 +1,14 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use anyhow::Result;
 use enum_map::EnumMap;
 use geo::LineString;
 use geojson::{feature::Id, Feature, GeoJson};
-use graph::{Graph, RoadID};
+use graph::{Graph, PathStep, Position, RoadID};
 use serde::Serialize;
 
 use crate::join_lines::{Dir, KeyedLineString};
-use crate::{InfraType, MapModel, Route, Tier};
+use crate::{InfraType, LevelOfService, MapModel, Route, Tier};
 
 impl MapModel {
     /// Returns the route ID
@@ -23,20 +23,15 @@ impl MapModel {
         };
 
         // Check for overlaps
-        let mut used_roads = HashMap::new();
-        for (id, existing_route) in &self.routes {
-            for r in &existing_route.roads {
-                used_roads.insert(*r, *id);
-            }
-        }
+        let used_roads = self.used_roads();
         for r in &route.roads {
-            if let Some(id) = used_roads.get(r) {
+            if used_roads.contains(r) {
                 // Restore the original
                 if let (Some(id), Some(route)) = (edit_id, original) {
                     self.routes.insert(id, route);
                 }
 
-                bail!("Another route {id} already crosses the same road {r:?}");
+                bail!("Another route already crosses the same road {r:?}");
             }
         }
 
@@ -86,11 +81,7 @@ impl MapModel {
 
     /// Returns the number of edits
     pub fn import_existing_routes(&mut self) -> usize {
-        let used_roads: HashSet<RoadID> = self
-            .routes
-            .values()
-            .flat_map(|route| route.roads.clone())
-            .collect();
+        let used_roads = self.used_roads();
         let mut imports = Vec::new();
         for (idx, road) in self.graph.roads.iter().enumerate() {
             let road_id = RoadID(idx);
@@ -116,11 +107,7 @@ impl MapModel {
 
     /// Returns the number of edits
     pub fn import_core_network(&mut self) -> usize {
-        let used_roads: HashSet<RoadID> = self
-            .routes
-            .values()
-            .flat_map(|route| route.roads.clone())
-            .collect();
+        let used_roads = self.used_roads();
         let mut imports: EnumMap<Tier, Vec<(RoadID, InfraType)>> = EnumMap::default();
 
         for idx in 0..self.graph.roads.len() {
@@ -139,6 +126,47 @@ impl MapModel {
             edits += self.import_roads(roads, tier)
         }
         edits
+    }
+
+    /// Split a route into sections, returning a FeatureCollection
+    pub fn autosplit_route(&self, route: Vec<(RoadID, bool)>) -> Result<String> {
+        let used_roads = self.used_roads();
+
+        // Split when:
+        // - the auto-recommended infrastructure type changes
+        // - the route crosses something existing
+        #[derive(PartialEq)]
+        enum Case {
+            AlreadyExists,
+            New(Option<InfraType>),
+        }
+        let case = |(r, _)| {
+            if used_roads.contains(&r) {
+                Case::AlreadyExists
+            } else {
+                Case::New(self.best_infra_type(r))
+            }
+        };
+
+        let mut sections = Vec::new();
+        for roads in route.chunk_by(|a, b| case(*a) == case(*b)) {
+            let c = case(roads[0]);
+            let mut f = self
+                .graph
+                .mercator
+                .to_wgs84_gj(&glue_route(&self.graph, roads));
+            match c {
+                Case::AlreadyExists => {
+                    f.set_property("kind", "overlap");
+                }
+                Case::New(infra_type) => {
+                    f.set_property("kind", "new");
+                    f.set_property("infra_type", serde_json::to_value(&infra_type).unwrap());
+                }
+            }
+            sections.push(f);
+        }
+        Ok(serde_json::to_string(&GeoJson::from(sections))?)
     }
 
     fn import_roads(&mut self, imports: Vec<(RoadID, InfraType)>, tier: Tier) -> usize {
@@ -181,6 +209,27 @@ impl MapModel {
 
         self.recalculate_after_edits();
         changes
+    }
+
+    fn used_roads(&self) -> HashSet<RoadID> {
+        self.routes
+            .values()
+            .flat_map(|route| route.roads.clone())
+            .collect()
+    }
+
+    // TODO Use CbD guidance. Simple for now
+    // This assumes this road doesn't have anything set yet, and so its LoS isn't based on an
+    // InfraType already
+    fn best_infra_type(&self, r: RoadID) -> Option<InfraType> {
+        match self.los[r.0] {
+            // Already fine
+            LevelOfService::High => None,
+            LevelOfService::Medium => Some(InfraType::SegregatedNarrow),
+            LevelOfService::Low => Some(InfraType::SegregatedWide),
+            // TODO The user drew a route here, so what should we recommend?
+            LevelOfService::ShouldNotBeUsed => Some(InfraType::SegregatedWide),
+        }
     }
 }
 
@@ -251,4 +300,32 @@ struct JsonNode {
 // plenty of precision
 fn trim_lon_lat(x: f64) -> f64 {
     (x * 10e6).round() / 10e6
+}
+
+// TODO Upstream to graph
+fn glue_route(graph: &Graph, roads: &[(RoadID, bool)]) -> LineString {
+    graph::Route {
+        start: start_pos(roads[0], graph),
+        end: end_pos(*roads.last().unwrap(), graph),
+        steps: roads
+            .into_iter()
+            .cloned()
+            .map(|(road, forwards)| PathStep::Road { road, forwards })
+            .collect(),
+    }
+    .linestring(graph)
+}
+
+// TODO Upstream to graph
+fn start_pos((r, forwards): (RoadID, bool), graph: &Graph) -> Position {
+    let road = &graph.roads[r.0];
+    Position {
+        road: r,
+        fraction_along: if forwards { 0.0 } else { 1.0 },
+        intersection: if forwards { road.src_i } else { road.dst_i },
+    }
+}
+
+fn end_pos((road, forwards): (RoadID, bool), graph: &Graph) -> Position {
+    start_pos((road, !forwards), graph)
 }
