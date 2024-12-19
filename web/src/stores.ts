@@ -6,6 +6,7 @@ import type {
   LineString,
   Point,
   MultiPolygon,
+  Feature,
 } from "geojson";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
@@ -157,3 +158,25 @@ export type PrecalculatedFlows = FeatureCollection<
   covered_quintile_sums: number[];
   total_quintile_sums: number[];
 };
+
+export type RouteNode = { snapped: number } | { free: [number, number] };
+
+// TODO Reconcile these two
+
+export interface SetRouteInput {
+  feature: Feature<LineString, RouteProps>;
+  name: string;
+  notes: string;
+  full_path: RouteNode[];
+  infra_type: string;
+  tier: Tier;
+}
+
+export interface RouteProps {
+  name: string;
+  notes: string;
+  full_path: RouteNode[];
+  waypoints: any[];
+  infra_type: string;
+  tier: Tier;
+}

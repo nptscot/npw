@@ -352,7 +352,7 @@ impl MapModel {
             Err(err) => bail!("{err}"),
         };
         let roads = self
-            .full_path_to_roads(route.nodes)?
+            .full_path_to_roads(route.full_path)?
             .into_iter()
             .map(|(r, _)| r)
             .collect();
@@ -400,7 +400,7 @@ struct InputRoute {
     feature: Feature,
     name: String,
     notes: String,
-    nodes: Vec<RouteNode>,
+    full_path: Vec<RouteNode>,
     infra_type: InfraType,
     tier: Tier,
 }

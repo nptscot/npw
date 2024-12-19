@@ -15,6 +15,9 @@ import type {
   TownCentres,
   DataZones,
   PrecalculatedFlows,
+  SetRouteInput,
+  RouteNode,
+  RouteProps,
 } from "./stores";
 
 export class Backend {
@@ -72,15 +75,13 @@ export class Backend {
     return this.inner!.toRouteSnapper();
   }
 
-  // TODO More specific type
-  renderRoutes(): FeatureCollection {
+  renderRoutes(): FeatureCollection<LineString, RouteProps> {
     this.checkReady();
     return JSON.parse(this.inner!.renderRoutes());
   }
 
-  // TODO types
   // TODO Be consistent about undefined vs null
-  setRoute(id: number | null, input: any): number {
+  setRoute(id: number | null, input: SetRouteInput): number {
     this.checkReady();
     return this.inner!.setRoute(id == null ? undefined : id, input);
   }
@@ -95,8 +96,7 @@ export class Backend {
     this.inner!.clearAllRoutes();
   }
 
-  // TODO types, along with setRoute
-  autosplitRoute(full_path: any[]): FeatureCollection {
+  autosplitRoute(full_path: RouteNode[]): FeatureCollection {
     this.checkReady();
     return JSON.parse(this.inner!.autosplitRoute(full_path));
   }

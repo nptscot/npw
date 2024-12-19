@@ -1,15 +1,16 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import type { ExpressionSpecification } from "maplibre-gl";
   import {
     backend,
     mode,
     autosave,
     tier as currentTier,
-    type Tier,
     routeA,
     routeB,
+    type RouteProps,
   } from "./stores";
-  import type { Feature, FeatureCollection, LineString } from "geojson";
+  import type { FeatureCollection, LineString } from "geojson";
   import { onMount } from "svelte";
   import { colorByInfraType } from "./colors";
   import RouteControls from "./snapper/RouteControls.svelte";
@@ -21,26 +22,12 @@
   export let map: Map;
   export let id: number | null;
 
-  // TODO Move to stores
-  type RouteFeature = Feature<
-    LineString,
-    // TODO route props too
-    {
-      waypoints: any[];
-      full_path: any[];
-      name: string;
-      notes: string;
-      infra_type: string;
-      tier: Tier;
-    }
-  >;
-
   let name = "";
   let notes = "";
   let infraType = "Unknown";
   let tier = $currentTier;
 
-  let existingGj: FeatureCollection | null = null;
+  let existingGj: FeatureCollection<LineString, RouteProps> | null = null;
 
   let showSections = true;
   let sectionsGj = emptyGeojson();
@@ -51,9 +38,7 @@
 
     $waypoints = [];
     if (id != null) {
-      let feature = existingGj.features.find(
-        (f) => f.id == id,
-      )! as RouteFeature;
+      let feature = existingGj.features.find((f) => f.id == id)!;
       name = feature.properties.name;
       notes = feature.properties.notes;
       infraType = feature.properties.infra_type;
@@ -114,7 +99,7 @@
         feature,
         name,
         notes,
-        nodes: feature.properties.full_path,
+        full_path: feature.properties.full_path,
         infra_type: infraType,
         tier,
       });
@@ -159,6 +144,13 @@
       } catch (err) {}
     }
   }
+
+  let sectionsLineColor = [
+    "case",
+    ["==", ["get", "kind"], "overlap"],
+    "red",
+    colorByInfraType,
+  ] as ExpressionSpecification;
 </script>
 
 <RouteControls
@@ -210,14 +202,8 @@
     <GeoJSON data={sectionsGj}>
       <LineLayer
         paint={{
-          "line-width": 10,
-          "line-color": [
-            "case",
-            ["==", ["get", "kind"], "overlap"],
-            "red",
-            "cyan",
-          ],
-          "line-opacity": 0.5,
+          "line-width": 3,
+          "line-color": sectionsLineColor,
         }}
       >
         <Popup openOn="hover" let:props>
