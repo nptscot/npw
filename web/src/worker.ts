@@ -81,9 +81,9 @@ export class Backend {
   }
 
   // TODO Be consistent about undefined vs null
-  setRoute(id: number | null, input: SetRouteInput): number {
+  setRoute(id: number | null, input: SetRouteInput) {
     this.checkReady();
-    return this.inner!.setRoute(id == null ? undefined : id, input);
+    this.inner!.setRoute(id == null ? undefined : id, input);
   }
 
   deleteRoute(id: number) {

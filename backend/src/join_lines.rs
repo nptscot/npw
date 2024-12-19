@@ -4,16 +4,10 @@ use geo::{Coord, Euclidean, Length, LineString};
 use graph::RoadID;
 use petgraph::graphmap::UnGraphMap;
 
-use crate::InfraType;
+use crate::{Dir, InfraType};
 
 // TODO For simplicty right now, hardcodes an ID and key type. Make generic later.
 // TODO Upstream in geo or utils
-
-#[derive(Clone)]
-pub enum Dir {
-    Forwards,
-    Backwards,
-}
 
 /// A linestring with a list of IDs in order and some key
 pub struct KeyedLineString {

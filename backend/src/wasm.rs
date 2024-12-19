@@ -7,7 +7,7 @@ use graph::{IntersectionID, RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-use crate::{evaluate::Breakdown, Highway, InfraType, MapModel, Route, Tier};
+use crate::{evaluate::Breakdown, Dir, Highway, InfraType, MapModel, Route, Tier};
 
 static START: Once = Once::new();
 
@@ -71,7 +71,7 @@ impl MapModel {
 
     /// Create or edit a route. Returns the ID
     #[wasm_bindgen(js_name = setRoute)]
-    pub fn set_route_wasm(&mut self, id: Option<usize>, input: JsValue) -> Result<usize, JsValue> {
+    pub fn set_route_wasm(&mut self, id: Option<usize>, input: JsValue) -> Result<(), JsValue> {
         let route = self.parse_route(input).map_err(err_to_js)?;
         self.set_route(id, route).map_err(err_to_js)
     }
@@ -367,7 +367,7 @@ impl MapModel {
     }
 
     // Returns (Road, forwards) pairs
-    fn full_path_to_roads(&self, full_path: Vec<RouteNode>) -> anyhow::Result<Vec<(RoadID, bool)>> {
+    fn full_path_to_roads(&self, full_path: Vec<RouteNode>) -> anyhow::Result<Vec<(RoadID, Dir)>> {
         let mut intersections = Vec::new();
         for node in full_path {
             if let Some(id) = node.snapped {
@@ -383,7 +383,14 @@ impl MapModel {
         for pair in intersections.windows(2) {
             match self.graph.find_edge(pair[0], pair[1]) {
                 Some(road) => {
-                    roads.push((road.id, road.src_i == pair[0]));
+                    roads.push((
+                        road.id,
+                        if road.src_i == pair[0] {
+                            Dir::Forwards
+                        } else {
+                            Dir::Backwards
+                        },
+                    ));
                 }
                 None => {
                     // TODO Change route snapper behavior here? Or treat as a freehand line?

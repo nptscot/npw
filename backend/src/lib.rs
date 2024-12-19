@@ -79,6 +79,12 @@ pub struct Route {
     tier: Tier,
 }
 
+#[derive(Clone, Copy)]
+pub enum Dir {
+    Forwards,
+    Backwards,
+}
+
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Enum, Serialize, Deserialize,
 )]

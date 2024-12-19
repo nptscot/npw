@@ -7,12 +7,12 @@ use geojson::{feature::Id, Feature, GeoJson};
 use graph::{Graph, PathStep, Position, RoadID};
 use serde::Serialize;
 
-use crate::join_lines::{Dir, KeyedLineString};
-use crate::{InfraType, LevelOfService, MapModel, Route, Tier};
+use crate::join_lines::KeyedLineString;
+use crate::{Dir, InfraType, LevelOfService, MapModel, Route, Tier};
 
 impl MapModel {
     /// Returns the route ID
-    pub fn set_route(&mut self, edit_id: Option<usize>, route: Route) -> Result<usize> {
+    pub fn set_route(&mut self, edit_id: Option<usize>, route: Route) -> Result<()> {
         let original = if let Some(id) = edit_id {
             match self.routes.remove(&id) {
                 Some(route) => Some(route),
@@ -45,7 +45,7 @@ impl MapModel {
         };
         self.routes.insert(id, route);
         self.recalculate_after_edits();
-        Ok(id)
+        Ok(())
     }
 
     pub fn delete_route(&mut self, id: usize) -> Result<()> {
@@ -129,7 +129,7 @@ impl MapModel {
     }
 
     /// Split a route into sections, returning a FeatureCollection
-    pub fn autosplit_route(&self, route: Vec<(RoadID, bool)>) -> Result<String> {
+    pub fn autosplit_route(&self, route: Vec<(RoadID, Dir)>) -> Result<String> {
         let used_roads = self.used_roads();
 
         // Split when:
@@ -303,29 +303,44 @@ fn trim_lon_lat(x: f64) -> f64 {
 }
 
 // TODO Upstream to graph
-fn glue_route(graph: &Graph, roads: &[(RoadID, bool)]) -> LineString {
+fn glue_route(graph: &Graph, roads: &[(RoadID, Dir)]) -> LineString {
     graph::Route {
         start: start_pos(roads[0], graph),
         end: end_pos(*roads.last().unwrap(), graph),
         steps: roads
             .into_iter()
             .cloned()
-            .map(|(road, forwards)| PathStep::Road { road, forwards })
+            .map(|(road, dir)| PathStep::Road {
+                road,
+                forwards: matches!(dir, Dir::Forwards),
+            })
             .collect(),
     }
     .linestring(graph)
 }
 
 // TODO Upstream to graph
-fn start_pos((r, forwards): (RoadID, bool), graph: &Graph) -> Position {
+fn start_pos((r, dir): (RoadID, Dir), graph: &Graph) -> Position {
     let road = &graph.roads[r.0];
     Position {
         road: r,
-        fraction_along: if forwards { 0.0 } else { 1.0 },
-        intersection: if forwards { road.src_i } else { road.dst_i },
+        fraction_along: if matches!(dir, Dir::Forwards) {
+            0.0
+        } else {
+            1.0
+        },
+        intersection: if matches!(dir, Dir::Forwards) {
+            road.src_i
+        } else {
+            road.dst_i
+        },
     }
 }
 
-fn end_pos((road, forwards): (RoadID, bool), graph: &Graph) -> Position {
-    start_pos((road, !forwards), graph)
+fn end_pos((road, dir): (RoadID, Dir), graph: &Graph) -> Position {
+    let opposite = match dir {
+        Dir::Forwards => Dir::Backwards,
+        Dir::Backwards => Dir::Forwards,
+    };
+    start_pos((road, opposite), graph)
 }
