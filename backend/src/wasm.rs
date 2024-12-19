@@ -351,16 +351,11 @@ impl MapModel {
             Ok(r) => r,
             Err(err) => bail!("{err}"),
         };
-        let roads = self
-            .full_path_to_roads(route.full_path)?
-            .into_iter()
-            .map(|(r, _)| r)
-            .collect();
         Ok(Route {
             feature: route.feature,
             name: route.name,
             notes: route.notes,
-            roads,
+            roads: self.full_path_to_roads(route.full_path)?,
             infra_type: route.infra_type,
             tier: route.tier,
         })

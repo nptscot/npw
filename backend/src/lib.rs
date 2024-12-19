@@ -74,12 +74,13 @@ pub struct Route {
     feature: Feature,
     name: String,
     notes: String,
-    roads: Vec<RoadID>,
+    // Derived from full_path. The direction is only plumbed along for rendering/splitting purposes
+    roads: Vec<(RoadID, Dir)>,
     infra_type: InfraType,
     tier: Tier,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub enum Dir {
     Forwards,
     Backwards,
@@ -158,7 +159,7 @@ impl MapModel {
             .collect();
 
         for route in self.routes.values() {
-            for road in &route.roads {
+            for (road, _) in &route.roads {
                 self.infra_types[road.0] = Some(route.infra_type);
             }
         }

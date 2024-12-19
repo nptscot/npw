@@ -11,8 +11,12 @@ use crate::join_lines::KeyedLineString;
 use crate::{Dir, InfraType, LevelOfService, MapModel, Route, Tier};
 
 impl MapModel {
-    /// Returns the route ID
+    // TODO Old case
     pub fn set_route(&mut self, edit_id: Option<usize>, route: Route) -> Result<()> {
+        if edit_id.is_none() {
+            return self.add_new_route(route);
+        }
+
         let original = if let Some(id) = edit_id {
             match self.routes.remove(&id) {
                 Some(route) => Some(route),
@@ -24,7 +28,7 @@ impl MapModel {
 
         // Check for overlaps
         let used_roads = self.used_roads();
-        for r in &route.roads {
+        for (r, _) in &route.roads {
             if used_roads.contains(r) {
                 // Restore the original
                 if let (Some(id), Some(route)) = (edit_id, original) {
@@ -45,6 +49,60 @@ impl MapModel {
         };
         self.routes.insert(id, route);
         self.recalculate_after_edits();
+        Ok(())
+    }
+
+    fn add_new_route(&mut self, orig_route: Route) -> Result<()> {
+        let used_roads = self.used_roads();
+
+        // TODO Refactor
+        // Split when:
+        // - the auto-recommended infrastructure type changes
+        // - the route crosses something existing
+        #[derive(PartialEq)]
+        enum Case {
+            AlreadyExists,
+            New(InfraType),
+        }
+        let case = |(r, _)| {
+            if used_roads.contains(&r) {
+                Case::AlreadyExists
+            } else {
+                Case::New(self.best_infra_type(r))
+            }
+        };
+
+        let mut new_routes = Vec::new();
+        for roads in orig_route.roads.chunk_by(|a, b| case(*a) == case(*b)) {
+            let infra_type = match case(roads[0]) {
+                Case::AlreadyExists => {
+                    // TODO Should we modify that route and add to its notes or description? What
+                    // if the tier or something else differs?
+                    continue;
+                }
+                Case::New(infra_type) => infra_type,
+            };
+
+            let linestring = glue_route(&self.graph, roads);
+
+            new_routes.push(Route {
+                // TODO This'll have so many waypoints! Can trim this down. But also think through
+                // the UI for the user to force splits -- maybe it doubles as the waypoints
+                feature: make_route_snapper_feature(&self.graph, roads, &linestring),
+                name: orig_route.name.clone(),
+                notes: orig_route.notes.clone(),
+                roads: roads.to_vec(),
+                infra_type,
+                tier: orig_route.tier,
+            });
+        }
+
+        for route in new_routes {
+            let route_id = self.id_counter;
+            self.id_counter += 1;
+            self.routes.insert(route_id, route);
+        }
+
         Ok(())
     }
 
@@ -138,7 +196,7 @@ impl MapModel {
         #[derive(PartialEq)]
         enum Case {
             AlreadyExists,
-            New(Option<InfraType>),
+            New(InfraType),
         }
         let case = |(r, _)| {
             if used_roads.contains(&r) {
@@ -198,7 +256,7 @@ impl MapModel {
                     .next()
                     .unwrap_or_else(String::new),
                 notes: "imported from existing network".to_string(),
-                roads: line.ids.into_iter().map(|(r, _)| r).collect(),
+                roads: line.ids,
                 infra_type: line.key,
                 tier,
             };
@@ -214,21 +272,21 @@ impl MapModel {
     fn used_roads(&self) -> HashSet<RoadID> {
         self.routes
             .values()
-            .flat_map(|route| route.roads.clone())
+            .flat_map(|route| route.roads.iter().map(|(r, _)| *r))
             .collect()
     }
 
     // TODO Use CbD guidance. Simple for now
     // This assumes this road doesn't have anything set yet, and so its LoS isn't based on an
     // InfraType already
-    fn best_infra_type(&self, r: RoadID) -> Option<InfraType> {
+    fn best_infra_type(&self, r: RoadID) -> InfraType {
         match self.los[r.0] {
-            // Already fine
-            LevelOfService::High => None,
-            LevelOfService::Medium => Some(InfraType::SegregatedNarrow),
-            LevelOfService::Low => Some(InfraType::SegregatedWide),
+            // Already fine, just indicate it's a route
+            LevelOfService::High => InfraType::MixedTraffic,
+            LevelOfService::Medium => InfraType::SegregatedNarrow,
+            LevelOfService::Low => InfraType::SegregatedWide,
             // TODO The user drew a route here, so what should we recommend?
-            LevelOfService::ShouldNotBeUsed => Some(InfraType::SegregatedWide),
+            LevelOfService::ShouldNotBeUsed => InfraType::SegregatedWide,
         }
     }
 }
@@ -236,7 +294,7 @@ impl MapModel {
 // Mimic enough of what the route snapper creates, so the segment can be edited in the web app
 fn make_route_snapper_feature(
     graph: &Graph,
-    ids: &Vec<(RoadID, Dir)>,
+    ids: &[(RoadID, Dir)],
     linestring: &LineString,
 ) -> Feature {
     let mut intersections = Vec::new();
