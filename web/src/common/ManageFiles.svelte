@@ -25,6 +25,21 @@
     }
   }
 
+  async function makeCopy() {
+    let oldName = $currentFilename;
+    let newName = window.prompt(
+      `Make a copy of file ${oldName} as what name?`,
+      `${oldName} v2`,
+    );
+    // TODO Confirm overwriting
+    if (newName) {
+      let value = await $backend!.toSavefile();
+      window.localStorage.setItem(getKey($boundaryName, newName), value);
+      $currentFilename = newName;
+      fileList = listFilesInBoundary($boundaryName);
+    }
+  }
+
   async function exportFile() {
     let file = `npw_${$boundaryName}_${$currentFilename}.geojson`;
     downloadGeneratedFile(file, await $backend!.toSavefile());
@@ -43,6 +58,17 @@
       }
     }
   }
+
+  async function deleteFile() {
+    if (
+      !window.confirm(`Really delete ${$currentFilename}? You can't undo this`)
+    ) {
+      return;
+    }
+    window.localStorage.removeItem(getKey($boundaryName, $currentFilename));
+    fileList = listFilesInBoundary($boundaryName);
+    await openFile(fileList[0][0]);
+  }
 </script>
 
 <button class="secondary" on:click={() => (open = true)}>
@@ -58,7 +84,15 @@
     </p>
     <div role="group">
       <button class="secondary" on:click={rename}>Rename</button>
+      <button class="secondary" on:click={makeCopy}>Make copy</button>
       <button class="secondary" on:click={exportFile}>Export</button>
+      <button
+        class="warning"
+        on:click={deleteFile}
+        disabled={fileList.length < 2}
+      >
+        Delete
+      </button>
     </div>
 
     <hr />
