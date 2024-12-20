@@ -21,11 +21,15 @@
     "Reachable network",
   ]);
 
-  $: update(primary, $allControls, ["High NPT route coverage"]);
+  $: update(primary, $allControls, ["High cycling flow"]);
 
-  $: update(secondary, $allControls, ["Town centres"]);
+  $: update(secondary, $allControls, ["Town centres", "Medium cycling flow"]);
 
-  $: update(localAccess, $allControls, ["Schools", "GPs and hospitals"]);
+  $: update(localAccess, $allControls, [
+    "Schools",
+    "GPs and hospitals",
+    "Above-minimum cycling flow",
+  ]);
 
   $: update(longDistance, $allControls, ["Urban areas"]);
 

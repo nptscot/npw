@@ -9,7 +9,9 @@
     townCentres,
     deprivedPopulation,
     allPopulation,
-    highRouteCoverage,
+    cyclingFlow1,
+    cyclingFlow2,
+    cyclingFlow3,
     settlementsCoverage,
   } from "../layers/stores";
   import Metric from "./Metric.svelte";
@@ -39,7 +41,7 @@
   <div style:border="2px solid {tierColors.Primary}">
     <Metric
       label="High cycling flow coverage"
-      bind:showLayer={$highRouteCoverage}
+      bind:showLayer={$cyclingFlow1}
       pct={percent(
         $stats.covered_flow_quintile_sums[0],
         $stats.total_flow_quintile_sums[0],
@@ -51,7 +53,7 @@
     <div style:margin-top="4px" style:border="2px solid {tierColors.Secondary}">
       <Metric
         label="Medium cycling flow coverage"
-        bind:showLayer={$highRouteCoverage}
+        bind:showLayer={$cyclingFlow2}
         pct={percent(
           $stats.covered_flow_quintile_sums[1],
           $stats.total_flow_quintile_sums[1],
@@ -72,8 +74,8 @@
       style:border="2px solid {tierColors.LocalAccess}"
     >
       <Metric
-        label="Low cycling flow coverage"
-        bind:showLayer={$highRouteCoverage}
+        label="Above-minimum cycling flow coverage"
+        bind:showLayer={$cyclingFlow3}
         pct={percent(
           $stats.covered_flow_quintile_sums[2],
           $stats.total_flow_quintile_sums[2],

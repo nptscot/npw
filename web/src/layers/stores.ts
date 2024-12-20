@@ -11,7 +11,9 @@ export let gpHospitals = writable(false);
 export let townCentres = writable(false);
 export let deprivedPopulation = writable(false);
 export let allPopulation = writable(false);
-export let highRouteCoverage = writable(false);
+export let cyclingFlow1 = writable(false);
+export let cyclingFlow2 = writable(false);
+export let cyclingFlow3 = writable(false);
 export let majorJunctions = writable(true);
 // TODO not wired up yet
 export let settlementsCoverage = writable(false);

@@ -12,13 +12,16 @@
   import Gradient from "./Gradient.svelte";
   import DeprivedPopulation from "./DeprivedPopulation.svelte";
   import AllPopulation from "./AllPopulation.svelte";
-  import HighRouteCoverage from "./HighRouteCoverage.svelte";
+  import CyclingFlowCoverage from "./CyclingFlowCoverage.svelte";
   import MajorJunctions from "./MajorJunctions.svelte";
+  import { cyclingFlow1, cyclingFlow2, cyclingFlow3 } from "./stores";
 </script>
 
 <ExistingNetwork />
 <RouteNetwork />
-<HighRouteCoverage />
+<CyclingFlowCoverage quintile={1} label="High" show={$cyclingFlow1} />
+<CyclingFlowCoverage quintile={2} label="Medium" show={$cyclingFlow2} />
+<CyclingFlowCoverage quintile={3} label="Above-minimum" show={$cyclingFlow3} />
 <CoreNetwork />
 <Schools />
 <TownCentres />
