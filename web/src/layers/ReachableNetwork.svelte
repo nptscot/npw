@@ -30,16 +30,9 @@
   };
 </script>
 
-<LayerControls name="reachable network">
-  <label>
-    <input type="checkbox" bind:checked={show} />
-    Reachable network
-  </label>
-
-  {#if show}
-    <button class="outline" on:click={recalc}>Recalculate</button>
-    <QualitativeLegend {colors} />
-  {/if}
+<LayerControls name="Reachable network" bind:show>
+  <button class="outline" on:click={recalc}>Recalculate</button>
+  <QualitativeLegend {colors} />
 </LayerControls>
 
 <GeoJSON {data} generateId>

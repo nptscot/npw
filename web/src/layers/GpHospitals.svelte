@@ -28,24 +28,15 @@
   $: reachable = data.features.filter((f) => f.properties.reachable).length;
 </script>
 
-<LayerControls name="gp hospitals">
-  <label>
-    <input type="checkbox" bind:checked={$show} />
-    GPs and hospitals
-  </label>
-
-  {#if $show}
-    <button class="outline" on:click={recalc}>Recalculate</button>
-    <p>
-      {reachable.toLocaleString()} / {data.features.length.toLocaleString()} ({percent(
-        reachable,
-        data.features.length,
-      )}) reachable
-    </p>
-    <QualitativeLegend
-      colors={{ Reachable: "purple", "Not reachable": "red" }}
-    />
-  {/if}
+<LayerControls name="GPs and hospitals" bind:show={$show}>
+  <button class="outline" on:click={recalc}>Recalculate</button>
+  <p>
+    {reachable.toLocaleString()} / {data.features.length.toLocaleString()} ({percent(
+      reachable,
+      data.features.length,
+    )}) reachable
+  </p>
+  <QualitativeLegend colors={{ Reachable: "purple", "Not reachable": "red" }} />
 </LayerControls>
 
 <GeoJSON {data} generateId>

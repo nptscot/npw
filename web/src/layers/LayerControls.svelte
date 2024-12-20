@@ -2,6 +2,7 @@
   import { allControls } from "./stores";
 
   export let name: string;
+  export let show: boolean;
 
   let contents: HTMLDivElement | null = null;
 
@@ -14,5 +15,17 @@
 </script>
 
 <div bind:this={contents}>
-  <slot />
+  <label>
+    <input type="checkbox" bind:checked={show} />
+    {name}
+  </label>
+
+  <div
+    style:display={show ? "block" : "none"}
+    style:border="1px solid black"
+    style:padding="4px"
+    style:background="#fffff2"
+  >
+    <slot />
+  </div>
 </div>

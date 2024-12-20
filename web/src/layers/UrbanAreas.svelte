@@ -11,12 +11,7 @@
   let show = false;
 </script>
 
-<LayerControls name="urban areas">
-  <label>
-    <input type="checkbox" bind:checked={show} />
-    Urban areas
-  </label>
-</LayerControls>
+<LayerControls name="Urban areas" bind:show />
 
 <VectorTileSource url={`pmtiles://${assetUrl("urban_areas.pmtiles")}`}>
   <FillLayer

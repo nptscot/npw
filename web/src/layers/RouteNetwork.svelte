@@ -62,49 +62,42 @@
   }[colorBy] as ExpressionSpecification;
 </script>
 
-<LayerControls name="route network">
+<LayerControls name="Route network" bind:show>
   <label>
-    <input type="checkbox" bind:checked={show} />
-    Route network
+    Trip purpose:
+    <select bind:value={purpose}>
+      {#each purposes as [value, label]}
+        <option {value}>{label}</option>
+      {/each}
+    </select>
   </label>
 
-  {#if show}
-    <label>
-      Trip purpose:
-      <select bind:value={purpose}>
-        {#each purposes as [value, label]}
-          <option {value}>{label}</option>
-        {/each}
-      </select>
-    </label>
+  <label>
+    Scenario:
+    <select bind:value={scenario}>
+      {#each scenarios as [value, label]}
+        <option {value}>{label}</option>
+      {/each}
+    </select>
+  </label>
 
-    <label>
-      Scenario:
-      <select bind:value={scenario}>
-        {#each scenarios as [value, label]}
-          <option {value}>{label}</option>
-        {/each}
-      </select>
-    </label>
+  <label>
+    Network type:
+    <select bind:value={networkType}>
+      {#each networkTypes as [value, label]}
+        <option {value}>{label}</option>
+      {/each}
+    </select>
+  </label>
 
-    <label>
-      Network type:
-      <select bind:value={networkType}>
-        {#each networkTypes as [value, label]}
-          <option {value}>{label}</option>
-        {/each}
-      </select>
-    </label>
-
-    <label>
-      Color by:
-      <select bind:value={colorBy}>
-        {#each colorByOptions as [value, label]}
-          <option {value}>{label}</option>
-        {/each}
-      </select>
-    </label>
-  {/if}
+  <label>
+    Color by:
+    <select bind:value={colorBy}>
+      {#each colorByOptions as [value, label]}
+        <option {value}>{label}</option>
+      {/each}
+    </select>
+  </label>
 </LayerControls>
 
 <VectorTileSource url={`pmtiles://${assetUrl("route_network.pmtiles")}`}>

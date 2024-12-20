@@ -20,25 +20,18 @@
   let showMatched = true;
 </script>
 
-<LayerControls name="traffic volume">
+<LayerControls name="Estimated traffic volume" bind:show>
+  <SequentialLegend {colorScale} {limits} />
+
   <label>
-    <input type="checkbox" bind:checked={show} />
-    Estimated traffic volume
+    <input type="checkbox" bind:checked={showTruth} />
+    Show actual data
   </label>
 
-  {#if show}
-    <SequentialLegend {colorScale} {limits} />
-
-    <label>
-      <input type="checkbox" bind:checked={showTruth} />
-      Show actual data
-    </label>
-
-    <label>
-      <input type="checkbox" bind:checked={showMatched} />
-      Show map-matched data
-    </label>
-  {/if}
+  <label>
+    <input type="checkbox" bind:checked={showMatched} />
+    Show map-matched data
+  </label>
 </LayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->

@@ -10,24 +10,24 @@
   let longDistance: HTMLDivElement | null = null;
 
   $: update(basic, $allControls, [
-    "route network",
-    "simd",
-    "population density",
-    "core network",
-    "existing network",
-    "level of service",
-    "traffic volume",
-    "gradient",
-    "reachable network",
+    "Route network",
+    "SIMD",
+    "Population",
+    "Core network",
+    "Existing network",
+    "Level of Service",
+    "Estimated traffic volume",
+    "Gradient",
+    "Reachable network",
   ]);
 
-  $: update(primary, $allControls, ["high npt route coverage"]);
+  $: update(primary, $allControls, ["High NPT route coverage"]);
 
-  $: update(secondary, $allControls, ["town centres"]);
+  $: update(secondary, $allControls, ["Town centres"]);
 
-  $: update(localAccess, $allControls, ["schools", "gp hospitals"]);
+  $: update(localAccess, $allControls, ["Schools", "GPs and hospitals"]);
 
-  $: update(longDistance, $allControls, ["urban areas"]);
+  $: update(longDistance, $allControls, ["Urban areas"]);
 
   function update(
     container: HTMLDivElement | null,

@@ -48,26 +48,19 @@
   let limits = [0, 4, 8, 12, 16, 20];
 </script>
 
-<LayerControls name="simd">
-  <label>
-    <input type="checkbox" bind:checked={$show} />
-    SIMD
-  </label>
-
-  {#if $show}
-    <button class="outline" on:click={recalc}>Recalculate</button>
-    <p>Only the top 20%ile most deprived zones are shown</p>
-    <p>
-      {numReachable.toLocaleString()} / {data.features.length.toLocaleString()} zones
-      reachable. That's {reachablePopulation.toLocaleString()} / {totalPopulation.toLocaleString()}
-      ({percent(reachablePopulation, totalPopulation)}) of the population.
-    </p>
-    <SequentialLegend {colorScale} {limits} />
-    <p>
-      Darker colours are more deprived. Zones with a red outline are not
-      reachable by the current network.
-    </p>
-  {/if}
+<LayerControls name="SIMD" bind:show={$show}>
+  <button class="outline" on:click={recalc}>Recalculate</button>
+  <p>Only the top 20%ile most deprived zones are shown</p>
+  <p>
+    {numReachable.toLocaleString()} / {data.features.length.toLocaleString()} zones
+    reachable. That's {reachablePopulation.toLocaleString()} / {totalPopulation.toLocaleString()}
+    ({percent(reachablePopulation, totalPopulation)}) of the population.
+  </p>
+  <SequentialLegend {colorScale} {limits} />
+  <p>
+    Darker colours are more deprived. Zones with a red outline are not reachable
+    by the current network.
+  </p>
 </LayerControls>
 
 <GeoJSON {data} generateId>

@@ -43,69 +43,60 @@
   }
 </script>
 
-<LayerControls name="high npt route coverage">
+<LayerControls name="High NPT route coverage" bind:show={$show}>
+  <button class="outline" on:click={recalc}>Recalculate</button>
+
   <label>
-    <input type="checkbox" bind:checked={$show} />
-    High NPT route coverage
+    <input type="checkbox" bind:checked={onlyCovered} />
+    Only show routes covered by current edits
   </label>
 
-  {#if $show}
-    <div style="border: 1px solid black; padding: 4px">
-      <button class="outline" on:click={recalc}>Recalculate</button>
+  <label>
+    Only show quintile:
+    <select bind:value={onlyQuintile}>
+      <option value="">Show all</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+    </select>
+  </label>
 
-      <label>
-        <input type="checkbox" bind:checked={onlyCovered} />
-        Only show routes covered by current edits
-      </label>
-
-      <label>
-        Only show quintile:
-        <select bind:value={onlyQuintile}>
-          <option value="">Show all</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-        </select>
-      </label>
-
-      {#if data.total_quintile_sums.length > 0}
-        <p>Flow covered by current edits</p>
-        <ul>
-          <li>
-            Quintile 1: {percent(
-              data.covered_quintile_sums[0],
-              data.total_quintile_sums[0],
-            )}
-          </li>
-          <li>
-            Quintile 2: {percent(
-              data.covered_quintile_sums[1],
-              data.total_quintile_sums[1],
-            )}
-          </li>
-          <li>
-            Quintile 3: {percent(
-              data.covered_quintile_sums[2],
-              data.total_quintile_sums[2],
-            )}
-          </li>
-          <li>
-            Quintile 4: {percent(
-              data.covered_quintile_sums[3],
-              data.total_quintile_sums[3],
-            )}
-          </li>
-          <li>
-            Quintile 5: {percent(
-              data.covered_quintile_sums[4],
-              data.total_quintile_sums[4],
-            )}
-          </li>
-        </ul>
-      {/if}
-    </div>
+  {#if data.total_quintile_sums.length > 0}
+    <p>Flow covered by current edits</p>
+    <ul>
+      <li>
+        Quintile 1: {percent(
+          data.covered_quintile_sums[0],
+          data.total_quintile_sums[0],
+        )}
+      </li>
+      <li>
+        Quintile 2: {percent(
+          data.covered_quintile_sums[1],
+          data.total_quintile_sums[1],
+        )}
+      </li>
+      <li>
+        Quintile 3: {percent(
+          data.covered_quintile_sums[2],
+          data.total_quintile_sums[2],
+        )}
+      </li>
+      <li>
+        Quintile 4: {percent(
+          data.covered_quintile_sums[3],
+          data.total_quintile_sums[3],
+        )}
+      </li>
+      <li>
+        Quintile 5: {percent(
+          data.covered_quintile_sums[4],
+          data.total_quintile_sums[4],
+        )}
+      </li>
+    </ul>
   {/if}
 </LayerControls>
 

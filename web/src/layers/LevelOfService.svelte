@@ -31,26 +31,19 @@
   }
 </script>
 
-<LayerControls name="level of service">
+<LayerControls name="Level of Service" bind:show>
+  <button class="outline" on:click={recalc}>Recalculate</button>
   <label>
-    <input type="checkbox" bind:checked={show} />
-    Level of Service
+    <input type="checkbox" bind:checked={showOrig} />
+    Show original data
   </label>
 
-  {#if show}
-    <button class="outline" on:click={recalc}>Recalculate</button>
-    <label>
-      <input type="checkbox" bind:checked={showOrig} />
-      Show original data
-    </label>
+  <label>
+    <input type="checkbox" bind:checked={showCurrent} />
+    Show current derived data
+  </label>
 
-    <label>
-      <input type="checkbox" bind:checked={showCurrent} />
-      Show current derived data
-    </label>
-
-    <QualitativeLegend colors={levelOfServiceColors} />
-  {/if}
+  <QualitativeLegend colors={levelOfServiceColors} />
 </LayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->

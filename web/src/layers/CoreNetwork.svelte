@@ -32,27 +32,18 @@
   }
 </script>
 
-<LayerControls name="core network">
+<LayerControls name="Core network" bind:show>
+  <button class="outline" on:click={importExisting}>Import core network</button>
+
   <label>
-    <input type="checkbox" bind:checked={show} />
-    Core network
+    <input type="checkbox" bind:checked={showTruth} />
+    Show actual core network
   </label>
 
-  {#if show}
-    <button class="outline" on:click={importExisting}>
-      Import core network
-    </button>
-
-    <label>
-      <input type="checkbox" bind:checked={showTruth} />
-      Show actual core network
-    </label>
-
-    <label>
-      <input type="checkbox" bind:checked={showMatched} />
-      Show map-matched core network
-    </label>
-  {/if}
+  <label>
+    <input type="checkbox" bind:checked={showMatched} />
+    Show map-matched core network
+  </label>
 </LayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->

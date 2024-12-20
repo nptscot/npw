@@ -43,27 +43,20 @@
   let showCalculated = true;
 </script>
 
-<LayerControls name="existing network">
+<LayerControls name="Existing network" bind:show>
+  <button class="outline" on:click={() => (showImportModal = true)}>
+    Import existing routes
+  </button>
+
   <label>
-    <input type="checkbox" bind:checked={show} />
-    Existing network
+    <input type="checkbox" bind:checked={showTruth} />
+    Show osmactive data
   </label>
 
-  {#if show}
-    <button class="outline" on:click={() => (showImportModal = true)}>
-      Import existing routes
-    </button>
-
-    <label>
-      <input type="checkbox" bind:checked={showTruth} />
-      Show osmactive data
-    </label>
-
-    <label>
-      <input type="checkbox" bind:checked={showCalculated} />
-      Show calculated data
-    </label>
-  {/if}
+  <label>
+    <input type="checkbox" bind:checked={showCalculated} />
+    Show calculated data
+  </label>
 </LayerControls>
 
 {#if showImportModal}

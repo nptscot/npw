@@ -49,25 +49,18 @@
   );
 </script>
 
-<LayerControls name="population density">
-  <label>
-    <input type="checkbox" bind:checked={$show} />
-    Population
-  </label>
-
-  {#if $show}
-    <button class="outline" on:click={recalc}>Recalculate</button>
-    <p>
-      {numReachable.toLocaleString()} / {data.features.length.toLocaleString()} zones
-      reachable. That's {reachablePopulation.toLocaleString()} / {totalPopulation.toLocaleString()}
-      ({percent(reachablePopulation, totalPopulation)}) of the population.
-    </p>
-    <SequentialLegend {colorScale} {limits} />
-    <p>
-      Darker colours are denser. Zones with a red outline are not reachable by
-      the current network. Only the top 3 densest quintiles are shown.
-    </p>
-  {/if}
+<LayerControls name="Population" bind:show={$show}>
+  <button class="outline" on:click={recalc}>Recalculate</button>
+  <p>
+    {numReachable.toLocaleString()} / {data.features.length.toLocaleString()} zones
+    reachable. That's {reachablePopulation.toLocaleString()} / {totalPopulation.toLocaleString()}
+    ({percent(reachablePopulation, totalPopulation)}) of the population.
+  </p>
+  <SequentialLegend {colorScale} {limits} />
+  <p>
+    Darker colours are denser. Zones with a red outline are not reachable by the
+    current network. Only the top 3 densest quintiles are shown.
+  </p>
 </LayerControls>
 
 <GeoJSON {data} generateId>

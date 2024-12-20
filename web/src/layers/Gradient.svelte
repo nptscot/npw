@@ -16,12 +16,7 @@
   // TODO Legend
 </script>
 
-<LayerControls name="gradient">
-  <label>
-    <input type="checkbox" bind:checked={show} />
-    Gradient
-  </label>
-</LayerControls>
+<LayerControls name="Gradient" bind:show />
 
 {#if $backend && firstLoad}
   {#await $backend.renderLevelOfService() then data}
