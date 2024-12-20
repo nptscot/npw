@@ -82,6 +82,7 @@ const layerZorder = [
   "traffic",
   "gradients",
   "npt-coverage",
+  "los-debug",
   "los",
   "rnet",
   "reachability",

@@ -1,8 +1,13 @@
 <script lang="ts">
   import type { FeatureCollection } from "geojson";
-  import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
-  import { backend, infraTypeMapping } from "../stores";
-  import { Popup } from "svelte-utils/map";
+  import {
+    VectorTileSource,
+    GeoJSON,
+    hoverStateFilter,
+    LineLayer,
+  } from "svelte-maplibre";
+  import { backend, infraTypeMapping, assetUrl } from "../stores";
+  import { Popup, constructMatchExpression } from "svelte-utils/map";
   import LayerControls from "./LayerControls.svelte";
   import { layerId, QualitativeLegend } from "../common";
   import { levelOfServiceColors, colorByLoS } from "../colors";
@@ -12,6 +17,8 @@
     features: [],
   };
   let show = false;
+  let showOrig = false;
+  let showCurrent = true;
 
   async function recalc() {
     if ($backend) {
@@ -19,7 +26,7 @@
     }
   }
 
-  $: if (show && data.features.length == 0) {
+  $: if (show && showCurrent && data.features.length == 0) {
     recalc();
   }
 </script>
@@ -32,15 +39,49 @@
 
   {#if show}
     <button class="outline" on:click={recalc}>Recalculate</button>
+    <label>
+      <input type="checkbox" bind:checked={showOrig} />
+      Show original data
+    </label>
+
+    <label>
+      <input type="checkbox" bind:checked={showCurrent} />
+      Show current derived data
+    </label>
+
     <QualitativeLegend colors={levelOfServiceColors} />
   {/if}
 </LayerControls>
+
+<!-- TODO Continue showing this for debugging the map matching -->
+<VectorTileSource url={`pmtiles://${assetUrl("cbd.pmtiles")}`}>
+  <LineLayer
+    {...layerId("los-debug")}
+    sourceLayer="cbd_layer"
+    paint={{
+      "line-color": constructMatchExpression(
+        ["get", "Level of Service"],
+        {
+          High: "mediumseagreen",
+          Medium: "orange",
+          Low: "red",
+          "Should not be used": "brown",
+        },
+        "cyan",
+      ),
+      "line-width": 10,
+    }}
+    layout={{
+      visibility: show && showOrig ? "visible" : "none",
+    }}
+  />
+</VectorTileSource>
 
 <GeoJSON {data} generateId>
   <LineLayer
     {...layerId("los")}
     layout={{
-      visibility: show ? "visible" : "none",
+      visibility: show && showCurrent ? "visible" : "none",
     }}
     paint={{
       "line-width": hoverStateFilter(5, 7),
