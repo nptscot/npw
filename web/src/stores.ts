@@ -22,6 +22,7 @@ export type Mode =
 export type Tier = "Primary" | "Secondary" | "LocalAccess" | "LongDistance";
 
 export let boundaryName = writable("");
+// This may be updated by App upfront
 export let currentFilename = writable("untitled");
 export let mode: Writable<Mode> = writable({ kind: "main" });
 export let tier: Writable<Tier> = writable("Primary");

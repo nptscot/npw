@@ -6,7 +6,7 @@
     currentFilename,
     mainModeRoutesChanged,
   } from "../stores";
-  import { getKey, listFilesInBoundary } from "./files";
+  import { getKey, listFilesInBoundary, getLastOpenedFileKey } from "./files";
   import Link from "./Link.svelte";
 
   let open = false;
@@ -21,6 +21,7 @@
       window.localStorage.setItem(getKey($boundaryName, newName), value);
       window.localStorage.removeItem(getKey($boundaryName, oldName));
       $currentFilename = newName;
+      saveLastOpenedFile();
       fileList = listFilesInBoundary($boundaryName);
     }
   }
@@ -36,6 +37,7 @@
       let value = await $backend!.toSavefile();
       window.localStorage.setItem(getKey($boundaryName, newName), value);
       $currentFilename = newName;
+      saveLastOpenedFile();
       fileList = listFilesInBoundary($boundaryName);
     }
   }
@@ -51,6 +53,7 @@
       try {
         await $backend!.loadSavefile(value);
         $currentFilename = filename;
+        saveLastOpenedFile();
         open = false;
         $mainModeRoutesChanged += 1;
       } catch (err) {
@@ -93,6 +96,7 @@
         window.localStorage.setItem(getKey($boundaryName, newName), value);
         fileList = listFilesInBoundary($boundaryName);
         $currentFilename = newName;
+        saveLastOpenedFile();
         open = false;
         $mainModeRoutesChanged += 1;
         return;
@@ -110,6 +114,13 @@
       filename = filename.slice(prefix.length);
     }
     return filename;
+  }
+
+  function saveLastOpenedFile() {
+    window.localStorage.setItem(
+      getLastOpenedFileKey($boundaryName),
+      $currentFilename,
+    );
   }
 </script>
 

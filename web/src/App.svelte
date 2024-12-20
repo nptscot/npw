@@ -12,7 +12,7 @@
     rightSidebarContents,
   } from "./common/layout";
   import { layerId } from "./common";
-  import { getKey } from "./common/files";
+  import { getKey, getLastOpenedFileKey } from "./common/files";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
   import MainMode from "./MainMode.svelte";
@@ -83,14 +83,18 @@
     }
 
     // Load saved state?
-    let item = window.localStorage.getItem(
-      getKey($boundaryName, $currentFilename),
+    let lastFile = window.localStorage.getItem(
+      getLastOpenedFileKey($boundaryName),
     );
-    if (item) {
-      try {
-        await backendWorker.loadSavefile(item);
-      } catch (err) {
-        window.alert(`Couldn't restore saved state: ${err}`);
+    if (lastFile) {
+      let item = window.localStorage.getItem(getKey($boundaryName, lastFile));
+      if (item) {
+        try {
+          await backendWorker.loadSavefile(item);
+          $currentFilename = lastFile;
+        } catch (err) {
+          window.alert(`Couldn't restore saved state: ${err}`);
+        }
       }
     }
 
