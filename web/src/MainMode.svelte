@@ -14,7 +14,6 @@
     infraTypeMapping,
     boundaryName,
     mainModeRoutesChanged,
-    autosave,
     colorRoutesBy,
     tier,
   } from "./stores";
@@ -22,6 +21,7 @@
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
+  import ManageFiles from "./common/ManageFiles.svelte";
   import { colorByInfraType, colorByTier } from "./colors";
   import AllControls from "./layers/AllControls.svelte";
   import Stats from "./stats/Stats.svelte";
@@ -52,30 +52,19 @@
   function editRouteSidebar(id: string | number | undefined) {
     $mode = { kind: "edit-route", id: id as number };
   }
-
-  async function clearAll() {
-    if (window.confirm("Clear everything? You can't undo this")) {
-      await $backend?.clearAllRoutes();
-      await autosave();
-      await recalc();
-    }
-  }
 </script>
 
 <svelte:window on:keydown={onKeyDown} />
 
 <SplitComponent>
   <div slot="left">
+    <ManageFiles />
     <ChangeArea area={$boundaryName} />
 
-    <div>
-      <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
-        Draw new <u>r</u>
-        oute line
-      </button>
-
-      <button class="secondary" on:click={clearAll}>Clear all</button>
-    </div>
+    <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
+      Draw new <u>r</u>
+      oute line
+    </button>
 
     <label>
       <input type="checkbox" bind:checked={$currentNetwork} />

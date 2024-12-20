@@ -12,6 +12,7 @@
     rightSidebarContents,
   } from "./common/layout";
   import { layerId } from "./common";
+  import { getKey } from "./common/files";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
   import MainMode from "./MainMode.svelte";
@@ -30,6 +31,7 @@
     remoteStorage,
     assetUrl,
     boundaryName,
+    currentFilename,
   } from "./stores";
   import { routeTool } from "./snapper/stores";
   import { Backend } from "./worker";
@@ -81,7 +83,9 @@
     }
 
     // Load saved state?
-    let item = window.localStorage.getItem(`tmp-npt-editor/${$boundaryName}`);
+    let item = window.localStorage.getItem(
+      getKey($boundaryName, $currentFilename),
+    );
     if (item) {
       try {
         await backendWorker.loadSavefile(item);

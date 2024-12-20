@@ -8,6 +8,7 @@ import type {
   MultiPolygon,
   Feature,
 } from "geojson";
+import { getKey } from "./common/files";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 
@@ -21,6 +22,7 @@ export type Mode =
 export type Tier = "Primary" | "Secondary" | "LocalAccess" | "LongDistance";
 
 export let boundaryName = writable("");
+export let currentFilename = writable("untitled");
 export let mode: Writable<Mode> = writable({ kind: "main" });
 export let tier: Writable<Tier> = writable("Primary");
 export let map: Writable<Map | null> = writable(null);
@@ -76,8 +78,9 @@ export async function autosave() {
   if (!backendValue || !boundary) {
     return;
   }
+  let filename = get(currentFilename);
   let state = await backendValue.toSavefile();
-  window.localStorage.setItem(`tmp-npt-editor/${boundary}`, state);
+  window.localStorage.setItem(getKey(boundary, filename), state);
 }
 
 export let remoteStorage = writable(true);
