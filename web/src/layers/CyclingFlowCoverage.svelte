@@ -4,7 +4,7 @@
   import { backend, type PrecalculatedFlows } from "../stores";
   import { Popup } from "svelte-utils/map";
   import LayerControls from "./LayerControls.svelte";
-  import { percent, lineWidthForDemand, lineColorForDemand } from "../utils";
+  import { percent, lineWidthForDemand } from "../utils";
   import type { ExpressionSpecification } from "maplibre-gl";
 
   export let show: boolean;
@@ -70,7 +70,7 @@
     filter={makeFilter(onlyCovered)}
     paint={{
       "line-width": lineWidthForDemand("flow"),
-      "line-color": lineColorForDemand("flow"),
+      "line-color": "grey",
     }}
   >
     <Popup openOn="hover" let:props>
