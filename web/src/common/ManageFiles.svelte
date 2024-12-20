@@ -69,6 +69,48 @@
     fileList = listFilesInBoundary($boundaryName);
     await openFile(fileList[0][0]);
   }
+
+  let fileInput: HTMLInputElement;
+  async function importFile(e: Event) {
+    let rawFilename = fileInput.files![0].name;
+    let value = await fileInput.files![0].text();
+
+    try {
+      await $backend!.loadSavefile(value);
+    } catch (err) {
+      window.alert(`This file doesn't seem to be valid: ${err}`);
+      return;
+    }
+
+    let candidateFilename = guessFilename(rawFilename);
+    while (true) {
+      let newName = window.prompt(
+        `What do you want to name this imported file?`,
+        candidateFilename,
+      );
+      // TODO Confirm overwriting
+      if (newName) {
+        window.localStorage.setItem(getKey($boundaryName, newName), value);
+        fileList = listFilesInBoundary($boundaryName);
+        $currentFilename = newName;
+        open = false;
+        $mainModeRoutesChanged += 1;
+        return;
+      }
+    }
+  }
+
+  function guessFilename(filename: string): string {
+    let prefix = `npw_${$boundaryName}_`;
+    let suffix = ".geojson";
+    if (filename.endsWith(suffix)) {
+      filename = filename.slice(0, -suffix.length);
+    }
+    if (filename.startsWith(prefix)) {
+      filename = filename.slice(prefix.length);
+    }
+    return filename;
+  }
 </script>
 
 <button class="secondary" on:click={() => (open = true)}>
@@ -111,6 +153,11 @@
         {/if}
       {/each}
     </ul>
+
+    <label>
+      Load from an exported file
+      <input bind:this={fileInput} on:change={importFile} type="file" />
+    </label>
 
     <button on:click={() => (open = false)}>OK</button>
   </Modal>
