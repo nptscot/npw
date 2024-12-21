@@ -45,7 +45,7 @@
 
   function onClick(e: CustomEvent<LayerClickInfo>) {
     let props = e.detail.features[0].properties!;
-    window.location.href = `sketch.html?boundary=${props.kind}_${props.name}`;
+    window.location.href = `npw.html?boundary=${props.kind}_${props.name}`;
   }
 </script>
 
