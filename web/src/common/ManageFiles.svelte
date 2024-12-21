@@ -121,6 +121,11 @@
       getLastOpenedFileKey($boundaryName),
       $currentFilename,
     );
+
+    // Also update the URL
+    let url = new URL(window.location.href);
+    url.searchParams.set("file", $currentFilename);
+    window.history.replaceState(null, "", url.toString());
   }
 </script>
 
