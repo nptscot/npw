@@ -133,6 +133,7 @@ impl MapModel {
             "gp_hospitals" => [self.gp_hospitals[idx].road].into(),
             "town_centres" => self.town_centres[idx].roads.clone(),
             "settlements" => self.settlements[idx].roads.clone(),
+            "greenspaces" => self.greenspaces[idx].roads.clone(),
             _ => {
                 return Err(err_to_js(format!(
                     "debug_reachable_path_wasm got bad kind {kind}"
@@ -149,6 +150,7 @@ impl MapModel {
             "gp_hospitals" => [self.gp_hospitals[idx].road].into(),
             "town_centres" => self.town_centres[idx].roads.clone(),
             "settlements" => self.settlements[idx].roads.clone(),
+            "greenspaces" => self.greenspaces[idx].roads.clone(),
             _ => {
                 return Err(err_to_js(format!(
                     "debug_reachable_path_wasm got bad kind {kind}"
@@ -278,6 +280,24 @@ impl MapModel {
                 .iter()
                 .enumerate()
                 .map(|(idx, x)| x.to_gj(&self.graph.mercator, roads.covers_any(&x.roads), idx))
+                .collect(),
+        })
+        .map_err(err_to_js)
+    }
+
+    #[wasm_bindgen(js_name = getGreenspaces)]
+    pub fn get_greenspaces(&self) -> Result<String, JsValue> {
+        // TODO Some kind of caching would make this nicer
+        let roads = self.get_reachable_network();
+
+        serde_json::to_string(&FeatureCollection {
+            bbox: None,
+            foreign_members: None,
+            features: self
+                .greenspaces
+                .iter()
+                .enumerate()
+                .flat_map(|(idx, x)| x.to_gj(&self.graph.mercator, roads.covers_any(&x.roads), idx))
                 .collect(),
         })
         .map_err(err_to_js)

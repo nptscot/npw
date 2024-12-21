@@ -318,3 +318,33 @@ struct DataZoneGJ {
     population: usize,
     area: f64,
 }
+
+////
+
+#[derive(Serialize, Deserialize)]
+pub struct Greenspace {
+    pub polygon: MultiPolygon,
+    pub name: Option<String>,
+    pub access_points: Vec<Point>,
+    pub roads: HashSet<RoadID>,
+}
+
+impl Greenspace {
+    pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Vec<Feature> {
+        let mut features = Vec::new();
+        {
+            let mut f = mercator.to_wgs84_gj(&self.polygon);
+            f.set_property("kind", "greenspace");
+            f.set_property("name", self.name.clone());
+            f.set_property("reachable", reachable);
+            f.set_property("idx", idx);
+            features.push(f);
+        }
+        for pt in &self.access_points {
+            let mut f = mercator.to_wgs84_gj(pt);
+            f.set_property("kind", "access point");
+            features.push(f);
+        }
+        features
+    }
+}

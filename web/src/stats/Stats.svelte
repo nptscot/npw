@@ -13,6 +13,7 @@
     cyclingFlow2,
     cyclingFlow3,
     settlements,
+    greenspaces,
   } from "../layers/stores";
   import Metric from "./Metric.svelte";
 
@@ -92,6 +93,12 @@
         label="GPs and hospitals"
         bind:showLayer={$gpHospitals}
         pct={$stats.percent_reachable_gp_hospitals}
+      />
+
+      <Metric
+        label="Reachable greenspaces"
+        bind:showLayer={$greenspaces}
+        pct={$stats.percent_reachable_greenspaces}
       />
 
       <Metric

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 
@@ -6,9 +6,9 @@ use anyhow::{bail, Result};
 use clap::Parser;
 use elevation::GeoTiffElevation;
 use gdal::{vector::LayerAccess, Dataset};
-use geo::{Distance, Euclidean, Geometry, LineString, MultiPolygon};
-use graph::{Graph, Timer};
-use log::info;
+use geo::{Distance, Euclidean, Geometry, Intersects, LineString, MultiPolygon, Point};
+use graph::{Graph, RoadID, Timer};
+use log::{info, warn};
 use rstar::{primitives::GeomWithData, RTree, RTreeObject};
 use serde::Deserialize;
 
@@ -109,6 +109,14 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         &graph,
     )?;
 
+    timer.step("loading greenspaces");
+    let greenspaces = read_greenspaces(
+        "../data_prep/tmp/greenspace.gpkg",
+        "../data_prep/tmp/greenspace_access_points.gpkg",
+        &boundary_wgs84,
+        &graph,
+    )?;
+
     let traffic_volumes = read_traffic_volumes("../data_prep/tmp/traffic.gpkg", &graph, timer)?;
 
     let core_network = read_core_network("../data_prep/tmp/core_network.gpkg", &graph, timer)?;
@@ -128,6 +136,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         town_centres,
         settlements,
         data_zones,
+        greenspaces,
         traffic_volumes,
         core_network,
         precalculated_flows,
@@ -348,4 +357,69 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
             only_debug_idx,
         )
     }
+}
+
+fn read_greenspaces(
+    main_path: &str,
+    access_pts_path: &str,
+    boundary_wgs84: &MultiPolygon,
+    graph: &Graph,
+) -> Result<Vec<backend::places::Greenspace>> {
+    let mut access_points_per_site = read_access_points(access_pts_path, graph)?;
+    let profile = graph.profile_names["bicycle"];
+
+    let dataset = Dataset::open(main_path)?;
+    let mut layer = dataset.layer(0)?;
+    let b = &graph.mercator.wgs84_bounds;
+    layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+
+    let mut greenspaces = Vec::new();
+    for input in layer.features() {
+        let Some(id) = input.field_as_string_by_name("id")? else {
+            bail!("Missing id");
+        };
+        let name = input.field_as_string_by_name("name")?;
+        let mut geom: MultiPolygon = input.geometry().unwrap().to_geo()?.try_into()?;
+        if !boundary_wgs84.intersects(&geom) {
+            continue;
+        }
+        graph.mercator.to_mercator_in_place(&mut geom);
+
+        let access_points = access_points_per_site.remove(&id).unwrap_or_else(Vec::new);
+        let roads: HashSet<RoadID> = access_points
+            .iter()
+            .map(|pt| graph.snap_to_road((*pt).into(), profile).road)
+            .collect();
+
+        if roads.is_empty() {
+            warn!("Greenspace {name:?} has no access points; it won't be reachable");
+        }
+
+        greenspaces.push(backend::places::Greenspace {
+            polygon: geom,
+            name,
+            access_points,
+            roads,
+        });
+    }
+    Ok(greenspaces)
+}
+
+fn read_access_points(path: &str, graph: &Graph) -> Result<HashMap<String, Vec<Point>>> {
+    let dataset = Dataset::open(path)?;
+    let mut layer = dataset.layer(0)?;
+    let b = &graph.mercator.wgs84_bounds;
+    layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+
+    let mut pts_per_site = HashMap::new();
+    for input in layer.features() {
+        let Some(id) = input.field_as_string_by_name("site_id")? else {
+            bail!("Missing site_id");
+        };
+        let mut geom: Point = input.geometry().unwrap().to_geo()?.try_into()?;
+        graph.mercator.to_mercator_in_place(&mut geom);
+
+        pts_per_site.entry(id).or_insert_with(Vec::new).push(geom);
+    }
+    Ok(pts_per_site)
 }

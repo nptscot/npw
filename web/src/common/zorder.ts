@@ -90,6 +90,7 @@ const layerZorder = [
   "reachability",
   "debug-reachability-settlements",
   "debug-reachability-town_centres",
+  "debug-reachability-greenspaces",
   "debug-reachability-schools",
   "debug-reachability-gp_hospitals",
 
@@ -98,6 +99,8 @@ const layerZorder = [
   "schools",
   "settlements",
   "town-centres",
+  "greenspaces",
+  "greenspace-access-points",
   "major-junctions",
 
   // Edit mode

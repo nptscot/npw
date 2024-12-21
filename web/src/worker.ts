@@ -14,6 +14,7 @@ import type {
   GPHospitals,
   TownCentres,
   Settlements,
+  Greenspaces,
   DataZones,
   PrecalculatedFlows,
   SetRouteInput,
@@ -181,6 +182,11 @@ export class Backend {
   getSettlements(): Settlements {
     this.checkReady();
     return JSON.parse(this.inner!.getSettlements());
+  }
+
+  getGreenspaces(): Greenspaces {
+    this.checkReady();
+    return JSON.parse(this.inner!.getGreenspaces());
   }
 
   getDataZones(): DataZones {

@@ -52,6 +52,7 @@ pub struct MapModel {
     town_centres: Vec<places::TownCentre>,
     settlements: Vec<places::Settlement>,
     data_zones: Vec<places::DataZone>,
+    greenspaces: Vec<places::Greenspace>,
 
     // Per RoadID
     traffic_volumes: Vec<usize>,
@@ -120,6 +121,7 @@ impl MapModel {
         town_centres: Vec<places::TownCentre>,
         settlements: Vec<places::Settlement>,
         data_zones: Vec<places::DataZone>,
+        greenspaces: Vec<places::Greenspace>,
         traffic_volumes: Vec<usize>,
         core_network: Vec<Option<Tier>>,
         precalculated_flows: Vec<usize>,
@@ -146,6 +148,7 @@ impl MapModel {
             town_centres,
             settlements,
             data_zones,
+            greenspaces,
             traffic_volumes,
             core_network,
             precalculated_flows,

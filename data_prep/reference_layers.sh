@@ -129,6 +129,23 @@ function settlements {
   rm -f Localities* Settlements* shapefiles.zip settlements.geojson
 }
 
+function greenspace {
+  # Manually download all of GB as GeoPackage from https://osdatahub.os.uk/downloads/open/OpenGreenspace and pass in the .zip here
+  unzip $1 -j Data/opgrsp_gb.gpkg
+  mv Data/opgrsp_gb.gpkg .
+  rmdir Data
+  # TODO All functions, for now
+  ogr2ogr tmp/greenspace.gpkg \
+          -t_srs EPSG:4326 \
+          opgrsp_gb.gpkg \
+          -sql 'SELECT id, distinctive_name_1 as name, geometry FROM greenspace_site'
+  ogr2ogr tmp/greenspace_access_points.gpkg \
+          -t_srs EPSG:4326 \
+          opgrsp_gb.gpkg \
+          -sql 'SELECT ref_to_greenspace_site as site_id, geometry FROM access_point'
+  rm -f opgrsp_gb.gpkg
+}
+
 #core_net
 #rnet
 #schools
@@ -140,3 +157,4 @@ function settlements {
 #population
 #elevation
 #settlements
+#greenspace ~/Downloads/opgrsp_gpkg_gb.zip

@@ -28,6 +28,7 @@
   $: update(localAccess, $allControls, [
     "Schools",
     "GPs and hospitals",
+    "Greenspaces",
     "Above-minimum cycling flow",
   ]);
 

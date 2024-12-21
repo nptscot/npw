@@ -10,6 +10,7 @@ export let schools = writable(false);
 export let gpHospitals = writable(false);
 export let townCentres = writable(false);
 export let settlements = writable(false);
+export let greenspaces = writable(false);
 export let deprivedPopulation = writable(false);
 export let allPopulation = writable(false);
 export let cyclingFlow1 = writable(false);

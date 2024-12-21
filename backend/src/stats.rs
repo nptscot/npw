@@ -55,6 +55,17 @@ impl MapModel {
             )
             .into(),
         );
+        out.insert(
+            "percent_reachable_greenspaces".to_string(),
+            percent(
+                self.greenspaces
+                    .iter()
+                    .filter(|x| roads.covers_any(&x.roads))
+                    .count(),
+                self.greenspaces.len(),
+            )
+            .into(),
+        );
 
         // Weighted by population, not just count
         let mut deprived_sum = 0;
