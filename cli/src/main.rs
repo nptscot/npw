@@ -95,6 +95,13 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         &graph,
     )?;
 
+    timer.step("loading settlements");
+    let settlements = backend::places::Settlement::from_gj(
+        &std::fs::read_to_string("../data_prep/tmp/settlements.geojson")?,
+        &boundary_wgs84,
+        &graph,
+    )?;
+
     timer.step("loading data zones");
     let data_zones = backend::places::DataZone::from_gj(
         &std::fs::read_to_string("../data_prep/tmp/population.geojson")?,
@@ -119,6 +126,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         schools,
         gp_hospitals,
         town_centres,
+        settlements,
         data_zones,
         traffic_volumes,
         core_network,

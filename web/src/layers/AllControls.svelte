@@ -31,7 +31,7 @@
     "Above-minimum cycling flow",
   ]);
 
-  $: update(longDistance, $allControls, ["Urban areas"]);
+  $: update(longDistance, $allControls, ["Urban areas", "Settlements"]);
 
   function update(
     container: HTMLDivElement | null,

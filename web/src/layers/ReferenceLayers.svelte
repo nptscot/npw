@@ -4,6 +4,7 @@
   import CoreNetwork from "./CoreNetwork.svelte";
   import Schools from "./Schools.svelte";
   import TownCentres from "./TownCentres.svelte";
+  import Settlements from "./Settlements.svelte";
   import GpHospitals from "./GpHospitals.svelte";
   import UrbanAreas from "./UrbanAreas.svelte";
   import ReachableNetwork from "./ReachableNetwork.svelte";
@@ -25,6 +26,7 @@
 <CoreNetwork />
 <Schools />
 <TownCentres />
+<Settlements />
 <GpHospitals />
 <UrbanAreas />
 <LevelOfService />

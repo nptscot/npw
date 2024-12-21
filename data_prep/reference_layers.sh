@@ -116,13 +116,27 @@ function elevation {
   mv UK-dem-50m-4326.tif tmp
 }
 
-core_net
-rnet
-schools
-town_centres ~/Downloads/Town_Centres_-_Scotland.json
-gp_and_hospitals ~/Downloads/GP_Practices_-_Scotland.json ~/Downloads/NHS_Hospitals_-_Scotland.json
-urban_rural
-od_and_zones ~/Downloads/desire_lines_scotland.csv
-traffic ~/Downloads/final_estimates_Scotland.gpkg
-population
-elevation
+function settlements {
+  # From https://www.nrscotland.gov.uk/publications/population-estimates-for-settlements-and-localities-in-scotland-mid-2020/
+  wget https://www.nrscotland.gov.uk/media/2hsoadnx/shapefiles.zip
+  unzip shapefiles.zip
+  ogr2ogr settlements.geojson \
+          -t_srs EPSG:4326 \
+          Settlements_2020_MHW.shp \
+          -nlt PROMOTE_TO_MULTI
+  # There's some non-utf8 encodings; fix
+  iconv -f latin1 -t UTF-8 settlements.geojson > tmp/settlements.geojson
+  rm -f Localities* Settlements* shapefiles.zip settlements.geojson
+}
+
+#core_net
+#rnet
+#schools
+#town_centres ~/Downloads/Town_Centres_-_Scotland.json
+#gp_and_hospitals ~/Downloads/GP_Practices_-_Scotland.json ~/Downloads/NHS_Hospitals_-_Scotland.json
+#urban_rural
+#od_and_zones ~/Downloads/desire_lines_scotland.csv
+#traffic ~/Downloads/final_estimates_Scotland.gpkg
+#population
+#elevation
+#settlements

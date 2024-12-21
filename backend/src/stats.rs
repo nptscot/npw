@@ -43,6 +43,18 @@ impl MapModel {
             )
             .into(),
         );
+        // TODO Weight by population?
+        out.insert(
+            "percent_reachable_settlements".to_string(),
+            percent(
+                self.settlements
+                    .iter()
+                    .filter(|x| roads.covers_any(&x.roads))
+                    .count(),
+                self.settlements.len(),
+            )
+            .into(),
+        );
 
         // Weighted by population, not just count
         let mut deprived_sum = 0;

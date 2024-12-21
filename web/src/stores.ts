@@ -112,6 +112,7 @@ export interface Stats {
   percent_reachable_schools: number;
   percent_reachable_gp_hospitals: number;
   percent_reachable_town_centres: number;
+  percent_reachable_settlements: number;
   percent_reachable_imd_population: number;
   percent_reachable_population: number;
   worst_directness_routes: WorstRoutes;
@@ -140,6 +141,11 @@ export type GPHospitals = FeatureCollection<
 export type TownCentres = FeatureCollection<
   MultiPolygon,
   { name?: string; reachable: boolean; idx: number }
+>;
+
+export type Settlements = FeatureCollection<
+  MultiPolygon,
+  { name?: string; population: number; reachable: boolean; idx: number }
 >;
 
 export type DataZones = FeatureCollection<

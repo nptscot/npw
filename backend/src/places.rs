@@ -65,6 +65,8 @@ struct SchoolGJ {
     pupils: f64,
 }
 
+////
+
 #[derive(Serialize, Deserialize)]
 pub struct GPHospital {
     point: Point,
@@ -118,6 +120,8 @@ struct GPHospitalGJ {
     name: String,
 }
 
+////
+
 #[derive(Serialize, Deserialize)]
 pub struct TownCentre {
     polygon: MultiPolygon,
@@ -167,6 +171,65 @@ struct TownCentreGJ {
     geometry: MultiPolygon,
     name: Option<String>,
 }
+
+////
+
+#[derive(Serialize, Deserialize)]
+pub struct Settlement {
+    polygon: MultiPolygon,
+    name: Option<String>,
+    population: usize,
+    pub roads: HashSet<RoadID>,
+}
+
+impl Settlement {
+    pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
+        let mut f = mercator.to_wgs84_gj(&self.polygon);
+        f.set_property("name", self.name.clone());
+        f.set_property("population", self.population);
+        f.set_property("reachable", reachable);
+        f.set_property("idx", idx);
+        f
+    }
+
+    pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
+        let mut settlements = Vec::new();
+        for x in geojson::de::deserialize_feature_collection_str_to_vec::<SettlementGJ>(gj)? {
+            if boundary_wgs84.intersects(&x.geometry) {
+                let polygon = graph.mercator.to_mercator(&x.geometry);
+
+                // All intersecting roads
+                // TODO Could rtree to speed up
+                let mut roads: HashSet<RoadID> = HashSet::new();
+                for (idx, road) in graph.roads.iter().enumerate() {
+                    if polygon.intersects(&road.linestring) {
+                        roads.insert(RoadID(idx));
+                    }
+                }
+
+                settlements.push(Settlement {
+                    polygon,
+                    name: x.name,
+                    population: x.population as usize,
+                    roads,
+                });
+            }
+        }
+        info!("Matched {} settlements", settlements.len());
+        Ok(settlements)
+    }
+}
+
+#[derive(Deserialize)]
+struct SettlementGJ {
+    #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
+    geometry: MultiPolygon,
+    name: Option<String>,
+    #[serde(rename = "Population")]
+    population: f64,
+}
+
+////
 
 #[derive(Serialize, Deserialize)]
 pub struct DataZone {

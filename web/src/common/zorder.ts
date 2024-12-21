@@ -88,6 +88,7 @@ const layerZorder = [
   "los",
   "rnet",
   "reachability",
+  "debug-reachability-settlements",
   "debug-reachability-town_centres",
   "debug-reachability-schools",
   "debug-reachability-gp_hospitals",
@@ -95,6 +96,7 @@ const layerZorder = [
   // Reference layers (points or small polygons)
   "gp-hospitals",
   "schools",
+  "settlements",
   "town-centres",
   "major-junctions",
 

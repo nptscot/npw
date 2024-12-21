@@ -13,6 +13,7 @@ import type {
   Schools,
   GPHospitals,
   TownCentres,
+  Settlements,
   DataZones,
   PrecalculatedFlows,
   SetRouteInput,
@@ -175,6 +176,11 @@ export class Backend {
   getTownCentres(): TownCentres {
     this.checkReady();
     return JSON.parse(this.inner!.getTownCentres());
+  }
+
+  getSettlements(): Settlements {
+    this.checkReady();
+    return JSON.parse(this.inner!.getSettlements());
   }
 
   getDataZones(): DataZones {

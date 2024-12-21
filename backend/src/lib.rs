@@ -50,6 +50,7 @@ pub struct MapModel {
     schools: Vec<places::School>,
     gp_hospitals: Vec<places::GPHospital>,
     town_centres: Vec<places::TownCentre>,
+    settlements: Vec<places::Settlement>,
     data_zones: Vec<places::DataZone>,
 
     // Per RoadID
@@ -117,6 +118,7 @@ impl MapModel {
         schools: Vec<places::School>,
         gp_hospitals: Vec<places::GPHospital>,
         town_centres: Vec<places::TownCentre>,
+        settlements: Vec<places::Settlement>,
         data_zones: Vec<places::DataZone>,
         traffic_volumes: Vec<usize>,
         core_network: Vec<Option<Tier>>,
@@ -142,6 +144,7 @@ impl MapModel {
             schools,
             gp_hospitals,
             town_centres,
+            settlements,
             data_zones,
             traffic_volumes,
             core_network,

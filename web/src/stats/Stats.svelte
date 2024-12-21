@@ -12,7 +12,7 @@
     cyclingFlow1,
     cyclingFlow2,
     cyclingFlow3,
-    settlementsCoverage,
+    settlements,
   } from "../layers/stores";
   import Metric from "./Metric.svelte";
 
@@ -114,9 +114,9 @@
       style:border="2px solid {tierColors.LongDistance}"
     >
       <Metric
-        label="Reachable settlements (TODO)"
-        bind:showLayer={$settlementsCoverage}
-        pct={0}
+        label="Reachable settlements"
+        bind:showLayer={$settlements}
+        pct={$stats.percent_reachable_settlements}
       />
     </div>
   {/if}
