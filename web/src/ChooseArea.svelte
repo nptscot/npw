@@ -13,6 +13,7 @@
   import type { Polygon, MultiPolygon, FeatureCollection } from "geojson";
   import { maptilerApiKey } from "./stores";
   import boundariesUrl from "../assets/boundaries.geojson?url";
+  import { listAllFiles } from "./common/files";
 
   let gj: FeatureCollection<
     Polygon | MultiPolygon,
@@ -87,6 +88,31 @@
   <hr />
 
   <p>Or continue with a previously opened file:</p>
+
+  <div style="columns: 2">
+    {#each listAllFiles() as [boundary, list]}
+      <div class="group">
+        <h2>{boundary}</h2>
+        {#each list as [filename, description]}
+          <p>
+            <a href={`npw.html?boundary=${boundary}&file=${filename}`}>
+              {filename}
+            </a>
+            ({description})
+          </p>
+        {/each}
+      </div>
+    {/each}
+  </div>
+
+  <style>
+    .group {
+      border: 1px solid black;
+      padding: 4px;
+      margin-bottom: 8px;
+      break-inside: avoid-column;
+    }
+  </style>
 </div>
 
 <div class="main">

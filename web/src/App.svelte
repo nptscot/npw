@@ -83,9 +83,9 @@
     }
 
     // Load saved state?
-    let lastFile = window.localStorage.getItem(
-      getLastOpenedFileKey($boundaryName),
-    );
+    let lastFile =
+      params.get("file") ||
+      window.localStorage.getItem(getLastOpenedFileKey($boundaryName));
     if (lastFile) {
       let item = window.localStorage.getItem(getKey($boundaryName, lastFile));
       if (item) {
