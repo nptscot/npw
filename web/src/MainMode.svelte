@@ -20,6 +20,7 @@
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
   import Link from "./common/Link.svelte";
+  import StreetView from "./common/StreetView.svelte";
   import ManageFiles from "./common/ManageFiles.svelte";
   import { colorByInfraType, colorByTier } from "./colors";
   import AllControls from "./layers/AllControls.svelte";
@@ -172,5 +173,7 @@
         Debug mesh density
       </button>
     </div>
+
+    <StreetView />
   </div>
 </SplitComponent>

@@ -27,7 +27,6 @@
           on:click={(e) =>
             window.open(notNull(e.detail.features[0].properties).way, "_blank")}
           hoverCursor="pointer"
-          eventsIfTopMost
         >
           <Popup openOn="hover" let:props>
             <PropertiesTable properties={props} />

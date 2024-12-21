@@ -46,7 +46,6 @@
             "line-color": lineColorForDemand("count"),
           }}
           manageHoverState
-          eventsIfTopMost
         >
           <Popup openOn="hover" let:props>
             {props.count} on {props.infra_type}

@@ -16,6 +16,7 @@
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
   import MainMode from "./MainMode.svelte";
+  import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";
   import RouteLegend from "./common/RouteLegend.svelte";
   import EditRouteMode from "./EditRouteMode.svelte";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
@@ -178,6 +179,7 @@
       {#if !offlineMode}
         <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
       {/if}
+      <DisableInteractiveLayers />
 
       <RouteLegend />
 

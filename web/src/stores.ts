@@ -42,6 +42,8 @@ export let routeB: Writable<{ lng: number; lat: number } | null> =
 export let colorRoutesBy: Writable<"infra_type" | "tier"> =
   writable("infra_type");
 
+export let interactiveMapLayersEnabled = writable(true);
+
 export let infraTypes: [string, string, string][] = [
   ["SegregatedWide", "Segregated Track (wide)", "#054d05"],
   ["OffRoad", "Off Road Cycleway", "#3a9120"],
