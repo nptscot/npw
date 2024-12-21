@@ -12,7 +12,6 @@
     backend,
     mode,
     infraTypeMapping,
-    boundaryName,
     mainModeRoutesChanged,
     colorRoutesBy,
     tier,
@@ -25,7 +24,6 @@
   import { colorByInfraType, colorByTier } from "./colors";
   import AllControls from "./layers/AllControls.svelte";
   import Stats from "./stats/Stats.svelte";
-  import ChangeArea from "./ChangeArea.svelte";
 
   let gj: FeatureCollection | null = null;
   onMount(recalc);
@@ -58,8 +56,8 @@
 
 <SplitComponent>
   <div slot="left">
+    <a href="index.html">Change area</a>
     <ManageFiles />
-    <ChangeArea area={$boundaryName} />
 
     <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
       Draw new <u>r</u>
