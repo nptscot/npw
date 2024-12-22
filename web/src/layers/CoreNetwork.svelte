@@ -1,7 +1,7 @@
 <script lang="ts">
   import { layerId } from "../common";
   import { VectorTileSource, LineLayer, GeoJSON } from "svelte-maplibre";
-  import { Popup, constructMatchExpression } from "svelte-utils/map";
+  import { constructMatchExpression } from "svelte-utils/map";
   import {
     assetUrl,
     backend,
@@ -67,11 +67,7 @@
     layout={{
       visibility: show && showTruth ? "visible" : "none",
     }}
-  >
-    <Popup openOn="hover" let:props>
-      Go Dutch value {props.all_fastest_bicycle_go_dutch}
-    </Popup>
-  </LineLayer>
+  />
 </VectorTileSource>
 
 {#if $backend && firstLoad}

@@ -51,8 +51,9 @@
       visibility: $show ? "visible" : "none",
     }}
     bind:hovered
+    hoverCursor="pointer"
   >
-    <Popup openOn="hover" let:props>
+    <Popup openOn="click" let:props>
       {props.name} is a {props.kind}. It {props.reachable ? "is" : "is not"} reachable.
     </Popup>
   </CircleLayer>

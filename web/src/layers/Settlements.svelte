@@ -54,8 +54,9 @@
       visibility: $show ? "visible" : "none",
     }}
     bind:hovered
+    hoverCursor="pointer"
   >
-    <Popup openOn="hover" let:props>
+    <Popup openOn="click" let:props>
       Settlement {props.name || ""} with population {props.population.toLocaleString()}
       {props.reachable ? "is" : "is not"} reachable.
     </Popup>

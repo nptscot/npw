@@ -54,8 +54,9 @@
       visibility: $show ? "visible" : "none",
     }}
     bind:hovered
+    hoverCursor="pointer"
   >
-    <Popup openOn="hover" let:props>
+    <Popup openOn="click" let:props>
       Town centre {props.name || ""}
       {props.reachable ? "is" : "is not"} reachable.
     </Popup>
