@@ -339,6 +339,15 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
         length_ratio_threshold: 1.1,
         midpt_dist_threshold: 15.0,
     };
+
+    if false {
+        match_lines::dump_gj(
+            &rtree,
+            graph.roads.iter().map(|r| &r.linestring),
+            &graph.mercator,
+        )?;
+    }
+
     if true {
         Ok(match_lines::match_linestrings(
             &rtree,

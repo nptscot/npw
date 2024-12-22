@@ -35,6 +35,28 @@ pub fn match_linestrings<'a, T: Copy>(
     output
 }
 
+/// Just dump GeoJSON files with all sources and targets, for use with
+/// https://nptscot.github.io/match_linestrings/
+pub fn dump_gj<'a, T>(
+    rtree: &RTree<GeomWithData<LineString, T>>,
+    targets: impl Iterator<Item = &'a LineString>,
+    mercator: &Mercator,
+) -> Result<()> {
+    let mut out1 = geojson::FeatureWriter::from_writer(std::fs::File::create("sources.geojson")?);
+    for x in rtree.iter() {
+        let f = mercator.to_wgs84_gj(x.geom());
+        out1.write_feature(&f)?;
+    }
+
+    let mut out2 = geojson::FeatureWriter::from_writer(std::fs::File::create("targets.geojson")?);
+    for x in targets {
+        let f = mercator.to_wgs84_gj(x);
+        out2.write_feature(&f)?;
+    }
+
+    Ok(())
+}
+
 /// Same as `match_linestrings`, but for every target with no successful matches, write some
 /// GeoJSON output to manually debug.
 pub fn debug_match_linestrings<'a, T: Copy>(
