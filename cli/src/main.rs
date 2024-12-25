@@ -2,6 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 
+use anime::Anime;
 use anyhow::{bail, Result};
 use clap::Parser;
 use elevation::GeoTiffElevation;
@@ -12,7 +13,7 @@ use log::{info, warn};
 use rstar::{primitives::GeomWithData, RTree, RTreeObject};
 use serde::Deserialize;
 
-use backend::{MapModel, Tier};
+use backend::{Highway, MapModel, Tier};
 
 mod match_lines;
 
@@ -178,14 +179,15 @@ struct DesireLineRow {
 }
 
 fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<usize>> {
-    // Read all relevant lines and make an RTree
+    // Read all relevant lines
     timer.step("read traffic volumes");
     let dataset = Dataset::open(path)?;
     let mut layer = dataset.layer(0)?;
     let b = &graph.mercator.wgs84_bounds;
     layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
 
-    let mut traffic_links = Vec::new();
+    let mut source_geometry = Vec::new();
+    let mut source_data = Vec::new();
     for input in layer.features() {
         let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
         graph.mercator.to_mercator_in_place(&mut geom);
@@ -193,30 +195,61 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
             // TODO Why missing?
             continue;
         };
-        traffic_links.push(GeomWithData::new(geom, flows as usize));
+        source_geometry.push(geom);
+        source_data.push(flows as usize);
     }
-    if traffic_links.is_empty() {
+    if source_geometry.is_empty() {
         bail!("No traffic volumes detected; input is broken");
     }
-    info!("{} links have pred_flows", traffic_links.len());
-    let rtree = RTree::bulk_load(traffic_links);
+    info!("{} links have pred_flows", source_geometry.len());
 
     timer.step("match traffic volumes");
-    // TODO Share if they're the same for all cases
-    let opts = match_lines::Options {
-        buffer_meters: 20.0,
-        angle_diff_threshold: 10.0,
-        length_ratio_threshold: 1.1,
-        midpt_dist_threshold: 15.0,
-    };
-    let results =
-        match_lines::match_linestrings(&rtree, graph.roads.iter().map(|r| &r.linestring), &opts);
+    let distance_tolerance = 15.0;
+    let angle_tolerance = 10.0;
+    let matches = Anime::new(
+        source_geometry.into_iter(),
+        graph.roads.iter().map(|r| r.linestring.clone()),
+        distance_tolerance,
+        angle_tolerance,
+    )
+    .matches
+    .take()
+    .unwrap();
 
-    // TODO Filter out service roads manually?
-    Ok(results
-        .into_iter()
-        .map(|volume| volume.unwrap_or(0))
-        .collect())
+    let mut results = Vec::new();
+    for (idx, road) in graph.roads.iter().enumerate() {
+        // There are issues with small dead-end service roads next to big roads and car-free roads
+        // having high traffic assigned. Sometimes the problem is map matching, sometimes the
+        // source dataset is wrong. Override in some cases.
+        if matches!(
+            Highway::classify(&road.osm_tags).unwrap(),
+            Highway::Service
+                | Highway::Footway
+                | Highway::Cycleway
+                | Highway::Pedestrian
+                | Highway::Path
+        ) {
+            results.push(0);
+            continue;
+        }
+        results.push(
+            matches
+                .get(&idx)
+                .map(|candidates| {
+                    // Use the one with the most shared length
+                    if let Some(c) = candidates
+                        .into_iter()
+                        .max_by_key(|c| (c.shared_len * 1000.0) as usize)
+                    {
+                        source_data[c.source_index]
+                    } else {
+                        0
+                    }
+                })
+                .unwrap_or(0),
+        );
+    }
+    Ok(results)
 }
 
 // The output is the Go Dutch totals for all purpose
