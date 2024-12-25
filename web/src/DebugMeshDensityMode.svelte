@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { layerId } from "./common";
   import {
+    FillLayer,
     GeoJSON,
     hoverStateFilter,
-    FillLayer,
     LineLayer,
   } from "svelte-maplibre";
-  import { SplitComponent } from "./common/layout";
   import { notNull } from "svelte-utils";
+  import { layerId } from "./common";
+  import { SplitComponent } from "./common/layout";
   import { backend, mode } from "./stores";
 </script>
 

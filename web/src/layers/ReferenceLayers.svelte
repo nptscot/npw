@@ -1,22 +1,22 @@
 <script lang="ts">
-  import ExistingNetwork from "./ExistingNetwork.svelte";
-  import RouteNetwork from "./RouteNetwork.svelte";
-  import CoreNetwork from "./CoreNetwork.svelte";
-  import Schools from "./Schools.svelte";
-  import TownCentres from "./TownCentres.svelte";
-  import Settlements from "./Settlements.svelte";
-  import Greenspaces from "./Greenspaces.svelte";
-  import GpHospitals from "./GpHospitals.svelte";
-  import UrbanAreas from "./UrbanAreas.svelte";
-  import ReachableNetwork from "./ReachableNetwork.svelte";
-  import LevelOfService from "./LevelOfService.svelte";
-  import TrafficVolume from "./TrafficVolume.svelte";
-  import Gradient from "./Gradient.svelte";
-  import DeprivedPopulation from "./DeprivedPopulation.svelte";
   import AllPopulation from "./AllPopulation.svelte";
+  import CoreNetwork from "./CoreNetwork.svelte";
   import CyclingFlowCoverage from "./CyclingFlowCoverage.svelte";
+  import DeprivedPopulation from "./DeprivedPopulation.svelte";
+  import ExistingNetwork from "./ExistingNetwork.svelte";
+  import GpHospitals from "./GpHospitals.svelte";
+  import Gradient from "./Gradient.svelte";
+  import Greenspaces from "./Greenspaces.svelte";
+  import LevelOfService from "./LevelOfService.svelte";
   import MajorJunctions from "./MajorJunctions.svelte";
+  import ReachableNetwork from "./ReachableNetwork.svelte";
+  import RouteNetwork from "./RouteNetwork.svelte";
+  import Schools from "./Schools.svelte";
+  import Settlements from "./Settlements.svelte";
   import { cyclingFlow1, cyclingFlow2, cyclingFlow3 } from "./stores";
+  import TownCentres from "./TownCentres.svelte";
+  import TrafficVolume from "./TrafficVolume.svelte";
+  import UrbanAreas from "./UrbanAreas.svelte";
 </script>
 
 <ExistingNetwork />

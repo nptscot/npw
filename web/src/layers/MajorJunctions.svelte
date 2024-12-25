@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { layerId } from "../common";
-  import { GeoJSON, CircleLayer } from "svelte-maplibre";
-  import { mode, backend } from "../stores";
-  import { majorJunctions as show } from "./stores";
   import type { FeatureCollection } from "geojson";
+  import { CircleLayer, GeoJSON } from "svelte-maplibre";
+  import { layerId } from "../common";
+  import { backend, mode } from "../stores";
+  import { majorJunctions as show } from "./stores";
 
   let data: FeatureCollection = {
     type: "FeatureCollection",

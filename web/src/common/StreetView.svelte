@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { map, interactiveMapLayersEnabled } from "../stores";
-  import { onDestroy } from "svelte";
   import type { MapMouseEvent } from "maplibre-gl";
+  import { onDestroy } from "svelte";
   import { MapEvents } from "svelte-maplibre";
+  import { interactiveMapLayersEnabled, map } from "../stores";
 
   let source: "google" | "bing" = "google";
 

@@ -1,11 +1,11 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import { Popup } from "svelte-utils/map";
   import { layerId } from "./common";
   import { SplitComponent } from "./common/layout";
-  import { Popup } from "svelte-utils/map";
   import { backend, mode, type EvaluateODOut } from "./stores";
-  import { onMount } from "svelte";
-  import { lineWidthForDemand, lineColorForDemand } from "./utils";
+  import { lineColorForDemand, lineWidthForDemand } from "./utils";
 
   let gj: EvaluateODOut | null = null;
 

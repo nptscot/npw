@@ -1,7 +1,7 @@
 <script lang="ts">
   import { tierColors } from "./colors";
-  import { tier } from "./stores";
   import { HelpButton } from "./common";
+  import { tier } from "./stores";
 </script>
 
 <div>

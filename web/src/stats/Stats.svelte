@@ -1,20 +1,20 @@
 <script lang="ts">
-  import { notNull } from "svelte-utils";
-  import { backend, stats, mode, tier } from "../stores";
-  import { tierColors } from "../colors";
   import { onMount } from "svelte";
+  import { notNull } from "svelte-utils";
+  import { tierColors } from "../colors";
   import {
-    schools,
-    gpHospitals,
-    townCentres,
-    deprivedPopulation,
     allPopulation,
     cyclingFlow1,
     cyclingFlow2,
     cyclingFlow3,
-    settlements,
+    deprivedPopulation,
+    gpHospitals,
     greenspaces,
+    schools,
+    settlements,
+    townCentres,
   } from "../layers/stores";
+  import { backend, mode, stats, tier } from "../stores";
   import Metric from "./Metric.svelte";
 
   async function recalc() {

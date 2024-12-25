@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { FeatureCollection } from "geojson";
+  import { onMount } from "svelte";
   import {
     GeoJSON,
     hoverStateFilter,
@@ -6,25 +8,23 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { SplitComponent } from "./common/layout";
+  import { colorByInfraType, colorByTier } from "./colors";
   import { layerId } from "./common";
+  import { SplitComponent } from "./common/layout";
+  import Link from "./common/Link.svelte";
+  import ManageFiles from "./common/ManageFiles.svelte";
+  import StreetView from "./common/StreetView.svelte";
+  import AllControls from "./layers/AllControls.svelte";
+  import { currentNetwork } from "./layers/stores";
+  import Stats from "./stats/Stats.svelte";
   import {
     backend,
-    mode,
+    colorRoutesBy,
     infraTypeMapping,
     mainModeRoutesChanged,
-    colorRoutesBy,
+    mode,
     tier,
   } from "./stores";
-  import { currentNetwork } from "./layers/stores";
-  import type { FeatureCollection } from "geojson";
-  import { onMount } from "svelte";
-  import Link from "./common/Link.svelte";
-  import StreetView from "./common/StreetView.svelte";
-  import ManageFiles from "./common/ManageFiles.svelte";
-  import { colorByInfraType, colorByTier } from "./colors";
-  import AllControls from "./layers/AllControls.svelte";
-  import Stats from "./stats/Stats.svelte";
 
   let gj: FeatureCollection | null = null;
   onMount(recalc);

@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { layerId } from "../common";
-  import { VectorTileSource, LineLayer } from "svelte-maplibre";
-  import { Popup } from "svelte-utils/map";
-  import LayerControls from "./LayerControls.svelte";
-  import { assetUrl } from "../stores";
   import type { ExpressionSpecification } from "maplibre-gl";
+  import { LineLayer, VectorTileSource } from "svelte-maplibre";
+  import { Popup } from "svelte-utils/map";
+  import { layerId } from "../common";
+  import { assetUrl } from "../stores";
   import {
-    lineWidthForDemand,
     lineColorForDemand,
     lineColorForGradient,
+    lineWidthForDemand,
   } from "../utils";
+  import LayerControls from "./LayerControls.svelte";
 
   let show = false;
   let purpose = "all";

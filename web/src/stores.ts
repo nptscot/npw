@@ -1,14 +1,14 @@
-import type { Map } from "maplibre-gl";
-import { get, writable, type Writable } from "svelte/store";
-import { type Backend } from "./worker";
 import type {
+  Feature,
   FeatureCollection,
   LineString,
-  Point,
   MultiPolygon,
-  Feature,
+  Point,
 } from "geojson";
+import type { Map } from "maplibre-gl";
+import { get, writable, type Writable } from "svelte/store";
 import { getKey } from "./common/files";
+import { type Backend } from "./worker";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 

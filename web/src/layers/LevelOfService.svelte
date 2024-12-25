@@ -1,16 +1,16 @@
 <script lang="ts">
   import type { FeatureCollection } from "geojson";
   import {
-    VectorTileSource,
     GeoJSON,
     hoverStateFilter,
     LineLayer,
+    VectorTileSource,
   } from "svelte-maplibre";
-  import { backend, infraTypeMapping, assetUrl } from "../stores";
-  import { Popup, constructMatchExpression } from "svelte-utils/map";
-  import LayerControls from "./LayerControls.svelte";
+  import { constructMatchExpression, Popup } from "svelte-utils/map";
+  import { colorByLoS, levelOfServiceColors } from "../colors";
   import { layerId, QualitativeLegend } from "../common";
-  import { levelOfServiceColors, colorByLoS } from "../colors";
+  import { assetUrl, backend, infraTypeMapping } from "../stores";
+  import LayerControls from "./LayerControls.svelte";
 
   let data: FeatureCollection = {
     type: "FeatureCollection",

@@ -1,12 +1,12 @@
 <script lang="ts">
   import {
-    VectorTileSource,
-    hoverStateFilter,
     FillLayer,
+    hoverStateFilter,
+    VectorTileSource,
   } from "svelte-maplibre";
-  import LayerControls from "./LayerControls.svelte";
-  import { assetUrl } from "../stores";
   import { layerId } from "../common";
+  import { assetUrl } from "../stores";
+  import LayerControls from "./LayerControls.svelte";
 
   let show = false;
 </script>

@@ -1,23 +1,23 @@
 <script lang="ts">
-  import { layerId } from "./common";
+  import type { FeatureCollection, LineString } from "geojson";
+  import type { Map } from "maplibre-gl";
+  import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import { notNull } from "svelte-utils";
+  import { emptyGeojson, Popup } from "svelte-utils/map";
+  import { colorByInfraType } from "./colors";
+  import { layerId } from "./common";
+  import RouteControls from "./snapper/RouteControls.svelte";
+  import { routeTool, waypoints, type Waypoint } from "./snapper/stores";
   import {
-    backend,
-    mode,
     autosave,
+    backend,
     tier as currentTier,
+    mode,
     routeA,
     routeB,
     type RouteProps,
   } from "./stores";
-  import type { FeatureCollection, LineString } from "geojson";
-  import { onMount } from "svelte";
-  import { colorByInfraType } from "./colors";
-  import RouteControls from "./snapper/RouteControls.svelte";
-  import { routeTool, waypoints, type Waypoint } from "./snapper/stores";
-  import type { Map } from "maplibre-gl";
-  import { notNull } from "svelte-utils";
-  import { emptyGeojson, Popup } from "svelte-utils/map";
 
   export let map: Map;
   export let id: number | null;

@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { GeoJSON, hoverStateFilter, CircleLayer } from "svelte-maplibre";
+  import type { Feature, Point } from "geojson";
+  import { CircleLayer, GeoJSON, hoverStateFilter } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import LayerControls from "./LayerControls.svelte";
+  import { layerId, QualitativeLegend } from "../common";
   import { backend, type GPHospitals } from "../stores";
   import { percent } from "../utils";
-  import { layerId, QualitativeLegend } from "../common";
-  import { gpHospitals as show } from "./stores";
-  import type { Feature, Point } from "geojson";
   import DebugReachability from "./DebugReachability.svelte";
+  import LayerControls from "./LayerControls.svelte";
+  import { gpHospitals as show } from "./stores";
 
   let data: GPHospitals = {
     type: "FeatureCollection",

@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { layerId } from "../common";
-  import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { backend } from "../stores";
   import type {
     Feature,
-    Point,
-    MultiPolygon,
     FeatureCollection,
+    MultiPolygon,
+    Point,
   } from "geojson";
+  import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import { layerId } from "../common";
+  import { backend } from "../stores";
 
   export let kind: string;
   export let hovered: Feature<

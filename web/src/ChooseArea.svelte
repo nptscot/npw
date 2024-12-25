@@ -1,19 +1,19 @@
 <script lang="ts">
   import "@picocss/pico/css/pico.jade.min.css";
+  import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
   import { onMount } from "svelte";
   import {
-    MapLibre,
     FillLayer,
     GeoJSON,
     hoverStateFilter,
     LineLayer,
+    MapLibre,
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import type { Polygon, MultiPolygon, FeatureCollection } from "geojson";
-  import { maptilerApiKey } from "./stores";
   import boundariesUrl from "../assets/boundaries.geojson?url";
   import { listAllFiles } from "./common/files";
+  import { maptilerApiKey } from "./stores";
 
   let gj: FeatureCollection<
     Polygon | MultiPolygon,

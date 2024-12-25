@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { HelpButton, layerId } from "../common";
-  import { SplitComponent } from "../common/layout";
-  import { routeTool, waypoints, type Waypoint } from "./stores";
-  import { Marker, MapEvents, GeoJSON, LineLayer } from "svelte-maplibre";
-  import type { MapMouseEvent, Map } from "maplibre-gl";
   import type { FeatureCollection } from "geojson";
+  import type { Map, MapMouseEvent } from "maplibre-gl";
   import { RouteTool } from "route-snapper-ts";
   import { onDestroy } from "svelte";
+  import { GeoJSON, LineLayer, MapEvents, Marker } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
+  import { HelpButton, layerId } from "../common";
+  import { SplitComponent } from "../common/layout";
   import { majorJunctions } from "../layers/stores";
+  import { routeTool, waypoints, type Waypoint } from "./stores";
 
   export let map: Map;
   export let finish: () => void;

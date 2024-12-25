@@ -1,33 +1,33 @@
 <script lang="ts">
   import type { MapMouseEvent } from "maplibre-gl";
   import {
-    MapEvents,
     GeoJSON,
-    LineLayer,
-    Marker,
     hoverStateFilter,
+    LineLayer,
+    MapEvents,
+    Marker,
   } from "svelte-maplibre";
-  import { SplitComponent } from "./common/layout";
   import { notNull } from "svelte-utils";
   import {
-    mode,
+    colorByGradientGroup,
+    colorByInfraType,
+    colorByLoS,
+    gradientColors,
+    levelOfServiceColors,
+  } from "./colors";
+  import { layerId, QualitativeLegend } from "./common";
+  import { SplitComponent } from "./common/layout";
+  import Directions from "./Directions.svelte";
+  import { currentNetwork } from "./layers/stores";
+  import {
     backend,
+    mode,
     routeA,
     routeB,
     type Mode,
     type RouteGJ,
     type WorstRoutes,
   } from "./stores";
-  import {
-    colorByInfraType,
-    colorByLoS,
-    levelOfServiceColors,
-    gradientColors,
-    colorByGradientGroup,
-  } from "./colors";
-  import { layerId, QualitativeLegend } from "./common";
-  import Directions from "./Directions.svelte";
-  import { currentNetwork } from "./layers/stores";
 
   export let prevMode: Mode;
   export let browse: WorstRoutes;

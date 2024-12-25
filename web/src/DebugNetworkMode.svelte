@@ -1,10 +1,10 @@
 <script lang="ts">
   import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
-  import { SplitComponent } from "./common/layout";
-  import { PropertiesTable, notNull } from "svelte-utils";
+  import { notNull, PropertiesTable } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
-  import { backend, mode } from "./stores";
   import { layerId } from "./common";
+  import { SplitComponent } from "./common/layout";
+  import { backend, mode } from "./stores";
 </script>
 
 <SplitComponent>

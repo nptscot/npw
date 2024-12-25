@@ -1,22 +1,21 @@
 <script lang="ts">
-  import { layerId } from "../common";
-  import { notNull } from "svelte-utils";
   import {
-    VectorTileSource,
     GeoJSON,
     hoverStateFilter,
     LineLayer,
+    VectorTileSource,
   } from "svelte-maplibre";
+  import { Modal, notNull } from "svelte-utils";
+  import { constructMatchExpression, Popup } from "svelte-utils/map";
+  import { colorByInfraType } from "../colors";
+  import { layerId } from "../common";
   import {
+    assetUrl,
+    autosave,
     backend,
     infraTypeMapping,
-    autosave,
     mainModeRoutesChanged,
-    assetUrl,
   } from "../stores";
-  import { colorByInfraType } from "../colors";
-  import { Popup, constructMatchExpression } from "svelte-utils/map";
-  import { Modal } from "svelte-utils";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;

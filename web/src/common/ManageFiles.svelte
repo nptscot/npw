@@ -6,7 +6,7 @@
     currentFilename,
     mainModeRoutesChanged,
   } from "../stores";
-  import { getKey, listFilesInBoundary, getLastOpenedFileKey } from "./files";
+  import { getKey, getLastOpenedFileKey, listFilesInBoundary } from "./files";
   import Link from "./Link.svelte";
 
   let open = false;

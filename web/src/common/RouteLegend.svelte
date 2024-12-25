@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { colorRoutesBy, infraTypes } from "../stores";
   import { tierColors } from "../colors";
+  import { colorRoutesBy, infraTypes } from "../stores";
 </script>
 
 <div>

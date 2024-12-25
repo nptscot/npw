@@ -1,18 +1,18 @@
 <script lang="ts">
+  import type { Feature, MultiPolygon } from "geojson";
   import {
+    CircleLayer,
+    FillLayer,
     GeoJSON,
     hoverStateFilter,
-    FillLayer,
-    CircleLayer,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import LayerControls from "./LayerControls.svelte";
+  import { layerId, QualitativeLegend } from "../common";
   import { backend, type Greenspaces } from "../stores";
   import { percent } from "../utils";
-  import { layerId, QualitativeLegend } from "../common";
-  import { greenspaces as show } from "./stores";
-  import type { Feature, MultiPolygon } from "geojson";
   import DebugReachability from "./DebugReachability.svelte";
+  import LayerControls from "./LayerControls.svelte";
+  import { greenspaces as show } from "./stores";
 
   let data: Greenspaces = {
     type: "FeatureCollection",

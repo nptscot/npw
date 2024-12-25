@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { layerId } from "../common";
   import {
+    FillLayer,
     GeoJSON,
     hoverStateFilter,
-    FillLayer,
     LineLayer,
   } from "svelte-maplibre";
-  import { Popup, makeRamp } from "svelte-utils/map";
   import { SequentialLegend } from "svelte-utils";
-  import LayerControls from "./LayerControls.svelte";
+  import { makeRamp, Popup } from "svelte-utils/map";
+  import { layerId } from "../common";
   import { backend, type DataZones } from "../stores";
   import { percent, sum } from "../utils";
+  import LayerControls from "./LayerControls.svelte";
   import { deprivedPopulation as show } from "./stores";
 
   let data: DataZones = {

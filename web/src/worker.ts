@@ -1,25 +1,25 @@
 import init, { MapModel } from "backend";
 import type {
-  LineString,
-  Position,
   Feature,
-  Polygon,
   FeatureCollection,
+  LineString,
+  Polygon,
+  Position,
 } from "geojson";
 import type {
-  RouteGJ,
-  EvaluateODOut,
-  Stats,
-  Schools,
-  GPHospitals,
-  TownCentres,
-  Settlements,
-  Greenspaces,
   DataZones,
+  EvaluateODOut,
+  GPHospitals,
+  Greenspaces,
   PrecalculatedFlows,
-  SetRouteInput,
+  RouteGJ,
   RouteNode,
   RouteProps,
+  Schools,
+  SetRouteInput,
+  Settlements,
+  Stats,
+  TownCentres,
 } from "./stores";
 
 export class Backend {

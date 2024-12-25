@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { allControls } from "./stores";
-  import { tier } from "../stores";
   import { tierColors } from "../colors";
+  import { tier } from "../stores";
+  import { allControls } from "./stores";
 
   let basic: HTMLDivElement | null = null;
   let primary: HTMLDivElement | null = null;

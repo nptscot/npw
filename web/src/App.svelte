@@ -1,47 +1,47 @@
 <script lang="ts">
   import "@picocss/pico/css/pico.jade.min.css";
-  import { Geocoder, emptyGeojson } from "svelte-utils/map";
   import type { Map } from "maplibre-gl";
-  import { onMount } from "svelte";
-  import { writable } from "svelte/store";
-  import { FillLayer, GeoJSON, MapLibre } from "svelte-maplibre";
-  import {
-    Layout,
-    mapContents,
-    leftSidebarContents,
-    rightSidebarContents,
-  } from "./common/layout";
-  import { layerId } from "./common";
-  import { getKey, getLastOpenedFileKey } from "./common/files";
-  import DebugNetworkMode from "./DebugNetworkMode.svelte";
-  import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
-  import MainMode from "./MainMode.svelte";
-  import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";
-  import RouteLegend from "./common/RouteLegend.svelte";
-  import EditRouteMode from "./EditRouteMode.svelte";
-  import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
-  import EvaluateODMode from "./EvaluateODMode.svelte";
-  import TopBar from "./TopBar.svelte";
-  import {
-    map as mapStore,
-    mode,
-    backend,
-    maptilerApiKey,
-    routeA,
-    routeB,
-    remoteStorage,
-    assetUrl,
-    boundaryName,
-    currentFilename,
-  } from "./stores";
-  import { routeTool } from "./snapper/stores";
-  import { Backend } from "./worker";
-  import { init, RouteTool } from "route-snapper-ts";
-  import { Loading } from "svelte-utils";
-  import ReferenceLayers from "./layers/ReferenceLayers.svelte";
+  import maplibregl from "maplibre-gl";
   // TODO Indirect dependencies
   import * as pmtiles from "pmtiles";
-  import maplibregl from "maplibre-gl";
+  import { init, RouteTool } from "route-snapper-ts";
+  import { onMount } from "svelte";
+  import { FillLayer, GeoJSON, MapLibre } from "svelte-maplibre";
+  import { Loading } from "svelte-utils";
+  import { emptyGeojson, Geocoder } from "svelte-utils/map";
+  import { writable } from "svelte/store";
+  import { layerId } from "./common";
+  import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";
+  import { getKey, getLastOpenedFileKey } from "./common/files";
+  import {
+    Layout,
+    leftSidebarContents,
+    mapContents,
+    rightSidebarContents,
+  } from "./common/layout";
+  import RouteLegend from "./common/RouteLegend.svelte";
+  import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
+  import DebugNetworkMode from "./DebugNetworkMode.svelte";
+  import EditRouteMode from "./EditRouteMode.svelte";
+  import EvaluateODMode from "./EvaluateODMode.svelte";
+  import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
+  import ReferenceLayers from "./layers/ReferenceLayers.svelte";
+  import MainMode from "./MainMode.svelte";
+  import { routeTool } from "./snapper/stores";
+  import {
+    assetUrl,
+    backend,
+    boundaryName,
+    currentFilename,
+    map as mapStore,
+    maptilerApiKey,
+    mode,
+    remoteStorage,
+    routeA,
+    routeB,
+  } from "./stores";
+  import TopBar from "./TopBar.svelte";
+  import { Backend } from "./worker";
 
   // TODO Remove later
   let offlineMode = false;

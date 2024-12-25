@@ -1,7 +1,7 @@
 <script lang="ts">
   import {
-    mapContents,
     leftSidebarContents,
+    mapContents,
     rightSidebarContents,
   } from "./index.js";
 

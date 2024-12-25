@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { layerId } from "../common";
-  import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { backend, type PrecalculatedFlows } from "../stores";
-  import { Popup } from "svelte-utils/map";
-  import LayerControls from "./LayerControls.svelte";
-  import { percent, lineWidthForDemand } from "../utils";
   import type { ExpressionSpecification } from "maplibre-gl";
+  import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import { Popup } from "svelte-utils/map";
+  import { layerId } from "../common";
+  import { backend, type PrecalculatedFlows } from "../stores";
+  import { lineWidthForDemand, percent } from "../utils";
+  import LayerControls from "./LayerControls.svelte";
 
   export let show: boolean;
   export let quintile: number;

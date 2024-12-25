@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { GeoJSON, hoverStateFilter, FillLayer } from "svelte-maplibre";
+  import type { Feature, MultiPolygon } from "geojson";
+  import { FillLayer, GeoJSON, hoverStateFilter } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import LayerControls from "./LayerControls.svelte";
+  import { layerId, QualitativeLegend } from "../common";
   import { backend, type TownCentres } from "../stores";
   import { percent } from "../utils";
-  import { layerId, QualitativeLegend } from "../common";
-  import { townCentres as show } from "./stores";
-  import type { Feature, MultiPolygon } from "geojson";
   import DebugReachability from "./DebugReachability.svelte";
+  import LayerControls from "./LayerControls.svelte";
+  import { townCentres as show } from "./stores";
 
   let data: TownCentres = {
     type: "FeatureCollection",

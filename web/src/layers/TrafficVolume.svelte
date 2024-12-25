@@ -1,9 +1,9 @@
 <script lang="ts">
   import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
-  import { backend, assetUrl } from "../stores";
-  import { Popup, makeRamp, constructMatchExpression } from "svelte-utils/map";
   import { SequentialLegend } from "svelte-utils";
+  import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
   import { layerId } from "../common";
+  import { assetUrl, backend } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { layerId } from "../common";
-  import { GeoJSON, LineLayer, hoverStateFilter } from "svelte-maplibre";
-  import { backend } from "../stores";
+  import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import LayerControls from "./LayerControls.svelte";
+  import { layerId } from "../common";
+  import { backend } from "../stores";
   import { lineColorForGradient } from "../utils";
+  import LayerControls from "./LayerControls.svelte";
 
   let show = false;
   let firstLoad = false;

@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { layerId } from "../common";
-  import { VectorTileSource, LineLayer, GeoJSON } from "svelte-maplibre";
+  import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
+  import { colorByTier } from "../colors";
+  import { layerId } from "../common";
   import {
     assetUrl,
+    autosave,
     backend,
     mainModeRoutesChanged,
-    autosave,
   } from "../stores";
   import LayerControls from "./LayerControls.svelte";
-  import { colorByTier } from "../colors";
 
   let show = false;
   let firstLoad = false;
