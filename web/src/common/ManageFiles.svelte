@@ -26,6 +26,18 @@
     }
   }
 
+  async function newFile() {
+    let name = window.prompt(`What do you want to name the new file?`);
+    // TODO Confirm overwriting
+    if (!name) {
+      return;
+    }
+    await $backend!.clearAllRoutes();
+    $currentFilename = name;
+    $mainModeRoutesChanged += 1;
+    open = false;
+  }
+
   async function makeCopy() {
     let oldName = $currentFilename;
     let newName = window.prompt(
@@ -145,7 +157,7 @@
       <button class="secondary" on:click={makeCopy}>Make copy</button>
       <button class="secondary" on:click={exportFile}>Export</button>
       <button
-        class="warning"
+        class="secondary"
         on:click={deleteFile}
         disabled={fileList.length < 2}
       >
@@ -154,6 +166,8 @@
     </div>
 
     <hr />
+
+    <button on:click={newFile}>New file</button>
 
     <p>Load a different file in {$boundaryName}:</p>
     <ul>
