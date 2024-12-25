@@ -102,6 +102,7 @@ impl MapModel {
             self.id_counter += 1;
             self.routes.insert(route_id, route);
         }
+        self.recalculate_after_edits();
 
         Ok(())
     }
@@ -283,7 +284,9 @@ impl MapModel {
         match self.los[r.0] {
             // Already fine, just indicate it's a route
             LevelOfService::High => InfraType::MixedTraffic,
-            LevelOfService::Medium => InfraType::SegregatedNarrow,
+            // TODO Used to be narrow, but the LoS calculations aren't correct yet; force a high
+            // LoS
+            LevelOfService::Medium => InfraType::SegregatedWide,
             LevelOfService::Low => InfraType::SegregatedWide,
             // TODO The user drew a route here, so what should we recommend?
             LevelOfService::ShouldNotBeUsed => InfraType::SegregatedWide,
