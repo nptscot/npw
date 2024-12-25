@@ -15,8 +15,6 @@ use serde::Deserialize;
 
 use backend::{Highway, MapModel, Tier};
 
-mod match_lines;
-
 #[derive(Parser)]
 struct Args {
     /// Path to a .osm.pbf or .xml file to convert
@@ -232,22 +230,7 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
             results.push(0);
             continue;
         }
-        results.push(
-            matches
-                .get(&idx)
-                .map(|candidates| {
-                    // Use the one with the most shared length
-                    if let Some(c) = candidates
-                        .into_iter()
-                        .max_by_key(|c| (c.shared_len * 1000.0) as usize)
-                    {
-                        source_data[c.source_index]
-                    } else {
-                        0
-                    }
-                })
-                .unwrap_or(0),
-        );
+        results.push(get_anime_match(&matches, &source_data, idx).unwrap_or(0));
     }
     Ok(results)
 }
@@ -329,14 +312,15 @@ fn compare_road_geometry(ls1: &LineString, ls2: &LineString) -> usize {
 
 // The output is per road. If the road is part of the core network, what tier is it?
 fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<Option<Tier>>> {
-    // Read all relevant lines and make an RTree
+    // Read all relevant lines
     timer.step("read core network");
     let dataset = Dataset::open(path)?;
     let mut layer = dataset.layer(0)?;
     let b = &graph.mercator.wgs84_bounds;
     layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
 
-    let mut segments = Vec::new();
+    let mut source_geometry = Vec::new();
+    let mut source_data = Vec::new();
     for input in layer.features() {
         let Some(function) = input.field_as_string_by_name("road_function")? else {
             bail!("Missing road_function");
@@ -352,12 +336,14 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
         match geo {
             Geometry::LineString(mut ls) => {
                 graph.mercator.to_mercator_in_place(&mut ls);
-                segments.push(GeomWithData::new(ls, tier));
+                source_geometry.push(ls);
+                source_data.push(tier);
             }
             Geometry::MultiLineString(mls) => {
                 for mut ls in mls {
                     graph.mercator.to_mercator_in_place(&mut ls);
-                    segments.push(GeomWithData::new(ls, tier));
+                    source_geometry.push(ls);
+                    source_data.push(tier);
                 }
             }
             _ => bail!("read_core_network found something besides a LS or MLS"),
@@ -365,40 +351,23 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
     }
 
     timer.step("match core network");
-    let rtree = RTree::bulk_load(segments);
-    let opts = match_lines::Options {
-        buffer_meters: 20.0,
-        angle_diff_threshold: 10.0,
-        length_ratio_threshold: 1.1,
-        midpt_dist_threshold: 15.0,
-    };
+    let distance_tolerance = 15.0;
+    let angle_tolerance = 10.0;
+    let matches = Anime::new(
+        source_geometry.into_iter(),
+        graph.roads.iter().map(|r| r.linestring.clone()),
+        distance_tolerance,
+        angle_tolerance,
+    )
+    .matches
+    .take()
+    .unwrap();
 
-    if false {
-        match_lines::dump_gj(
-            &rtree,
-            graph.roads.iter().map(|r| &r.linestring),
-            &graph.mercator,
-        )?;
+    let mut results = Vec::new();
+    for idx in 0..graph.roads.len() {
+        results.push(get_anime_match(&matches, &source_data, idx));
     }
-
-    if true {
-        Ok(match_lines::match_linestrings(
-            &rtree,
-            graph.roads.iter().map(|r| &r.linestring),
-            &opts,
-        ))
-    } else {
-        let one_file = true;
-        let only_debug_idx = None;
-        match_lines::debug_match_linestrings(
-            &rtree,
-            graph.roads.iter().map(|r| &r.linestring),
-            &opts,
-            &graph.mercator,
-            one_file,
-            only_debug_idx,
-        )
-    }
+    Ok(results)
 }
 
 fn read_greenspaces(
@@ -464,4 +433,17 @@ fn read_access_points(path: &str, graph: &Graph) -> Result<HashMap<String, Vec<P
         pts_per_site.entry(id).or_insert_with(Vec::new).push(geom);
     }
     Ok(pts_per_site)
+}
+
+fn get_anime_match<T: Copy>(
+    matches: &anime::MatchesMap,
+    source_data: &Vec<T>,
+    target_idx: usize,
+) -> Option<T> {
+    let candidates = matches.get(&target_idx)?;
+    // Use the one with the most shared length
+    let c = candidates
+        .into_iter()
+        .max_by_key(|c| (c.shared_len * 1000.0) as usize)?;
+    Some(source_data[c.source_index])
 }
