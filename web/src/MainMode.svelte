@@ -39,8 +39,11 @@
 
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "r") {
-      e.preventDefault();
-      $mode = { kind: "edit-route", id: null };
+      let tag = (e.target as HTMLElement).tagName;
+      if (tag != "INPUT") {
+        e.preventDefault();
+        $mode = { kind: "edit-route", id: null };
+      }
     }
   }
 
