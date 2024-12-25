@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import { notNull } from "svelte-utils";
   import { tierColors } from "../colors";
   import {
@@ -14,18 +13,16 @@
     settlements,
     townCentres,
   } from "../layers/stores";
-  import { backend, mode, stats, tier } from "../stores";
+  import { backend, mode, mutationCounter, stats, tier } from "../stores";
   import Metric from "./Metric.svelte";
+
+  // Start less than $mutationCounter
+  let lastUpdate = 0;
 
   async function recalc() {
     $stats = await $backend!.recalculateStats();
+    lastUpdate = $mutationCounter;
   }
-
-  onMount(async () => {
-    if ($stats == null) {
-      await recalc();
-    }
-  });
 
   // Returns something [0, 1]
   function percent(x: number, total: number): number {
@@ -36,7 +33,9 @@
   }
 </script>
 
-<button on:click={recalc}>Recalculate</button>
+<button on:click={recalc} disabled={$mutationCounter == lastUpdate}>
+  Recalculate
+</button>
 
 {#if $stats}
   <div style:border="2px solid {tierColors.Primary}">
@@ -163,4 +162,8 @@
       </ul>
     </details>
   </div>
+{:else}
+  <p>
+    Initial stats calculation disabled for faster start. Press the button above.
+  </p>
 {/if}
