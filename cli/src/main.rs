@@ -7,10 +7,9 @@ use anyhow::{bail, Result};
 use clap::Parser;
 use elevation::GeoTiffElevation;
 use gdal::{vector::LayerAccess, Dataset};
-use geo::{Distance, Euclidean, Geometry, Intersects, LineString, MultiPolygon, Point};
+use geo::{Geometry, Intersects, LineString, MultiPolygon, Point};
 use graph::{Graph, RoadID, Timer};
 use log::{info, warn};
-use rstar::{primitives::GeomWithData, RTree, RTreeObject};
 use serde::Deserialize;
 
 use backend::{Highway, MapModel, Tier};
@@ -237,14 +236,15 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
 
 // The output is the Go Dutch totals for all purpose
 fn read_precalculated_flows(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<usize>> {
-    // Read all relevant lines and make an RTree
+    // Read all relevant lines
     timer.step("read precalculated flows");
     let dataset = Dataset::open(path)?;
     let mut layer = dataset.layer(0)?;
     let b = &graph.mercator.wgs84_bounds;
     layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
 
-    let mut links = Vec::new();
+    let mut source_geometry = Vec::new();
+    let mut source_data = Vec::new();
     for input in layer.features() {
         let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
         graph.mercator.to_mercator_in_place(&mut geom);
@@ -252,27 +252,28 @@ fn read_precalculated_flows(path: &str, graph: &Graph, timer: &mut Timer) -> Res
         let Some(flow) = input.field_as_integer_by_name("all_fastest_bicycle_go_dutch")? else {
             bail!("combined_network is missing all_fastest_bicycle_go_dutch");
         };
-        links.push(GeomWithData::new(geom, flow as usize));
+        source_geometry.push(geom);
+        source_data.push(flow as usize);
     }
-    let rtree = RTree::bulk_load(links);
 
-    // Multiple roads might match to the same link -- dual carriageways, for example.
-    // Insist on finding a match for every road.
     timer.step("match roads to precalculated flows");
-    let mut output = Vec::new();
-    for road in &graph.roads {
-        // TODO Skip service roads or similar? Check what's in the NPT rnet
+    let distance_tolerance = 15.0;
+    let angle_tolerance = 10.0;
+    let matches = Anime::new(
+        source_geometry.into_iter(),
+        graph.roads.iter().map(|r| r.linestring.clone()),
+        distance_tolerance,
+        angle_tolerance,
+    )
+    .matches
+    .take()
+    .unwrap();
 
-        if let Some(link) = rtree
-            .locate_in_envelope_intersecting(&road.linestring.envelope())
-            .min_by_key(|link| compare_road_geometry(&road.linestring, link.geom()))
-        {
-            output.push(link.data);
-        } else {
-            output.push(0);
-        }
+    let mut results = Vec::new();
+    for idx in 0..graph.roads.len() {
+        results.push(get_anime_match(&matches, &source_data, idx).unwrap_or(0));
     }
-    Ok(output)
+    Ok(results)
 }
 
 fn read_gradients(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<f64>> {
@@ -299,15 +300,6 @@ fn read_gradients(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<f6
         gradients.push(slope.into());
     }
     Ok(gradients)
-}
-
-// Just sum distance between endpoints
-// TODO When the volume links are much longer than OSM, or vice versa, how well does this work?
-fn compare_road_geometry(ls1: &LineString, ls2: &LineString) -> usize {
-    let dist1 = Euclidean::distance(*ls1.coords().next().unwrap(), *ls2.coords().next().unwrap());
-    let dist2 = Euclidean::distance(*ls1.coords().last().unwrap(), *ls2.coords().last().unwrap());
-    // cm precision
-    ((dist1 + dist2) * 100.0) as usize
 }
 
 // The output is per road. If the road is part of the core network, what tier is it?
