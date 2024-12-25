@@ -9,7 +9,12 @@
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { colorByLoS, levelOfServiceColors } from "../colors";
   import { layerId, QualitativeLegend } from "../common";
-  import { assetUrl, backend, infraTypeMapping } from "../stores";
+  import {
+    assetUrl,
+    backend,
+    infraTypeMapping,
+    mutationCounter,
+  } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
   let data: FeatureCollection = {
@@ -26,13 +31,12 @@
     }
   }
 
-  $: if (show && showCurrent && data.features.length == 0) {
+  $: if (show && showCurrent && $mutationCounter > 0) {
     recalc();
   }
 </script>
 
 <LayerControls name="Level of Service" bind:show>
-  <button class="outline" on:click={recalc}>Recalculate</button>
   <label>
     <input type="checkbox" bind:checked={showOrig} />
     Show original data

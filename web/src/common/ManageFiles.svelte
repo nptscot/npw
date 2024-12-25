@@ -4,7 +4,7 @@
     backend,
     boundaryName,
     currentFilename,
-    mainModeRoutesChanged,
+    mutationCounter,
   } from "../stores";
   import { getKey, getLastOpenedFileKey, listFilesInBoundary } from "./files";
   import Link from "./Link.svelte";
@@ -34,7 +34,7 @@
     }
     await $backend!.clearAllRoutes();
     $currentFilename = name;
-    $mainModeRoutesChanged += 1;
+    $mutationCounter += 1;
     open = false;
   }
 
@@ -67,7 +67,7 @@
         $currentFilename = filename;
         saveLastOpenedFile();
         open = false;
-        $mainModeRoutesChanged += 1;
+        $mutationCounter += 1;
       } catch (err) {
         window.alert(`Couldn't restore saved state: ${err}`);
       }
@@ -110,7 +110,7 @@
         $currentFilename = newName;
         saveLastOpenedFile();
         open = false;
-        $mainModeRoutesChanged += 1;
+        $mutationCounter += 1;
         return;
       }
     }

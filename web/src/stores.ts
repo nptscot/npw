@@ -28,8 +28,8 @@ export let mode: Writable<Mode> = writable({ kind: "main" });
 export let tier: Writable<Tier> = writable("Primary");
 export let map: Writable<Map | null> = writable(null);
 
-// When the state is modified in main mode, trigger it to refresh the routes
-export let mainModeRoutesChanged = writable(0);
+// When the state is modified, trigger to refresh various things
+export let mutationCounter = writable(1);
 
 // TODO Does this need to be a store?
 export let backend: Writable<Backend | null> = writable(null);
@@ -76,6 +76,10 @@ export interface Step {
 }
 
 export async function autosave() {
+  mutationCounter.update((x) => {
+    return x + 1;
+  });
+
   let backendValue = get(backend);
   let boundary = get(boundaryName);
   if (!backendValue || !boundary) {

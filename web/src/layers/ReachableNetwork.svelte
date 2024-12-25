@@ -3,7 +3,7 @@
   import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
   import { layerId, QualitativeLegend } from "../common";
-  import { backend } from "../stores";
+  import { backend, mutationCounter } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
   // TODO Does this belong as a layer like this, or a debug mode, in the short term?
@@ -19,7 +19,7 @@
     data = await $backend!.renderReachableNetwork();
   }
 
-  $: if (show && data.features.length == 0) {
+  $: if (show && $mutationCounter > 0) {
     recalc();
   }
 
@@ -31,7 +31,6 @@
 </script>
 
 <LayerControls name="Reachable network" bind:show>
-  <button class="outline" on:click={recalc}>Recalculate</button>
   <QualitativeLegend {colors} />
 </LayerControls>
 

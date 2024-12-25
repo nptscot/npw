@@ -3,12 +3,7 @@
   import { constructMatchExpression } from "svelte-utils/map";
   import { colorByTier } from "../colors";
   import { layerId } from "../common";
-  import {
-    assetUrl,
-    autosave,
-    backend,
-    mainModeRoutesChanged,
-  } from "../stores";
+  import { assetUrl, autosave, backend } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;
@@ -26,7 +21,6 @@
       let numChanges = $backend.importCoreNetwork();
       let noun = numChanges == 1 ? "route segment" : "route segments";
       await autosave();
-      $mainModeRoutesChanged += 1;
       window.alert(`Imported ${numChanges} ${noun}`);
     }
   }

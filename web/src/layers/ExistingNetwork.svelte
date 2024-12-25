@@ -9,13 +9,7 @@
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { colorByInfraType } from "../colors";
   import { layerId } from "../common";
-  import {
-    assetUrl,
-    autosave,
-    backend,
-    infraTypeMapping,
-    mainModeRoutesChanged,
-  } from "../stores";
+  import { assetUrl, autosave, backend, infraTypeMapping } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;
@@ -32,7 +26,6 @@
       let numChanges = $backend.importExistingRoutes();
       let noun = numChanges == 1 ? "route segment" : "route segments";
       await autosave();
-      $mainModeRoutesChanged += 1;
       window.alert(`Imported ${numChanges} ${noun}`);
       show = false;
     }

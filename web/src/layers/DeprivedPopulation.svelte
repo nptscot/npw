@@ -8,7 +8,7 @@
   import { SequentialLegend } from "svelte-utils";
   import { makeRamp, Popup } from "svelte-utils/map";
   import { layerId } from "../common";
-  import { backend, type DataZones } from "../stores";
+  import { backend, mutationCounter, type DataZones } from "../stores";
   import { percent, sum } from "../utils";
   import LayerControls from "./LayerControls.svelte";
   import { deprivedPopulation as show } from "./stores";
@@ -29,7 +29,7 @@
     }
   }
 
-  $: if ($show && data.features.length == 0) {
+  $: if ($show && $mutationCounter > 0) {
     recalc();
   }
 
@@ -49,7 +49,6 @@
 </script>
 
 <LayerControls name="SIMD" bind:show={$show}>
-  <button class="outline" on:click={recalc}>Recalculate</button>
   <p>Only the top 20%ile most deprived zones are shown</p>
   <p>
     {numReachable.toLocaleString()} / {data.features.length.toLocaleString()} zones

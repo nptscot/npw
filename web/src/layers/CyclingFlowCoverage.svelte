@@ -3,7 +3,7 @@
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
-  import { backend, type PrecalculatedFlows } from "../stores";
+  import { backend, mutationCounter, type PrecalculatedFlows } from "../stores";
   import { lineWidthForDemand, percent } from "../utils";
   import LayerControls from "./LayerControls.svelte";
 
@@ -26,7 +26,7 @@
     }
   }
 
-  $: if (show && data.features.length == 0) {
+  $: if (show && $mutationCounter > 0) {
     recalc();
   }
 
@@ -43,8 +43,6 @@
 </script>
 
 <LayerControls name={label + " cycling flow"} bind:show>
-  <button class="outline" on:click={recalc}>Recalculate</button>
-
   <label>
     <input type="checkbox" bind:checked={onlyCovered} />
     Only show routes covered by current edits

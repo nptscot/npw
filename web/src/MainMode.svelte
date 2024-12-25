@@ -21,15 +21,15 @@
     backend,
     colorRoutesBy,
     infraTypeMapping,
-    mainModeRoutesChanged,
     mode,
+    mutationCounter,
     tier,
   } from "./stores";
 
   let gj: FeatureCollection | null = null;
   onMount(recalc);
 
-  $: if ($mainModeRoutesChanged > 0) {
+  $: if ($mutationCounter > 0) {
     recalc();
   }
 

@@ -3,7 +3,7 @@
   import { FillLayer, GeoJSON, hoverStateFilter } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId, QualitativeLegend } from "../common";
-  import { backend, type Settlements } from "../stores";
+  import { backend, mutationCounter, type Settlements } from "../stores";
   import { percent } from "../utils";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
@@ -24,7 +24,7 @@
     }
   }
 
-  $: if ($show && data.features.length == 0) {
+  $: if ($show && $mutationCounter > 0) {
     recalc();
   }
 
@@ -32,7 +32,6 @@
 </script>
 
 <LayerControls name="Settlements" bind:show={$show}>
-  <button class="outline" on:click={recalc}>Recalculate</button>
   <p>
     {reachable.toLocaleString()} / {data.features.length.toLocaleString()} ({percent(
       reachable,

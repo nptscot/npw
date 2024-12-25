@@ -10,6 +10,8 @@
     features: [],
   };
 
+  // This is a bit of a special layer (embedded in the route tool), so it does
+  // firstLoad logic differently.
   async function recalc() {
     if ($backend) {
       data = await $backend.getMajorJunctions();
