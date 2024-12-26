@@ -14,11 +14,21 @@ impl MapModel {
         let boundary = self.graph.mercator.to_mercator(&self.boundary_wgs84.0[0]);
         let polygons = split_polygon(boundary, linestrings);
 
-        let mut features = Vec::new();
-        for polygon in polygons {
-            // Convert from m^2 to km^2. Use unsigned area to ignore polygon orientation.
-            let area = polygon.unsigned_area() / 1_000_000.0;
+        let mut with_area = polygons
+            .into_iter()
+            .map(|polygon| {
+                // Convert from m^2 to km^2. Use unsigned area to ignore polygon orientation.
+                let area = polygon.unsigned_area() / 1_000_000.0;
+                (polygon, area)
+            })
+            .collect::<Vec<_>>();
+        // Put smallest areas on top, for better z-ordering in the frontend. In practice, the areas
+        // overlap.
+        with_area.sort_by_key(|pair| (pair.1 * 1000.0) as usize);
+        with_area.reverse();
 
+        let mut features = Vec::new();
+        for (polygon, area) in with_area {
             let mut f = self.graph.mercator.to_wgs84_gj(&polygon);
             f.set_property("area", area);
             features.push(f);
