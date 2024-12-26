@@ -72,8 +72,10 @@ const layerZorder = [
   "simd",
   "simd-outline",
   "urban-areas",
-  "mesh-density",
-  "mesh-density-outline",
+  "mesh-density-area",
+  "mesh-density-area-outline",
+  "mesh-density-grid",
+  "mesh-density-grid-outline",
 
   "main-mode",
 

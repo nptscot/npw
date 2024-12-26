@@ -1,5 +1,6 @@
 <script lang="ts">
   import AllPopulation from "./AllPopulation.svelte";
+  import AreaMeshDensity from "./AreaMeshDensity.svelte";
   import CoreNetwork from "./CoreNetwork.svelte";
   import CyclingFlowCoverage from "./CyclingFlowCoverage.svelte";
   import DeprivedPopulation from "./DeprivedPopulation.svelte";
@@ -7,9 +8,9 @@
   import GpHospitals from "./GpHospitals.svelte";
   import Gradient from "./Gradient.svelte";
   import Greenspaces from "./Greenspaces.svelte";
+  import GridMeshDensity from "./GridMeshDensity.svelte";
   import LevelOfService from "./LevelOfService.svelte";
   import MajorJunctions from "./MajorJunctions.svelte";
-  import MeshDensity from "./MeshDensity.svelte";
   import ReachableNetwork from "./ReachableNetwork.svelte";
   import RouteNetwork from "./RouteNetwork.svelte";
   import Schools from "./Schools.svelte";
@@ -39,4 +40,5 @@
 <DeprivedPopulation />
 <AllPopulation />
 <MajorJunctions />
-<MeshDensity />
+<AreaMeshDensity />
+<GridMeshDensity />
