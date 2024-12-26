@@ -54,6 +54,12 @@
   <span style:color="red">red</span>
   )
 </p>
+<p>
+  <b>{(gj.route_length / gj.direct_bike_length).toFixed(1)}x</b>
+  longer than the direct cycling route (in
+  <span style:color="blue">blue</span>
+  )
+</p>
 
 <hr />
 

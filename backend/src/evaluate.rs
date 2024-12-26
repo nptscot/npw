@@ -39,10 +39,14 @@ impl MapModel {
         match breakdown {
             Breakdown::None => {
                 features.push(self.graph.mercator.to_wgs84_gj(&full_route_linestring));
+                let mut f = self.graph.mercator.to_wgs84_gj(&full_route_linestring);
+                f.set_property("kind", "actual");
+                features.push(f);
             }
             Breakdown::LevelOfService => {
                 for (linestring, los) in route.split_linestrings(&self.graph, |r| self.los[r.0]) {
                     let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
+                    f.set_property("kind", "actual");
                     f.set_property("los", serde_json::to_value(los).unwrap());
                     features.push(f);
                 }
@@ -52,6 +56,7 @@ impl MapModel {
                     route.split_linestrings(&self.graph, |r| self.get_infra_type(r))
                 {
                     let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
+                    f.set_property("kind", "actual");
                     f.set_property("infra_type", serde_json::to_value(infra_type).unwrap());
                     features.push(f);
                 }
@@ -61,6 +66,7 @@ impl MapModel {
                     route.split_linestrings(&self.graph, |r| gradient_group(self.gradients[r.0]))
                 {
                     let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
+                    f.set_property("kind", "actual");
                     f.set_property("gradient_group", gradient);
                     features.push(f);
                 }
@@ -81,7 +87,22 @@ impl MapModel {
         let car_linestring = car_route.linestring(&self.graph);
         {
             let mut f = self.graph.mercator.to_wgs84_gj(&car_linestring);
-            f.set_property("car_route", true);
+            f.set_property("kind", "car");
+            features.push(f);
+        }
+
+        let direct_bike_profile = self.graph.profile_names["bicycle_direct"];
+        let direct_bike_start = self.graph.snap_to_road(pt1, direct_bike_profile);
+        let direct_bike_end = self.graph.snap_to_road(pt2, direct_bike_profile);
+        let direct_bike_route = self.graph.routers[direct_bike_profile.0].route(
+            &self.graph,
+            direct_bike_start,
+            direct_bike_end,
+        )?;
+        let direct_bike_linestring = direct_bike_route.linestring(&self.graph);
+        {
+            let mut f = self.graph.mercator.to_wgs84_gj(&direct_bike_linestring);
+            f.set_property("kin", "direct_bike");
             features.push(f);
         }
 
@@ -92,6 +113,7 @@ impl MapModel {
                 serde_json::json!({
                     "direct_length": direct_line.length::<Euclidean>(),
                     "car_length": car_linestring.length::<Euclidean>(),
+                    "direct_bike_length": direct_bike_linestring.length::<Euclidean>(),
                     "route_length": full_route_linestring.length::<Euclidean>(),
                     "directions": directions,
                 })

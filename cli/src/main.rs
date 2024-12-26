@@ -55,6 +55,12 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
                 "bicycle".to_string(),
                 Box::new(backend::existing::bicycle_profile),
             ),
+            // TODO This is wasteful in a few ways. bicycle will change with edits, but
+            // bicycle_direct is immutable. At least clone the Router.
+            (
+                "bicycle_direct".to_string(),
+                Box::new(backend::existing::bicycle_profile),
+            ),
             ("car".to_string(), Box::new(backend::existing::car_profile)),
         ],
         timer,

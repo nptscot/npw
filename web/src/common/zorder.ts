@@ -119,6 +119,7 @@ const layerZorder = [
   "eval-current-routes",
   "eval-route-breakdown",
   "eval-car-route",
+  "eval-direct-bike-route",
 
   streets("Road labels"),
 

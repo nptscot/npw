@@ -152,7 +152,7 @@
       <GeoJSON data={gj} generateId>
         <LineLayer
           {...layerId("eval-route-breakdown")}
-          filter={["!", ["has", "car_route"]]}
+          filter={["==", ["get", "kind"], "actual"]}
           paint={{
             "line-width": 20,
             "line-color": {
@@ -168,10 +168,21 @@
 
         <LineLayer
           {...layerId("eval-car-route")}
-          filter={["has", "car_route"]}
+          filter={["==", ["get", "kind"], "car"]}
           paint={{
             "line-width": 10,
             "line-color": "red",
+            "line-opacity": hoverStateFilter(0.5, 1.0),
+          }}
+          manageHoverState
+        />
+
+        <LineLayer
+          {...layerId("eval-direct-bike-route")}
+          filter={["==", ["get", "kind"], "direct_bike"]}
+          paint={{
+            "line-width": 10,
+            "line-color": "blue",
             "line-opacity": hoverStateFilter(0.5, 1.0),
           }}
           manageHoverState

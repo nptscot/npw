@@ -63,6 +63,7 @@ export let infraTypeMapping: { [name: string]: [string, string] } =
 export interface RouteGJ extends FeatureCollection {
   direct_length: number;
   car_length: number;
+  direct_bike_length: number;
   route_length: number;
   directions: Step[];
 }

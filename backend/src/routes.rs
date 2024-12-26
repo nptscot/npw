@@ -3,11 +3,11 @@ use std::collections::HashSet;
 use anyhow::Result;
 use enum_map::EnumMap;
 use geo::LineString;
-use geojson::{feature::Id, Feature, GeoJson};
+use geojson::{feature::Id, GeoJson};
 use graph::{Graph, PathStep, Position, RoadID};
-use serde::Serialize;
 
 use crate::join_lines::KeyedLineString;
+use crate::route_snapper::make_route_snapper_feature;
 use crate::{Dir, InfraType, LevelOfService, MapModel, Route, Tier};
 
 impl MapModel {
@@ -292,75 +292,6 @@ impl MapModel {
             LevelOfService::ShouldNotBeUsed => InfraType::SegregatedWide,
         }
     }
-}
-
-// Mimic enough of what the route snapper creates, so the segment can be edited in the web app
-fn make_route_snapper_feature(
-    graph: &Graph,
-    ids: &[(RoadID, Dir)],
-    linestring: &LineString,
-) -> Feature {
-    let mut intersections = Vec::new();
-    for (r, dir) in ids {
-        let road = &graph.roads[r.0];
-        if matches!(dir, Dir::Forwards) {
-            intersections.push(road.src_i);
-            intersections.push(road.dst_i);
-        } else {
-            intersections.push(road.dst_i);
-            intersections.push(road.src_i);
-        }
-    }
-    intersections.dedup();
-
-    let mut f = graph.mercator.to_wgs84_gj(linestring);
-
-    // We don't know what waypoints we could leave out without doing some kind of iterative
-    // approach. For now, just include all of them.
-    let waypoints = intersections
-        .iter()
-        .map(|i| {
-            let pt = graph.mercator.to_wgs84(&graph.intersections[i.0].point);
-            serde_json::to_value(&RouteWaypoint {
-                lon: trim_lon_lat(pt.x()),
-                lat: trim_lon_lat(pt.y()),
-                snapped: true,
-            })
-            .unwrap()
-        })
-        .collect();
-    f.set_property("waypoints", serde_json::Value::Array(waypoints));
-
-    let full_path = intersections
-        .iter()
-        .map(|i| {
-            serde_json::to_value(&JsonNode {
-                snapped: i.0 as u32,
-            })
-            .unwrap()
-        })
-        .collect();
-    f.set_property("full_path", serde_json::Value::Array(full_path));
-
-    f
-}
-
-#[derive(Serialize)]
-struct RouteWaypoint {
-    lon: f64,
-    lat: f64,
-    snapped: bool,
-}
-
-#[derive(Serialize)]
-struct JsonNode {
-    snapped: u32,
-}
-
-// Per https://datatracker.ietf.org/doc/html/rfc7946#section-11.2, 6 decimal places (10cm) is
-// plenty of precision
-fn trim_lon_lat(x: f64) -> f64 {
-    (x * 10e6).round() / 10e6
 }
 
 // TODO Upstream to graph
