@@ -1,22 +1,27 @@
 use anyhow::Result;
-use geo::{Coord, LineString, Polygon};
+use geo::{Area, Coord, LineString, Polygon};
 use geojson::FeatureCollection;
 use i_float::f64_point::F64Point;
 use i_overlay::core::fill_rule::FillRule;
 use i_overlay::f64::string::F64StringOverlay;
 use i_overlay::string::rule::StringRule;
 
-use crate::{Highway, MapModel};
+use crate::MapModel;
 
 impl MapModel {
-    pub fn calculate_mesh_density(&self) -> Result<String> {
+    pub fn calculate_area_mesh_density(&self) -> Result<String> {
         let linestrings = self.get_mesh_density_sources();
         let boundary = self.graph.mercator.to_mercator(&self.boundary_wgs84.0[0]);
         let polygons = split_polygon(boundary, linestrings);
 
         let mut features = Vec::new();
-        for ls in polygons {
-            features.push(self.graph.mercator.to_wgs84_gj(&ls));
+        for polygon in polygons {
+            // Convert from m^2 to km^2. Use unsigned area to ignore polygon orientation.
+            let area = polygon.unsigned_area() / 1_000_000.0;
+
+            let mut f = self.graph.mercator.to_wgs84_gj(&polygon);
+            f.set_property("area", area);
+            features.push(f);
         }
 
         Ok(serde_json::to_string(&FeatureCollection {
@@ -27,14 +32,10 @@ impl MapModel {
     }
 
     fn get_mesh_density_sources(&self) -> Vec<LineString> {
-        // Find all main roads (later this'll be the drawn cycle network, but most sketches aren't
-        // likely to be complete enough yet)
+        // Anything with infrastructure on it
         let mut linestrings = Vec::new();
-        for road in &self.graph.roads {
-            if matches!(
-                Highway::classify(&road.osm_tags).unwrap(),
-                Highway::Motorway | Highway::Primary | Highway::Secondary
-            ) {
+        for (idx, road) in self.graph.roads.iter().enumerate() {
+            if self.infra_types[idx].is_some() {
                 linestrings.push(road.linestring.clone());
             }
         }

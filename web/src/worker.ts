@@ -7,6 +7,7 @@ import type {
   Position,
 } from "geojson";
 import type {
+  AreaMeshDensity,
   DataZones,
   EvaluateODOut,
   GPHospitals,
@@ -131,9 +132,9 @@ export class Backend {
     return JSON.parse(this.inner!.recalculateStats());
   }
 
-  meshDensity(): FeatureCollection {
+  getAreaMeshDensity(): AreaMeshDensity {
     this.checkReady();
-    return JSON.parse(this.inner!.meshDensity());
+    return JSON.parse(this.inner!.getAreaMeshDensity());
   }
 
   classifyExistingNetwork(): FeatureCollection<

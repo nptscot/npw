@@ -193,9 +193,9 @@ impl MapModel {
         Ok(())
     }
 
-    #[wasm_bindgen(js_name = meshDensity)]
-    pub fn mesh_density(&self) -> Result<String, JsValue> {
-        self.calculate_mesh_density().map_err(err_to_js)
+    #[wasm_bindgen(js_name = getAreaMeshDensity)]
+    pub fn get_area_mesh_density(&self) -> Result<String, JsValue> {
+        self.calculate_area_mesh_density().map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = classifyExistingNetwork)]

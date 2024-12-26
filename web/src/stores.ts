@@ -4,6 +4,7 @@ import type {
   LineString,
   MultiPolygon,
   Point,
+  Polygon,
 } from "geojson";
 import type { Map } from "maplibre-gl";
 import { get, writable, type Writable } from "svelte/store";
@@ -177,6 +178,8 @@ export type DataZones = FeatureCollection<
     density_quintile: number;
   }
 >;
+
+export type AreaMeshDensity = FeatureCollection<Polygon, { area: number }>;
 
 export type PrecalculatedFlows = FeatureCollection<
   LineString,
