@@ -24,7 +24,6 @@
     rightSidebarContents,
   } from "./common/layout";
   import RouteLegend from "./common/RouteLegend.svelte";
-  import DebugMeshDensityMode from "./DebugMeshDensityMode.svelte";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import EditRouteMode from "./EditRouteMode.svelte";
   import EvaluateODMode from "./EvaluateODMode.svelte";
@@ -217,8 +216,6 @@
           <EvaluateODMode />
         {:else if $mode.kind == "debug-network"}
           <DebugNetworkMode />
-        {:else if $mode.kind == "debug-mesh-density"}
-          <DebugMeshDensityMode />
         {/if}
       {/if}
     </MapLibre>

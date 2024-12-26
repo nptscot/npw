@@ -15,5 +15,6 @@ export let deprivedPopulation = writable(false);
 export let allPopulation = writable(false);
 export let cyclingFlow1 = writable(false);
 export let cyclingFlow2 = writable(false);
+export let meshDensity = writable(false);
 export let cyclingFlow3 = writable(false);
 export let majorJunctions = writable(true);

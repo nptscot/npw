@@ -30,6 +30,7 @@
     "GPs and hospitals",
     "Greenspaces",
     "Above-minimum cycling flow",
+    "Mesh density",
   ]);
 
   $: update(longDistance, $allControls, ["Urban areas", "Settlements"]);

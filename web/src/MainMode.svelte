@@ -168,15 +168,6 @@
       </button>
     </div>
 
-    <div>
-      <button
-        class="secondary"
-        on:click={() => ($mode = { kind: "debug-mesh-density" })}
-      >
-        Debug mesh density
-      </button>
-    </div>
-
     <StreetView />
   </div>
 </SplitComponent>

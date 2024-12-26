@@ -9,6 +9,7 @@
   import Greenspaces from "./Greenspaces.svelte";
   import LevelOfService from "./LevelOfService.svelte";
   import MajorJunctions from "./MajorJunctions.svelte";
+  import MeshDensity from "./MeshDensity.svelte";
   import ReachableNetwork from "./ReachableNetwork.svelte";
   import RouteNetwork from "./RouteNetwork.svelte";
   import Schools from "./Schools.svelte";
@@ -38,3 +39,4 @@
 <DeprivedPopulation />
 <AllPopulation />
 <MajorJunctions />
+<MeshDensity />

@@ -17,8 +17,7 @@ export type Mode =
   | { kind: "edit-route"; id: number | null }
   | { kind: "evaluate-route"; prevMode: Mode; browse: WorstRoutes }
   | { kind: "evaluate-od" }
-  | { kind: "debug-network" }
-  | { kind: "debug-mesh-density" };
+  | { kind: "debug-network" };
 export type Tier = "Primary" | "Secondary" | "LocalAccess" | "LongDistance";
 
 export let boundaryName = writable("");

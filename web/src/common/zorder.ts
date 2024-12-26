@@ -72,6 +72,8 @@ const layerZorder = [
   "simd",
   "simd-outline",
   "urban-areas",
+  "mesh-density",
+  "mesh-density-outline",
 
   "main-mode",
 
@@ -114,8 +116,6 @@ const layerZorder = [
   // Special modes
   "eval-od-mode",
   "debug-mode",
-  "mesh-density",
-  "mesh-density-outline",
   "eval-current-routes",
   "eval-route-breakdown",
   "eval-car-route",
