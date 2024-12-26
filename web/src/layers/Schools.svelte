@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Feature, Point } from "geojson";
-  import { CircleLayer, GeoJSON, hoverStateFilter } from "svelte-maplibre";
+  import { GeoJSON, SymbolLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId, QualitativeLegend } from "../common";
   import { backend, mutationCounter, type Schools } from "../stores";
@@ -39,15 +39,19 @@
 </LayerControls>
 
 <GeoJSON {data} generateId>
-  <CircleLayer
+  <SymbolLayer
     {...layerId("schools")}
     manageHoverState
-    paint={{
-      "circle-color": ["case", ["get", "reachable"], "purple", "red"],
-      "circle-radius": hoverStateFilter(5, 8),
-    }}
     layout={{
       visibility: $show ? "visible" : "none",
+      "icon-allow-overlap": true,
+      "icon-size": 0.5,
+      "icon-image": [
+        "case",
+        ["get", "reachable"],
+        "school_reachable",
+        "school_unreachable",
+      ],
     }}
     bind:hovered
     hoverCursor="pointer"
@@ -57,7 +61,7 @@
         ? "is"
         : "is not"} reachable.
     </Popup>
-  </CircleLayer>
+  </SymbolLayer>
 </GeoJSON>
 
 <DebugReachability kind="schools" {hovered} />

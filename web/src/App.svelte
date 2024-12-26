@@ -10,6 +10,10 @@
   import { Loading } from "svelte-utils";
   import { emptyGeojson, Geocoder } from "svelte-utils/map";
   import { writable } from "svelte/store";
+  import hospital1Icon from "../assets/hospital_reachable.png";
+  import hospital2Icon from "../assets/hospital_unreachable.png";
+  import school1Icon from "../assets/school_reachable.png";
+  import school2Icon from "../assets/school_unreachable.png";
   import { layerId } from "./common";
   import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";
   import { getKey, getLastOpenedFileKey } from "./common/files";
@@ -175,6 +179,12 @@
         // @ts-expect-error ErrorEvent isn't exported
         console.log(e.detail.error);
       }}
+      images={[
+        { id: "school_reachable", url: school1Icon },
+        { id: "school_unreachable", url: school2Icon },
+        { id: "hospital_reachable", url: hospital1Icon },
+        { id: "hospital_unreachable", url: hospital2Icon },
+      ]}
     >
       {#if !offlineMode}
         <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
