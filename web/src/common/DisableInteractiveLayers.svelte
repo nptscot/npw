@@ -1,11 +1,12 @@
 <script lang="ts">
   import { FillLayer, GeoJSON } from "svelte-maplibre";
-  import { interactiveMapLayersEnabled } from "../stores";
+  import { interactiveMapLayersEnabled, mode } from "../stores";
   import { layerId } from "./";
 
-  // When StreetView is on, disable interactive layers -- no hovering or
-  // clicking behavior. Achieve this by enabling a layer on top of
-  // everything.
+  // There are two cases when we want to disable interactions with layers --
+  // when StreetView mode is on, block everything. And when editing,
+  // block all reference layers. Achieve this by toggling a layer with a
+  // certain z-order.
   let coverEverything = {
     type: "Feature" as const,
     properties: {},
@@ -26,7 +27,18 @@
 
 <GeoJSON data={coverEverything}>
   <FillLayer
-    {...layerId("block-interactiveness")}
+    {...layerId("block-reference-layers")}
+    paint={{
+      "fill-color": "black",
+      "fill-opacity": 0.0,
+    }}
+    layout={{
+      visibility: $mode.kind == "edit-route" ? "visible" : "none",
+    }}
+  />
+
+  <FillLayer
+    {...layerId("block-everything")}
     paint={{
       "fill-color": "yellow",
       "fill-opacity": 0.1,

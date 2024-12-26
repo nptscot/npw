@@ -107,6 +107,8 @@ const layerZorder = [
   "greenspace-access-points",
   "major-junctions",
 
+  "block-reference-layers",
+
   // Edit mode
   "snapper-lines",
   "snapper-preview",
@@ -124,5 +126,5 @@ const layerZorder = [
   streets("Road labels"),
 
   "fade-study-area",
-  "block-interactiveness",
+  "block-everything",
 ];
