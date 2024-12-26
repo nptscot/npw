@@ -2,7 +2,7 @@ use route_snapper_graph::{Edge, NodeID, RouteSnapperMap};
 
 use geo::LineString;
 use geojson::Feature;
-use graph::{Direction, Graph, RoadID};
+use graph::{Direction, Graph, IntersectionID, PathStep, RoadID};
 use serde::Serialize;
 
 use crate::{Dir, MapModel};
@@ -63,11 +63,8 @@ pub fn make_route_snapper_feature(
     intersections.dedup();
 
     let mut f = graph.mercator.to_wgs84_gj(linestring);
-
-    // We don't know what waypoints we could leave out without doing some kind of iterative
-    // approach. For now, just include all of them.
-    let waypoints = intersections
-        .iter()
+    let waypoints = find_minimal_waypoints(graph, ids, &intersections)
+        .into_iter()
         .map(|i| {
             let pt = graph.mercator.to_wgs84(&graph.intersections[i.0].point);
             serde_json::to_value(&RouteWaypoint {
@@ -92,6 +89,43 @@ pub fn make_route_snapper_feature(
     f.set_property("full_path", serde_json::Value::Array(full_path));
 
     f
+}
+
+// From the full sequence of intersections in a route, find the snapped waypoints that will
+// reproduce this in the route snapper, which uses the bicycle_direct profile.
+fn find_minimal_waypoints(
+    graph: &Graph,
+    steps: &[(RoadID, Dir)],
+    intersections: &Vec<IntersectionID>,
+) -> Vec<IntersectionID> {
+    use crate::routes::{end_pos, start_pos};
+
+    // Try the optimistic, simple approach first -- just the first and last point
+    let i1 = intersections[0];
+    let i2 = *intersections.last().unwrap();
+    let profile = graph.profile_names["bicycle_direct"];
+    let start = start_pos(steps[0], graph);
+    let end = end_pos(*steps.last().unwrap(), graph);
+    if let Ok(route) = graph.routers[profile.0].route(graph, start, end) {
+        // TODO Really rethink the route snapper backend now, because the translation back and
+        // forth is getting silly
+        let path_steps: Vec<PathStep> = steps
+            .iter()
+            .cloned()
+            .map(|(road, dir)| PathStep::Road {
+                road,
+                forwards: matches!(dir, Dir::Forwards),
+            })
+            .collect();
+        if path_steps == route.steps {
+            return vec![i1, i2];
+        }
+    }
+
+    // TODO Try some kind of iterative / binary search approach to pruning
+
+    // Give up and just include them all
+    intersections.iter().cloned().collect()
 }
 
 #[derive(Serialize)]

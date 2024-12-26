@@ -312,7 +312,7 @@ fn glue_route(graph: &Graph, roads: &[(RoadID, Dir)]) -> LineString {
 }
 
 // TODO Upstream to graph
-fn start_pos((r, dir): (RoadID, Dir), graph: &Graph) -> Position {
+pub fn start_pos((r, dir): (RoadID, Dir), graph: &Graph) -> Position {
     let road = &graph.roads[r.0];
     Position {
         road: r,
@@ -329,7 +329,7 @@ fn start_pos((r, dir): (RoadID, Dir), graph: &Graph) -> Position {
     }
 }
 
-fn end_pos((road, dir): (RoadID, Dir), graph: &Graph) -> Position {
+pub fn end_pos((road, dir): (RoadID, Dir), graph: &Graph) -> Position {
     let opposite = match dir {
         Dir::Forwards => Dir::Backwards,
         Dir::Backwards => Dir::Forwards,
