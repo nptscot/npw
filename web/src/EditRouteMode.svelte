@@ -78,7 +78,7 @@
   });
 
   async function deleteRoute() {
-    if (id) {
+    if (id != null) {
       await $backend!.deleteRoute(id);
       await autosave();
     }
