@@ -12,6 +12,7 @@ import type {
   EvaluateODOut,
   GPHospitals,
   Greenspaces,
+  GridMeshDensity,
   PrecalculatedFlows,
   RouteGJ,
   RouteNode,
@@ -135,6 +136,11 @@ export class Backend {
   getAreaMeshDensity(): AreaMeshDensity {
     this.checkReady();
     return JSON.parse(this.inner!.getAreaMeshDensity());
+  }
+
+  getGridMeshDensity(): GridMeshDensity {
+    this.checkReady();
+    return JSON.parse(this.inner!.getGridMeshDensity());
   }
 
   classifyExistingNetwork(): FeatureCollection<

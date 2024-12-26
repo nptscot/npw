@@ -1,10 +1,11 @@
 use anyhow::Result;
-use geo::{Area, Coord, LineString, Polygon};
+use geo::{Area, Contains, Coord, LineString, Polygon, Rect};
 use geojson::FeatureCollection;
 use i_float::f64_point::F64Point;
 use i_overlay::core::fill_rule::FillRule;
 use i_overlay::f64::string::F64StringOverlay;
 use i_overlay::string::rule::StringRule;
+use utils::Grid;
 
 use crate::MapModel;
 
@@ -86,4 +87,52 @@ fn to_geo_linestring(pts: Vec<F64Point>) -> LineString {
             .map(|pt| Coord { x: pt.x, y: pt.y })
             .collect(),
     )
+}
+
+impl MapModel {
+    pub fn calculate_grid_mesh_density(&self) -> Result<String> {
+        // TODO Depends on urban/rural
+        let resolution = 200.0;
+
+        // Make a 2D grid covering the entire area. Each tile counts the total length of routes built inside.
+        let grid: Grid<f64> = Grid::new(
+            (self.graph.mercator.width / resolution).ceil() as usize,
+            (self.graph.mercator.height / resolution).ceil() as usize,
+            0.0,
+        );
+
+        let boundary = self.graph.mercator.to_mercator(&self.boundary_wgs84.0[0]);
+        let mut features = Vec::new();
+        for x in 0..grid.width {
+            for y in 0..grid.height {
+                let midpt = Coord {
+                    x: ((x as f64) + 0.5) * resolution,
+                    y: ((y as f64) + 0.5) * resolution,
+                };
+                if !boundary.contains(&midpt) {
+                    continue;
+                }
+
+                let square = Rect::new(
+                    Coord {
+                        x: (x as f64) * resolution,
+                        y: (y as f64) * resolution,
+                    },
+                    Coord {
+                        x: ((x + 1) as f64) * resolution,
+                        y: ((y + 1) as f64) * resolution,
+                    },
+                )
+                .to_polygon();
+                let mut f = self.graph.mercator.to_wgs84_gj(&square);
+                f.set_property("length", grid.data[grid.idx(x, y)]);
+                features.push(f);
+            }
+        }
+        Ok(serde_json::to_string(&FeatureCollection {
+            features,
+            bbox: None,
+            foreign_members: None,
+        })?)
+    }
 }
