@@ -74,6 +74,19 @@
     }
   }
 
+  async function clearFile() {
+    if (
+      !window.confirm(
+        `Really clear all routes and reset ${$currentFilename} to a blank file? You can't undo this`,
+      )
+    ) {
+      return;
+    }
+    await $backend!.clearAllRoutes();
+    $mutationCounter += 1;
+    open = false;
+  }
+
   async function deleteFile() {
     if (
       !window.confirm(`Really delete ${$currentFilename}? You can't undo this`)
@@ -156,6 +169,7 @@
       <button class="secondary" on:click={rename}>Rename</button>
       <button class="secondary" on:click={makeCopy}>Make copy</button>
       <button class="secondary" on:click={exportFile}>Export</button>
+      <button class="secondary" on:click={clearFile}>Clear all routes</button>
       <button
         class="secondary"
         on:click={deleteFile}
