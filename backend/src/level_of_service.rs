@@ -38,39 +38,110 @@ impl MapModel {
         })?)
     }
 
-    // TODO Implement directly from
-    // https://www.transport.gov.scot/media/50323/cycling-by-design-update-2019-final-document-15-september-2021-1.pdf?
+    /// This follows table 3.2 from https://www.transport.gov.scot/media/50323/cycling-by-design-update-2019-final-document-15-september-2021-1.pdf as closely as possible
     pub fn calculate_level_of_service(&self, r: RoadID) -> LevelOfService {
         let infra_type = self.get_infra_type(r);
         let speed = self.speeds[r.0];
         let traffic = self.traffic_volumes[r.0];
-        // TODO Total placeholder
+
         match infra_type {
-            // TODO The rest of these are still placeholder; osmactive isn't implemented in terms of
-            // these categories
-            InfraType::SegregatedWide => LevelOfService::High,
-            InfraType::OffRoad => LevelOfService::High,
-            InfraType::SegregatedNarrow => LevelOfService::Medium,
-            InfraType::SharedFootway => LevelOfService::Medium,
-            InfraType::CycleLane => LevelOfService::Low,
-            // Treat Unknown like MixedTraffic, or like CycleLane?
+            // TODO Treat Unknown like MixedTraffic, or like CycleLane?
             InfraType::MixedTraffic | InfraType::Unknown => {
-                if speed <= 20 && traffic < 2000 {
-                    LevelOfService::High
-                } else if speed == 30 && traffic < 1000 {
-                    LevelOfService::High
-                } else if speed <= 20 && traffic < 4000 {
-                    LevelOfService::Medium
-                } else if speed == 30 && traffic < 2000 {
-                    LevelOfService::Medium
-                } else if speed == 40 && traffic < 1000 {
-                    LevelOfService::Medium
+                if speed <= 20 {
+                    if traffic < 2000 {
+                        LevelOfService::High
+                    } else if traffic < 4000 {
+                        LevelOfService::Medium
+                    } else {
+                        LevelOfService::Low
+                    }
                 } else if speed <= 30 {
+                    if traffic < 1000 {
+                        LevelOfService::High
+                    } else if traffic < 2000 {
+                        LevelOfService::Medium
+                    } else {
+                        LevelOfService::Low
+                    }
+                } else if speed <= 40 {
+                    if traffic < 1000 {
+                        LevelOfService::Medium
+                    } else if traffic < 2000 {
+                        LevelOfService::Low
+                    } else {
+                        LevelOfService::ShouldNotBeUsed
+                    }
+                } else if speed <= 60 {
+                    // Both 50 and 60mph cases
+                    if traffic < 1000 {
+                        LevelOfService::Low
+                    } else {
+                        LevelOfService::ShouldNotBeUsed
+                    }
+                } else {
+                    LevelOfService::ShouldNotBeUsed
+                }
+            }
+
+            // TODO Not sure how this maps to the CbD category. Since this is the best option on
+            // big roads, treat it as "Detached or Remote Cycle Track"
+            InfraType::SegregatedWide => LevelOfService::High,
+
+            // "Detached or Remote Cycle Track"
+            InfraType::OffRoad => LevelOfService::High,
+
+            // TODO confirm both cases: "Stepped or Footway Level Cycle Track"?
+            InfraType::SegregatedNarrow | InfraType::SharedFootway => {
+                if speed <= 20 {
+                    LevelOfService::High
+                } else if speed <= 30 {
+                    if traffic < 4000 {
+                        LevelOfService::High
+                    } else {
+                        LevelOfService::Medium
+                    }
+                } else if speed <= 40 {
+                    LevelOfService::Medium
+                } else if speed <= 50 {
+                    if traffic < 1000 {
+                        LevelOfService::Medium
+                    } else {
+                        LevelOfService::Low
+                    }
+                } else {
                     LevelOfService::Low
-                } else if speed == 40 && traffic < 2000 {
+                }
+            }
+
+            InfraType::CycleLane => {
+                if speed <= 20 {
+                    if traffic < 4000 {
+                        LevelOfService::High
+                    } else {
+                        LevelOfService::Medium
+                    }
+                } else if speed <= 30 {
+                    if traffic < 1000 {
+                        LevelOfService::High
+                    } else if traffic < 4000 {
+                        LevelOfService::Medium
+                    } else {
+                        LevelOfService::Low
+                    }
+                } else if speed <= 40 {
+                    if traffic < 1000 {
+                        LevelOfService::Medium
+                    } else {
+                        LevelOfService::Low
+                    }
+                } else if speed <= 50 {
                     LevelOfService::Low
-                } else if speed == 60 && traffic < 1000 {
-                    LevelOfService::Low
+                } else if speed <= 60 {
+                    if traffic < 1000 {
+                        LevelOfService::Low
+                    } else {
+                        LevelOfService::ShouldNotBeUsed
+                    }
                 } else {
                     LevelOfService::ShouldNotBeUsed
                 }
