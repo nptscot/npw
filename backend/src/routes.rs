@@ -8,7 +8,7 @@ use graph::{Graph, PathStep, Position, RoadID};
 
 use crate::join_lines::KeyedLineString;
 use crate::route_snapper::make_route_snapper_feature;
-use crate::{Dir, InfraType, LevelOfService, MapModel, Route, Tier};
+use crate::{Dir, InfraType, MapModel, Route, Tier};
 
 impl MapModel {
     // TODO Old case
@@ -275,22 +275,6 @@ impl MapModel {
             .values()
             .flat_map(|route| route.roads.iter().map(|(r, _)| *r))
             .collect()
-    }
-
-    // TODO Use CbD guidance. Simple for now
-    // This assumes this road doesn't have anything set yet, and so its LoS isn't based on an
-    // InfraType already
-    fn best_infra_type(&self, r: RoadID) -> InfraType {
-        match self.los[r.0] {
-            // Already fine, just indicate it's a route
-            LevelOfService::High => InfraType::MixedTraffic,
-            // TODO Used to be narrow, but the LoS calculations aren't correct yet; force a high
-            // LoS
-            LevelOfService::Medium => InfraType::SegregatedWide,
-            LevelOfService::Low => InfraType::SegregatedWide,
-            // TODO The user drew a route here, so what should we recommend?
-            LevelOfService::ShouldNotBeUsed => InfraType::SegregatedWide,
-        }
     }
 }
 
