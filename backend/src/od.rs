@@ -9,7 +9,7 @@ use nanorand::{Rng, WyRand};
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
 
-use crate::{uptake, InfraType, MapModel};
+use crate::{stats::percent, uptake, InfraType, LevelOfService, MapModel};
 
 pub struct CountsOD {
     pub counts: HashMap<RoadID, usize>,
@@ -18,6 +18,67 @@ pub struct CountsOD {
     pub average_weighted_directness: f64,
 
     pub worst_directness_routes: Vec<(Coord, Coord)>,
+}
+
+impl CountsOD {
+    /// Populate `out` with `od_percents_los`, `od_percents_infra_type`,
+    /// `average_weighted_directness`, and `worst_directness_routes`
+    pub fn describe(
+        self,
+        map: &MapModel,
+        out: &mut serde_json::Map<String, serde_json::Value>,
+    ) -> Result<()> {
+        let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();
+        let mut count_by_los: EnumMap<LevelOfService, usize> = EnumMap::default();
+        let mut count_off_network = 0;
+        let mut total_count = 0;
+
+        for (r, count) in self.counts {
+            total_count += count;
+            if let Some(infra_type) = map.infra_types[r.0] {
+                count_by_infra[infra_type] += count;
+            } else {
+                count_off_network += count;
+            }
+            count_by_los[map.los[r.0]] += count;
+        }
+
+        let mut od_percents_infra_type = serde_json::Map::new();
+        od_percents_infra_type.insert(
+            "Off network".to_string(),
+            percent(count_off_network, total_count).into(),
+        );
+        for (infra_type, count) in count_by_infra {
+            od_percents_infra_type.insert(
+                format!("{infra_type:?}"),
+                percent(count, total_count).into(),
+            );
+        }
+
+        let mut od_percents_los = serde_json::Map::new();
+        for (los, count) in count_by_los {
+            od_percents_los.insert(format!("{los:?}"), percent(count, total_count).into());
+        }
+
+        out.insert(
+            "od_percents_infra_type".to_string(),
+            serde_json::Value::Object(od_percents_infra_type),
+        );
+        out.insert(
+            "od_percents_los".to_string(),
+            serde_json::Value::Object(od_percents_los),
+        );
+        out.insert(
+            "average_weighted_directness".to_string(),
+            self.average_weighted_directness.into(),
+        );
+        out.insert(
+            "worst_directness_routes".to_string(),
+            serde_json::to_value(&self.worst_directness_routes)?,
+        );
+
+        Ok(())
+    }
 }
 
 impl MapModel {
@@ -136,55 +197,34 @@ impl MapModel {
 
     /// Returns detailed GJ with per-road counts
     pub fn evaluate_od(&self) -> Result<String> {
-        let out = self.od_counts()?;
-
-        let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();
-        let mut count_off_network = 0;
-        let mut total_count = 0;
+        let od = self.od_counts()?;
 
         let mut max_count = 0;
         let mut features = Vec::new();
-        for (r, count) in out.counts {
-            max_count = max_count.max(count);
+        for (r, count) in &od.counts {
+            max_count = max_count.max(*count);
+
             let mut f = self
                 .graph
                 .mercator
                 .to_wgs84_gj(&self.graph.roads[r.0].linestring);
-            f.set_property("count", count);
+            f.set_property("count", *count);
             f.set_property(
                 "infra_type",
-                serde_json::to_value(self.get_infra_type(r)).unwrap(),
+                serde_json::to_value(self.get_infra_type(*r)).unwrap(),
             );
             features.push(f);
-
-            total_count += count;
-            if let Some(infra_type) = self.infra_types[r.0] {
-                count_by_infra[infra_type] += count;
-            } else {
-                count_off_network += count;
-            }
         }
 
         let mut foreign_members = serde_json::json!({
-            "succeeded": out.succeeded,
-            "failed": out.failed,
+            "succeeded": od.succeeded,
+            "failed": od.failed,
             "max_count": max_count,
-            "percent_off_network": percent(count_off_network, total_count),
         })
         .as_object()
         .unwrap()
         .clone();
-        let mut percent_on_network = serde_json::Map::new();
-        for (infra_type, count) in count_by_infra {
-            percent_on_network.insert(
-                format!("{infra_type:?}"),
-                percent(count, total_count).into(),
-            );
-        }
-        foreign_members.insert(
-            "percent_on_network".to_string(),
-            serde_json::Value::Object(percent_on_network),
-        );
+        od.describe(self, &mut foreign_members)?;
 
         Ok(serde_json::to_string(&FeatureCollection {
             features,
@@ -257,13 +297,5 @@ impl Zone {
         }
         info!("Matched to {} zones", zones.len());
         Ok(zones)
-    }
-}
-
-fn percent(x: usize, total: usize) -> f64 {
-    if total == 0 {
-        0.0
-    } else {
-        (x as f64) / (total as f64)
     }
 }

@@ -1,8 +1,7 @@
 use anyhow::Result;
-use enum_map::EnumMap;
 use graph::Timer;
 
-use crate::{utils::Quintiles, InfraType, LevelOfService, MapModel};
+use crate::{utils::Quintiles, MapModel};
 
 impl MapModel {
     /// After any edit, calculate summary stats. Returns JSON.
@@ -96,56 +95,8 @@ impl MapModel {
         );
 
         timer.step("calculate OD routes and stats");
-
-        let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();
-        let mut count_by_los: EnumMap<LevelOfService, usize> = EnumMap::default();
-        let mut count_off_network = 0;
-        let mut total_count = 0;
-
         let od = self.od_counts()?;
-        for (r, count) in od.counts {
-            total_count += count;
-            if let Some(infra_type) = self.infra_types[r.0] {
-                count_by_infra[infra_type] += count;
-            } else {
-                count_off_network += count;
-            }
-            count_by_los[self.los[r.0]] += count;
-        }
-
-        let mut od_percents_infra_type = serde_json::Map::new();
-        od_percents_infra_type.insert(
-            "Off network".to_string(),
-            percent(count_off_network, total_count).into(),
-        );
-        for (infra_type, count) in count_by_infra {
-            od_percents_infra_type.insert(
-                format!("{infra_type:?}"),
-                percent(count, total_count).into(),
-            );
-        }
-
-        let mut od_percents_los = serde_json::Map::new();
-        for (los, count) in count_by_los {
-            od_percents_los.insert(format!("{los:?}"), percent(count, total_count).into());
-        }
-
-        out.insert(
-            "od_percents_infra_type".to_string(),
-            serde_json::Value::Object(od_percents_infra_type),
-        );
-        out.insert(
-            "od_percents_los".to_string(),
-            serde_json::Value::Object(od_percents_los),
-        );
-        out.insert(
-            "average_weighted_directness".to_string(),
-            od.average_weighted_directness.into(),
-        );
-        out.insert(
-            "worst_directness_routes".to_string(),
-            serde_json::to_value(&od.worst_directness_routes)?,
-        );
+        od.describe(self, &mut out)?;
 
         let flow_stats = Quintiles::new(&self.precalculated_flows);
         let mut covered_quintile_sums = [0; 5];
@@ -171,7 +122,7 @@ impl MapModel {
     }
 }
 
-fn percent(x: usize, total: usize) -> f64 {
+pub fn percent(x: usize, total: usize) -> f64 {
     if total == 0 {
         0.0
     } else {

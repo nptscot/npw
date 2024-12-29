@@ -103,19 +103,21 @@ export type EvaluateODOut = FeatureCollection & {
   succeeded: number;
   failed: number;
   max_count: number;
-  percent_off_network: number;
-  percent_on_network: { [name: string]: number };
-};
+} & ODStats;
 
 export type WorstRoutes = [
   { x: number; y: number },
   { x: number; y: number },
 ][];
 
-export interface Stats {
+export interface ODStats {
   od_percents_infra_type: { [name: string]: number };
   od_percents_los: { [name: string]: number };
   average_weighted_directness: number;
+  worst_directness_routes: WorstRoutes;
+}
+
+export interface Stats extends ODStats {
   percent_reachable_schools: number;
   percent_reachable_gp_hospitals: number;
   percent_reachable_town_centres: number;
@@ -123,7 +125,6 @@ export interface Stats {
   percent_reachable_greenspaces: number;
   percent_reachable_imd_population: number;
   percent_reachable_population: number;
-  worst_directness_routes: WorstRoutes;
   covered_flow_quintile_sums: number[];
   total_flow_quintile_sums: number[];
 }
