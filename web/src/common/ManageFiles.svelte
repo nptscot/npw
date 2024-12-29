@@ -1,6 +1,7 @@
 <script lang="ts">
   import { downloadGeneratedFile, Modal } from "svelte-utils";
   import {
+    autosave,
     backend,
     boundaryName,
     currentFilename,
@@ -83,7 +84,7 @@
       return;
     }
     await $backend!.clearAllRoutes();
-    $mutationCounter += 1;
+    await autosave();
     open = false;
   }
 

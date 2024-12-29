@@ -175,8 +175,7 @@ impl MapModel {
                 continue;
             }
             if let Some(tier) = self.core_network[idx] {
-                // TODO What type?
-                imports[tier].push((road_id, InfraType::SegregatedNarrow));
+                imports[tier].push((road_id, self.best_infra_type(road_id)));
             }
         }
 
