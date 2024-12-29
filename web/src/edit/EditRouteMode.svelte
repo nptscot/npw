@@ -5,10 +5,8 @@
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { notNull } from "svelte-utils";
   import { emptyGeojson, Popup } from "svelte-utils/map";
-  import { colorByInfraType } from "./colors";
-  import { layerId } from "./common";
-  import RouteControls from "./snapper/RouteControls.svelte";
-  import { routeTool, waypoints, type Waypoint } from "./snapper/stores";
+  import { colorByInfraType } from "../colors";
+  import { layerId } from "../common";
   import {
     autosave,
     backend,
@@ -17,7 +15,9 @@
     routeA,
     routeB,
     type RouteProps,
-  } from "./stores";
+  } from "../stores";
+  import RouteControls from "./RouteControls.svelte";
+  import { routeTool, waypoints, type Waypoint } from "./stores";
 
   export let map: Map;
   export let id: number | null;

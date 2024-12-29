@@ -1,12 +1,12 @@
 <script lang="ts">
-  import icon5 from "../assets/CycleLane.jpg";
-  import icon6 from "../assets/MixedTraffic.jpg";
-  import icon2 from "../assets/OffRoad.jpg";
-  import icon3 from "../assets/SegregatedNarrow.jpg";
-  import icon1 from "../assets/SegregatedWide.jpg";
-  import icon4 from "../assets/SharedFootway.jpg";
-  import icon7 from "../assets/Unknown.jpg";
-  import { infraTypeMapping } from "./stores";
+  import icon5 from "../../assets/CycleLane.jpg";
+  import icon6 from "../../assets/MixedTraffic.jpg";
+  import icon2 from "../../assets/OffRoad.jpg";
+  import icon3 from "../../assets/SegregatedNarrow.jpg";
+  import icon1 from "../../assets/SegregatedWide.jpg";
+  import icon4 from "../../assets/SharedFootway.jpg";
+  import icon7 from "../../assets/Unknown.jpg";
+  import { infraTypeMapping } from "../stores";
 
   export let current: string;
 

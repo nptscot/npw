@@ -25,11 +25,11 @@
   } from "./common/layout";
   import RouteLegend from "./common/RouteLegend.svelte";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
-  import EditRouteMode from "./EditRouteMode.svelte";
+  import EditRouteMode from "./edit/EditRouteMode.svelte";
+  import { routeTool } from "./edit/stores";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
   import MainMode from "./MainMode.svelte";
-  import { routeTool } from "./snapper/stores";
   import {
     assetUrl,
     backend,
