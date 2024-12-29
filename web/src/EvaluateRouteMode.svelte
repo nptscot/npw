@@ -36,6 +36,8 @@
   let gj: RouteGJ | null = null;
   let err = "";
   let breakdown: "" | "los" | "infra_type" | "gradient" = "los";
+  let showDirectBikeRoute = false;
+  let showCarRoute = false;
 
   async function update(
     start: { lng: number; lat: number },
@@ -117,7 +119,7 @@
     {/if}
 
     {#if gj}
-      <Directions {gj} />
+      <Directions {gj} bind:showDirectBikeRoute bind:showCarRoute />
     {/if}
   </div>
 
@@ -169,6 +171,9 @@
         <LineLayer
           {...layerId("eval-car-route")}
           filter={["==", ["get", "kind"], "car"]}
+          layout={{
+            visibility: showCarRoute ? "visible" : "none",
+          }}
           paint={{
             "line-width": 10,
             "line-color": "red",
@@ -180,6 +185,9 @@
         <LineLayer
           {...layerId("eval-direct-bike-route")}
           filter={["==", ["get", "kind"], "direct_bike"]}
+          layout={{
+            visibility: showDirectBikeRoute ? "visible" : "none",
+          }}
           paint={{
             "line-width": 10,
             "line-color": "blue",
