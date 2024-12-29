@@ -183,6 +183,7 @@
         { id: "hospital_reachable", url: hospital1Icon },
         { id: "hospital_unreachable", url: hospital2Icon },
       ]}
+      hash
     >
       {#if !offlineMode}
         <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
