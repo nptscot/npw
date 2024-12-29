@@ -18,7 +18,7 @@
 
   async function importExisting() {
     if ($backend) {
-      let numChanges = $backend.importCoreNetwork();
+      let numChanges = await $backend.importCoreNetwork();
       let noun = numChanges == 1 ? "route segment" : "route segments";
       await autosave();
       window.alert(`Imported ${numChanges} ${noun}`);

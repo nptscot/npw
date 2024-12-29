@@ -23,7 +23,7 @@
   async function importExisting() {
     showImportModal = false;
     if ($backend) {
-      let numChanges = $backend.importExistingRoutes();
+      let numChanges = await $backend.importExistingRoutes();
       let noun = numChanges == 1 ? "route segment" : "route segments";
       await autosave();
       window.alert(`Imported ${numChanges} ${noun}`);
