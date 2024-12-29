@@ -362,7 +362,16 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
     .unwrap();
 
     let mut results = Vec::new();
-    for idx in 0..graph.roads.len() {
+    for (idx, road) in graph.roads.iter().enumerate() {
+        // The core network can never be on the motorway, but in Glasgow, it's hard to distinguish
+        // some of the parallel roads
+        if matches!(
+            Highway::classify(&road.osm_tags).unwrap(),
+            Highway::Motorway
+        ) {
+            results.push(None);
+            continue;
+        }
         results.push(get_anime_match(&matches, &source_data, idx));
     }
     Ok(results)
