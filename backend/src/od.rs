@@ -209,10 +209,8 @@ impl MapModel {
                 .mercator
                 .to_wgs84_gj(&self.graph.roads[r.0].linestring);
             f.set_property("count", *count);
-            f.set_property(
-                "infra_type",
-                serde_json::to_value(self.get_infra_type(*r)).unwrap(),
-            );
+            f.set_property("infra_type", serde_json::to_value(self.get_infra_type(*r))?);
+            f.set_property("los", serde_json::to_value(self.los[r.0])?);
             features.push(f);
         }
 

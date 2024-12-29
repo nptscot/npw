@@ -99,7 +99,10 @@ export function assetUrl(path: string): string {
     : path;
 }
 
-export type EvaluateODOut = FeatureCollection & {
+export type EvaluateODOut = FeatureCollection<
+  LineString,
+  { count: number; infra_type: string; los: string }
+> & {
   succeeded: number;
   failed: number;
   max_count: number;

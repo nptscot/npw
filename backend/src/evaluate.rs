@@ -47,7 +47,7 @@ impl MapModel {
                 for (linestring, los) in route.split_linestrings(&self.graph, |r| self.los[r.0]) {
                     let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
                     f.set_property("kind", "actual");
-                    f.set_property("los", serde_json::to_value(los).unwrap());
+                    f.set_property("los", serde_json::to_value(los)?);
                     features.push(f);
                 }
             }
@@ -57,7 +57,7 @@ impl MapModel {
                 {
                     let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
                     f.set_property("kind", "actual");
-                    f.set_property("infra_type", serde_json::to_value(infra_type).unwrap());
+                    f.set_property("infra_type", serde_json::to_value(infra_type)?);
                     features.push(f);
                 }
             }

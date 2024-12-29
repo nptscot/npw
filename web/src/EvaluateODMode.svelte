@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
+  import { colorByInfraType, colorByLoS } from "./colors";
   import { layerId } from "./common";
   import { SplitComponent } from "./common/layout";
   import ODBreakdowns from "./stats/ODBreakdowns.svelte";
@@ -13,6 +14,8 @@
   onMount(async () => {
     gj = await $backend!.evaluateOD();
   });
+
+  let colorBy: "flow" | "infra_type" | "los" = "flow";
 </script>
 
 <SplitComponent>
@@ -27,6 +30,15 @@
       </p>
       <p>Highest count on any one road is {gj.max_count.toLocaleString()}</p>
 
+      <label>
+        Color:
+        <select bind:value={colorBy}>
+          <option value="flow">Flow</option>
+          <option value="los">Level of service</option>
+          <option value="infra_type">Infrastructure type</option>
+        </select>
+      </label>
+
       <ODBreakdowns od={gj} />
     {/if}
   </div>
@@ -38,12 +50,16 @@
           {...layerId("eval-od-mode")}
           paint={{
             "line-width": lineWidthForDemand("count"),
-            "line-color": lineColorForDemand("count"),
+            "line-color": {
+              flow: lineColorForDemand("count"),
+              infra_type: colorByInfraType,
+              los: colorByLoS,
+            }[colorBy],
           }}
           manageHoverState
         >
           <Popup openOn="hover" let:props>
-            {props.count} on {props.infra_type}
+            {props.count.toLocaleString()} on {props.infra_type} ({props.los})
           </Popup>
         </LineLayer>
       </GeoJSON>
