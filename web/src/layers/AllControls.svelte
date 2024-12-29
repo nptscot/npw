@@ -10,7 +10,8 @@
   let longDistance: HTMLDivElement | null = null;
 
   $: update(basic, $allControls, [
-    "Route network",
+    "Route network (precalculated)",
+    "Route network (calculated)",
     "SIMD",
     "Population",
     "Core network",

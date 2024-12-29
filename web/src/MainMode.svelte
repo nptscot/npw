@@ -153,15 +153,6 @@
     <div>
       <button
         class="secondary"
-        on:click={() => ($mode = { kind: "evaluate-od" })}
-      >
-        Evaluate OD
-      </button>
-    </div>
-
-    <div>
-      <button
-        class="secondary"
         on:click={() => ($mode = { kind: "debug-network" })}
       >
         Debug network

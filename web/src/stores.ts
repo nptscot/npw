@@ -17,7 +17,6 @@ export type Mode =
   | { kind: "main" }
   | { kind: "edit-route"; id: number | null }
   | { kind: "evaluate-route"; prevMode: Mode; browse: WorstRoutes }
-  | { kind: "evaluate-od" }
   | { kind: "debug-network" };
 export type Tier = "Primary" | "Secondary" | "LocalAccess" | "LongDistance";
 

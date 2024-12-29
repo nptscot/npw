@@ -62,7 +62,7 @@
   }[colorBy] as ExpressionSpecification;
 </script>
 
-<LayerControls name="Route network" bind:show>
+<LayerControls name="Route network (precalculated)" bind:show>
   <label>
     Trip purpose:
     <select bind:value={purpose}>
@@ -102,7 +102,7 @@
 
 <VectorTileSource url={`pmtiles://${assetUrl("route_network.pmtiles")}`}>
   <LineLayer
-    {...layerId("rnet")}
+    {...layerId("precalculated-rnet")}
     sourceLayer="rnet"
     paint={{
       "line-color": lineColor,

@@ -92,7 +92,8 @@ const layerZorder = [
   "cycling-flow-3",
   "los-debug",
   "los",
-  "rnet",
+  "precalculated-rnet",
+  "calculated-rnet",
   "reachability",
   "debug-reachability-settlements",
   "debug-reachability-town_centres",
@@ -118,7 +119,6 @@ const layerZorder = [
   "edit-route-sections",
 
   // Special modes
-  "eval-od-mode",
   "debug-mode",
   "eval-current-routes",
   "eval-route-breakdown",

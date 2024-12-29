@@ -26,7 +26,6 @@
   import RouteLegend from "./common/RouteLegend.svelte";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import EditRouteMode from "./EditRouteMode.svelte";
-  import EvaluateODMode from "./EvaluateODMode.svelte";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
   import MainMode from "./MainMode.svelte";
@@ -212,8 +211,6 @@
           <EditRouteMode id={$mode.id} {map} />
         {:else if $mode.kind == "evaluate-route"}
           <EvaluateRouteMode prevMode={$mode.prevMode} browse={$mode.browse} />
-        {:else if $mode.kind == "evaluate-od"}
-          <EvaluateODMode />
         {:else if $mode.kind == "debug-network"}
           <DebugNetworkMode />
         {/if}
