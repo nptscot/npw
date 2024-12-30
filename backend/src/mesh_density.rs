@@ -1,5 +1,8 @@
 use anyhow::Result;
-use geo::{Area, Contains, Coord, LineString, Polygon, Rect};
+use geo::{
+    Area, BooleanOps, BoundingRect, Contains, Coord, Euclidean, Length, LineString,
+    MultiLineString, Polygon, Rect,
+};
 use geojson::FeatureCollection;
 use i_float::f64_point::F64Point;
 use i_overlay::core::fill_rule::FillRule;
@@ -95,13 +98,50 @@ impl MapModel {
         let resolution = 200.0;
 
         // Make a 2D grid covering the entire area. Each tile counts the total length of routes built inside.
-        let grid: Grid<f64> = Grid::new(
+        // TODO We don't actually use the grid structure at all
+        let mut grid: Grid<f64> = Grid::new(
             (self.graph.mercator.width / resolution).ceil() as usize,
             (self.graph.mercator.height / resolution).ceil() as usize,
             0.0,
         );
 
+        // Clip every drawn linestring to the grid
+        for route in self.routes.values() {
+            let mut ls: LineString = route.feature.clone().try_into()?;
+            self.graph.mercator.to_mercator_in_place(&mut ls);
+            let mls = MultiLineString(vec![ls]);
+
+            let bbox: Rect = mls.bounding_rect().unwrap().into();
+            // TODO Grid should have more helpers
+            let x1 = (bbox.min().x / resolution).round() as usize;
+            let x2 = (bbox.max().x / resolution).round() as usize;
+            let y1 = (bbox.min().y / resolution).round() as usize;
+            let y2 = (bbox.max().y / resolution).round() as usize;
+
+            for x in x1..=x2 {
+                for y in y1..=y2 {
+                    let square = Rect::new(
+                        Coord {
+                            x: (x as f64) * resolution,
+                            y: (y as f64) * resolution,
+                        },
+                        Coord {
+                            x: ((x + 1) as f64) * resolution,
+                            y: ((y + 1) as f64) * resolution,
+                        },
+                    )
+                    .to_polygon();
+
+                    let invert = false;
+                    let clipped = square.clip(&mls, invert);
+                    let idx = grid.idx(x, y);
+                    grid.data[idx] += clipped.length::<Euclidean>();
+                }
+            }
+        }
+
         let boundary = self.graph.mercator.to_mercator(&self.boundary_wgs84.0[0]);
+
         let mut features = Vec::new();
         for x in 0..grid.width {
             for y in 0..grid.height {
@@ -112,7 +152,6 @@ impl MapModel {
                 if !boundary.contains(&midpt) {
                     continue;
                 }
-
                 let square = Rect::new(
                     Coord {
                         x: (x as f64) * resolution,
@@ -124,6 +163,7 @@ impl MapModel {
                     },
                 )
                 .to_polygon();
+
                 let mut f = self.graph.mercator.to_wgs84_gj(&square);
                 f.set_property("length", grid.data[grid.idx(x, y)]);
                 features.push(f);
