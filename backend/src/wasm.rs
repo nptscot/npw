@@ -199,8 +199,14 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = getGridMeshDensity)]
-    pub fn get_grid_mesh_density(&self) -> Result<String, JsValue> {
-        self.calculate_grid_mesh_density().map_err(err_to_js)
+    pub fn get_grid_mesh_density(
+        &self,
+        resolution: f64,
+        x_offset: f64,
+        y_offset: f64,
+    ) -> Result<String, JsValue> {
+        self.calculate_grid_mesh_density(resolution, x_offset, y_offset)
+            .map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = classifyExistingNetwork)]

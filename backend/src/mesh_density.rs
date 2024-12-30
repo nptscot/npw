@@ -93,9 +93,13 @@ fn to_geo_linestring(pts: Vec<F64Point>) -> LineString {
 }
 
 impl MapModel {
-    pub fn calculate_grid_mesh_density(&self) -> Result<String> {
-        // TODO Depends on urban/rural
-        let resolution = 200.0;
+    pub fn calculate_grid_mesh_density(
+        &self,
+        resolution: f64,
+        x_offset: f64,
+        y_offset: f64,
+    ) -> Result<String> {
+        // TODO Resolution depends on urban/rural. And weight by population?
 
         // Make a 2D grid covering the entire area. Each tile counts the total length of routes built inside.
         // TODO We don't actually use the grid structure at all
@@ -122,12 +126,12 @@ impl MapModel {
                 for y in y1..=y2 {
                     let square = Rect::new(
                         Coord {
-                            x: (x as f64) * resolution,
-                            y: (y as f64) * resolution,
+                            x: ((x as f64) * resolution) - x_offset,
+                            y: ((y as f64) * resolution) - y_offset,
                         },
                         Coord {
-                            x: ((x + 1) as f64) * resolution,
-                            y: ((y + 1) as f64) * resolution,
+                            x: (((x + 1) as f64) * resolution) - x_offset,
+                            y: (((y + 1) as f64) * resolution) - y_offset,
                         },
                     )
                     .to_polygon();
@@ -146,26 +150,27 @@ impl MapModel {
         for x in 0..grid.width {
             for y in 0..grid.height {
                 let midpt = Coord {
-                    x: ((x as f64) + 0.5) * resolution,
-                    y: ((y as f64) + 0.5) * resolution,
+                    x: (((x as f64) + 0.5) * resolution) - x_offset,
+                    y: (((y as f64) + 0.5) * resolution) - y_offset,
                 };
                 if !boundary.contains(&midpt) {
                     continue;
                 }
                 let square = Rect::new(
                     Coord {
-                        x: (x as f64) * resolution,
-                        y: (y as f64) * resolution,
+                        x: ((x as f64) * resolution) - x_offset,
+                        y: ((y as f64) * resolution) - y_offset,
                     },
                     Coord {
-                        x: ((x + 1) as f64) * resolution,
-                        y: ((y + 1) as f64) * resolution,
+                        x: (((x + 1) as f64) * resolution) - x_offset,
+                        y: (((y + 1) as f64) * resolution) - y_offset,
                     },
                 )
                 .to_polygon();
 
                 let mut f = self.graph.mercator.to_wgs84_gj(&square);
-                f.set_property("length", grid.data[grid.idx(x, y)]);
+                let length = grid.data[grid.idx(x, y)];
+                f.set_property("length", length);
                 features.push(f);
             }
         }

@@ -138,9 +138,15 @@ export class Backend {
     return JSON.parse(this.inner!.getAreaMeshDensity());
   }
 
-  getGridMeshDensity(): GridMeshDensity {
+  getGridMeshDensity(
+    resolution: number,
+    xOffset: number,
+    yOffset: number,
+  ): GridMeshDensity {
     this.checkReady();
-    return JSON.parse(this.inner!.getGridMeshDensity());
+    return JSON.parse(
+      this.inner!.getGridMeshDensity(resolution, xOffset, yOffset),
+    );
   }
 
   classifyExistingNetwork(): FeatureCollection<
