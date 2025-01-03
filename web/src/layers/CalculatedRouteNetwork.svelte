@@ -34,7 +34,7 @@
       div.remove();
       lastUpdate = $mutationCounter;
       lastFastSample = fastSample;
-    });
+    }, 10);
   }
 
   // First load case
