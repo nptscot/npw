@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Comlink from "comlink";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { Loading } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
@@ -22,10 +23,20 @@
 
   async function recalc() {
     loading = "Evaluating OD data";
-    gj = await $backend!.evaluateOD(fastSample);
+    gj = await $backend!.evaluateOD(fastSample, Comlink.proxy(progressCb));
     loading = "";
     lastUpdate = $mutationCounter;
     lastFastSample = fastSample;
+  }
+
+  function progressCb(percent: number) {
+    console.log({ percent });
+    if (percent == 1) {
+      // Depending on the order this happens vs the await evaluateOD, we might need to do this
+      loading = "";
+    } else {
+      loading = `Evaluating OD data: ${percent * 100}%`;
+    }
   }
 
   // First load case

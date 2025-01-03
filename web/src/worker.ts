@@ -125,9 +125,12 @@ export class Backend {
   }
 
   // Needs loading screen
-  evaluateOD(fastSample: boolean): EvaluateODOut {
+  evaluateOD(
+    fastSample: boolean,
+    progressCb: (percent: number) => void,
+  ): EvaluateODOut {
     this.checkReady();
-    return JSON.parse(this.inner!.evaluateOD(fastSample));
+    return JSON.parse(this.inner!.evaluateOD(fastSample, progressCb));
   }
 
   // Needs loading screen

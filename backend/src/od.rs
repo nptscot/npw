@@ -8,6 +8,7 @@ use graph::{PathStep, RoadID};
 use nanorand::{Rng, WyRand};
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
+use wasm_bindgen::prelude::JsValue;
 
 use crate::{stats::percent, uptake, InfraType, LevelOfService, MapModel};
 
@@ -82,7 +83,11 @@ impl CountsOD {
 }
 
 impl MapModel {
-    pub fn od_counts(&self, fast_sample: bool) -> Result<CountsOD> {
+    pub fn od_counts(
+        &self,
+        fast_sample: bool,
+        progress_cb: Option<js_sys::Function>,
+    ) -> Result<CountsOD> {
         let keep_directness_routes = 10;
 
         let mut rng = WyRand::new_seed(42);
@@ -95,7 +100,15 @@ impl MapModel {
 
         let mut worst_directness_routes = Vec::new();
 
-        info!("Evaluating {} desire lines", self.desire_lines.len());
+        let mut total_requests = 0.0;
+        for (_, _, raw_count) in &self.desire_lines {
+            total_requests += *raw_count as f64;
+        }
+        let mut num_requests = 0.0;
+        info!(
+            "Evaluating {} desire lines with {total_requests} requests total",
+            self.desire_lines.len()
+        );
 
         for (zone1, zone2, raw_count) in &self.desire_lines {
             let (iterations, uptake_multiplier) = if fast_sample {
@@ -105,6 +118,17 @@ impl MapModel {
             };
 
             for _ in 0..iterations {
+                num_requests += uptake_multiplier;
+                if let Some(ref cb) = progress_cb {
+                    info!("calling with progress {}", num_requests / total_requests);
+                    if let Err(err) = cb.call1(
+                        &JsValue::null(),
+                        &JsValue::from(num_requests / total_requests),
+                    ) {
+                        error!("JS progress callback broke: {err:?}");
+                    }
+                }
+
                 let pt1 = self.od_zones[zone1].random_point(&mut rng);
                 let pt2 = self.od_zones[zone2].random_point(&mut rng);
 
@@ -202,8 +226,8 @@ impl MapModel {
     }
 
     /// Returns detailed GJ with per-road counts
-    pub fn evaluate_od(&self, fast_sample: bool) -> Result<String> {
-        let od = self.od_counts(fast_sample)?;
+    pub fn evaluate_od(&self, fast_sample: bool, progress_cb: js_sys::Function) -> Result<String> {
+        let od = self.od_counts(fast_sample, Some(progress_cb))?;
 
         let mut max_count = 0;
         let mut features = Vec::new();
