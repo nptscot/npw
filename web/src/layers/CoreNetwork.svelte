@@ -1,5 +1,6 @@
 <script lang="ts">
   import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
+  import { Loading } from "svelte-utils";
   import { constructMatchExpression } from "svelte-utils/map";
   import { colorByTier } from "../colors";
   import { layerId } from "../common";
@@ -8,6 +9,7 @@
 
   let show = false;
   let firstLoad = false;
+  let loading = "";
 
   $: if (show) {
     firstLoad = true;
@@ -18,13 +20,17 @@
 
   async function importExisting() {
     if ($backend) {
+      loading = "Importing core network";
       let numChanges = await $backend.importCoreNetwork();
+      loading = "";
       let noun = numChanges == 1 ? "route segment" : "route segments";
       await autosave();
       window.alert(`Imported ${numChanges} ${noun}`);
     }
   }
 </script>
+
+<Loading {loading} />
 
 <LayerControls name="Core network" bind:show>
   <button class="outline" on:click={importExisting}>Import core network</button>

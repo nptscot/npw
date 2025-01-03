@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { notNull } from "svelte-utils";
+  import { Loading, notNull } from "svelte-utils";
   import { tierColors } from "../colors";
   import {
     allPopulation,
@@ -19,9 +19,12 @@
 
   // Start less than $mutationCounter
   let lastUpdate = 0;
+  let loading = "";
 
   async function recalc() {
+    loading = "Recalculating stats";
     $stats = await $backend!.recalculateStats();
+    loading = "";
     lastUpdate = $mutationCounter;
   }
 
@@ -33,6 +36,8 @@
     return x / total;
   }
 </script>
+
+<Loading {loading} />
 
 <button on:click={recalc} disabled={$mutationCounter == lastUpdate}>
   Recalculate

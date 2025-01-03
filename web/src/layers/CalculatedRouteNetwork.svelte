@@ -1,5 +1,6 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import { Loading } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
   import { colorByInfraType, colorByLoS } from "../colors";
   import { layerId } from "../common";
@@ -17,9 +18,12 @@
   let lastUpdate = 0;
   let lastFastSample = true;
   let gj: EvaluateODOut | null = null;
+  let loading = "";
 
   async function recalc() {
+    loading = "Evaluating OD data";
     gj = await $backend!.evaluateOD(fastSample);
+    loading = "";
     lastUpdate = $mutationCounter;
     lastFastSample = fastSample;
   }
@@ -29,6 +33,8 @@
     recalc();
   }
 </script>
+
+<Loading {loading} />
 
 <LayerControls name="Route network (calculated)" bind:show>
   <button

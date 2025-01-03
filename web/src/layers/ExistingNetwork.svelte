@@ -5,7 +5,7 @@
     LineLayer,
     VectorTileSource,
   } from "svelte-maplibre";
-  import { Modal, notNull } from "svelte-utils";
+  import { Loading, Modal, notNull } from "svelte-utils";
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { colorByInfraType } from "../colors";
   import { layerId } from "../common";
@@ -15,6 +15,7 @@
   let show = false;
   let firstLoad = false;
   let showImportModal = false;
+  let loading = "";
 
   $: if (show) {
     firstLoad = true;
@@ -23,7 +24,9 @@
   async function importExisting() {
     showImportModal = false;
     if ($backend) {
+      loading = "Importing existing routes from OSM";
       let numChanges = await $backend.importExistingRoutes();
+      loading = "";
       let noun = numChanges == 1 ? "route segment" : "route segments";
       await autosave();
       window.alert(`Imported ${numChanges} ${noun}`);
@@ -34,6 +37,8 @@
   let showTruth = false;
   let showCalculated = true;
 </script>
+
+<Loading {loading} />
 
 <LayerControls name="Existing network" bind:show>
   <button class="outline" on:click={() => (showImportModal = true)}>

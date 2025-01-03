@@ -124,11 +124,13 @@ export class Backend {
     );
   }
 
+  // Needs loading screen
   evaluateOD(fastSample: boolean): EvaluateODOut {
     this.checkReady();
     return JSON.parse(this.inner!.evaluateOD(fastSample));
   }
 
+  // Needs loading screen
   recalculateStats(): Stats {
     this.checkReady();
     return JSON.parse(this.inner!.recalculateStats());
@@ -158,11 +160,13 @@ export class Backend {
     return JSON.parse(this.inner!.classifyExistingNetwork());
   }
 
+  // Needs loading screen
   importExistingRoutes(): number {
     this.checkReady();
     return this.inner!.importExistingRoutes();
   }
 
+  // Needs loading screen
   importCoreNetwork(): number {
     this.checkReady();
     return this.inner!.importCoreNetwork();
