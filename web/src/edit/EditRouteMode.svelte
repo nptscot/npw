@@ -24,7 +24,7 @@
 
   let name = "";
   let notes = "";
-  let infraType = "Unknown";
+  let infraType = "MixedTraffic";
   let tier = $currentTier;
 
   let currentGj: FeatureCollection<LineString, RouteProps> | null = null;

@@ -50,7 +50,6 @@ export let infraTypes: [string, string, string][] = [
   ["SharedFootway", "Shared Footway", "#ffbf00"],
   ["CycleLane", "Painted Cycle Lane", "#FF0000"],
   ["MixedTraffic", "Mixed traffic", "#EFD1C5"],
-  ["Unknown", "Unknown", "blue"],
 ];
 
 // Map the name to [label, color]

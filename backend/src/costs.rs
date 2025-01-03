@@ -54,8 +54,6 @@ fn edge_cost(road: &Road, infra_type: InfraType, los: LevelOfService) -> Duratio
             // TODO Check these assumptions. What does MixedTraffic even mean in this case?
             Highway::Cycleway | Highway::Footway | Highway::Pedestrian | Highway::Path => 85,
         },
-        // TODO Some kind of infrastructure, but unspecified. Make up a value for now.
-        InfraType::Unknown => 50,
     };
 
     // TODO Just making these up for now!

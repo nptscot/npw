@@ -134,8 +134,8 @@ impl MapModel {
 }
 
 // https://github.com/nptscot/osmactive/blob/main/R/osmactive.R is a reference implementation.
-// Don't include MixedTraffic or Unknown. If a road has two types of infrastructure in each
-// direction, return the stronger case.
+// Don't include MixedTraffic. If a road has two types of infrastructure in each direction, return
+// the stronger case.
 //
 // TODO This is only a partial implementation
 pub fn classify(tags: &Tags) -> Option<InfraType> {

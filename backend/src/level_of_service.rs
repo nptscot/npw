@@ -70,8 +70,7 @@ impl MapModel {
 /// This follows table 3.2 from https://www.transport.gov.scot/media/50323/cycling-by-design-update-2019-final-document-15-september-2021-1.pdf as closely as possible
 pub fn get_level_of_service(infra_type: InfraType, speed: usize, traffic: usize) -> LevelOfService {
     match infra_type {
-        // TODO Treat Unknown like MixedTraffic, or like CycleLane?
-        InfraType::MixedTraffic | InfraType::Unknown => {
+        InfraType::MixedTraffic => {
             if speed <= 20 {
                 if traffic < 2000 {
                     LevelOfService::High

@@ -5,7 +5,6 @@
   import icon3 from "../../assets/SegregatedNarrow.jpg";
   import icon1 from "../../assets/SegregatedWide.jpg";
   import icon4 from "../../assets/SharedFootway.jpg";
-  import icon7 from "../../assets/Unknown.jpg";
   import { infraTypeMapping } from "../stores";
 
   export let current: string;
@@ -23,7 +22,6 @@
     ["SharedFootway", icon4, "https://www.cyclestreets.net/location/92805/"],
     ["CycleLane", icon5, "https://www.cyclestreets.net/location/81341/"],
     ["MixedTraffic", icon6, ""],
-    ["Unknown", icon7, ""],
   ];
 </script>
 

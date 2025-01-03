@@ -99,7 +99,6 @@ pub enum InfraType {
     SharedFootway,
     CycleLane,
     MixedTraffic,
-    Unknown,
 }
 
 #[derive(Clone, Copy, Debug, Enum, Serialize, Deserialize)]
