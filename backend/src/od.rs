@@ -82,7 +82,7 @@ impl CountsOD {
 }
 
 impl MapModel {
-    pub fn od_counts(&self) -> Result<CountsOD> {
+    pub fn od_counts(&self, fast_sample: bool) -> Result<CountsOD> {
         let keep_directness_routes = 10;
 
         let mut rng = WyRand::new_seed(42);
@@ -97,79 +97,85 @@ impl MapModel {
 
         info!("Evaluating {} desire lines", self.desire_lines.len());
 
-        // TODO TEMPORARILY, evaluate just one route from each desire line and weight it by the
-        // count
         for (zone1, zone2, raw_count) in &self.desire_lines {
-            let pt1 = self.od_zones[zone1].random_point(&mut rng);
-            let pt2 = self.od_zones[zone2].random_point(&mut rng);
-
-            let profile = self.graph.profile_names["bicycle"];
-            let start = self.graph.snap_to_road(pt1, profile);
-            let end = self.graph.snap_to_road(pt2, profile);
-            let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) else {
-                failed += 1;
-                continue;
-            };
-            succeeded += 1;
-
-            // TODO Still deciding which to use
-            let compare_length = if true {
-                // Compare with the car route
-                let car_profile = self.graph.profile_names["car"];
-                let car_start = self.graph.snap_to_road(pt1, car_profile);
-                let car_end = self.graph.snap_to_road(pt2, car_profile);
-                if let Ok(car_route) =
-                    self.graph.routers[car_profile.0].route(&self.graph, car_start, car_end)
-                {
-                    let mut car_length = 0.0;
-                    for step in &car_route.steps {
-                        if let PathStep::Road { road, .. } = step {
-                            car_length += self.graph.roads[road.0].length_meters;
-                        }
-                    }
-                    car_length
-                } else {
-                    // Skip this one
-                    0.0
-                }
+            let (iterations, uptake_multiplier) = if fast_sample {
+                (1, *raw_count as f64)
             } else {
-                // Straight line distance.
-                Euclidean::distance(
-                    self.graph.intersections[start.intersection.0].point,
-                    self.graph.intersections[end.intersection.0].point,
-                )
+                (*raw_count, 1.0)
             };
 
-            // TODO route.linestring() is more accurate, but slower, and then we have to do the
-            // same for comparisons
-            let mut route_length = 0.0;
-            // TODO Use a lower-level API to squeeze out some speed
-            for step in &route.steps {
-                if let PathStep::Road { road, .. } = step {
-                    route_length += self.graph.roads[road.0].length_meters;
+            for _ in 0..iterations {
+                let pt1 = self.od_zones[zone1].random_point(&mut rng);
+                let pt2 = self.od_zones[zone2].random_point(&mut rng);
+
+                let profile = self.graph.profile_names["bicycle"];
+                let start = self.graph.snap_to_road(pt1, profile);
+                let end = self.graph.snap_to_road(pt2, profile);
+                let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) else {
+                    failed += 1;
+                    continue;
+                };
+                succeeded += 1;
+
+                // TODO Still deciding which to use
+                let compare_length = if true {
+                    // Compare with the car route
+                    let car_profile = self.graph.profile_names["car"];
+                    let car_start = self.graph.snap_to_road(pt1, car_profile);
+                    let car_end = self.graph.snap_to_road(pt2, car_profile);
+                    if let Ok(car_route) =
+                        self.graph.routers[car_profile.0].route(&self.graph, car_start, car_end)
+                    {
+                        let mut car_length = 0.0;
+                        for step in &car_route.steps {
+                            if let PathStep::Road { road, .. } = step {
+                                car_length += self.graph.roads[road.0].length_meters;
+                            }
+                        }
+                        car_length
+                    } else {
+                        // Skip this one
+                        0.0
+                    }
+                } else {
+                    // Straight line distance.
+                    Euclidean::distance(
+                        self.graph.intersections[start.intersection.0].point,
+                        self.graph.intersections[end.intersection.0].point,
+                    )
+                };
+
+                // TODO route.linestring() is more accurate, but slower, and then we have to do the
+                // same for comparisons
+                let mut route_length = 0.0;
+                // TODO Use a lower-level API to squeeze out some speed
+                for step in &route.steps {
+                    if let PathStep::Road { road, .. } = step {
+                        route_length += self.graph.roads[road.0].length_meters;
+                    }
                 }
-            }
 
-            let count = uptake::pct_godutch_2020(route_length) * (*raw_count as f64);
+                let count = uptake::pct_godutch_2020(route_length) * uptake_multiplier;
 
-            for step in route.steps {
-                if let PathStep::Road { road, .. } = step {
-                    *counts.entry(road).or_insert(0.0) += count;
+                for step in route.steps {
+                    if let PathStep::Road { road, .. } = step {
+                        *counts.entry(road).or_insert(0.0) += count;
+                    }
                 }
-            }
 
-            if compare_length > 0.0 {
-                let directness = route_length / compare_length;
-                sum_directness += count * directness;
-                sum_count += count;
+                if compare_length > 0.0 {
+                    let directness = route_length / compare_length;
+                    sum_directness += count * directness;
+                    sum_count += count;
 
-                if worst_directness_routes.len() < keep_directness_routes {
-                    worst_directness_routes.push((pt1, pt2, directness));
-                    worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
-                } else if worst_directness_routes.last().as_ref().unwrap().2 < directness {
-                    worst_directness_routes.pop();
-                    worst_directness_routes.push((pt1, pt2, directness));
-                    worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
+                    if worst_directness_routes.len() < keep_directness_routes {
+                        worst_directness_routes.push((pt1, pt2, directness));
+                        worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
+                    } else if worst_directness_routes.last().as_ref().unwrap().2 < directness {
+                        worst_directness_routes.pop();
+                        worst_directness_routes.push((pt1, pt2, directness));
+                        worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
+                    }
                 }
             }
         }
@@ -196,8 +202,8 @@ impl MapModel {
     }
 
     /// Returns detailed GJ with per-road counts
-    pub fn evaluate_od(&self) -> Result<String> {
-        let od = self.od_counts()?;
+    pub fn evaluate_od(&self, fast_sample: bool) -> Result<String> {
+        let od = self.od_counts(fast_sample)?;
 
         let mut max_count = 0;
         let mut features = Vec::new();

@@ -123,9 +123,9 @@ export class Backend {
     );
   }
 
-  evaluateOD(): EvaluateODOut {
+  evaluateOD(fastSample: boolean): EvaluateODOut {
     this.checkReady();
-    return JSON.parse(this.inner!.evaluateOD());
+    return JSON.parse(this.inner!.evaluateOD(fastSample));
   }
 
   recalculateStats(): Stats {

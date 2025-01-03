@@ -9,16 +9,19 @@
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;
+  let fastSample = true;
   let colorBy: "flow" | "infra_type" | "los" = "los";
 
   // Until we have loading screens, don't automatically update this layer
   // Start less than $mutationCounter
   let lastUpdate = 0;
+  let lastFastSample = true;
   let gj: EvaluateODOut | null = null;
 
   async function recalc() {
-    gj = await $backend!.evaluateOD();
+    gj = await $backend!.evaluateOD(fastSample);
     lastUpdate = $mutationCounter;
+    lastFastSample = fastSample;
   }
 
   // First load case
@@ -28,9 +31,17 @@
 </script>
 
 <LayerControls name="Route network (calculated)" bind:show>
-  <button on:click={recalc} disabled={$mutationCounter == lastUpdate}>
+  <button
+    on:click={recalc}
+    disabled={$mutationCounter == lastUpdate && fastSample == lastFastSample}
+  >
     Recalculate
   </button>
+
+  <label>
+    <input type="checkbox" bind:checked={fastSample} />
+    Just sample desire lines (fast)
+  </label>
 
   <label>
     Color:

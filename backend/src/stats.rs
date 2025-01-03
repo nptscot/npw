@@ -95,7 +95,8 @@ impl MapModel {
         );
 
         timer.step("calculate OD routes and stats");
-        let od = self.od_counts()?;
+        let fast_sample = true;
+        let od = self.od_counts(fast_sample)?;
         od.describe(self, &mut out)?;
 
         let flow_stats = Quintiles::new(&self.precalculated_flows);

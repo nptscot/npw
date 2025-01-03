@@ -161,8 +161,8 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = evaluateOD)]
-    pub fn evaluate_od_wasm(&self) -> Result<String, JsValue> {
-        self.evaluate_od().map_err(err_to_js)
+    pub fn evaluate_od_wasm(&self, fast_sample: bool) -> Result<String, JsValue> {
+        self.evaluate_od(fast_sample).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = recalculateStats)]
