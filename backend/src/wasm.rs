@@ -6,6 +6,7 @@ use geojson::{Feature, FeatureCollection, Geometry};
 use graph::{IntersectionID, RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
+use wasm_bindgen_futures::JsFuture;
 
 use crate::{evaluate::Breakdown, Dir, Highway, InfraType, MapModel, Route, Tier};
 
@@ -161,19 +162,20 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = evaluateOD)]
-    pub fn evaluate_od_wasm(
+    pub async fn evaluate_od_wasm(
         &self,
         fast_sample: bool,
         progress_cb: js_sys::Function,
     ) -> Result<String, JsValue> {
         self.evaluate_od(fast_sample, progress_cb)
+            .await
             .map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = recalculateStats)]
-    pub fn recalculate_stats_wasm(&mut self) -> Result<String, JsValue> {
+    pub async fn recalculate_stats_wasm(&mut self) -> Result<String, JsValue> {
         let mut timer = Timer::new("recalculate after edits", None);
-        let result = self.recalculate_stats(&mut timer).map_err(err_to_js);
+        let result = self.recalculate_stats(&mut timer).await.map_err(err_to_js);
         timer.done();
         result
     }
@@ -487,4 +489,17 @@ struct Savefile {
 
 fn err_to_js<E: std::fmt::Display>(err: E) -> JsValue {
     JsValue::from_str(&err.to_string())
+}
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = window, js_name = setTimeout)]
+    fn set_timeout(callback: &Closure<dyn FnMut()>, delay: u32) -> js_sys::Promise;
+}
+
+pub async fn sleep(ms: u32) {
+    let promise = set_timeout(&Closure::once(|| {
+        info!("inside the sleep");
+    }), ms);
+    JsFuture::from(promise).await.unwrap();
 }

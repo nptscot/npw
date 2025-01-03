@@ -5,7 +5,7 @@ use crate::{utils::Quintiles, MapModel};
 
 impl MapModel {
     /// After any edit, calculate summary stats. Returns JSON.
-    pub fn recalculate_stats(&mut self, timer: &mut Timer) -> Result<String> {
+    pub async fn recalculate_stats(&mut self, timer: &mut Timer) -> Result<String> {
         let mut out = serde_json::Map::new();
 
         self.recalculate_router(timer);
@@ -96,7 +96,7 @@ impl MapModel {
 
         timer.step("calculate OD routes and stats");
         let fast_sample = true;
-        let od = self.od_counts(fast_sample, None)?;
+        let od = self.od_counts(fast_sample, None).await?;
         od.describe(self, &mut out)?;
 
         let flow_stats = Quintiles::new(&self.precalculated_flows);

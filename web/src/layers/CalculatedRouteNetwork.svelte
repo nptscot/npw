@@ -30,7 +30,7 @@
   }
 
   function progressCb(percent: number) {
-    console.log({ percent });
+          //console.log({ percent });
     if (percent == 1) {
       // Depending on the order this happens vs the await evaluateOD, we might need to do this
       loading = "";

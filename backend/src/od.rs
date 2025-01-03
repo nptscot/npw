@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use utils::Mercator;
 use wasm_bindgen::prelude::JsValue;
 
+use crate::wasm::sleep;
 use crate::{stats::percent, uptake, InfraType, LevelOfService, MapModel};
 
 pub struct CountsOD {
@@ -83,7 +84,7 @@ impl CountsOD {
 }
 
 impl MapModel {
-    pub fn od_counts(
+    pub async fn od_counts(
         &self,
         fast_sample: bool,
         progress_cb: Option<js_sys::Function>,
@@ -128,6 +129,9 @@ impl MapModel {
                         error!("JS progress callback broke: {err:?}");
                     }
                 }
+                info!("calling sleep");
+                sleep(1).await;
+                info!("done with sleep");
 
                 let pt1 = self.od_zones[zone1].random_point(&mut rng);
                 let pt2 = self.od_zones[zone2].random_point(&mut rng);
@@ -226,8 +230,12 @@ impl MapModel {
     }
 
     /// Returns detailed GJ with per-road counts
-    pub fn evaluate_od(&self, fast_sample: bool, progress_cb: js_sys::Function) -> Result<String> {
-        let od = self.od_counts(fast_sample, Some(progress_cb))?;
+    pub async fn evaluate_od(
+        &self,
+        fast_sample: bool,
+        progress_cb: js_sys::Function,
+    ) -> Result<String> {
+        let od = self.od_counts(fast_sample, Some(progress_cb)).await?;
 
         let mut max_count = 0;
         let mut features = Vec::new();
