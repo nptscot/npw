@@ -1,5 +1,5 @@
 <script lang="ts">
-        import { tick } from "svelte";
+  import { tick } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { colorByInfraType, colorByLoS } from "../colors";
@@ -10,29 +10,31 @@
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;
-  let fastSample = true;
+  let fastSample = false;
   let colorBy: "flow" | "infra_type" | "los" = "los";
 
   // Until we have loading screens, don't automatically update this layer
   // Start less than $mutationCounter
   let lastUpdate = 0;
-  let lastFastSample = true;
+  let lastFastSample = fastSample;
   let gj: EvaluateODOut | null = null;
 
   async function recalc() {
-          console.log("setting up loading screen");
+    console.log("setting up loading screen");
 
-          let div = document.createElement("div");
-          div.className = "loading";
-          div.textContent = "Recalculating OD";
-          document.body.appendChild(div);
+    let div = document.createElement("div");
+    div.className = "loading";
+    div.textContent = "Recalculating OD";
+    document.body.appendChild(div);
 
-    console.log("now do calcultion");
-    gj = await $backend!.evaluateOD(fastSample);
-    console.log("calcultion done, reset loading");
-          div.remove();
-    lastUpdate = $mutationCounter;
-    lastFastSample = fastSample;
+    setTimeout(async () => {
+      console.log("now do calcultion");
+      gj = await $backend!.evaluateOD(fastSample);
+      console.log("calcultion done, reset loading");
+      div.remove();
+      lastUpdate = $mutationCounter;
+      lastFastSample = fastSample;
+    });
   }
 
   // First load case
