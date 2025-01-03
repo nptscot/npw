@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Comlink from "comlink";
   import "@picocss/pico/css/pico.jade.min.css";
   import type { Map } from "maplibre-gl";
   import maplibregl from "maplibre-gl";
@@ -43,7 +44,8 @@
     routeB,
   } from "./stores";
   import TopBar from "./TopBar.svelte";
-  import { Backend } from "./worker";
+  import type { Backend } from "./worker";
+  import workerWrapper from "./worker?worker";
 
   // TODO Remove later
   let offlineMode = false;
@@ -60,13 +62,21 @@
   }
 
   onMount(async () => {
+    // Note this is for the route-snapper, which doesn't run in a web worker
     await init();
 
     let params = new URLSearchParams(window.location.search);
     $boundaryName = params.get("boundary") || "LAD_City of Edinburgh";
     loading = `Loading ${$boundaryName}`;
 
-    let backendWorker = new Backend();
+    interface WorkerConstructor {
+      new (): Backend;
+    }
+
+    let MyWorker: Comlink.Remote<WorkerConstructor> = Comlink.wrap(
+      new workerWrapper(),
+    );
+    let backendWorker = await new MyWorker();
 
     // Detect if we're running locally first
     let resp = await fetch(`areas/${$boundaryName}.bin`);
@@ -116,7 +126,7 @@
     // The stores are unused; the WASM API is used directly. This TS wrapper is unused.
     $routeTool = new RouteTool(
       map,
-      backendWorker.toRouteSnapper(),
+      await backendWorker.toRouteSnapper(),
       writable(emptyGeojson()),
       writable(true),
       writable(0),

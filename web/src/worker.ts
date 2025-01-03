@@ -1,4 +1,5 @@
 import init, { MapModel } from "backend";
+import * as Comlink from "comlink";
 import type {
   Feature,
   FeatureCollection,
@@ -233,3 +234,5 @@ export class Backend {
     }
   }
 }
+
+Comlink.expose(Backend);
