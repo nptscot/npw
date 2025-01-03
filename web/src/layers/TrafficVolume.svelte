@@ -16,7 +16,7 @@
   let colorScale = ["#27918d", "#ffaa33", "#440154"];
   let limits = [0, 2000, 4000, 10000];
 
-  let showTruth = true;
+  let showTruth = false;
   let showMatched = true;
 </script>
 

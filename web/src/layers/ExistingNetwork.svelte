@@ -31,7 +31,7 @@
     }
   }
 
-  let showTruth = true;
+  let showTruth = false;
   let showCalculated = true;
 </script>
 

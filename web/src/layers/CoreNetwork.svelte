@@ -13,7 +13,7 @@
     firstLoad = true;
   }
 
-  let showTruth = true;
+  let showTruth = false;
   let showMatched = true;
 
   async function importExisting() {
