@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { tick } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import { Loading } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
   import { colorByInfraType, colorByLoS } from "../colors";
   import { layerId } from "../common";
@@ -17,9 +19,16 @@
   let lastUpdate = 0;
   let lastFastSample = true;
   let gj: EvaluateODOut | null = null;
+  let loading = "";
 
   async function recalc() {
+    loading = "Recalculating OD";
+    console.log("changed loading, tick");
+    await tick();
+    console.log("now do calcultion");
     gj = await $backend!.evaluateOD(fastSample);
+    console.log("calcultion done, reset loading");
+    loading = "";
     lastUpdate = $mutationCounter;
     lastFastSample = fastSample;
   }
@@ -28,7 +37,11 @@
   $: if (show && lastUpdate == 0) {
     recalc();
   }
+
+  $: console.log(`changed loading to ${loading}`);
 </script>
+
+<Loading {loading} />
 
 <LayerControls name="Route network (calculated)" bind:show>
   <button
@@ -37,6 +50,8 @@
   >
     Recalculate
   </button>
+
+  <p>LOading? {loading}</p>
 
   <label>
     <input type="checkbox" bind:checked={fastSample} />
