@@ -59,3 +59,15 @@ function describe(state: any): string {
   let numRoutes = Object.keys(state.routes).length;
   return `${numRoutes} routes`;
 }
+
+// Returns all local storage items, sorted by size (in bytes) descending.
+export function measureLocalStorageSizes(): [string, number][] {
+  let list: [string, number][] = [];
+  for (let i = 0; i < window.localStorage.length; i++) {
+    let key = window.localStorage.key(i)!;
+    list.push([key, window.localStorage.getItem(key)!.length]);
+  }
+  // Sort by size descending
+  list.sort((a, b) => b[1] - a[1]);
+  return list;
+}
