@@ -9,7 +9,7 @@ import type {
 } from "geojson";
 import type { Map } from "maplibre-gl";
 import { get, writable, type Writable } from "svelte/store";
-import { getKey } from "./common/files";
+import { getKey, setLocalStorage } from "./common/files";
 import type { Backend } from "./worker";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
@@ -87,7 +87,7 @@ export async function autosave() {
   }
   let filename = get(currentFilename);
   let state = await backendValue.toSavefile();
-  window.localStorage.setItem(getKey(boundary, filename), state);
+  setLocalStorage(getKey(boundary, filename), state);
 }
 
 export let remoteStorage = writable(true);

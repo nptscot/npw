@@ -7,7 +7,12 @@
     currentFilename,
     mutationCounter,
   } from "../stores";
-  import { getKey, getLastOpenedFileKey, listFilesInBoundary } from "./files";
+  import {
+    getKey,
+    getLastOpenedFileKey,
+    listFilesInBoundary,
+    setLocalStorage,
+  } from "./files";
   import Link from "./Link.svelte";
 
   let open = false;
@@ -19,7 +24,7 @@
     // TODO Confirm overwriting
     if (newName) {
       let value = await $backend!.toSavefile();
-      window.localStorage.setItem(getKey($boundaryName, newName), value);
+      setLocalStorage(getKey($boundaryName, newName), value);
       window.localStorage.removeItem(getKey($boundaryName, oldName));
       $currentFilename = newName;
       saveLastOpenedFile();
@@ -48,7 +53,7 @@
     // TODO Confirm overwriting
     if (newName) {
       let value = await $backend!.toSavefile();
-      window.localStorage.setItem(getKey($boundaryName, newName), value);
+      setLocalStorage(getKey($boundaryName, newName), value);
       $currentFilename = newName;
       saveLastOpenedFile();
       fileList = listFilesInBoundary($boundaryName);
@@ -119,7 +124,7 @@
       );
       // TODO Confirm overwriting
       if (newName) {
-        window.localStorage.setItem(getKey($boundaryName, newName), value);
+        setLocalStorage(getKey($boundaryName, newName), value);
         fileList = listFilesInBoundary($boundaryName);
         $currentFilename = newName;
         saveLastOpenedFile();
@@ -143,10 +148,7 @@
   }
 
   function saveLastOpenedFile() {
-    window.localStorage.setItem(
-      getLastOpenedFileKey($boundaryName),
-      $currentFilename,
-    );
+    setLocalStorage(getLastOpenedFileKey($boundaryName), $currentFilename);
 
     // Also update the URL
     let url = new URL(window.location.href);

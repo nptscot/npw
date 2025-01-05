@@ -1,3 +1,17 @@
+// Sets a local storage item. If quota is exceeded, then redirect to a page
+// where the user can clean things up.
+export function setLocalStorage(key: string, value: string) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch (err) {
+    console.log(`Couldn't set local storage for ${key}: ${err}`);
+    window.alert(
+      "Your changes couldn't be saved because you've run out of local storage. Please fix this problem on the next page and try again.",
+    );
+    window.location.href = "local_storage.html";
+  }
+}
+
 // Returns the local storage key for a file
 export function getKey(boundary: string, filename: string): string {
   return `npw/${boundary}/${filename}`;
