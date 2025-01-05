@@ -1,14 +1,9 @@
 <script lang="ts">
-  import {
-    GeoJSON,
-    hoverStateFilter,
-    LineLayer,
-    VectorTileSource,
-  } from "svelte-maplibre";
+  import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
   import { Loading, Modal, notNull } from "svelte-utils";
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { colorByInfraType } from "../colors";
-  import { layerId } from "../common";
+  import { layerId, roadLineWidth } from "../common";
   import { assetUrl, autosave, backend, infraTypeMapping } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
@@ -94,7 +89,7 @@
         },
         "cyan",
       ),
-      "line-width": 3,
+      "line-width": roadLineWidth(4),
     }}
     layout={{
       visibility: show && showTruth ? "visible" : "none",
@@ -115,9 +110,8 @@
           visibility: show && showCalculated ? "visible" : "none",
         }}
         paint={{
-          "line-width": hoverStateFilter(5, 7),
+          "line-width": roadLineWidth(0),
           "line-color": colorByInfraType,
-          "line-opacity": 0.8,
         }}
         manageHoverState
         on:click={(e) =>

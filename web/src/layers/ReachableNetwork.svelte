@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { FeatureCollection } from "geojson";
-  import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
+  import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
-  import { layerId, QualitativeLegend } from "../common";
+  import { layerId, QualitativeLegend, roadLineWidth } from "../common";
   import { backend, mutationCounter } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
@@ -41,7 +41,7 @@
       visibility: show ? "visible" : "none",
     }}
     paint={{
-      "line-width": hoverStateFilter(5, 7),
+      "line-width": roadLineWidth(0),
       "line-color": constructMatchExpression(["get", "kind"], colors, "black"),
       "line-opacity": 0.8,
     }}

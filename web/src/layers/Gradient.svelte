@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { GeoJSON, hoverStateFilter, LineLayer } from "svelte-maplibre";
+  import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { layerId } from "../common";
+  import { layerId, roadLineWidth } from "../common";
   import { backend } from "../stores";
   import { lineColorForGradient } from "../utils";
   import LayerControls from "./LayerControls.svelte";
@@ -27,7 +27,7 @@
           visibility: show ? "visible" : "none",
         }}
         paint={{
-          "line-width": hoverStateFilter(3, 5),
+          "line-width": roadLineWidth(0),
           "line-color": lineColorForGradient(),
         }}
         manageHoverState

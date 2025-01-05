@@ -1,14 +1,9 @@
 <script lang="ts">
   import type { FeatureCollection } from "geojson";
-  import {
-    GeoJSON,
-    hoverStateFilter,
-    LineLayer,
-    VectorTileSource,
-  } from "svelte-maplibre";
+  import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { colorByLoS, levelOfServiceColors } from "../colors";
-  import { layerId, QualitativeLegend } from "../common";
+  import { layerId, QualitativeLegend, roadLineWidth } from "../common";
   import {
     assetUrl,
     backend,
@@ -66,7 +61,7 @@
         },
         "cyan",
       ),
-      "line-width": 10,
+      "line-width": roadLineWidth(4),
     }}
     layout={{
       visibility: show && showOrig ? "visible" : "none",
@@ -81,7 +76,7 @@
       visibility: show && showCurrent ? "visible" : "none",
     }}
     paint={{
-      "line-width": hoverStateFilter(5, 7),
+      "line-width": roadLineWidth(0),
       "line-color": colorByLoS,
       "line-opacity": 0.8,
     }}

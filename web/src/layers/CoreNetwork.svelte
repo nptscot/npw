@@ -3,7 +3,7 @@
   import { Loading } from "svelte-utils";
   import { constructMatchExpression } from "svelte-utils/map";
   import { colorByTier } from "../colors";
-  import { layerId } from "../common";
+  import { layerId, roadLineWidth } from "../common";
   import { assetUrl, autosave, backend } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
@@ -62,7 +62,7 @@
         },
         "cyan",
       ),
-      "line-width": 2,
+      "line-width": roadLineWidth(4),
     }}
     layout={{
       visibility: show && showTruth ? "visible" : "none",
@@ -77,8 +77,7 @@
         {...layerId("cn")}
         paint={{
           "line-color": colorByTier,
-          "line-width": 10,
-          "line-opacity": 0.5,
+          "line-width": roadLineWidth(0),
         }}
         layout={{
           visibility: show && showMatched ? "visible" : "none",

@@ -1,13 +1,8 @@
 <script lang="ts">
-  import {
-    GeoJSON,
-    hoverStateFilter,
-    LineLayer,
-    VectorTileSource,
-  } from "svelte-maplibre";
+  import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
   import { SequentialLegend } from "svelte-utils";
   import { makeRamp, Popup } from "svelte-utils/map";
-  import { layerId } from "../common";
+  import { layerId, roadLineWidth } from "../common";
   import { assetUrl, backend } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
@@ -52,7 +47,7 @@
     sourceLayer="cbd_layer"
     paint={{
       "line-color": makeRamp(["get", "Speed limit"], limits, colorScale),
-      "line-width": 10,
+      "line-width": roadLineWidth(4),
     }}
     layout={{
       visibility: show && showOrig ? "visible" : "none",
@@ -69,7 +64,7 @@
           visibility: show && showMatched ? "visible" : "none",
         }}
         paint={{
-          "line-width": hoverStateFilter(5, 7),
+          "line-width": roadLineWidth(0),
           "line-color": makeRamp(["get", "speed"], limits, colorScale),
           "line-opacity": 0.8,
         }}

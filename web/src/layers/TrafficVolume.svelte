@@ -2,7 +2,7 @@
   import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
   import { SequentialLegend } from "svelte-utils";
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
-  import { layerId } from "../common";
+  import { layerId, roadLineWidth } from "../common";
   import { assetUrl, backend } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
@@ -50,7 +50,7 @@
         },
         "cyan",
       ),
-      "line-width": 5,
+      "line-width": roadLineWidth(4),
     }}
     layout={{
       visibility: show && showTruth ? "visible" : "none",
@@ -67,7 +67,7 @@
           visibility: show && showMatched ? "visible" : "none",
         }}
         paint={{
-          "line-width": makeRamp(["get", "traffic"], limits, [1, 2, 3]),
+          "line-width": roadLineWidth(0),
           "line-color": makeRamp(["get", "traffic"], limits, colorScale),
           "line-opacity": 0.8,
         }}
