@@ -92,6 +92,8 @@ const layerZorder = [
   "cycling-flow-3",
   "los-debug",
   "los",
+  "speed_limit",
+  "speed_limit-debug",
   "precalculated-rnet",
   "calculated-rnet",
   "reachability",

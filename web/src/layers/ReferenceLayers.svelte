@@ -16,6 +16,7 @@
   import ReachableNetwork from "./ReachableNetwork.svelte";
   import Schools from "./Schools.svelte";
   import Settlements from "./Settlements.svelte";
+  import SpeedLimit from "./SpeedLimit.svelte";
   import { cyclingFlow1, cyclingFlow2, cyclingFlow3 } from "./stores";
   import TownCentres from "./TownCentres.svelte";
   import TrafficVolume from "./TrafficVolume.svelte";
@@ -44,3 +45,4 @@
 <MajorJunctions />
 <AreaMeshDensity />
 <GridMeshDensity />
+<SpeedLimit />
