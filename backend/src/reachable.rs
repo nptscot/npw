@@ -175,6 +175,16 @@ impl MapModel {
     pub fn debug_unreachable_path(&self, start_roads: HashSet<RoadID>) -> Result<String> {
         let mut features = Vec::new();
 
+        // Show all severances
+        // TODO Or for efficiency, make the frontend use renderReachableNetwork and filter
+        for (idx, road) in self.graph.roads.iter().enumerate() {
+            if self.los[idx] != LevelOfService::High {
+                let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
+                f.set_property("kind", "severance");
+                features.push(f);
+            }
+        }
+
         let mut visited: HashSet<RoadID> = HashSet::new();
         let mut queue: Vec<RoadID> = Vec::new();
         queue.extend(start_roads);
@@ -189,8 +199,6 @@ impl MapModel {
             let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
 
             if self.los[r.0] != LevelOfService::High {
-                f.set_property("kind", "severance");
-                features.push(f);
                 continue;
             }
 
