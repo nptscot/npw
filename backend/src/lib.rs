@@ -68,6 +68,8 @@ pub struct MapModel {
     #[serde(skip_serializing, skip_deserializing, default)]
     infra_types: Vec<Option<InfraType>>,
     #[serde(skip_serializing, skip_deserializing, default)]
+    tiers: Vec<Option<Tier>>,
+    #[serde(skip_serializing, skip_deserializing, default)]
     los: Vec<LevelOfService>,
 }
 
@@ -133,6 +135,7 @@ impl MapModel {
             .map(|r| level_of_service::get_speed_mph(&r.osm_tags))
             .collect();
         let infra_types = std::iter::repeat(None).take(graph.roads.len()).collect();
+        let tiers = std::iter::repeat(None).take(graph.roads.len()).collect();
         let los = std::iter::repeat(LevelOfService::ShouldNotBeUsed)
             .take(graph.roads.len())
             .collect();
@@ -155,6 +158,7 @@ impl MapModel {
             speeds,
             gradients,
             infra_types,
+            tiers,
             los,
         }
     }
@@ -163,10 +167,14 @@ impl MapModel {
         self.infra_types = std::iter::repeat(None)
             .take(self.graph.roads.len())
             .collect();
+        self.tiers = std::iter::repeat(None)
+            .take(self.graph.roads.len())
+            .collect();
 
         for route in self.routes.values() {
             for (road, _) in &route.roads {
                 self.infra_types[road.0] = Some(route.infra_type);
+                self.tiers[road.0] = Some(route.tier);
             }
         }
 

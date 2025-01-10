@@ -9,7 +9,7 @@ use nanorand::{Rng, WyRand};
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
 
-use crate::{stats::percent, uptake, InfraType, LevelOfService, MapModel};
+use crate::{stats::percent, uptake, InfraType, LevelOfService, MapModel, Tier};
 
 pub struct CountsOD {
     pub counts: HashMap<RoadID, usize>,
@@ -21,7 +21,7 @@ pub struct CountsOD {
 }
 
 impl CountsOD {
-    /// Populate `out` with `od_percents_los`, `od_percents_infra_type`,
+    /// Populate `out` with `od_percents_los`, `od_percents_infra_type`, `od_percents_tier`,
     /// `average_weighted_directness`, and `worst_directness_routes`
     pub fn describe(
         self,
@@ -30,6 +30,7 @@ impl CountsOD {
     ) -> Result<()> {
         let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();
         let mut count_by_los: EnumMap<LevelOfService, usize> = EnumMap::default();
+        let mut count_by_tier: EnumMap<Tier, usize> = EnumMap::default();
         let mut count_off_network = 0;
         let mut total_count = 0;
 
@@ -37,6 +38,7 @@ impl CountsOD {
             total_count += count;
             if let Some(infra_type) = map.infra_types[r.0] {
                 count_by_infra[infra_type] += count;
+                count_by_tier[map.tiers[r.0].unwrap()] += count;
             } else {
                 count_off_network += count;
             }
@@ -55,6 +57,15 @@ impl CountsOD {
             );
         }
 
+        let mut od_percents_tier = serde_json::Map::new();
+        od_percents_tier.insert(
+            "Off network".to_string(),
+            percent(count_off_network, total_count).into(),
+        );
+        for (tier, count) in count_by_tier {
+            od_percents_tier.insert(format!("{tier:?}"), percent(count, total_count).into());
+        }
+
         let mut od_percents_los = serde_json::Map::new();
         for (los, count) in count_by_los {
             od_percents_los.insert(format!("{los:?}"), percent(count, total_count).into());
@@ -63,6 +74,10 @@ impl CountsOD {
         out.insert(
             "od_percents_infra_type".to_string(),
             serde_json::Value::Object(od_percents_infra_type),
+        );
+        out.insert(
+            "od_percents_tier".to_string(),
+            serde_json::Value::Object(od_percents_tier),
         );
         out.insert(
             "od_percents_los".to_string(),

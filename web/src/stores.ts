@@ -114,6 +114,7 @@ export type WorstRoutes = [
 
 export interface ODStats {
   od_percents_infra_type: { [name: string]: number };
+  od_percents_tier: { [name: string]: number };
   od_percents_los: { [name: string]: number };
   average_weighted_directness: number;
   worst_directness_routes: WorstRoutes;
