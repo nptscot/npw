@@ -12,6 +12,7 @@
   } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
+  let lastUpdate = 0;
   let data: FeatureCollection = {
     type: "FeatureCollection",
     features: [],
@@ -21,8 +22,9 @@
   let showCurrent = true;
 
   async function recalc() {
-    if ($backend) {
+    if ($backend && lastUpdate != $mutationCounter) {
       data = await $backend.renderLevelOfService();
+      lastUpdate = $mutationCounter;
     }
   }
 

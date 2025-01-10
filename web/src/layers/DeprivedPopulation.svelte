@@ -13,19 +13,21 @@
   import LayerControls from "./LayerControls.svelte";
   import { deprivedPopulation as show } from "./stores";
 
+  let lastUpdate = 0;
   let data: DataZones = {
     type: "FeatureCollection",
     features: [],
   };
 
   async function recalc() {
-    if ($backend) {
+    if ($backend && lastUpdate != $mutationCounter) {
       let gj = await $backend.getDataZones();
       // Filter for the top quintile only
       gj.features = gj.features.filter(
         (f) => f.properties.imd_percentile <= 20,
       );
       data = gj;
+      lastUpdate = $mutationCounter;
     }
   }
 

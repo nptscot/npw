@@ -24,6 +24,7 @@
   let xOffset = 0;
   let yOffset = 0;
 
+  // Don't use lastUpdate pattern here, since there are other cache keys here
   async function recalc(resolution: number, xOffset: number, yOffset: number) {
     if ($backend) {
       data = await $backend.getGridMeshDensity(

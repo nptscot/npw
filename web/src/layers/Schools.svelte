@@ -9,6 +9,7 @@
   import LayerControls from "./LayerControls.svelte";
   import { schools as show } from "./stores";
 
+  let lastUpdate = 0;
   let data: Schools = {
     type: "FeatureCollection",
     features: [],
@@ -16,8 +17,9 @@
   let hovered: Feature<Point, { reachable: boolean; idx: number }> | null;
 
   async function recalc() {
-    if ($backend) {
+    if ($backend && lastUpdate != $mutationCounter) {
       data = await $backend.getSchools();
+      lastUpdate = $mutationCounter;
     }
   }
 

@@ -14,6 +14,7 @@
   import LayerControls from "./LayerControls.svelte";
   import { greenspaces as show } from "./stores";
 
+  let lastUpdate = 0;
   let data: Greenspaces = {
     type: "FeatureCollection",
     features: [],
@@ -24,8 +25,9 @@
   > | null;
 
   async function recalc() {
-    if ($backend) {
+    if ($backend && lastUpdate != $mutationCounter) {
       data = await $backend.getGreenspaces();
+      lastUpdate = $mutationCounter;
     }
   }
 

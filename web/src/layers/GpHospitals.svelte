@@ -9,6 +9,7 @@
   import LayerControls from "./LayerControls.svelte";
   import { gpHospitals as show } from "./stores";
 
+  let lastUpdate = 0;
   let data: GPHospitals = {
     type: "FeatureCollection",
     features: [],
@@ -16,8 +17,9 @@
   let hovered: Feature<Point, { reachable: boolean; idx: number }> | null;
 
   async function recalc() {
-    if ($backend) {
+    if ($backend && lastUpdate != $mutationCounter) {
       data = await $backend.getGpHospitals();
+      lastUpdate = $mutationCounter;
     }
   }
 

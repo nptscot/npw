@@ -13,6 +13,7 @@
 
   let onlyCovered = false;
 
+  let lastUpdate = 0;
   let data: PrecalculatedFlows = {
     type: "FeatureCollection",
     features: [],
@@ -21,8 +22,9 @@
   };
 
   async function recalc() {
-    if ($backend) {
+    if ($backend && lastUpdate != $mutationCounter) {
       data = await $backend.renderPrecalculatedFlows();
+      lastUpdate = $mutationCounter;
     }
   }
 

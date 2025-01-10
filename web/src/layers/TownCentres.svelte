@@ -9,6 +9,7 @@
   import LayerControls from "./LayerControls.svelte";
   import { townCentres as show } from "./stores";
 
+  let lastUpdate = 0;
   let data: TownCentres = {
     type: "FeatureCollection",
     features: [],
@@ -19,8 +20,9 @@
   > | null;
 
   async function recalc() {
-    if ($backend) {
+    if ($backend && lastUpdate != $mutationCounter) {
       data = await $backend.getTownCentres();
+      lastUpdate = $mutationCounter;
     }
   }
 

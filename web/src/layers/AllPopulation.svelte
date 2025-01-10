@@ -13,14 +13,16 @@
   import LayerControls from "./LayerControls.svelte";
   import { allPopulation as show } from "./stores";
 
+  let lastUpdate = 0;
   let data: DataZones = {
     type: "FeatureCollection",
     features: [],
   };
 
   async function recalc() {
-    if ($backend) {
+    if ($backend && lastUpdate != $mutationCounter) {
       data = await $backend.getDataZones();
+      lastUpdate = $mutationCounter;
     }
   }
 

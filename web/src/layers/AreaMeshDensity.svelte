@@ -12,6 +12,7 @@
   import LayerControls from "./LayerControls.svelte";
   import { areaMeshDensity as show } from "./stores";
 
+  let lastUpdate = 0;
   let data: AreaMeshDensity = {
     type: "FeatureCollection",
     features: [],
@@ -21,8 +22,9 @@
   let limits = [0, 0.04, 0.2, 0.5, 1000];
 
   async function recalc() {
-    if ($backend) {
+    if ($backend && lastUpdate != $mutationCounter) {
       data = await $backend.getAreaMeshDensity();
+      lastUpdate = $mutationCounter;
     }
   }
 

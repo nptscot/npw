@@ -7,17 +7,19 @@
   import LayerControls from "./LayerControls.svelte";
   import { severances } from "./stores";
 
-  // TODO Does this belong as a layer like this, or a debug mode, in the short term?
-
   let show = false;
 
+  let lastUpdate = 0;
   let data: FeatureCollection = {
     type: "FeatureCollection",
     features: [],
   };
 
   async function recalc() {
-    data = await $backend!.renderReachableNetwork();
+    if ($backend && lastUpdate != $mutationCounter) {
+      data = await $backend.renderReachableNetwork();
+      lastUpdate = $mutationCounter;
+    }
   }
 
   $: if ((show || $severances) && $mutationCounter > 0) {

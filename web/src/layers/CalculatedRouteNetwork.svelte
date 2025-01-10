@@ -14,7 +14,6 @@
   let colorBy: "flow" | "infra_type" | "los" = "los";
 
   // Until we have loading screens, don't automatically update this layer
-  // Start less than $mutationCounter
   let lastUpdate = 0;
   let lastFastSample = true;
   let gj: EvaluateODOut | null = null;
