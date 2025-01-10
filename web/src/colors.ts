@@ -1,14 +1,20 @@
 import { constructMatchExpression } from "svelte-utils/map";
 import { infraTypes } from "./stores";
 
-export let tierColors = {
+export let infraTypeColors = Object.fromEntries(
+  infraTypes.map((x) => [x[0], x[2]]),
+);
+
+// TODO Making types less precise here for convenience elsewhere.
+// Alternatively, improve ODStats types.
+export let tierColors: { [name: string]: string } = {
   Primary: "#c00000",
   Secondary: "#e97132",
   LocalAccess: "#ffc000",
   LongDistance: "#4ea72e",
 };
 
-export let levelOfServiceColors = {
+export let levelOfServiceColors: { [name: string]: string } = {
   High: "mediumseagreen",
   Medium: "orange",
   Low: "red",
@@ -25,7 +31,7 @@ export let gradientColors = {
 
 export let colorByInfraType = constructMatchExpression(
   ["get", "infra_type"],
-  Object.fromEntries(infraTypes.map((x) => [x[0], x[2]])),
+  infraTypeColors,
   "red",
 );
 
