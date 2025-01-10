@@ -215,3 +215,10 @@ export interface RouteProps {
   infra_type: string;
   tier: Tier;
 }
+
+export type ConnectedComponents = FeatureCollection<
+  LineString,
+  { component: number }
+> & {
+  component_sizes: number[];
+};

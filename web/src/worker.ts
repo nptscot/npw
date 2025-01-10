@@ -9,6 +9,7 @@ import type {
 } from "geojson";
 import type {
   AreaMeshDensity,
+  ConnectedComponents,
   DataZones,
   EvaluateODOut,
   GPHospitals,
@@ -230,6 +231,11 @@ export class Backend {
   getMajorJunctions(): FeatureCollection {
     this.checkReady();
     return JSON.parse(this.inner!.getMajorJunctions());
+  }
+
+  getConnectedComponents(): ConnectedComponents {
+    this.checkReady();
+    return JSON.parse(this.inner!.getConnectedComponents());
   }
 
   private checkReady() {

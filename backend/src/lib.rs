@@ -16,6 +16,7 @@ pub use crate::existing::Highway;
 use crate::level_of_service::LevelOfService;
 
 mod costs;
+mod disconnected;
 mod evaluate;
 pub mod existing;
 mod join_lines;

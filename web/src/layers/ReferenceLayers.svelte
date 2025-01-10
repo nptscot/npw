@@ -12,6 +12,7 @@
   import GridMeshDensity from "./GridMeshDensity.svelte";
   import LevelOfService from "./LevelOfService.svelte";
   import MajorJunctions from "./MajorJunctions.svelte";
+  import NetworkDisconnections from "./NetworkDisconnections.svelte";
   import PrecalculatedRouteNetwork from "./PrecalculatedRouteNetwork.svelte";
   import ReachableNetwork from "./ReachableNetwork.svelte";
   import Schools from "./Schools.svelte";
@@ -46,3 +47,4 @@
 <AreaMeshDensity />
 <GridMeshDensity />
 <SpeedLimit />
+<NetworkDisconnections />

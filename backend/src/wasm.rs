@@ -396,6 +396,11 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = getConnectedComponents)]
+    pub fn get_connected_components_wasm(&self) -> Result<String, JsValue> {
+        serde_json::to_string(&self.get_connected_components()).map_err(err_to_js)
+    }
+
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
         // TODO map_err?
         let route: InputRoute = match serde_wasm_bindgen::from_value(input) {

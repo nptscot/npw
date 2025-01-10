@@ -97,6 +97,7 @@ const layerZorder = [
   "precalculated-rnet",
   "calculated-rnet",
   "reachability",
+  "network-disconnections",
   "debug-reachability-settlements",
   "debug-reachability-town_centres",
   "debug-reachability-greenspaces",

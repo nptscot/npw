@@ -21,6 +21,7 @@
     "Estimated speed limit",
     "Gradient",
     "Reachable network",
+    "Network disconnections",
   ]);
 
   $: update(primary, $allControls, ["High cycling flow"]);
