@@ -5,6 +5,7 @@
   import { layerId, QualitativeLegend, roadLineWidth } from "../common";
   import { backend, mutationCounter } from "../stores";
   import LayerControls from "./LayerControls.svelte";
+  import { severances } from "./stores";
 
   // TODO Does this belong as a layer like this, or a debug mode, in the short term?
 
@@ -19,7 +20,7 @@
     data = await $backend!.renderReachableNetwork();
   }
 
-  $: if (show && $mutationCounter > 0) {
+  $: if ((show || $severances) && $mutationCounter > 0) {
     recalc();
   }
 
@@ -34,17 +35,17 @@
   <QualitativeLegend {colors} />
 </LayerControls>
 
-<GeoJSON {data} generateId>
+<GeoJSON {data}>
   <LineLayer
     {...layerId("reachability")}
     layout={{
-      visibility: show ? "visible" : "none",
+      visibility: show || $severances ? "visible" : "none",
     }}
+    filter={$severances ? ["==", ["get", "kind"], "severance"] : undefined}
     paint={{
       "line-width": roadLineWidth(0),
       "line-color": constructMatchExpression(["get", "kind"], colors, "black"),
       "line-opacity": 0.8,
     }}
-    manageHoverState
   />
 </GeoJSON>

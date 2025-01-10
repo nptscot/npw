@@ -19,3 +19,4 @@ export let gridMeshDensity = writable(false);
 export let areaMeshDensity = writable(false);
 export let cyclingFlow3 = writable(false);
 export let majorJunctions = writable(true);
+export let severances = writable(false);

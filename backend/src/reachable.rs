@@ -171,39 +171,27 @@ impl MapModel {
         })?)
     }
 
-    /// Flood from all of the start roads, showing reachable roads and severances
+    /// Flood from all of the start roads, showing reachable roads only
     pub fn debug_unreachable_path(&self, start_roads: HashSet<RoadID>) -> Result<String> {
         let mut features = Vec::new();
-
-        // Show all severances
-        // TODO Or for efficiency, make the frontend use renderReachableNetwork and filter
-        for (idx, road) in self.graph.roads.iter().enumerate() {
-            if self.los[idx] != LevelOfService::High {
-                let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
-                f.set_property("kind", "severance");
-                features.push(f);
-            }
-        }
 
         let mut visited: HashSet<RoadID> = HashSet::new();
         let mut queue: Vec<RoadID> = Vec::new();
         queue.extend(start_roads);
 
         while let Some(r) = queue.pop() {
+            // Do this upfront, because something might snap to a severance
+            if self.los[r.0] != LevelOfService::High {
+                continue;
+            }
+
             if visited.contains(&r) {
                 continue;
             }
             visited.insert(r);
 
             let road = &self.graph.roads[r.0];
-            let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
-
-            if self.los[r.0] != LevelOfService::High {
-                continue;
-            }
-
-            f.set_property("kind", "reachable");
-            features.push(f);
+            features.push(self.graph.mercator.to_wgs84_gj(&road.linestring));
 
             for i in [road.src_i, road.dst_i] {
                 queue.extend(self.graph.intersections[i.0].roads.clone());

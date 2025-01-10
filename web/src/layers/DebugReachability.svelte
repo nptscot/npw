@@ -8,6 +8,7 @@
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { layerId } from "../common";
   import { backend } from "../stores";
+  import { severances } from "./stores";
 
   export let kind: string;
   export let hovered: Feature<
@@ -27,6 +28,7 @@
       { reachable: boolean; idx: number }
     > | null,
   ) {
+    $severances = false;
     if ($backend && hovered) {
       if (hovered.properties.reachable) {
         debug = await $backend.debugReachablePath(kind, hovered.properties.idx);
@@ -35,6 +37,7 @@
           kind,
           hovered.properties.idx,
         );
+        $severances = true;
       }
     } else {
       debug = {
@@ -50,12 +53,7 @@
     {...layerId("debug-reachability-" + kind)}
     paint={{
       "line-width": 3,
-      "line-color": [
-        "case",
-        ["==", ["get", "kind"], "severance"],
-        "red",
-        "blue",
-      ],
+      "line-color": "blue",
     }}
   />
 </GeoJSON>
