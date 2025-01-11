@@ -18,7 +18,7 @@ impl MapModel {
 
         let mut features = Vec::new();
         let mut component_sizes = Vec::new();
-        for nodes in petgraph::algo::tarjan_scc(&graph) {
+        for nodes in petgraph::algo::kosaraju_scc(&graph) {
             let component = component_sizes.len();
             let roads = nodes_to_edges(self, nodes);
             component_sizes.push(roads.len());
