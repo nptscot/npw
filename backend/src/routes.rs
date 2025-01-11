@@ -8,7 +8,9 @@ use graph::{Graph, PathStep, Position, RoadID};
 
 use crate::join_lines::KeyedLineString;
 use crate::route_snapper::make_route_snapper_feature;
-use crate::{Dir, InfraType, MapModel, Route, Tier};
+use crate::{
+    level_of_service::get_level_of_service, Dir, InfraType, LevelOfService, MapModel, Route, Tier,
+};
 
 impl MapModel {
     // TODO Old case
@@ -139,7 +141,7 @@ impl MapModel {
     }
 
     /// Returns the number of edits
-    pub fn import_existing_routes(&mut self) -> usize {
+    pub fn import_existing_routes(&mut self, only_some_infra_types: bool) -> usize {
         let used_roads = self.used_roads();
         let mut imports = Vec::new();
         for (idx, road) in self.graph.roads.iter().enumerate() {
@@ -150,12 +152,25 @@ impl MapModel {
             let Some(infra_type) = crate::existing::classify(&road.osm_tags) else {
                 continue;
             };
-            if !matches!(
-                infra_type,
-                InfraType::SegregatedWide | InfraType::OffRoad | InfraType::SegregatedNarrow,
-            ) {
-                continue;
+
+            if only_some_infra_types {
+                if !matches!(
+                    infra_type,
+                    InfraType::SegregatedWide | InfraType::OffRoad | InfraType::SegregatedNarrow,
+                ) {
+                    continue;
+                }
+            } else {
+                // We could check if the current los is already high, but if it is, it may be
+                // because it's an existing separately tagged cycleway that has no modelled traffic
+                // volume.
+                if get_level_of_service(infra_type, self.speeds[idx], self.traffic_volumes[idx])
+                    != LevelOfService::High
+                {
+                    continue;
+                }
             }
+
             imports.push((road_id, infra_type));
         }
 

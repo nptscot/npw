@@ -162,9 +162,9 @@ export class Backend {
   }
 
   // Needs loading screen
-  importExistingRoutes(): number {
+  importExistingRoutes(kind: "infra-type" | "los"): number {
     this.checkReady();
-    return this.inner!.importExistingRoutes();
+    return this.inner!.importExistingRoutes(kind == "infra-type");
   }
 
   // Needs loading screen

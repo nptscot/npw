@@ -84,7 +84,9 @@
       <li style:color={colors[idx % colors.length]}>{size}</li>
     {/each}
     {#if data.component_sizes.length > 5}
-            <p>({data.component_sizes.length} components total; only 5 largest shown)</p>
+      <p>
+        ({data.component_sizes.length} components total; only 5 largest shown)
+      </p>
     {/if}
   </ul>
 </LayerControls>
