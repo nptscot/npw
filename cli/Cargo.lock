@@ -253,6 +253,7 @@ dependencies = [
  "geojson",
  "graph",
  "log",
+ "petgraph",
  "serde",
  "serde_json",
  "simple_logger",
@@ -587,7 +588,7 @@ dependencies = [
 [[package]]
 name = "graph"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/15m#5ee39037ad95498ce043cfad213fa3a298f7b039"
+source = "git+https://github.com/a-b-street/15m#40bb502c179ec1f1434793a7fc6b94a01c783609"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1369,7 +1370,7 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 [[package]]
 name = "utils"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/utils#e0a5d36fdf030ab99b325b84c9428f6e92e34ae4"
+source = "git+https://github.com/a-b-street/utils#cd795253de3a21398a22ac4ae5e58115aa7000ae"
 dependencies = [
  "anyhow",
  "fast_paths",

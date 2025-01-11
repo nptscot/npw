@@ -12,7 +12,10 @@ use graph::{Graph, RoadID, Timer};
 use log::{info, warn};
 use serde::Deserialize;
 
+use self::disconnected::remove_disconnected_components;
 use backend::{Highway, MapModel, Tier};
+
+mod disconnected;
 
 #[derive(Parser)]
 struct Args {
@@ -50,6 +53,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
     let graph = Graph::new(
         input_bytes,
         &mut utils::osm2graph::NullReader,
+        Box::new(remove_disconnected_components),
         vec![
             (
                 "bicycle".to_string(),
