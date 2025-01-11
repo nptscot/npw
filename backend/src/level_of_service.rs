@@ -201,6 +201,7 @@ pub fn get_speed_mph(tags: &Tags) -> usize {
         Highway::Primary => 40,
         Highway::Secondary | Highway::Tertiary => 30,
         Highway::Residential | Highway::Service | Highway::Unclassified => 20,
+        Highway::LivingStreet => 15,
         // TODO What should these do?
         Highway::Footway | Highway::Cycleway | Highway::Pedestrian | Highway::Path => 10,
     }

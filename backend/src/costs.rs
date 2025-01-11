@@ -51,6 +51,8 @@ fn edge_cost(road: &Road, infra_type: InfraType, los: LevelOfService) -> Duratio
             Highway::Unclassified => 70,
             // See special case: https://github.com/nptscot/npw/issues/29#issuecomment-2508180511
             Highway::Residential | Highway::Service => 60,
+            // TODO LivingStreet should be quieter
+            Highway::LivingStreet => 70,
             // TODO Check these assumptions. What does MixedTraffic even mean in this case?
             Highway::Cycleway | Highway::Footway | Highway::Pedestrian | Highway::Path => 85,
         },

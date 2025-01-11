@@ -18,6 +18,7 @@ pub enum Highway {
     Residential,
     Service,
     Unclassified,
+    LivingStreet,
 
     Footway,
     Cycleway,
@@ -39,6 +40,7 @@ impl Highway {
             "residential" => Some(Highway::Residential),
             "service" => Some(Highway::Service),
             "unclassified" => Some(Highway::Unclassified),
+            "living_street" => Some(Highway::LivingStreet),
             "cycleway" => Some(Highway::Cycleway),
             "pedestrian" => Some(Highway::Pedestrian),
             "path" => Some(Highway::Path),
@@ -147,7 +149,8 @@ pub fn classify(tags: &Tags) -> Option<InfraType> {
         | Highway::Tertiary
         | Highway::Residential
         | Highway::Service
-        | Highway::Unclassified => {
+        | Highway::Unclassified
+        | Highway::LivingStreet => {
             if is_any_key(
                 tags,
                 vec![
