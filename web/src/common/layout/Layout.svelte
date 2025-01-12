@@ -1,43 +1,47 @@
-<div class="top">
-  <slot name="top" />
-</div>
-<div class="main-row">
-  <div class="left">
-    <slot name="left" />
+<div class="flex-container">
+  <div class="top">
+    <slot name="top" />
   </div>
-  <div class="main">
-    <slot name="main" />
-  </div>
-  <div class="right">
-    <slot name="right" />
+  <div class="content">
+    <div class="left">
+      <slot name="left" />
+    </div>
+    <div class="main">
+      <slot name="main" />
+    </div>
+    <div class="right">
+      <slot name="right" />
+    </div>
   </div>
 </div>
 
 <style>
-  div {
-    float: left;
+  /* Note calling this "container" will clash with a pico built-in */
+  .flex-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
   }
 
   .top {
     width: 100%;
-    height: 6vh;
+    padding: 4px;
   }
 
-  .main-row {
-    height: 94vh;
-    width: 100%;
+  .content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
   }
 
-  .left,
-  .right {
+  .left, .right {
     width: 25%;
-    height: 100%;
-    overflow: scroll;
-    padding: 8px;
+    overflow-y: auto;
+    padding: 4px;
   }
 
   .main {
     width: 50%;
-    height: 100%;
   }
 </style>
