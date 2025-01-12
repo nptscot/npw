@@ -9,7 +9,7 @@ const MIN_ROADS_PER_COMPONENT: usize = 100;
 
 pub fn remove_disconnected_components(graph: &mut Graph) -> Result<()> {
     let mut scc_graph: UnGraphMap<IntersectionID, EdgeID> = UnGraphMap::new();
-    for edge in &graph.edges {
+    for edge in graph.edges.values() {
         scc_graph.add_edge(edge.src, edge.dst, edge.id);
     }
 
@@ -29,6 +29,7 @@ pub fn remove_disconnected_components(graph: &mut Graph) -> Result<()> {
     }
 
     info!("Removing {} disconnected roads", remove_edges.len());
+    graph.remove_edges(remove_edges);
 
     Ok(())
 }
@@ -37,7 +38,7 @@ pub fn remove_disconnected_components(graph: &mut Graph) -> Result<()> {
 fn nodes_to_edges(graph: &Graph, nodes: Vec<IntersectionID>) -> BTreeSet<EdgeID> {
     let mut edges = BTreeSet::new();
     for i in nodes {
-        edges.extend(graph.intersections[i.0].edges.clone());
+        edges.extend(graph.intersections[&i].edges.clone());
     }
     edges
 }
