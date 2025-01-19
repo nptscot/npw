@@ -62,11 +62,6 @@ export class Backend {
     return JSON.parse(this.inner!.renderStaticRoads());
   }
 
-  renderDebug(): FeatureCollection {
-    this.checkReady();
-    return JSON.parse(this.inner!.renderDebug());
-  }
-
   renderLevelOfService(): FeatureCollection<LineString, { los: string }> {
     this.checkReady();
     return JSON.parse(this.inner!.renderLevelOfService());
