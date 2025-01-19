@@ -11,7 +11,6 @@
     mutationCounter,
     roadStyle,
   } from "../stores";
-  import { infraTypeMapping } from "../types";
   import RoadLayerControls from "./RoadLayerControls.svelte";
 
   let lastUpdate = 0;
@@ -88,25 +87,6 @@
     }}
     manageHoverState
   >
-    <Popup openOn="hover" let:props>
-      <table>
-        <tr>
-          <th>Level of Service</th>
-          <td>{props.los}</td>
-        </tr>
-        <tr>
-          <th>Infrastructure type</th>
-          <td>{infraTypeMapping[props.infra_type][0]}</td>
-        </tr>
-        <tr>
-          <th>Speed (mph)</th>
-          <td>{props.speed}</td>
-        </tr>
-        <tr>
-          <th>Estimated daily traffic volume</th>
-          <td>{props.traffic.toLocaleString()}</td>
-        </tr>
-      </table>
-    </Popup>
+    <Popup openOn="hover" let:props>{props.los}</Popup>
   </LineLayer>
 </GeoJSON>

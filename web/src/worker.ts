@@ -67,14 +67,9 @@ export class Backend {
     return JSON.parse(this.inner!.renderDebug());
   }
 
-  renderLevelOfService(): FeatureCollection {
+  renderLevelOfService(): FeatureCollection<LineString, { los: string }> {
     this.checkReady();
     return JSON.parse(this.inner!.renderLevelOfService());
-  }
-
-  renderCoreNetwork(): FeatureCollection {
-    this.checkReady();
-    return JSON.parse(this.inner!.renderCoreNetwork());
   }
 
   renderPrecalculatedFlows(): PrecalculatedFlows {
@@ -157,14 +152,6 @@ export class Backend {
     return JSON.parse(
       this.inner!.getGridMeshDensity(resolution, xOffset, yOffset),
     );
-  }
-
-  classifyExistingNetwork(): FeatureCollection<
-    LineString,
-    { infra_type: string; way: string }
-  > {
-    this.checkReady();
-    return JSON.parse(this.inner!.classifyExistingNetwork());
   }
 
   // Needs loading screen

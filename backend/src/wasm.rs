@@ -227,11 +227,6 @@ impl MapModel {
             .map_err(err_to_js)
     }
 
-    #[wasm_bindgen(js_name = classifyExistingNetwork)]
-    pub fn classify_existing_network_wasm(&self) -> Result<String, JsValue> {
-        self.classify_existing_network().map_err(err_to_js)
-    }
-
     /// true means only import some infra types, false means import anything achieving good LoS
     #[wasm_bindgen(js_name = importExistingRoutes)]
     pub fn import_existing_routes_wasm(&mut self, only_some_infra_types: bool) -> usize {
@@ -358,25 +353,6 @@ impl MapModel {
     #[wasm_bindgen(js_name = renderLevelOfService)]
     pub fn render_level_of_service_wasm(&self) -> Result<String, JsValue> {
         self.render_level_of_service().map_err(err_to_js)
-    }
-
-    #[wasm_bindgen(js_name = renderCoreNetwork)]
-    pub fn render_core_network(&self) -> Result<String, JsValue> {
-        let mut features = Vec::new();
-        for (road, tier) in self.graph.roads.iter().zip(self.core_network.iter()) {
-            if let Some(tier) = tier {
-                let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
-                f.set_property("tier", serde_json::to_value(tier).map_err(err_to_js)?);
-                features.push(f);
-            }
-        }
-
-        Ok(serde_json::to_string(&FeatureCollection {
-            features,
-            bbox: None,
-            foreign_members: None,
-        })
-        .map_err(err_to_js)?)
     }
 
     #[wasm_bindgen(js_name = renderPrecalculatedFlows)]

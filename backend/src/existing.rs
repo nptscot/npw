@@ -1,12 +1,10 @@
 use std::time::Duration;
 
-use anyhow::Result;
 use geo::{Euclidean, Length, LineString};
-use geojson::FeatureCollection;
 use graph::Direction;
 use utils::Tags;
 
-use crate::{level_of_service::get_speed_mph, InfraType, MapModel};
+use crate::{level_of_service::get_speed_mph, InfraType};
 
 /// All of the OSM highway types used anywhere. This forces exhaustive matching of all cases.
 pub enum Highway {
@@ -113,26 +111,6 @@ pub fn car_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration
     let speed = (get_speed_mph(tags) as f64) / 0.44704;
     let cost = Duration::from_secs_f64(linestring.length::<Euclidean>() / speed);
     (dir, cost)
-}
-
-impl MapModel {
-    pub fn classify_existing_network(&self) -> Result<String> {
-        let mut features = Vec::new();
-        for road in &self.graph.roads {
-            if let Some(infra_type) = classify(&road.osm_tags) {
-                let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
-                f.set_property("infra_type", serde_json::to_value(infra_type)?);
-                f.set_property("way", format!("{}", road.way));
-                features.push(f);
-            }
-        }
-
-        Ok(serde_json::to_string(&FeatureCollection {
-            features,
-            bbox: None,
-            foreign_members: None,
-        })?)
-    }
 }
 
 // https://github.com/nptscot/osmactive/blob/main/R/osmactive.R is a reference implementation.
