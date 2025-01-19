@@ -193,7 +193,6 @@ impl MapModel {
         let mut features = Vec::new();
         for (idx, road) in self.graph.roads.iter().enumerate() {
             let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
-
             f.set_property("id", idx);
             f.set_property("way", road.way.to_string());
 
@@ -205,6 +204,34 @@ impl MapModel {
             f.set_property(
                 "existing_infra",
                 serde_json::to_value(existing::classify(&road.osm_tags)).unwrap(),
+            );
+
+            features.push(f);
+        }
+        GeoJson::from(features)
+    }
+
+    pub fn render_dynamic_roads(&self) -> GeoJson {
+        let reachable = self.get_reachable_network();
+
+        let mut features = Vec::new();
+        for (idx, road) in self.graph.roads.iter().enumerate() {
+            let id = RoadID(idx);
+            let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
+            f.set_property("id", idx);
+
+            f.set_property("los", serde_json::to_value(self.los[idx]).unwrap());
+            f.set_property(
+                "reachable",
+                if reachable.network.contains(&id) {
+                    "network"
+                } else if reachable.severances.contains(&id) {
+                    "severance"
+                } else if reachable.reachable.contains(&id) {
+                    "reachable"
+                } else {
+                    "unreachable"
+                },
             );
 
             features.push(f);

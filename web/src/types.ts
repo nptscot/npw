@@ -172,3 +172,9 @@ export interface StaticRoad {
   gradient: number;
   existing_infra: string | null;
 }
+
+export interface DynamicRoad {
+  id: number;
+  los: string;
+  reachable: "network" | "severance" | "reachable" | "unreachable";
+}

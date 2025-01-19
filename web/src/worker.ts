@@ -11,6 +11,7 @@ import type {
   AreaMeshDensity,
   ConnectedComponents,
   DataZones,
+  DynamicRoad,
   EvaluateODOut,
   GPHospitals,
   Greenspaces,
@@ -62,9 +63,9 @@ export class Backend {
     return JSON.parse(this.inner!.renderStaticRoads());
   }
 
-  renderLevelOfService(): FeatureCollection<LineString, { los: string }> {
+  renderDynamicRoads(): FeatureCollection<LineString, DynamicRoad> {
     this.checkReady();
-    return JSON.parse(this.inner!.renderLevelOfService());
+    return JSON.parse(this.inner!.renderDynamicRoads());
   }
 
   renderPrecalculatedFlows(): PrecalculatedFlows {
@@ -199,11 +200,6 @@ export class Backend {
   getDataZones(): DataZones {
     this.checkReady();
     return JSON.parse(this.inner!.getDataZones());
-  }
-
-  renderReachableNetwork(): FeatureCollection {
-    this.checkReady();
-    return JSON.parse(this.inner!.renderReachableNetwork());
   }
 
   debugReachablePath(kind: string, idx: number): FeatureCollection {

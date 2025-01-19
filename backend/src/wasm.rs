@@ -33,6 +33,12 @@ impl MapModel {
         serde_json::to_string(&self.render_static_roads()).map_err(err_to_js)
     }
 
+    /// Returns GJ with one feature per road, with all properties that do change.
+    #[wasm_bindgen(js_name = renderDynamicRoads)]
+    pub fn render_dynamic_roads_wasm(&self) -> Result<String, JsValue> {
+        serde_json::to_string(&self.render_dynamic_roads()).map_err(err_to_js)
+    }
+
     /// Return a polygon covering the world, minus a hole for the boundary, in WGS84
     #[wasm_bindgen(js_name = getInvertedBoundary)]
     pub fn get_inverted_boundary(&self) -> Result<String, JsValue> {
@@ -336,16 +342,6 @@ impl MapModel {
                 .collect(),
         })
         .map_err(err_to_js)
-    }
-
-    #[wasm_bindgen(js_name = renderReachableNetwork)]
-    pub fn render_reachable_network_wasm(&self) -> Result<String, JsValue> {
-        self.render_reachable_network().map_err(err_to_js)
-    }
-
-    #[wasm_bindgen(js_name = renderLevelOfService)]
-    pub fn render_level_of_service_wasm(&self) -> Result<String, JsValue> {
-        self.render_level_of_service().map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = renderPrecalculatedFlows)]
