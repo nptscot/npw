@@ -2,7 +2,7 @@
   import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
   import { Loading, Modal, notNull } from "svelte-utils";
   import { constructMatchExpression, Popup } from "svelte-utils/map";
-  import { colorByInfraType } from "../colors";
+  import { infraTypeColors } from "../colors";
   import { layerId, roadLineWidth } from "../common";
   import { assetUrl, autosave, backend, devMode, roadStyle } from "../stores";
   import { infraTypeMapping } from "../types";
@@ -119,16 +119,21 @@
 </VectorTileSource>
 
 {#if $backend && firstLoad}
-  {#await $backend.classifyExistingNetwork() then data}
+  {#await $backend.renderStaticRoads() then data}
     <GeoJSON {data} generateId>
       <LineLayer
         {...layerId("existing-infra")}
         layout={{
           visibility: show && showCalculated ? "visible" : "none",
         }}
+        filter={["to-boolean", ["get", "existing_infra"]]}
         paint={{
           "line-width": roadLineWidth(0),
-          "line-color": colorByInfraType,
+          "line-color": constructMatchExpression(
+            ["get", "existing_infra"],
+            infraTypeColors,
+            "red",
+          ),
         }}
         manageHoverState
         on:click={(e) =>
@@ -136,7 +141,7 @@
         hoverCursor="pointer"
       >
         <Popup openOn="hover" let:props>
-          {infraTypeMapping[props.infra_type][0]}
+          {infraTypeMapping[props.existing_infra][0]}
         </Popup>
       </LineLayer>
     </GeoJSON>

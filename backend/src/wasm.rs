@@ -27,6 +27,12 @@ impl MapModel {
         Ok(map)
     }
 
+    /// Returns GJ with one feature per road, with all properties that never change.
+    #[wasm_bindgen(js_name = renderStaticRoads)]
+    pub fn render_static_roads_wasm(&self) -> Result<String, JsValue> {
+        serde_json::to_string(&self.render_static_roads()).map_err(err_to_js)
+    }
+
     /// Returns a GeoJSON string. Just shows the full network
     #[wasm_bindgen(js_name = renderDebug)]
     pub fn render_debug(&self) -> Result<String, JsValue> {

@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 use enum_map::Enum;
 use geo::MultiPolygon;
-use geojson::Feature;
+use geojson::{Feature, GeoJson};
 use graph::{Graph, RoadID};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
@@ -56,7 +56,7 @@ pub struct MapModel {
     data_zones: Vec<places::DataZone>,
     greenspaces: Vec<places::Greenspace>,
 
-    // Per RoadID
+    // Per RoadID, static data
     traffic_volumes: Vec<usize>,
     core_network: Vec<Option<Tier>>,
     // Go Dutch totals for all purposes
@@ -65,7 +65,8 @@ pub struct MapModel {
     speeds: Vec<usize>,
     // A percent. Positive if uphill in the forwards direction, negative if downhill
     gradients: Vec<f64>,
-    // Derived things maintained by recalculate_after_edits
+
+    // Derived things per RoadID maintained by recalculate_after_edits
     #[serde(skip_serializing, skip_deserializing, default)]
     infra_types: Vec<Option<InfraType>>,
     #[serde(skip_serializing, skip_deserializing, default)]
@@ -186,5 +187,28 @@ impl MapModel {
 
     pub fn get_infra_type(&self, r: RoadID) -> InfraType {
         self.infra_types[r.0].unwrap_or(InfraType::MixedTraffic)
+    }
+
+    pub fn render_static_roads(&self) -> GeoJson {
+        let mut features = Vec::new();
+        for (idx, road) in self.graph.roads.iter().enumerate() {
+            let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
+
+            f.set_property("id", idx);
+            f.set_property("way", road.way.to_string());
+
+            f.set_property("traffic", self.traffic_volumes[idx]);
+            f.set_property("cn", serde_json::to_value(self.core_network[idx]).unwrap());
+            // TODO precalculated_flows
+            f.set_property("speed", self.speeds[idx]);
+            f.set_property("gradient", self.gradients[idx]);
+            f.set_property(
+                "existing_infra",
+                serde_json::to_value(existing::classify(&road.osm_tags)).unwrap(),
+            );
+
+            features.push(f);
+        }
+        GeoJson::from(features)
     }
 }
