@@ -4,16 +4,22 @@
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { colorByLoS, levelOfServiceColors } from "../colors";
   import { layerId, QualitativeLegend, roadLineWidth } from "../common";
-  import { assetUrl, backend, devMode, mutationCounter } from "../stores";
+  import {
+    assetUrl,
+    backend,
+    devMode,
+    mutationCounter,
+    roadStyle,
+  } from "../stores";
   import { infraTypeMapping } from "../types";
-  import LayerControls from "./LayerControls.svelte";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
   let lastUpdate = 0;
   let data: FeatureCollection = {
     type: "FeatureCollection",
     features: [],
   };
-  let show = false;
+  $: show = $roadStyle == "los";
   let showOrig = false;
   let showCurrent = true;
 
@@ -29,7 +35,7 @@
   }
 </script>
 
-<LayerControls name="Level of Service" bind:show>
+<RoadLayerControls name="Level of Service" style="los">
   {#if $devMode}
     <label>
       <input type="checkbox" bind:checked={showOrig} />
@@ -43,7 +49,7 @@
   {/if}
 
   <QualitativeLegend colors={levelOfServiceColors} />
-</LayerControls>
+</RoadLayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->
 <VectorTileSource url={`pmtiles://${assetUrl("cbd.pmtiles")}`}>

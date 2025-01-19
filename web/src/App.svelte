@@ -24,7 +24,7 @@
     mapContents,
     rightSidebarContents,
   } from "./common/layout";
-  import RouteLegend from "./common/RouteLegend.svelte";
+  import RoadStyle from "./common/RoadStyle.svelte";
   import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import { routeTool } from "./edit/stores";
@@ -202,8 +202,6 @@
       {/if}
       <DisableInteractiveLayers />
 
-      <RouteLegend />
-
       <div bind:this={mapDiv} />
 
       {#if $backend}
@@ -234,6 +232,8 @@
     <div bind:this={rightSidebarDiv} />
 
     <hr />
+
+    <RoadStyle />
 
     <label>
       <input type="checkbox" bind:checked={$devMode} />

@@ -12,14 +12,21 @@
     colorByGradientGroup,
     colorByInfraType,
     colorByLoS,
+    colorByTier,
     gradientColors,
     levelOfServiceColors,
   } from "./colors";
   import { layerId, QualitativeLegend } from "./common";
   import { SplitComponent } from "./common/layout";
   import Directions from "./Directions.svelte";
-  import { currentNetwork } from "./layers/stores";
-  import { backend, mode, routeA, routeB, type Mode } from "./stores";
+  import {
+    backend,
+    mode,
+    roadStyle,
+    routeA,
+    routeB,
+    type Mode,
+  } from "./stores";
   import type { RouteGJ, WorstRoutes } from "./types";
 
   export let prevMode: Mode;
@@ -125,10 +132,14 @@
           {...layerId("eval-current-routes")}
           paint={{
             "line-width": 5,
-            "line-color": colorByInfraType,
+            "line-color":
+              $roadStyle == "current_infra" ? colorByInfraType : colorByTier,
           }}
           layout={{
-            visibility: $currentNetwork ? "visible" : "none",
+            visibility:
+              $roadStyle == "current_infra" || $roadStyle == "tier"
+                ? "visible"
+                : "none",
           }}
         />
       </GeoJSON>

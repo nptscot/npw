@@ -3,11 +3,11 @@
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
   import { layerId, QualitativeLegend, roadLineWidth } from "../common";
-  import { backend, mutationCounter } from "../stores";
-  import LayerControls from "./LayerControls.svelte";
+  import { backend, mutationCounter, roadStyle } from "../stores";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
   import { severances } from "./stores";
 
-  let show = false;
+  $: show = $roadStyle == "reachability";
 
   let lastUpdate = 0;
   let data: FeatureCollection = {
@@ -33,9 +33,9 @@
   };
 </script>
 
-<LayerControls name="Reachable network" bind:show>
+<RoadLayerControls name="Reachable network" style="reachability">
   <QualitativeLegend {colors} />
-</LayerControls>
+</RoadLayerControls>
 
 <GeoJSON {data}>
   <LineLayer
