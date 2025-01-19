@@ -1,6 +1,6 @@
 <script lang="ts">
   import { infraTypeColors, levelOfServiceColors, tierColors } from "../colors";
-  import type { ODStats } from "../stores";
+  import type { ODStats } from "../types";
 
   export let od: ODStats;
 </script>

@@ -35,7 +35,8 @@
     overflow: hidden;
   }
 
-  .left, .right {
+  .left,
+  .right {
     width: 25%;
     overflow-y: auto;
     padding: 4px;

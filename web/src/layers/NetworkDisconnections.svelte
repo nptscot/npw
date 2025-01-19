@@ -8,12 +8,8 @@
   } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
   import { layerId, roadLineWidth } from "../common";
-  import {
-    backend,
-    map,
-    mutationCounter,
-    type ConnectedComponents,
-  } from "../stores";
+  import { backend, map, mutationCounter } from "../stores";
+  import type { ConnectedComponents } from "../types";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;

@@ -5,7 +5,8 @@
   import { colorByInfraType, colorByLoS } from "../colors";
   import { layerId } from "../common";
   import ODBreakdowns from "../stats/ODBreakdowns.svelte";
-  import { backend, mutationCounter, type EvaluateODOut } from "../stores";
+  import { backend, mutationCounter } from "../stores";
+  import type { EvaluateODOut } from "../types";
   import { lineColorForDemand, lineWidthForDemand } from "../utils";
   import LayerControls from "./LayerControls.svelte";
 

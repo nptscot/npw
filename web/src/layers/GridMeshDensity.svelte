@@ -8,7 +8,8 @@
   import { SequentialLegend } from "svelte-utils";
   import { makeRamp, Popup } from "svelte-utils/map";
   import { layerId } from "../common";
-  import { backend, mutationCounter, type GridMeshDensity } from "../stores";
+  import { backend, mutationCounter } from "../stores";
+  import type { GridMeshDensity } from "../types";
   import LayerControls from "./LayerControls.svelte";
   import { gridMeshDensity as show } from "./stores";
 

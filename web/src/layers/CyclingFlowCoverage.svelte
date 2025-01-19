@@ -3,7 +3,8 @@
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
-  import { backend, mutationCounter, type PrecalculatedFlows } from "../stores";
+  import { backend, mutationCounter } from "../stores";
+  import type { PrecalculatedFlows } from "../types";
   import { lineWidthForDemand, percent } from "../utils";
   import LayerControls from "./LayerControls.svelte";
 

@@ -20,11 +20,11 @@
   import {
     backend,
     colorRoutesBy,
-    infraTypeMapping,
     mode,
     mutationCounter,
     tier,
   } from "./stores";
+  import { infraTypeMapping } from "./types";
 
   let gj: FeatureCollection | null = null;
   onMount(recalc);

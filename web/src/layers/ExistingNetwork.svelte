@@ -4,7 +4,8 @@
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { colorByInfraType } from "../colors";
   import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, autosave, backend, infraTypeMapping } from "../stores";
+  import { assetUrl, autosave, backend } from "../stores";
+  import { infraTypeMapping } from "../types";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;

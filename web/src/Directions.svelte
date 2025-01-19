@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { RouteGJ, Step } from "./stores";
+  import type { RouteGJ, Step } from "./types";
 
   export let gj: RouteGJ;
   export let showDirectBikeRoute: boolean;

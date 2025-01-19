@@ -19,15 +19,8 @@
   import { SplitComponent } from "./common/layout";
   import Directions from "./Directions.svelte";
   import { currentNetwork } from "./layers/stores";
-  import {
-    backend,
-    mode,
-    routeA,
-    routeB,
-    type Mode,
-    type RouteGJ,
-    type WorstRoutes,
-  } from "./stores";
+  import { backend, mode, routeA, routeB, type Mode } from "./stores";
+  import type { RouteGJ, WorstRoutes } from "./types";
 
   export let prevMode: Mode;
   export let browse: WorstRoutes;

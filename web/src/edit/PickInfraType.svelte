@@ -5,7 +5,7 @@
   import icon3 from "../../assets/SegregatedNarrow.jpg";
   import icon1 from "../../assets/SegregatedWide.jpg";
   import icon4 from "../../assets/SharedFootway.jpg";
-  import { infraTypeMapping } from "../stores";
+  import { infraTypeMapping } from "../types";
 
   export let current: string;
 

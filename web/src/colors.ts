@@ -1,5 +1,5 @@
 import { constructMatchExpression } from "svelte-utils/map";
-import { infraTypes } from "./stores";
+import { infraTypes } from "./types";
 
 export let infraTypeColors = Object.fromEntries(
   infraTypes.map((x) => [x[0], x[2]]),

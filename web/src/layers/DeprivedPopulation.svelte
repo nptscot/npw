@@ -8,7 +8,8 @@
   import { SequentialLegend } from "svelte-utils";
   import { makeRamp, Popup } from "svelte-utils/map";
   import { layerId } from "../common";
-  import { backend, mutationCounter, type DataZones } from "../stores";
+  import { backend, mutationCounter } from "../stores";
+  import type { DataZones } from "../types";
   import { percent, sum } from "../utils";
   import LayerControls from "./LayerControls.svelte";
   import { deprivedPopulation as show } from "./stores";

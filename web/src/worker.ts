@@ -24,7 +24,7 @@ import type {
   Settlements,
   Stats,
   TownCentres,
-} from "./stores";
+} from "./types";
 
 export class Backend {
   inner: MapModel | null;

@@ -3,7 +3,8 @@
   import { GeoJSON, SymbolLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId, QualitativeLegend } from "../common";
-  import { backend, mutationCounter, type GPHospitals } from "../stores";
+  import { backend, mutationCounter } from "../stores";
+  import type { GPHospitals } from "../types";
   import { percent } from "../utils";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";

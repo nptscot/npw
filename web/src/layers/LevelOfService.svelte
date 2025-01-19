@@ -4,12 +4,8 @@
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { colorByLoS, levelOfServiceColors } from "../colors";
   import { layerId, QualitativeLegend, roadLineWidth } from "../common";
-  import {
-    assetUrl,
-    backend,
-    infraTypeMapping,
-    mutationCounter,
-  } from "../stores";
+  import { assetUrl, backend, mutationCounter } from "../stores";
+  import { infraTypeMapping } from "../types";
   import LayerControls from "./LayerControls.svelte";
 
   let lastUpdate = 0;

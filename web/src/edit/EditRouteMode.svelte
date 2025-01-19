@@ -14,8 +14,8 @@
     mode,
     routeA,
     routeB,
-    type RouteProps,
   } from "../stores";
+  import type { RouteProps } from "../types";
   import RouteControls from "./RouteControls.svelte";
   import { routeTool, waypoints, type Waypoint } from "./stores";
 
