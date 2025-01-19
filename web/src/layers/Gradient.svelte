@@ -19,7 +19,7 @@
 <RoadLayerControls name="Gradient" style="gradient" />
 
 {#if $backend && firstLoad}
-  {#await $backend.renderLevelOfService() then data}
+  {#await $backend.renderStaticRoads() then data}
     <GeoJSON {data} generateId>
       <LineLayer
         {...layerId("gradients")}

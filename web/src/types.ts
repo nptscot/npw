@@ -162,3 +162,13 @@ export type ConnectedComponents = FeatureCollection<
 > & {
   component_sizes: number[];
 };
+
+export interface StaticRoad {
+  id: number;
+  way: number;
+  traffic: number;
+  cn: Tier | null;
+  speed: number;
+  gradient: number;
+  existing_infra: string | null;
+}

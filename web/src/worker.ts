@@ -22,6 +22,7 @@ import type {
   Schools,
   SetRouteInput,
   Settlements,
+  StaticRoad,
   Stats,
   TownCentres,
 } from "./types";
@@ -54,6 +55,11 @@ export class Backend {
   getInvertedBoundary(): Feature<Polygon> {
     this.checkReady();
     return JSON.parse(this.inner!.getInvertedBoundary());
+  }
+
+  renderStaticRoads(): FeatureCollection<LineString, StaticRoad> {
+    this.checkReady();
+    return JSON.parse(this.inner!.renderStaticRoads());
   }
 
   renderDebug(): FeatureCollection {

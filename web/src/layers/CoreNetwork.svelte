@@ -2,7 +2,7 @@
   import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
   import { Loading } from "svelte-utils";
   import { constructMatchExpression } from "svelte-utils/map";
-  import { colorByTier } from "../colors";
+  import { tierColors } from "../colors";
   import { layerId, roadLineWidth } from "../common";
   import { assetUrl, autosave, backend, devMode, roadStyle } from "../stores";
   import RoadLayerControls from "./RoadLayerControls.svelte";
@@ -74,12 +74,17 @@
 </VectorTileSource>
 
 {#if $backend && firstLoad}
-  {#await $backend.renderCoreNetwork() then data}
+  {#await $backend.renderStaticRoads() then data}
     <GeoJSON {data} generateId>
       <LineLayer
         {...layerId("cn")}
+        filter={["to-boolean", ["get", "cn"]]}
         paint={{
-          "line-color": colorByTier,
+          "line-color": constructMatchExpression(
+            ["get", "cn"],
+            tierColors,
+            "cyan",
+          ),
           "line-width": roadLineWidth(0),
         }}
         layout={{
