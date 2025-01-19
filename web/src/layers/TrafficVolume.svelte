@@ -3,10 +3,10 @@
   import { SequentialLegend } from "svelte-utils";
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
   import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, backend, devMode } from "../stores";
-  import LayerControls from "./LayerControls.svelte";
+  import { assetUrl, backend, devMode, roadStyle } from "../stores";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
-  let show = false;
+  $: show = $roadStyle == "traffic";
   let firstLoad = false;
 
   $: if (show) {
@@ -20,7 +20,7 @@
   let showMatched = true;
 </script>
 
-<LayerControls name="Estimated traffic volume" bind:show>
+<RoadLayerControls name="Estimated traffic volume" style="traffic">
   <SequentialLegend {colorScale} {limits} />
 
   {#if $devMode}
@@ -34,7 +34,7 @@
       Show map-matched data
     </label>
   {/if}
-</LayerControls>
+</RoadLayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->
 <VectorTileSource url={`pmtiles://${assetUrl("cbd.pmtiles")}`}>

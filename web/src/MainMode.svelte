@@ -15,14 +15,13 @@
   import ManageFiles from "./common/ManageFiles.svelte";
   import StreetView from "./common/StreetView.svelte";
   import AllControls from "./layers/AllControls.svelte";
-  import { currentNetwork } from "./layers/stores";
   import Stats from "./stats/Stats.svelte";
   import {
     backend,
-    colorRoutesBy,
     devMode,
     mode,
     mutationCounter,
+    roadStyle,
     tier,
   } from "./stores";
   import { infraTypeMapping } from "./types";
@@ -69,20 +68,8 @@
       oute line
     </button>
 
-    <label>
-      <input type="checkbox" bind:checked={$currentNetwork} />
-      Show current network
-    </label>
     <details>
       <summary>Current network routes</summary>
-
-      <label>
-        Show routes by:
-        <select bind:value={$colorRoutesBy}>
-          <option value="infra_type">Infrastructure type</option>
-          <option value="tier">Tier</option>
-        </select>
-      </label>
 
       {#if gj}
         <ol>
@@ -116,10 +103,13 @@
               hoverStateFilter(3, 5),
             ],
             "line-color":
-              $colorRoutesBy == "infra_type" ? colorByInfraType : colorByTier,
+              $roadStyle == "current_infra" ? colorByInfraType : colorByTier,
           }}
           layout={{
-            visibility: $currentNetwork ? "visible" : "none",
+            visibility:
+              $roadStyle == "current_infra" || $roadStyle == "tier"
+                ? "visible"
+                : "none",
           }}
           manageHoverState
           hoverCursor="pointer"

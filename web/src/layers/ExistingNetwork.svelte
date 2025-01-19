@@ -4,14 +4,15 @@
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { colorByInfraType } from "../colors";
   import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, autosave, backend, devMode } from "../stores";
+  import { assetUrl, autosave, backend, devMode, roadStyle } from "../stores";
   import { infraTypeMapping } from "../types";
-  import LayerControls from "./LayerControls.svelte";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
-  let show = false;
   let firstLoad = false;
   let showImportModal = false;
   let loading = "";
+
+  $: show = $roadStyle == "existing_infra";
 
   $: if (show) {
     firstLoad = true;
@@ -36,7 +37,7 @@
 
 <Loading {loading} />
 
-<LayerControls name="Existing network" bind:show>
+<RoadLayerControls name="Existing network" style="existing_infra">
   <button class="outline" on:click={() => (showImportModal = true)}>
     Import existing routes
   </button>
@@ -52,7 +53,7 @@
       Show calculated data
     </label>
   {/if}
-</LayerControls>
+</RoadLayerControls>
 
 {#if showImportModal}
   <span class="pico">

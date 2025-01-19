@@ -3,10 +3,10 @@
   import { SequentialLegend } from "svelte-utils";
   import { makeRamp, Popup } from "svelte-utils/map";
   import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, backend, devMode } from "../stores";
-  import LayerControls from "./LayerControls.svelte";
+  import { assetUrl, backend, devMode, roadStyle } from "../stores";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
-  let show = false;
+  $: show = $roadStyle == "speed";
   let showOrig = false;
   let showMatched = true;
   let firstLoad = false;
@@ -26,7 +26,7 @@
   let limits = [20, 30, 40, 50, 60, 70];
 </script>
 
-<LayerControls name="Estimated speed limit" bind:show>
+<RoadLayerControls name="Estimated speed limit" style="speed">
   {#if $devMode}
     <label>
       <input type="checkbox" bind:checked={showOrig} />
@@ -40,7 +40,7 @@
   {/if}
 
   <SequentialLegend {colorScale} {limits} />
-</LayerControls>
+</RoadLayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->
 <VectorTileSource url={`pmtiles://${assetUrl("cbd.pmtiles")}`}>

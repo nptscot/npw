@@ -8,11 +8,11 @@
   } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
   import { layerId, roadLineWidth } from "../common";
-  import { backend, map, mutationCounter } from "../stores";
+  import { backend, map, mutationCounter, roadStyle } from "../stores";
   import type { ConnectedComponents } from "../types";
-  import LayerControls from "./LayerControls.svelte";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
-  let show = false;
+  $: show = $roadStyle == "disconnections";
 
   let lastUpdate = 0;
   let data: ConnectedComponents = {
@@ -69,7 +69,7 @@
   }
 </script>
 
-<LayerControls name="Network disconnections" bind:show>
+<RoadLayerControls name="Network disconnections" style="disconnections">
   <p>
     The network you create should usually all be connected as one component.
   </p>
@@ -85,7 +85,7 @@
       </p>
     {/if}
   </ul>
-</LayerControls>
+</RoadLayerControls>
 
 <MapEvents on:click={onClick} />
 

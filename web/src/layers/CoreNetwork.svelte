@@ -4,12 +4,13 @@
   import { constructMatchExpression } from "svelte-utils/map";
   import { colorByTier } from "../colors";
   import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, autosave, backend, devMode } from "../stores";
-  import LayerControls from "./LayerControls.svelte";
+  import { assetUrl, autosave, backend, devMode, roadStyle } from "../stores";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
-  let show = false;
   let firstLoad = false;
   let loading = "";
+
+  $: show = $roadStyle == "cn";
 
   $: if (show) {
     firstLoad = true;
@@ -32,7 +33,7 @@
 
 <Loading {loading} />
 
-<LayerControls name="Core network" bind:show>
+<RoadLayerControls name="Core network" style="cn">
   <button class="outline" on:click={importExisting}>Import core network</button>
 
   {#if $devMode}
@@ -46,7 +47,7 @@
       Show map-matched core network
     </label>
   {/if}
-</LayerControls>
+</RoadLayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->
 <VectorTileSource url={`pmtiles://${assetUrl("core_network.pmtiles")}`}>

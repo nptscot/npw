@@ -31,8 +31,20 @@ export let routeA: Writable<{ lng: number; lat: number } | null> =
 export let routeB: Writable<{ lng: number; lat: number } | null> =
   writable(null);
 
-export let colorRoutesBy: Writable<"infra_type" | "tier"> =
-  writable("infra_type");
+export type RoadStyle =
+  | "off"
+  | "current_infra"
+  | "tier"
+  | "cn"
+  | "existing_infra"
+  | "traffic"
+  | "gradient"
+  | "speed"
+  | "los"
+  | "reachability"
+  | "disconnections";
+
+export let roadStyle: Writable<RoadStyle> = writable("current_infra");
 
 export let interactiveMapLayersEnabled = writable(true);
 

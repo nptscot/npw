@@ -2,11 +2,11 @@
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId, roadLineWidth } from "../common";
-  import { backend } from "../stores";
+  import { backend, roadStyle } from "../stores";
   import { lineColorForGradient } from "../utils";
-  import LayerControls from "./LayerControls.svelte";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
-  let show = false;
+  $: show = $roadStyle == "gradient";
   let firstLoad = false;
 
   $: if (show) {
@@ -16,7 +16,7 @@
   // TODO Legend
 </script>
 
-<LayerControls name="Gradient" bind:show />
+<RoadLayerControls name="Gradient" style="gradient" />
 
 {#if $backend && firstLoad}
   {#await $backend.renderLevelOfService() then data}
