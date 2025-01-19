@@ -19,15 +19,8 @@ impl MapModel {
     pub fn render_level_of_service(&self) -> Result<String> {
         let mut features = Vec::new();
         for (idx, road) in self.graph.roads.iter().enumerate() {
-            let id = RoadID(idx);
-
             let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
             f.set_property("los", serde_json::to_value(self.los[idx])?);
-            f.set_property("infra_type", serde_json::to_value(self.get_infra_type(id))?);
-            f.set_property("traffic", self.traffic_volumes[idx]);
-            f.set_property("speed", self.speeds[idx]);
-            // TODO Abusing this here; need to consolidate the output layers
-            f.set_property("gradient", self.gradients[idx]);
             features.push(f);
         }
 
