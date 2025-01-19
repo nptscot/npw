@@ -37,6 +37,7 @@ export let colorRoutesBy: Writable<"infra_type" | "tier"> =
 export let interactiveMapLayersEnabled = writable(true);
 
 export let remoteStorage = writable(true);
+export let devMode = writable(import.meta.env.MODE == "development");
 
 // For now, the user manually recalculates this
 export let stats: Writable<Stats | null> = writable(null);

@@ -4,7 +4,7 @@
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { colorByLoS, levelOfServiceColors } from "../colors";
   import { layerId, QualitativeLegend, roadLineWidth } from "../common";
-  import { assetUrl, backend, mutationCounter } from "../stores";
+  import { assetUrl, backend, devMode, mutationCounter } from "../stores";
   import { infraTypeMapping } from "../types";
   import LayerControls from "./LayerControls.svelte";
 
@@ -30,15 +30,17 @@
 </script>
 
 <LayerControls name="Level of Service" bind:show>
-  <label>
-    <input type="checkbox" bind:checked={showOrig} />
-    Show original data
-  </label>
+  {#if $devMode}
+    <label>
+      <input type="checkbox" bind:checked={showOrig} />
+      Show original data
+    </label>
 
-  <label>
-    <input type="checkbox" bind:checked={showCurrent} />
-    Show current derived data
-  </label>
+    <label>
+      <input type="checkbox" bind:checked={showCurrent} />
+      Show current derived data
+    </label>
+  {/if}
 
   <QualitativeLegend colors={levelOfServiceColors} />
 </LayerControls>

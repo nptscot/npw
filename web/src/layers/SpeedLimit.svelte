@@ -3,7 +3,7 @@
   import { SequentialLegend } from "svelte-utils";
   import { makeRamp, Popup } from "svelte-utils/map";
   import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, backend } from "../stores";
+  import { assetUrl, backend, devMode } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;
@@ -27,15 +27,17 @@
 </script>
 
 <LayerControls name="Estimated speed limit" bind:show>
-  <label>
-    <input type="checkbox" bind:checked={showOrig} />
-    Show original data
-  </label>
+  {#if $devMode}
+    <label>
+      <input type="checkbox" bind:checked={showOrig} />
+      Show original data
+    </label>
 
-  <label>
-    <input type="checkbox" bind:checked={showMatched} />
-    Show map-matched data
-  </label>
+    <label>
+      <input type="checkbox" bind:checked={showMatched} />
+      Show map-matched data
+    </label>
+  {/if}
 
   <SequentialLegend {colorScale} {limits} />
 </LayerControls>

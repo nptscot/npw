@@ -36,6 +36,7 @@
     backend,
     boundaryName,
     currentFilename,
+    devMode,
     map as mapStore,
     maptilerApiKey,
     mode,
@@ -230,6 +231,13 @@
   </div>
   <div slot="right">
     <div bind:this={rightSidebarDiv} />
+
+    <hr />
+
+    <label>
+      <input type="checkbox" bind:checked={$devMode} />
+      Dev mode
+    </label>
   </div>
 </Layout>
 

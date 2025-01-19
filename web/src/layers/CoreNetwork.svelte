@@ -4,7 +4,7 @@
   import { constructMatchExpression } from "svelte-utils/map";
   import { colorByTier } from "../colors";
   import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, autosave, backend } from "../stores";
+  import { assetUrl, autosave, backend, devMode } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;
@@ -35,15 +35,17 @@
 <LayerControls name="Core network" bind:show>
   <button class="outline" on:click={importExisting}>Import core network</button>
 
-  <label>
-    <input type="checkbox" bind:checked={showTruth} />
-    Show actual core network
-  </label>
+  {#if $devMode}
+    <label>
+      <input type="checkbox" bind:checked={showTruth} />
+      Show actual core network
+    </label>
 
-  <label>
-    <input type="checkbox" bind:checked={showMatched} />
-    Show map-matched core network
-  </label>
+    <label>
+      <input type="checkbox" bind:checked={showMatched} />
+      Show map-matched core network
+    </label>
+  {/if}
 </LayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->

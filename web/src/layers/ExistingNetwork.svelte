@@ -4,7 +4,7 @@
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { colorByInfraType } from "../colors";
   import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, autosave, backend } from "../stores";
+  import { assetUrl, autosave, backend, devMode } from "../stores";
   import { infraTypeMapping } from "../types";
   import LayerControls from "./LayerControls.svelte";
 
@@ -41,15 +41,17 @@
     Import existing routes
   </button>
 
-  <label>
-    <input type="checkbox" bind:checked={showTruth} />
-    Show osmactive data
-  </label>
+  {#if $devMode}
+    <label>
+      <input type="checkbox" bind:checked={showTruth} />
+      Show osmactive data
+    </label>
 
-  <label>
-    <input type="checkbox" bind:checked={showCalculated} />
-    Show calculated data
-  </label>
+    <label>
+      <input type="checkbox" bind:checked={showCalculated} />
+      Show calculated data
+    </label>
+  {/if}
 </LayerControls>
 
 {#if showImportModal}

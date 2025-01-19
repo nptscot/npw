@@ -20,6 +20,7 @@
   import {
     backend,
     colorRoutesBy,
+    devMode,
     mode,
     mutationCounter,
     tier,
@@ -150,14 +151,16 @@
       </button>
     </div>
 
-    <div>
-      <button
-        class="secondary"
-        on:click={() => ($mode = { kind: "debug-network" })}
-      >
-        Debug network
-      </button>
-    </div>
+    {#if $devMode}
+      <div>
+        <button
+          class="secondary"
+          on:click={() => ($mode = { kind: "debug-network" })}
+        >
+          Debug network
+        </button>
+      </div>
+    {/if}
 
     <StreetView />
   </div>

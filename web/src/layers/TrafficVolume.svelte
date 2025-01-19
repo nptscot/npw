@@ -3,7 +3,7 @@
   import { SequentialLegend } from "svelte-utils";
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
   import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, backend } from "../stores";
+  import { assetUrl, backend, devMode } from "../stores";
   import LayerControls from "./LayerControls.svelte";
 
   let show = false;
@@ -23,15 +23,17 @@
 <LayerControls name="Estimated traffic volume" bind:show>
   <SequentialLegend {colorScale} {limits} />
 
-  <label>
-    <input type="checkbox" bind:checked={showTruth} />
-    Show actual data
-  </label>
+  {#if $devMode}
+    <label>
+      <input type="checkbox" bind:checked={showTruth} />
+      Show actual data
+    </label>
 
-  <label>
-    <input type="checkbox" bind:checked={showMatched} />
-    Show map-matched data
-  </label>
+    <label>
+      <input type="checkbox" bind:checked={showMatched} />
+      Show map-matched data
+    </label>
+  {/if}
 </LayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->
