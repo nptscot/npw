@@ -15,7 +15,7 @@
   </div>
 
   <div slot="map">
-    {#await notNull($backend).renderDebug() then data}
+    {#await notNull($backend).renderStaticRoads() then data}
       <GeoJSON {data} generateId>
         <LineLayer
           {...layerId("debug-mode")}
