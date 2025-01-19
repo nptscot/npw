@@ -17,7 +17,7 @@
 
   async function recalc() {
     if ($backend && lastUpdate != $mutationCounter) {
-      data = await $backend.renderReachableNetwork();
+      data = await $backend.renderDynamicRoads();
       lastUpdate = $mutationCounter;
     }
   }
@@ -43,10 +43,16 @@
     layout={{
       visibility: show || $severances ? "visible" : "none",
     }}
-    filter={$severances ? ["==", ["get", "kind"], "severance"] : undefined}
+    filter={$severances
+      ? ["==", ["get", "reachable"], "severance"]
+      : ["!=", ["get", "reachable"], "unreachable"]}
     paint={{
       "line-width": roadLineWidth(0),
-      "line-color": constructMatchExpression(["get", "kind"], colors, "black"),
+      "line-color": constructMatchExpression(
+        ["get", "reachable"],
+        colors,
+        "black",
+      ),
       "line-opacity": 0.8,
     }}
   />

@@ -71,32 +71,6 @@ impl MapModel {
         }
     }
 
-    pub fn render_reachable_network(&self) -> Result<String> {
-        let mut features = Vec::new();
-        let out = self.get_reachable_network();
-
-        for (kind, list) in [
-            ("network", out.network),
-            ("severance", out.severances),
-            ("reachable", out.reachable),
-        ] {
-            for r in list {
-                let mut f = self
-                    .graph
-                    .mercator
-                    .to_wgs84_gj(&self.graph.roads[r.0].linestring);
-                f.set_property("kind", kind);
-                features.push(f);
-            }
-        }
-
-        Ok(serde_json::to_string(&FeatureCollection {
-            features,
-            bbox: None,
-            foreign_members: None,
-        })?)
-    }
-
     /// Show the shortest distance path from any of the start roads to any part of the network.
     pub fn debug_reachable_path(&self, start_roads: HashSet<RoadID>) -> Result<String> {
         let mut visited: HashSet<RoadID> = HashSet::new();

@@ -24,7 +24,7 @@
 
   async function recalc() {
     if ($backend && lastUpdate != $mutationCounter) {
-      data = await $backend.renderLevelOfService();
+      data = await $backend.renderDynamicRoads();
       lastUpdate = $mutationCounter;
     }
   }

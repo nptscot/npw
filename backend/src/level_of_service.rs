@@ -1,6 +1,4 @@
-use anyhow::Result;
 use enum_map::Enum;
-use geojson::FeatureCollection;
 use graph::RoadID;
 use serde::Serialize;
 use utils::Tags;
@@ -16,21 +14,6 @@ pub enum LevelOfService {
 }
 
 impl MapModel {
-    pub fn render_level_of_service(&self) -> Result<String> {
-        let mut features = Vec::new();
-        for (idx, road) in self.graph.roads.iter().enumerate() {
-            let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
-            f.set_property("los", serde_json::to_value(self.los[idx])?);
-            features.push(f);
-        }
-
-        Ok(serde_json::to_string(&FeatureCollection {
-            features,
-            bbox: None,
-            foreign_members: None,
-        })?)
-    }
-
     pub fn calculate_level_of_service(&self, r: RoadID) -> LevelOfService {
         get_level_of_service(
             self.get_infra_type(r),
