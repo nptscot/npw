@@ -9,7 +9,7 @@
   <select bind:value={$roadStyle}>
     <option value="off">Don't show</option>
     <option value="current_infra">Current infrastructure type</option>
-    <option value="tier">Tier</option>
+    <option value="current_tier">Tier</option>
     <option value="cn">Core network</option>
     <option value="existing_infra">Existing infrastructure type</option>
     <option value="traffic">Estimated traffic volume</option>
@@ -25,7 +25,7 @@
   <summary>Legend</summary>
   {#if $roadStyle == "current_infra"}
     <QualitativeLegend colors={infraTypeColors} />
-  {:else if $roadStyle == "tier"}
+  {:else if $roadStyle == "current_tier"}
     <QualitativeLegend colors={tierColors} />
   {/if}
 </details>

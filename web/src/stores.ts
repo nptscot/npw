@@ -34,7 +34,7 @@ export let routeB: Writable<{ lng: number; lat: number } | null> =
 export type RoadStyle =
   | "off"
   | "current_infra"
-  | "tier"
+  | "current_tier"
   | "cn"
   | "existing_infra"
   | "traffic"
