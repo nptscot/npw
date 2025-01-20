@@ -1,17 +1,12 @@
 <script lang="ts">
-  import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
+  import { LineLayer, VectorTileSource } from "svelte-maplibre";
   import { SequentialLegend } from "svelte-utils";
-  import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
-  import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, backend, devMode, roadStyle } from "../stores";
-  import RoadLayerControls from "./RoadLayerControls.svelte";
+  import { constructMatchExpression } from "svelte-utils/map";
+  import { layerId, roadLineWidth } from "../../common";
+  import { assetUrl, devMode, roadStyle } from "../../stores";
+  import RoadLayerControls from "../RoadLayerControls.svelte";
 
   $: show = $roadStyle == "traffic";
-  let firstLoad = false;
-
-  $: if (show) {
-    firstLoad = true;
-  }
 
   let colorScale = ["#27918d", "#ffaa33", "#440154"];
   let limits = [0, 2000, 4000, 10000];
@@ -59,26 +54,3 @@
     }}
   />
 </VectorTileSource>
-
-{#if $backend && firstLoad}
-  {#await $backend.renderStaticRoads() then data}
-    <GeoJSON {data} generateId>
-      <LineLayer
-        {...layerId("traffic")}
-        layout={{
-          visibility: show && showMatched ? "visible" : "none",
-        }}
-        paint={{
-          "line-width": roadLineWidth(0),
-          "line-color": makeRamp(["get", "traffic"], limits, colorScale),
-          "line-opacity": 0.8,
-        }}
-        manageHoverState
-      >
-        <Popup openOn="hover" let:props>
-          <p>{props.traffic.toLocaleString()}</p>
-        </Popup>
-      </LineLayer>
-    </GeoJSON>
-  {/await}
-{/if}

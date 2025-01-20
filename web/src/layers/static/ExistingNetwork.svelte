@@ -1,22 +1,21 @@
 <script lang="ts">
-  import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
-  import { Loading, Modal, notNull } from "svelte-utils";
+  import { LineLayer, VectorTileSource } from "svelte-maplibre";
+  import { Loading, Modal } from "svelte-utils";
   import { constructMatchExpression, Popup } from "svelte-utils/map";
-  import { infraTypeColors } from "../colors";
-  import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, autosave, backend, devMode, roadStyle } from "../stores";
-  import { infraTypeMapping } from "../types";
-  import RoadLayerControls from "./RoadLayerControls.svelte";
+  import { layerId, roadLineWidth } from "../../common";
+  import {
+    assetUrl,
+    autosave,
+    backend,
+    devMode,
+    roadStyle,
+  } from "../../stores";
+  import RoadLayerControls from "../RoadLayerControls.svelte";
 
-  let firstLoad = false;
   let showImportModal = false;
   let loading = "";
 
   $: show = $roadStyle == "existing_infra";
-
-  $: if (show) {
-    firstLoad = true;
-  }
 
   async function importExisting(kind: "infra-type" | "los") {
     showImportModal = false;
@@ -117,33 +116,3 @@
     </Popup>
   </LineLayer>
 </VectorTileSource>
-
-{#if $backend && firstLoad}
-  {#await $backend.renderStaticRoads() then data}
-    <GeoJSON {data} generateId>
-      <LineLayer
-        {...layerId("existing-infra")}
-        layout={{
-          visibility: show && showCalculated ? "visible" : "none",
-        }}
-        filter={["to-boolean", ["get", "existing_infra"]]}
-        paint={{
-          "line-width": roadLineWidth(0),
-          "line-color": constructMatchExpression(
-            ["get", "existing_infra"],
-            infraTypeColors,
-            "red",
-          ),
-        }}
-        manageHoverState
-        on:click={(e) =>
-          window.open(notNull(e.detail.features[0].properties).way, "_blank")}
-        hoverCursor="pointer"
-      >
-        <Popup openOn="hover" let:props>
-          {infraTypeMapping[props.existing_infra][0]}
-        </Popup>
-      </LineLayer>
-    </GeoJSON>
-  {/await}
-{/if}
