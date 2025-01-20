@@ -3,19 +3,50 @@
     DataDrivenPropertyValueSpecification,
     ExpressionSpecification,
   } from "maplibre-gl";
-  import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import { GeoJSON, JoinedData, LineLayer } from "svelte-maplibre";
+  import { notNull } from "svelte-utils";
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
-  import { infraTypeColors, tierColors } from "../../colors";
+  import {
+    infraTypeColors,
+    levelOfServiceColors,
+    tierColors,
+  } from "../../colors";
   import { layerId, roadLineWidth } from "../../common";
-  import { backend, roadStyle, type RoadStyle } from "../../stores";
-  import { infraTypeMapping } from "../../types";
+  import {
+    backend,
+    mutationCounter,
+    roadStyle,
+    type RoadStyle,
+  } from "../../stores";
+  import { infraTypeMapping, type DynamicRoad } from "../../types";
   import { lineColorForGradient } from "../../utils";
+  import { severances } from "../stores";
+
+  let lastUpdate = 0;
+  // The Popup code assumes that 'props.id' indexes into this
+  // Array<Record<string, string | number | undefined>>
+  let dynamicData: DynamicRoad[] = [];
+
+  async function recalc() {
+    if ($backend && lastUpdate != $mutationCounter) {
+      dynamicData = await $backend.renderDynamicRoads();
+      lastUpdate = $mutationCounter;
+    }
+  }
+
+  $: if ($mutationCounter > 0) {
+    recalc();
+  }
 
   function makeFilter(style: RoadStyle): ExpressionSpecification | undefined {
     if (style == "cn") {
       return ["to-boolean", ["get", "cn"]];
     } else if (style == "existing_infra") {
       return ["to-boolean", ["get", "existing_infra"]];
+    } else if (style == "reachability") {
+      return $severances
+        ? ["==", ["get", "reachable"], "severance"]
+        : ["!=", ["get", "reachable"], "unreachable"];
     }
     return undefined;
   }
@@ -51,6 +82,21 @@
       let limits = [20, 30, 40, 50, 60, 70];
 
       return makeRamp(["get", "speed"], limits, colorScale);
+    } else if (style == "los") {
+      return constructMatchExpression(
+        ["feature-state", "los"],
+        levelOfServiceColors,
+        "black",
+      );
+    } else if (style == "reachability") {
+      // TODO Copied
+      let colors = {
+        network: "green",
+        reachable: "purple",
+        severance: "red",
+      };
+
+      return constructMatchExpression(["feature-state", "reachable"], colors, "black");
     } else {
       // Not visible
       return "red";
@@ -71,6 +117,12 @@
       return true;
     } else if (style == "speed") {
       return true;
+    } else if (style == "los") {
+      // TODO another var from the other place
+      return true;
+    } else if (style == "reachability") {
+      // TODO or the $severances case
+      return true;
     } else {
       return false;
     }
@@ -79,9 +131,11 @@
 
 {#if $backend}
   {#await $backend.renderStaticRoads() then data}
-    <GeoJSON {data} generateId>
+    <GeoJSON {data} promoteId="id">
+      <JoinedData data={dynamicData} idCol="id" />
+
       <LineLayer
-        {...layerId("static-roads")}
+        {...layerId("npw-roads")}
         filter={makeFilter($roadStyle)}
         paint={{
           "line-color": lineColor($roadStyle),
@@ -104,6 +158,19 @@
             <p>{infraTypeMapping[props.existing_infra][0]}</p>
           {/if}
           <a href={props.way} target="_blank">Open OSM</a>
+
+          <hr />
+
+          {#if dynamicData[props.id].current_infra}
+            <p>
+              Currently: {infraTypeMapping[
+                notNull(dynamicData[props.id].current_infra)
+              ][0]}
+              ({dynamicData[props.id].current_tier} tier)
+            </p>
+          {/if}
+          <p>Level of service: {dynamicData[props.id].los}</p>
+          <p>Reachability: {dynamicData[props.id].reachable}</p>
         </Popup>
       </LineLayer>
     </GeoJSON>

@@ -33,7 +33,7 @@ impl MapModel {
         serde_json::to_string(&self.render_static_roads()).map_err(err_to_js)
     }
 
-    /// Returns GJ with one feature per road, with all properties that do change.
+    /// Returns a list of objects per road, with all properties that do change.
     #[wasm_bindgen(js_name = renderDynamicRoads)]
     pub fn render_dynamic_roads_wasm(&self) -> Result<String, JsValue> {
         serde_json::to_string(&self.render_dynamic_roads()).map_err(err_to_js)

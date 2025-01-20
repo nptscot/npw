@@ -63,7 +63,7 @@ export class Backend {
     return JSON.parse(this.inner!.renderStaticRoads());
   }
 
-  renderDynamicRoads(): FeatureCollection<LineString, DynamicRoad> {
+  renderDynamicRoads(): DynamicRoad[] {
     this.checkReady();
     return JSON.parse(this.inner!.renderDynamicRoads());
   }

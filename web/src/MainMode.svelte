@@ -107,7 +107,7 @@
           }}
           layout={{
             visibility:
-              $roadStyle == "current_infra" || $roadStyle == "tier"
+              $roadStyle == "current_infra" || $roadStyle == "current_tier"
                 ? "visible"
                 : "none",
           }}

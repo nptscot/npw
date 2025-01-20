@@ -10,21 +10,22 @@
   import LevelOfService from "./LevelOfService.svelte";
   import NetworkDisconnections from "./NetworkDisconnections.svelte";
   import PrecalculatedRouteNetwork from "./PrecalculatedRouteNetwork.svelte";
-  import ReachableNetwork from "./ReachableNetwork.svelte";
+  import CoreNetwork from "./roads/CoreNetwork.svelte";
+  import ExistingNetwork from "./roads/ExistingNetwork.svelte";
+  import Gradient from "./roads/Gradient.svelte";
+  import LevelOfService from "./roads/LevelOfService.svelte";
+  import ReachableNetwork from "./roads/ReachableNetwork.svelte";
+  import Roads from "./roads/Roads.svelte";
+  import SpeedLimit from "./roads/SpeedLimit.svelte";
+  import TrafficVolume from "./roads/TrafficVolume.svelte";
   import Schools from "./Schools.svelte";
   import Settlements from "./Settlements.svelte";
-  import CoreNetwork from "./static/CoreNetwork.svelte";
-  import ExistingNetwork from "./static/ExistingNetwork.svelte";
-  import Gradient from "./static/Gradient.svelte";
-  import SpeedLimit from "./static/SpeedLimit.svelte";
-  import StaticRoads from "./static/StaticRoads.svelte";
-  import TrafficVolume from "./static/TrafficVolume.svelte";
   import { cyclingFlow1, cyclingFlow2, cyclingFlow3 } from "./stores";
   import TownCentres from "./TownCentres.svelte";
   import UrbanAreas from "./UrbanAreas.svelte";
 </script>
 
-<StaticRoads />
+<Roads />
 <ExistingNetwork />
 <PrecalculatedRouteNetwork />
 <CalculatedRouteNetwork />

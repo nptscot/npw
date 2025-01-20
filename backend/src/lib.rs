@@ -211,19 +211,18 @@ impl MapModel {
         GeoJson::from(features)
     }
 
-    pub fn render_dynamic_roads(&self) -> GeoJson {
+    pub fn render_dynamic_roads(&self) -> Vec<DynamicRoad> {
         let reachable = self.get_reachable_network();
 
-        let mut features = Vec::new();
-        for (idx, road) in self.graph.roads.iter().enumerate() {
+        let mut roads = Vec::new();
+        for idx in 0..self.graph.roads.len() {
             let id = RoadID(idx);
-            let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
-            f.set_property("id", idx);
-
-            f.set_property("los", serde_json::to_value(self.los[idx]).unwrap());
-            f.set_property(
-                "reachable",
-                if reachable.network.contains(&id) {
+            roads.push(DynamicRoad {
+                id: idx,
+                current_infra: self.infra_types[idx],
+                current_tier: self.tiers[idx],
+                los: self.los[idx],
+                reachable: if reachable.network.contains(&id) {
                     "network"
                 } else if reachable.severances.contains(&id) {
                     "severance"
@@ -232,10 +231,18 @@ impl MapModel {
                 } else {
                     "unreachable"
                 },
-            );
-
-            features.push(f);
+            });
         }
-        GeoJson::from(features)
+        roads
     }
+}
+
+#[derive(Serialize)]
+pub struct DynamicRoad {
+    id: usize,
+    current_infra: Option<InfraType>,
+    current_tier: Option<Tier>,
+    los: LevelOfService,
+    // TODO enum?
+    reachable: &'static str,
 }
