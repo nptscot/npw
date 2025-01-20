@@ -1,20 +1,20 @@
 <script lang="ts">
-  import { GeoJSON, LineLayer, VectorTileSource } from "svelte-maplibre";
+  import { LineLayer, VectorTileSource } from "svelte-maplibre";
   import { Loading } from "svelte-utils";
   import { constructMatchExpression } from "svelte-utils/map";
-  import { tierColors } from "../colors";
-  import { layerId, roadLineWidth } from "../common";
-  import { assetUrl, autosave, backend, devMode, roadStyle } from "../stores";
-  import RoadLayerControls from "./RoadLayerControls.svelte";
+  import { layerId, roadLineWidth } from "../../common";
+  import {
+    assetUrl,
+    autosave,
+    backend,
+    devMode,
+    roadStyle,
+  } from "../../stores";
+  import RoadLayerControls from "../RoadLayerControls.svelte";
 
-  let firstLoad = false;
   let loading = "";
 
   $: show = $roadStyle == "cn";
-
-  $: if (show) {
-    firstLoad = true;
-  }
 
   let showTruth = false;
   let showMatched = true;
@@ -72,25 +72,3 @@
     }}
   />
 </VectorTileSource>
-
-{#if $backend && firstLoad}
-  {#await $backend.renderStaticRoads() then data}
-    <GeoJSON {data} generateId>
-      <LineLayer
-        {...layerId("cn")}
-        filter={["to-boolean", ["get", "cn"]]}
-        paint={{
-          "line-color": constructMatchExpression(
-            ["get", "cn"],
-            tierColors,
-            "cyan",
-          ),
-          "line-width": roadLineWidth(0),
-        }}
-        layout={{
-          visibility: show && showMatched ? "visible" : "none",
-        }}
-      />
-    </GeoJSON>
-  {/await}
-{/if}

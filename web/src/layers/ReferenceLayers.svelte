@@ -2,12 +2,9 @@
   import AllPopulation from "./AllPopulation.svelte";
   import AreaMeshDensity from "./AreaMeshDensity.svelte";
   import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
-  import CoreNetwork from "./CoreNetwork.svelte";
   import CyclingFlowCoverage from "./CyclingFlowCoverage.svelte";
   import DeprivedPopulation from "./DeprivedPopulation.svelte";
-  import ExistingNetwork from "./ExistingNetwork.svelte";
   import GpHospitals from "./GpHospitals.svelte";
-  import Gradient from "./Gradient.svelte";
   import Greenspaces from "./Greenspaces.svelte";
   import GridMeshDensity from "./GridMeshDensity.svelte";
   import LevelOfService from "./LevelOfService.svelte";
@@ -16,13 +13,18 @@
   import ReachableNetwork from "./ReachableNetwork.svelte";
   import Schools from "./Schools.svelte";
   import Settlements from "./Settlements.svelte";
-  import SpeedLimit from "./SpeedLimit.svelte";
+  import CoreNetwork from "./static/CoreNetwork.svelte";
+  import ExistingNetwork from "./static/ExistingNetwork.svelte";
+  import Gradient from "./static/Gradient.svelte";
+  import SpeedLimit from "./static/SpeedLimit.svelte";
+  import StaticRoads from "./static/StaticRoads.svelte";
+  import TrafficVolume from "./static/TrafficVolume.svelte";
   import { cyclingFlow1, cyclingFlow2, cyclingFlow3 } from "./stores";
   import TownCentres from "./TownCentres.svelte";
-  import TrafficVolume from "./TrafficVolume.svelte";
   import UrbanAreas from "./UrbanAreas.svelte";
 </script>
 
+<StaticRoads />
 <ExistingNetwork />
 <PrecalculatedRouteNetwork />
 <CalculatedRouteNetwork />
