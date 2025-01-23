@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Comlink from "comlink";
-  import "@picocss/pico/css/pico.jade.min.css";
+  import "@picocss/pico/css/pico.conditional.jade.min.css";
   import type { Map } from "maplibre-gl";
   import maplibregl from "maplibre-gl";
   // TODO Indirect dependencies
@@ -171,10 +171,10 @@
 <Loading {loading} />
 
 <Layout>
-  <div slot="top">
+  <div slot="top" class="pico">
     <TopBar />
   </div>
-  <div slot="left">
+  <div slot="left" class="pico">
     <div bind:this={leftSidebarDiv} />
   </div>
   <div slot="main" style="position:relative; width: 100%; height: 100%;">
@@ -229,7 +229,7 @@
       {/if}
     </MapLibre>
   </div>
-  <div slot="right">
+  <div slot="right" class="pico">
     <div bind:this={rightSidebarDiv} />
 
     <hr />
@@ -240,14 +240,3 @@
     </label>
   </div>
 </Layout>
-
-<style>
-  :global(.maplibregl-popup-content) {
-    background-color: var(--pico-background-color);
-  }
-
-  /* picocss messes up maplibre controls; workaround */
-  :global(.maplibregl-ctrl > button) {
-    margin-bottom: 0px;
-  }
-</style>
