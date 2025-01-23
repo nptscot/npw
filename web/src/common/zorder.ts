@@ -114,9 +114,7 @@ const layerZorder = [
   "edit-current-routes",
   "edit-route-sections",
 
-  // Special modes
-  "debug-mode",
-  "eval-current-routes",
+  // Eval route mode
   "eval-route-breakdown",
   "eval-car-route",
   "eval-direct-bike-route",

@@ -16,14 +16,7 @@
   import StreetView from "./common/StreetView.svelte";
   import AllControls from "./layers/AllControls.svelte";
   import Stats from "./stats/Stats.svelte";
-  import {
-    backend,
-    devMode,
-    mode,
-    mutationCounter,
-    roadStyle,
-    tier,
-  } from "./stores";
+  import { backend, mode, mutationCounter, roadStyle, tier } from "./stores";
   import { infraTypeMapping } from "./types";
 
   let gj: FeatureCollection | null = null;
@@ -140,17 +133,6 @@
         Evaluate a route
       </button>
     </div>
-
-    {#if $devMode}
-      <div>
-        <button
-          class="secondary"
-          on:click={() => ($mode = { kind: "debug-network" })}
-        >
-          Debug network
-        </button>
-      </div>
-    {/if}
 
     <StreetView />
   </div>
