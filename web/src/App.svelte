@@ -25,7 +25,6 @@
     rightSidebarContents,
   } from "./common/layout";
   import RoadStyle from "./common/RoadStyle.svelte";
-  import DebugNetworkMode from "./DebugNetworkMode.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import { routeTool } from "./edit/stores";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
@@ -222,8 +221,6 @@
           <EditRouteMode id={$mode.id} {map} />
         {:else if $mode.kind == "evaluate-route"}
           <EvaluateRouteMode prevMode={$mode.prevMode} browse={$mode.browse} />
-        {:else if $mode.kind == "debug-network"}
-          <DebugNetworkMode />
         {/if}
       {/if}
     </MapLibre>

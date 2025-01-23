@@ -51,10 +51,37 @@
     return undefined;
   }
 
+  // TODO Filter doesn't work on feature-state
+  function lineOpacity(
+    style: RoadStyle,
+  ): DataDrivenPropertyValueSpecification<number> {
+    if (style == "current_infra" || style == "current_tier") {
+      return [
+        "case",
+        ["to-boolean", ["feature-state", "current_infra"]],
+        1.0,
+        0.0,
+      ];
+    }
+    return 1.0;
+  }
+
   function lineColor(
     style: RoadStyle,
   ): DataDrivenPropertyValueSpecification<string> {
-    if (style == "cn") {
+    if (style == "current_infra") {
+      return constructMatchExpression(
+        ["feature-state", "current_infra"],
+        infraTypeColors,
+        "red",
+      );
+    } else if (style == "current_tier") {
+      return constructMatchExpression(
+        ["feature-state", "current_tier"],
+        tierColors,
+        "red",
+      );
+    } else if (style == "cn") {
       return constructMatchExpression(["get", "cn"], tierColors, "cyan");
     } else if (style == "existing_infra") {
       return constructMatchExpression(
@@ -96,7 +123,11 @@
         severance: "red",
       };
 
-      return constructMatchExpression(["feature-state", "reachable"], colors, "black");
+      return constructMatchExpression(
+        ["feature-state", "reachable"],
+        colors,
+        "black",
+      );
     } else {
       // Not visible
       return "red";
@@ -104,7 +135,9 @@
   }
 
   function showLayer(style: RoadStyle): boolean {
-    if (style == "cn") {
+    if (style == "current_tier" || style == "current_infra") {
+      return true;
+    } else if (style == "cn") {
       // TODO another var from the other place
       return true;
     } else if (style == "existing_infra") {
@@ -139,6 +172,7 @@
         filter={makeFilter($roadStyle)}
         paint={{
           "line-color": lineColor($roadStyle),
+          "line-opacity": lineOpacity($roadStyle),
           "line-width": roadLineWidth(0),
         }}
         layout={{

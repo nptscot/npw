@@ -7,26 +7,17 @@
     MapEvents,
     Marker,
   } from "svelte-maplibre";
-  import { notNull } from "svelte-utils";
   import {
     colorByGradientGroup,
     colorByInfraType,
     colorByLoS,
-    colorByTier,
     gradientColors,
     levelOfServiceColors,
   } from "./colors";
   import { layerId, QualitativeLegend } from "./common";
   import { SplitComponent } from "./common/layout";
   import Directions from "./Directions.svelte";
-  import {
-    backend,
-    mode,
-    roadStyle,
-    routeA,
-    routeB,
-    type Mode,
-  } from "./stores";
+  import { backend, mode, routeA, routeB, type Mode } from "./stores";
   import type { RouteGJ, WorstRoutes } from "./types";
 
   export let prevMode: Mode;
@@ -125,25 +116,6 @@
 
   <div slot="map">
     <MapEvents on:contextmenu={onRightClick} />
-
-    {#await notNull($backend).renderRoutes() then data}
-      <GeoJSON {data}>
-        <LineLayer
-          {...layerId("eval-current-routes")}
-          paint={{
-            "line-width": 5,
-            "line-color":
-              $roadStyle == "current_infra" ? colorByInfraType : colorByTier,
-          }}
-          layout={{
-            visibility:
-              $roadStyle == "current_infra" || $roadStyle == "current_tier"
-                ? "visible"
-                : "none",
-          }}
-        />
-      </GeoJSON>
-    {/await}
 
     {#if $routeA && $routeB}
       <Marker bind:lngLat={$routeA} draggable>
