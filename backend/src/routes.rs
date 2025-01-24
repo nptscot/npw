@@ -13,51 +13,17 @@ use crate::{
 };
 
 impl MapModel {
-    // TODO Old case
-    pub fn set_route(&mut self, edit_id: Option<usize>, route: Route) -> Result<()> {
-        if edit_id.is_none() {
-            return self.add_new_route(route);
-        }
-
-        let original = if let Some(id) = edit_id {
-            match self.routes.remove(&id) {
-                Some(route) => Some(route),
-                None => bail!("Unknown route {id}"),
-            }
-        } else {
-            None
-        };
-
-        // Check for overlaps
-        let used_roads = self.used_roads();
-        for (r, _) in &route.roads {
-            if used_roads.contains(r) {
-                // Restore the original
-                if let (Some(id), Some(route)) = (edit_id, original) {
-                    self.routes.insert(id, route);
-                }
-
-                bail!("Another route already crosses the same road {r:?}");
+    pub fn set_route(&mut self, edit_id: Option<usize>, orig_route: Route) -> Result<()> {
+        // If we're editing an existing route, first delete it
+        if let Some(id) = edit_id {
+            if self.routes.remove(&id).is_none() {
+                bail!("Unknown route {id}");
             }
         }
 
-        let id = match edit_id {
-            Some(id) => id,
-            None => {
-                let id = self.id_counter;
-                self.id_counter += 1;
-                id
-            }
-        };
-        self.routes.insert(id, route);
-        self.recalculate_after_edits();
-        Ok(())
-    }
-
-    fn add_new_route(&mut self, orig_route: Route) -> Result<()> {
         let used_roads = self.used_roads();
 
-        // TODO Refactor
+        // TODO Refactor with autosplit_route
         // Split when:
         // - the auto-recommended infrastructure type changes
         // - the route crosses something existing
@@ -88,8 +54,6 @@ impl MapModel {
             let linestring = glue_route(&self.graph, roads);
 
             new_routes.push(Route {
-                // TODO This'll have so many waypoints! Can trim this down. But also think through
-                // the UI for the user to force splits -- maybe it doubles as the waypoints
                 feature: make_route_snapper_feature(&self.graph, roads, &linestring),
                 name: orig_route.name.clone(),
                 notes: orig_route.notes.clone(),
