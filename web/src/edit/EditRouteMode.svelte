@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { FeatureCollection, LineString } from "geojson";
   import type { Map } from "maplibre-gl";
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
@@ -15,7 +14,6 @@
     routeA,
     routeB,
   } from "../stores";
-  import type { RouteProps } from "../types";
   import RouteControls from "./RouteControls.svelte";
   import { routeTool, waypoints, type Waypoint } from "./stores";
 
@@ -27,16 +25,13 @@
   let infraType = "MixedTraffic";
   let tier = $currentTier;
 
-  let currentGj: FeatureCollection<LineString, RouteProps> | null = null;
-
   let sectionsGj = emptyGeojson();
   $: recalculateSections($waypoints);
 
   onMount(async () => {
-    currentGj = await $backend!.renderRoutes();
-
     $waypoints = [];
     if (id != null) {
+      let currentGj = await $backend!.renderRoutes();
       let feature = currentGj.features.find((f) => f.id == id)!;
       name = feature.properties.name;
       notes = feature.properties.notes;
@@ -167,20 +162,6 @@
   </div>
 
   <span slot="extra-map">
-    {#if currentGj}
-      <GeoJSON data={currentGj}>
-        <LineLayer
-          {...layerId("edit-current-routes")}
-          filter={id == null ? undefined : ["!=", ["id"], id]}
-          paint={{
-            "line-width": 5,
-            "line-color": colorByInfraType,
-            "line-opacity": 0.5,
-          }}
-        />
-      </GeoJSON>
-    {/if}
-
     <GeoJSON data={sectionsGj}>
       <LineLayer
         {...layerId("edit-route-sections")}

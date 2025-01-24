@@ -22,6 +22,7 @@
     mode,
     mutationCounter,
     roadStyle,
+    type Mode,
     type RoadStyle,
   } from "../../stores";
   import { infraTypeMapping, type DynamicRoad } from "../../types";
@@ -72,19 +73,22 @@
     return undefined;
   }
 
-  // TODO Filter doesn't work on feature-state
   function lineOpacity(
+    mode: Mode,
     style: RoadStyle,
   ): DataDrivenPropertyValueSpecification<number> {
+    let show = $mode.kind == "main" ? 1.0 : 0.5;
+
     if (style == "current_infra" || style == "current_tier") {
+      // TODO Filter doesn't work on feature-state
       return [
         "case",
         ["to-boolean", ["feature-state", "current_infra"]],
-        1.0,
+        show,
         0.0,
       ];
     }
-    return 1.0;
+    return show;
   }
 
   function lineColor(
@@ -193,7 +197,7 @@
         filter={makeFilter($roadStyle)}
         paint={{
           "line-color": lineColor($roadStyle),
-          "line-opacity": lineOpacity($roadStyle),
+          "line-opacity": lineOpacity($mode, $roadStyle),
           "line-width": roadLineWidth(0),
         }}
         layout={{
