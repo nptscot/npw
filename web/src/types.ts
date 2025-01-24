@@ -175,8 +175,12 @@ export interface StaticRoad {
 
 export interface DynamicRoad {
   id: number;
-  current_infra: string | null;
-  current_tier: Tier | null;
   los: string;
   reachable: "network" | "severance" | "reachable" | "unreachable";
+
+  // All or nothing
+  current_route_id: number | null;
+  current_route_name: string | null;
+  current_infra: string | null;
+  current_tier: Tier | null;
 }

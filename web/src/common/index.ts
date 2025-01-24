@@ -1,6 +1,7 @@
 import type { ExpressionSpecification } from "maplibre-gl";
 
 export { default as HelpButton } from "./HelpButton.svelte";
+export { default as Link } from "./Link.svelte";
 export { default as QualitativeLegend } from "./QualitativeLegend.svelte";
 export { layerId } from "./zorder";
 

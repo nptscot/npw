@@ -77,8 +77,6 @@ const layerZorder = [
   "mesh-density-grid",
   "mesh-density-grid-outline",
 
-  "main-mode",
-
   // Reference layers (lines)
   "npw-roads",
   "cn-debug",

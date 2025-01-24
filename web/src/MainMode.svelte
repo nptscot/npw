@@ -1,23 +1,13 @@
 <script lang="ts">
   import type { FeatureCollection } from "geojson";
   import { onMount } from "svelte";
-  import {
-    GeoJSON,
-    hoverStateFilter,
-    LineLayer,
-    type LayerClickInfo,
-  } from "svelte-maplibre";
-  import { Popup } from "svelte-utils/map";
-  import { colorByInfraType, colorByTier } from "./colors";
-  import { layerId } from "./common";
   import { SplitComponent } from "./common/layout";
   import Link from "./common/Link.svelte";
   import ManageFiles from "./common/ManageFiles.svelte";
   import StreetView from "./common/StreetView.svelte";
   import AllControls from "./layers/AllControls.svelte";
   import Stats from "./stats/Stats.svelte";
-  import { backend, mode, mutationCounter, roadStyle, tier } from "./stores";
-  import { infraTypeMapping } from "./types";
+  import { backend, mode, mutationCounter } from "./stores";
 
   let gj: FeatureCollection | null = null;
   onMount(recalc);
@@ -38,10 +28,6 @@
         $mode = { kind: "edit-route", id: null };
       }
     }
-  }
-
-  function editRouteMap(e: CustomEvent<LayerClickInfo>) {
-    $mode = { kind: "edit-route", id: e.detail.features[0].id as number };
   }
 
   function editRouteSidebar(id: string | number | undefined) {
@@ -83,39 +69,7 @@
     <AllControls />
   </div>
 
-  <div slot="map">
-    {#if gj}
-      <GeoJSON data={gj}>
-        <LineLayer
-          {...layerId("main-mode")}
-          paint={{
-            "line-width": [
-              "case",
-              ["==", ["get", "tier"], $tier],
-              hoverStateFilter(5, 7),
-              hoverStateFilter(3, 5),
-            ],
-            "line-color":
-              $roadStyle == "current_infra" ? colorByInfraType : colorByTier,
-          }}
-          layout={{
-            visibility:
-              $roadStyle == "current_infra" || $roadStyle == "current_tier"
-                ? "visible"
-                : "none",
-          }}
-          manageHoverState
-          hoverCursor="pointer"
-          on:click={editRouteMap}
-        >
-          <Popup openOn="hover" let:props>
-            {props.name || "Untitled"} ({infraTypeMapping[props.infra_type][0]},
-            {props.tier})
-          </Popup>
-        </LineLayer>
-      </GeoJSON>
-    {/if}
-  </div>
+  <div slot="map" />
 
   <div slot="right">
     <Stats />
