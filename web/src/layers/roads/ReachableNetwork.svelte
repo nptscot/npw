@@ -2,8 +2,6 @@
   import { QualitativeLegend } from "../../common";
   import RoadLayerControls from "../RoadLayerControls.svelte";
 
-  // TODO Show some things if $severances
-
   let colors = {
     network: "green",
     reachable: "purple",

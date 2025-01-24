@@ -65,36 +65,51 @@
       return ["to-boolean", ["get", "cn"]];
     } else if (style == "existing_infra") {
       return ["to-boolean", ["get", "existing_infra"]];
-    } else if (style == "reachability") {
-      return $severances
-        ? ["==", ["get", "reachable"], "severance"]
-        : ["!=", ["get", "reachable"], "unreachable"];
     }
     return undefined;
   }
 
+  // TODO Filter doesn't work on feature-state
   function lineOpacity(
     mode: Mode,
+    severances: boolean,
     style: RoadStyle,
   ): DataDrivenPropertyValueSpecification<number> {
     let show = $mode.kind == "main" ? 1.0 : 0.5;
 
-    if (style == "current_infra" || style == "current_tier") {
-      // TODO Filter doesn't work on feature-state
+    if (severances) {
+      return [
+        "case",
+        ["==", ["feature-state", "reachable"], "severance"],
+        show,
+        0.0,
+      ];
+    } else if (style == "current_infra" || style == "current_tier") {
       return [
         "case",
         ["to-boolean", ["feature-state", "current_infra"]],
         show,
         0.0,
       ];
+    } else if (style == "reachability") {
+      return [
+        "case",
+        ["==", ["feature-state", "reachable"], "unreachable"],
+        0.0,
+        show,
+      ];
     }
+
     return show;
   }
 
   function lineColor(
+    severances: boolean,
     style: RoadStyle,
   ): DataDrivenPropertyValueSpecification<string> {
-    if (style == "current_infra") {
+    if (severances) {
+      return "red";
+    } else if (style == "current_infra") {
       return constructMatchExpression(
         ["feature-state", "current_infra"],
         infraTypeColors,
@@ -159,8 +174,10 @@
     }
   }
 
-  function showLayer(style: RoadStyle): boolean {
-    if (style == "current_tier" || style == "current_infra") {
+  function showLayer(severances: boolean, style: RoadStyle): boolean {
+    if (severances) {
+      return true;
+    } else if (style == "current_tier" || style == "current_infra") {
       return true;
     } else if (style == "cn") {
       // TODO another var from the other place
@@ -179,7 +196,6 @@
       // TODO another var from the other place
       return true;
     } else if (style == "reachability") {
-      // TODO or the $severances case
       return true;
     } else {
       return false;
@@ -196,12 +212,12 @@
         {...layerId("npw-roads")}
         filter={makeFilter($roadStyle)}
         paint={{
-          "line-color": lineColor($roadStyle),
-          "line-opacity": lineOpacity($mode, $roadStyle),
+          "line-color": lineColor($severances, $roadStyle),
+          "line-opacity": lineOpacity($mode, $severances, $roadStyle),
           "line-width": roadLineWidth(0),
         }}
         layout={{
-          visibility: showLayer($roadStyle) ? "visible" : "none",
+          visibility: showLayer($severances, $roadStyle) ? "visible" : "none",
         }}
         manageHoverState
         hoverCursor="pointer"
