@@ -31,7 +31,7 @@ impl CountsOD {
         let mut count_by_infra: EnumMap<InfraType, usize> = EnumMap::default();
         let mut count_by_los: EnumMap<LevelOfService, usize> = EnumMap::default();
         let mut count_by_tier: EnumMap<Tier, usize> = EnumMap::default();
-        let mut count_off_network = 0;
+        let mut count_not_on_network = 0;
         let mut total_count = 0;
 
         for (r, count) in self.counts {
@@ -40,15 +40,15 @@ impl CountsOD {
                 count_by_infra[infra_type] += count;
                 count_by_tier[map.tiers[r.0].unwrap()] += count;
             } else {
-                count_off_network += count;
+                count_not_on_network += count;
             }
             count_by_los[map.los[r.0]] += count;
         }
 
         let mut od_percents_infra_type = serde_json::Map::new();
         od_percents_infra_type.insert(
-            "Off network".to_string(),
-            percent(count_off_network, total_count).into(),
+            "Not on the network".to_string(),
+            percent(count_not_on_network, total_count).into(),
         );
         for (infra_type, count) in count_by_infra {
             od_percents_infra_type.insert(
@@ -59,8 +59,8 @@ impl CountsOD {
 
         let mut od_percents_tier = serde_json::Map::new();
         od_percents_tier.insert(
-            "Off network".to_string(),
-            percent(count_off_network, total_count).into(),
+            "Not on the network".to_string(),
+            percent(count_not_on_network, total_count).into(),
         );
         for (tier, count) in count_by_tier {
             od_percents_tier.insert(format!("{tier:?}"), percent(count, total_count).into());
