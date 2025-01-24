@@ -185,8 +185,20 @@ impl MapModel {
     #[wasm_bindgen(js_name = loadSavefile)]
     pub fn load_savefile(&mut self, input: String) -> Result<(), JsValue> {
         let savefile: Savefile = serde_json::from_str(&input).map_err(err_to_js)?;
-        // TODO Detect if the savefile is incompatible with the current model (too big RoadIDs) and
+
+        // Detect if the savefile is incompatible with the current model
         // bail cleanly
+        let n = self.graph.roads.len();
+        for route in savefile.routes.values() {
+            for (r, _) in &route.roads {
+                if r.0 >= n {
+                    return Err(JsValue::from_str(
+                        "This savefile was created with an old version of NPW and can't be used",
+                    ));
+                }
+            }
+        }
+
         self.routes = savefile.routes;
         self.id_counter = savefile.id_counter;
         self.recalculate_after_edits();

@@ -108,6 +108,7 @@
           $currentFilename = lastFile;
         } catch (err) {
           window.alert(`Couldn't restore saved state: ${err}`);
+          window.location.href = "index.html";
         }
       }
     }
