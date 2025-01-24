@@ -19,6 +19,7 @@
     <option value="reachability">Reachability</option>
     <option value="disconnections">Network disconnections</option>
     <option value="precalculated_rnet">Route network (precalculated)</option>
+    <option value="calculated_rnet">Route network (calculated)</option>
   </select>
 </label>
 
