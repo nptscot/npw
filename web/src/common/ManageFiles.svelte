@@ -13,7 +13,7 @@
     listFilesInBoundary,
     setLocalStorage,
   } from "./files";
-  import Link from "./Link.svelte";
+  import { Link } from "./index";
 
   let open = false;
   let fileList = listFilesInBoundary($boundaryName);

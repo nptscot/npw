@@ -3,7 +3,12 @@
     DataDrivenPropertyValueSpecification,
     ExpressionSpecification,
   } from "maplibre-gl";
-  import { GeoJSON, JoinedData, LineLayer } from "svelte-maplibre";
+  import {
+    GeoJSON,
+    JoinedData,
+    LineLayer,
+    type LayerClickInfo,
+  } from "svelte-maplibre";
   import { notNull } from "svelte-utils";
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
   import {
@@ -11,9 +16,10 @@
     levelOfServiceColors,
     tierColors,
   } from "../../colors";
-  import { layerId, roadLineWidth } from "../../common";
+  import { layerId, Link, roadLineWidth } from "../../common";
   import {
     backend,
+    mode,
     mutationCounter,
     roadStyle,
     type RoadStyle,
@@ -36,6 +42,21 @@
 
   $: if ($mutationCounter > 0) {
     recalc();
+  }
+
+  $: clickToEdit =
+    $mode.kind == "main" &&
+    ($roadStyle == "current_infra" || $roadStyle == "current_tier");
+
+  function editRouteMap(e: CustomEvent<LayerClickInfo>) {
+    if (clickToEdit) {
+      let road_id = e.detail.features[0].id as number;
+      let route_id = dynamicData[road_id].current_route_id;
+      // If it's null, we clicked an opacity 0 road that's not part of a route
+      if (route_id != null) {
+        $mode = { kind: "edit-route", id: route_id };
+      }
+    }
   }
 
   function makeFilter(style: RoadStyle): ExpressionSpecification | undefined {
@@ -73,13 +94,13 @@
       return constructMatchExpression(
         ["feature-state", "current_infra"],
         infraTypeColors,
-        "red",
+        "black",
       );
     } else if (style == "current_tier") {
       return constructMatchExpression(
         ["feature-state", "current_tier"],
         tierColors,
-        "red",
+        "black",
       );
     } else if (style == "cn") {
       return constructMatchExpression(["get", "cn"], tierColors, "cyan");
@@ -87,7 +108,7 @@
       return constructMatchExpression(
         ["get", "existing_infra"],
         infraTypeColors,
-        "red",
+        "black",
       );
     } else if (style == "traffic") {
       // TODO Copied
@@ -130,7 +151,7 @@
       );
     } else {
       // Not visible
-      return "red";
+      return "black";
     }
   }
 
@@ -180,32 +201,55 @@
         }}
         manageHoverState
         hoverCursor="pointer"
+        on:click={editRouteMap}
       >
-        <Popup openOn="click" let:props>
-          <p>Traffic: {props.traffic.toLocaleString()}</p>
-          <p>Gradient: {props.gradient.toFixed(1)}%</p>
-          <p>Speed: {props.speed} mph</p>
-          {#if props.cn}
-            <p>Core network tier: {props.cn}</p>
-          {/if}
-          {#if props.existing_infra}
-            <p>{infraTypeMapping[props.existing_infra][0]}</p>
-          {/if}
-          <a href={props.way} target="_blank">Open OSM</a>
+        {#if clickToEdit}
+          <Popup openOn="hover" let:props>
+            {#if dynamicData[props.id].current_route_id != null}
+              Edit {dynamicData[props.id].current_route_name}
+            {/if}
+          </Popup>
+        {:else}
+          <Popup openOn="click" let:props>
+            <p>Traffic: {props.traffic.toLocaleString()}</p>
+            <p>Gradient: {props.gradient.toFixed(1)}%</p>
+            <p>Speed: {props.speed} mph</p>
+            {#if props.cn}
+              <p>Core network tier: {props.cn}</p>
+            {/if}
+            {#if props.existing_infra}
+              <p>{infraTypeMapping[props.existing_infra][0]}</p>
+            {/if}
+            <a href={props.way} target="_blank">Open OSM</a>
 
-          <hr />
+            <hr />
 
-          {#if dynamicData[props.id].current_infra}
-            <p>
-              Currently: {infraTypeMapping[
-                notNull(dynamicData[props.id].current_infra)
-              ][0]}
-              ({dynamicData[props.id].current_tier} tier)
-            </p>
-          {/if}
-          <p>Level of service: {dynamicData[props.id].los}</p>
-          <p>Reachability: {dynamicData[props.id].reachable}</p>
-        </Popup>
+            {#if dynamicData[props.id].current_route_id != null}
+              {#if $mode.kind == "main"}
+                <Link
+                  on:click={() => {
+                    $mode = {
+                      kind: "edit-route",
+                      id: dynamicData[props.id].current_route_id,
+                    };
+                  }}
+                >
+                  Edit route
+                </Link>
+              {/if}
+
+              <p>
+                Part of {dynamicData[props.id].current_route_name}: {infraTypeMapping[
+                  notNull(dynamicData[props.id].current_infra)
+                ][0]}
+                ({dynamicData[props.id].current_tier} tier)
+              </p>
+            {/if}
+
+            <p>Level of service: {dynamicData[props.id].los}</p>
+            <p>Reachability: {dynamicData[props.id].reachable}</p>
+          </Popup>
+        {/if}
       </LineLayer>
     </GeoJSON>
   {/await}
