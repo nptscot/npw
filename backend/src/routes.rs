@@ -87,6 +87,7 @@ impl MapModel {
         self.recalculate_after_edits();
     }
 
+    // TODO Maybe overkill now, have a more focused API to get one route for editing?
     pub fn to_routes_gj(&self) -> GeoJson {
         let mut features = Vec::new();
         for (id, route) in &self.routes {

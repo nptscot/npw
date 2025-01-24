@@ -41,7 +41,8 @@ export type RoadStyle =
   | "speed"
   | "los"
   | "reachability"
-  | "disconnections";
+  | "disconnections"
+  | "precalculated_rnet";
 
 export let roadStyle: Writable<RoadStyle> = writable("current_infra");
 

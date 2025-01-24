@@ -18,6 +18,7 @@
     <option value="los">Level of Service</option>
     <option value="reachability">Reachability</option>
     <option value="disconnections">Network disconnections</option>
+    <option value="precalculated_rnet">Route network (precalculated)</option>
   </select>
 </label>
 
