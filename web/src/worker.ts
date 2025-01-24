@@ -228,11 +228,6 @@ export class Backend {
     return JSON.parse(this.inner!.debugUnreachablePath(kind, idx));
   }
 
-  getMajorJunctions(): FeatureCollection {
-    this.checkReady();
-    return JSON.parse(this.inner!.getMajorJunctions());
-  }
-
   getConnectedComponents(): ConnectedComponents {
     this.checkReady();
     return JSON.parse(this.inner!.getConnectedComponents());

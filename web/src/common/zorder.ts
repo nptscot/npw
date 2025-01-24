@@ -111,7 +111,6 @@ const layerZorder = [
   "town-centres",
   "greenspaces",
   "greenspace-access-points",
-  "major-junctions",
 
   "block-reference-layers",
 

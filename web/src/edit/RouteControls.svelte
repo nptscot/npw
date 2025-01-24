@@ -7,7 +7,6 @@
   import { emptyGeojson } from "svelte-utils/map";
   import { HelpButton, layerId } from "../common";
   import { SplitComponent } from "../common/layout";
-  import { majorJunctions } from "../layers/stores";
   import { routeTool, waypoints, type Waypoint } from "./stores";
 
   export let map: Map;
@@ -361,11 +360,6 @@
         )
       </label>
     </fieldset>
-
-    <label>
-      <input type="checkbox" bind:checked={$majorJunctions} />
-      Show major junctions
-    </label>
 
     <slot name="extra-left" />
   </div>

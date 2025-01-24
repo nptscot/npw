@@ -11,7 +11,6 @@
   import Greenspaces from "./Greenspaces.svelte";
   import GridMeshDensity from "./GridMeshDensity.svelte";
   import LevelOfService from "./LevelOfService.svelte";
-  import MajorJunctions from "./MajorJunctions.svelte";
   import NetworkDisconnections from "./NetworkDisconnections.svelte";
   import PrecalculatedRouteNetwork from "./PrecalculatedRouteNetwork.svelte";
   import ReachableNetwork from "./ReachableNetwork.svelte";
@@ -43,7 +42,6 @@
 <ReachableNetwork />
 <DeprivedPopulation />
 <AllPopulation />
-<MajorJunctions />
 <AreaMeshDensity />
 <GridMeshDensity />
 <SpeedLimit />
