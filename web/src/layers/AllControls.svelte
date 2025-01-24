@@ -56,11 +56,6 @@
   }
 </script>
 
-<details open style:border="2px solid black">
-  <summary>Basic Reference Layers</summary>
-  <div bind:this={basic} />
-</details>
-
 {#if $tier == "Primary"}
   <details open style:border="2px solid {tierColors.Primary}">
     <summary>Primary Route Reference Layers</summary>
@@ -88,3 +83,8 @@
     <div bind:this={longDistance} />
   </details>
 {/if}
+
+<details open style:border="2px solid black">
+  <summary>Basic Reference Layers</summary>
+  <div bind:this={basic} />
+</details>
