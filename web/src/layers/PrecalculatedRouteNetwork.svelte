@@ -3,15 +3,15 @@
   import { LineLayer, VectorTileSource } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
-  import { assetUrl } from "../stores";
+  import { assetUrl, roadStyle } from "../stores";
   import {
     lineColorForDemand,
     lineColorForGradient,
     lineWidthForDemand,
   } from "../utils";
-  import LayerControls from "./LayerControls.svelte";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
-  let show = false;
+  $: show = $roadStyle == "precalculated_rnet";
   let purpose = "all";
   let scenario = "bicycle_go_dutch";
   let networkType = "fastest";
@@ -62,7 +62,10 @@
   }[colorBy] as ExpressionSpecification;
 </script>
 
-<LayerControls name="Route network (precalculated)" bind:show>
+<RoadLayerControls
+  name="Route network (precalculated)"
+  style="precalculated_rnet"
+>
   <label>
     Trip purpose:
     <select bind:value={purpose}>
@@ -98,7 +101,7 @@
       {/each}
     </select>
   </label>
-</LayerControls>
+</RoadLayerControls>
 
 <VectorTileSource url={`pmtiles://${assetUrl("route_network.pmtiles")}`}>
   <LineLayer

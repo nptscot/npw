@@ -16,7 +16,7 @@
   }
 
   function toggle() {
-    $roadStyle = $roadStyle == style ? "off" : style;
+    $roadStyle = $roadStyle == style ? "current_infra" : style;
   }
 </script>
 
