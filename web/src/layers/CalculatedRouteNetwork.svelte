@@ -5,12 +5,12 @@
   import { colorByInfraType, colorByLoS } from "../colors";
   import { layerId } from "../common";
   import ODBreakdowns from "../stats/ODBreakdowns.svelte";
-  import { backend, mutationCounter } from "../stores";
+  import { backend, mutationCounter, roadStyle } from "../stores";
   import type { EvaluateODOut } from "../types";
   import { lineColorForDemand, lineWidthForDemand } from "../utils";
-  import LayerControls from "./LayerControls.svelte";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
-  let show = false;
+  $: show = $roadStyle == "calculated_rnet";
   let fastSample = true;
   let colorBy: "flow" | "infra_type" | "los" = "los";
 
@@ -36,7 +36,7 @@
 
 <Loading {loading} />
 
-<LayerControls name="Route network (calculated)" bind:show>
+<RoadLayerControls name="Route network (calculated)" style="calculated_rnet">
   <button
     on:click={recalc}
     disabled={$mutationCounter == lastUpdate && fastSample == lastFastSample}
@@ -67,7 +67,7 @@
 
     <ODBreakdowns od={gj} />
   {/if}
-</LayerControls>
+</RoadLayerControls>
 
 {#if gj}
   <GeoJSON data={gj} generateId>
@@ -87,7 +87,8 @@
       manageHoverState
     >
       <Popup openOn="hover" let:props>
-        {props.count.toLocaleString()} on {props.infra_type} ({props.los})
+        {props.count.toLocaleString()} on {props.infra_type} ({props.los} level of
+        service)
       </Popup>
     </LineLayer>
   </GeoJSON>
