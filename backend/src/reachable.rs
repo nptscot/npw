@@ -5,7 +5,7 @@ use geojson::FeatureCollection;
 use graph::RoadID;
 use utils::PriorityQueueItem;
 
-use crate::{InfraType, LevelOfService, MapModel};
+use crate::{LevelOfService, MapModel};
 
 pub struct Reachability {
     pub network: HashSet<RoadID>,
@@ -34,18 +34,16 @@ impl MapModel {
 
         for idx in 0..self.graph.roads.len() {
             let id = RoadID(idx);
-            if let Some(infra_type) = self.infra_types[idx] {
-                // TODO If a piece of assigned infrastructure is inappropriate and the level of
-                // service is poor, consider it part of the network or not?
-                if infra_type != InfraType::MixedTraffic {
-                    network.insert(id);
-                    queue.push(id);
-                    continue;
-                }
-            }
 
+            // Even if there's a piece of network drawn, if it doesn't achieve high LoS, don't
+            // count it as part of the network
             if self.los[idx] != LevelOfService::High {
                 severances.insert(id);
+            }
+
+            if self.infra_types[idx].is_some() {
+                network.insert(id);
+                queue.push(id);
             }
         }
 
@@ -117,30 +115,28 @@ impl MapModel {
             }
             visited.insert(r);
 
-            if let Some(infra_type) = self.infra_types[r.0] {
-                if infra_type != InfraType::MixedTraffic {
-                    // We don't even need the path in order; just draw all of the roads part of the
-                    // path
+            if self.los[r.0] != LevelOfService::High {
+                continue;
+            }
+
+            if self.infra_types[r.0].is_some() {
+                // We don't even need the path in order; just draw all of the roads part of the
+                // path
+                features.push(
+                    self.graph
+                        .mercator
+                        .to_wgs84_gj(&self.graph.roads[r.0].linestring),
+                );
+                let mut current = r;
+                while let Some(next) = backrefs.get(&current) {
                     features.push(
                         self.graph
                             .mercator
-                            .to_wgs84_gj(&self.graph.roads[r.0].linestring),
+                            .to_wgs84_gj(&self.graph.roads[next.0].linestring),
                     );
-                    let mut current = r;
-                    while let Some(next) = backrefs.get(&current) {
-                        features.push(
-                            self.graph
-                                .mercator
-                                .to_wgs84_gj(&self.graph.roads[next.0].linestring),
-                        );
-                        current = *next;
-                    }
-                    break;
+                    current = *next;
                 }
-            }
-
-            if self.los[r.0] != LevelOfService::High {
-                continue;
+                break;
             }
 
             let road = &self.graph.roads[r.0];
