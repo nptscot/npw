@@ -7,11 +7,10 @@
     MapEvents,
     Marker,
   } from "svelte-maplibre";
+  import { constructMatchExpression } from "svelte-utils/map";
   import {
-    colorByGradientGroup,
-    colorByInfraType,
-    colorByLoS,
     gradientColors,
+    infraTypeColors,
     levelOfServiceColors,
   } from "./colors";
   import { layerId, QualitativeLegend } from "./common";
@@ -135,9 +134,21 @@
             "line-width": 20,
             "line-color": {
               "": "cyan",
-              los: colorByLoS,
-              infra_type: colorByInfraType,
-              gradient: colorByGradientGroup,
+              los: constructMatchExpression(
+                ["get", "los"],
+                levelOfServiceColors,
+                "black",
+              ),
+              infra_type: constructMatchExpression(
+                ["get", "infra_type"],
+                infraTypeColors,
+                "black",
+              ),
+              gradient: constructMatchExpression(
+                ["get", "gradient_group"],
+                gradientColors,
+                "black",
+              ),
             }[breakdown],
             "line-opacity": hoverStateFilter(0.5, 1.0),
           }}

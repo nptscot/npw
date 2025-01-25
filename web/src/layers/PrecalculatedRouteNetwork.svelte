@@ -58,7 +58,7 @@
       101,
       "#000000",
     ],
-    gradient: lineColorForGradient,
+    gradient: lineColorForGradient(),
   }[colorBy] as ExpressionSpecification;
 </script>
 

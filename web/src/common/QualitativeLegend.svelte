@@ -1,19 +1,34 @@
 <script lang="ts">
-  // Vertical layout, for qualitative color schemes
   export let colors: { [name: string]: string };
+  export let horiz = false;
 </script>
 
-<ul>
-  {#each Object.entries(colors) as [label, color]}
-    <li>
-      <span style:background={color} />
-      {label}
-    </li>
-  {/each}
-</ul>
+{#if horiz}
+  <div style="display: flex">
+    {#each Object.entries(colors) as [_, color]}
+      <span style="background: {color}; width: 100%; border: 1px solid black;">
+        &nbsp;
+      </span>
+    {/each}
+  </div>
+  <div style="display: flex; justify-content: space-between;">
+    {#each Object.entries(colors) as [label, _]}
+      <span>{label}</span>
+    {/each}
+  </div>
+{:else}
+  <ul>
+    {#each Object.entries(colors) as [label, color]}
+      <li>
+        <span style:background={color} class="vertical-block" />
+        {label}
+      </li>
+    {/each}
+  </ul>
+{/if}
 
 <style>
-  span {
+  .vertical-block {
     display: block;
     float: left;
     height: 16px;

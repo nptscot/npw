@@ -1,4 +1,3 @@
-import { constructMatchExpression } from "svelte-utils/map";
 import { infraTypes } from "./types";
 
 export let infraTypeColors = Object.fromEntries(
@@ -29,26 +28,25 @@ export let gradientColors = {
   "> 10%": "#581845",
 };
 
-export let colorByInfraType = constructMatchExpression(
-  ["get", "infra_type"],
-  infraTypeColors,
-  "red",
-);
+export let traffic = {
+  colorScale: ["#27918d", "#ffaa33", "#440154"],
+  limits: [0, 2000, 4000, 10000],
+};
 
-export let colorByTier = constructMatchExpression(
-  ["get", "tier"],
-  tierColors,
-  "cyan",
-);
+export let speed = {
+  colorScale: [
+    "#8a9a5b",
+    "#ffc300",
+    "#cc5500",
+    "#c70039",
+    "#900c3f",
+    "#581845",
+  ],
+  limits: [20, 30, 40, 50, 60, 70],
+};
 
-export let colorByLoS = constructMatchExpression(
-  ["get", "los"],
-  levelOfServiceColors,
-  "black",
-);
-
-export let colorByGradientGroup = constructMatchExpression(
-  ["get", "gradient_group"],
-  gradientColors,
-  "black",
-);
+export let reachabilityColors = {
+  network: "green",
+  reachable: "purple",
+  severance: "red",
+};

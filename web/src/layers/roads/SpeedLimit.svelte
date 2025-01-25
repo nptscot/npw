@@ -1,6 +1,5 @@
 <script lang="ts">
   import { LineLayer, VectorTileSource } from "svelte-maplibre";
-  import { SequentialLegend } from "svelte-utils";
   import { makeRamp } from "svelte-utils/map";
   import { layerId, roadLineWidth } from "../../common";
   import { assetUrl, devMode, roadStyle } from "../../stores";
@@ -33,8 +32,6 @@
       Show map-matched data
     </label>
   {/if}
-
-  <SequentialLegend {colorScale} {limits} />
 </RoadLayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->

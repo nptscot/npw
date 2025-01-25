@@ -1,6 +1,5 @@
 <script lang="ts">
   import { LineLayer, VectorTileSource } from "svelte-maplibre";
-  import { SequentialLegend } from "svelte-utils";
   import { constructMatchExpression } from "svelte-utils/map";
   import { layerId, roadLineWidth } from "../../common";
   import { assetUrl, devMode, roadStyle } from "../../stores";
@@ -8,16 +7,11 @@
 
   $: show = $roadStyle == "traffic";
 
-  let colorScale = ["#27918d", "#ffaa33", "#440154"];
-  let limits = [0, 2000, 4000, 10000];
-
   let showTruth = false;
   let showMatched = true;
 </script>
 
 <RoadLayerControls name="Estimated traffic volume" style="traffic">
-  <SequentialLegend {colorScale} {limits} />
-
   {#if $devMode}
     <label>
       <input type="checkbox" bind:checked={showTruth} />

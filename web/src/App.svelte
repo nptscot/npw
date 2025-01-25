@@ -24,11 +24,11 @@
     mapContents,
     rightSidebarContents,
   } from "./common/layout";
-  import RoadStyle from "./common/RoadStyle.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import { routeTool } from "./edit/stores";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
+  import PickStyle from "./layers/roads/PickStyle.svelte";
   import MainMode from "./MainMode.svelte";
   import {
     assetUrl,
@@ -230,7 +230,7 @@
 
     <hr />
 
-    <RoadStyle />
+    <PickStyle />
 
     <label>
       <input type="checkbox" bind:checked={$devMode} />

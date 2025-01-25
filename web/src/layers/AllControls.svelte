@@ -20,7 +20,6 @@
     "Estimated traffic volume",
     "Estimated speed limit",
     "Gradient",
-    "Reachable network",
     "Network disconnections",
   ]);
 
