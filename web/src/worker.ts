@@ -78,9 +78,9 @@ export class Backend {
     return this.inner!.toRouteSnapper();
   }
 
-  renderRoutes(): FeatureCollection<LineString, RouteProps> {
+  getRoute(id: number): Feature<LineString, RouteProps> {
     this.checkReady();
-    return JSON.parse(this.inner!.renderRoutes());
+    return JSON.parse(this.inner!.getRoute(id));
   }
 
   // TODO Be consistent about undefined vs null

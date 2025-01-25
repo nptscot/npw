@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use anyhow::Result;
 use enum_map::EnumMap;
 use geo::LineString;
-use geojson::{feature::Id, GeoJson};
+use geojson::{feature::Id, Feature, GeoJson};
 use graph::{Graph, PathStep, Position, RoadID};
 
 use crate::join_lines::KeyedLineString;
@@ -87,22 +87,21 @@ impl MapModel {
         self.recalculate_after_edits();
     }
 
-    // TODO Maybe overkill now, have a more focused API to get one route for editing?
-    pub fn to_routes_gj(&self) -> GeoJson {
-        let mut features = Vec::new();
-        for (id, route) in &self.routes {
-            let mut f = route.feature.clone();
-            f.id = Some(Id::Number((*id).into()));
-            f.set_property("name", route.name.clone());
-            f.set_property("notes", route.notes.clone());
-            f.set_property(
-                "infra_type",
-                serde_json::to_value(&route.infra_type).unwrap(),
-            );
-            f.set_property("tier", serde_json::to_value(&route.tier).unwrap());
-            features.push(f);
-        }
-        GeoJson::from(features)
+    pub fn get_route(&self, id: usize) -> Result<Feature> {
+        let Some(route) = self.routes.get(&id) else {
+            bail!("No route {id}");
+        };
+
+        let mut f = route.feature.clone();
+        f.id = Some(Id::Number((id).into()));
+        f.set_property("name", route.name.clone());
+        f.set_property("notes", route.notes.clone());
+        f.set_property(
+            "infra_type",
+            serde_json::to_value(&route.infra_type).unwrap(),
+        );
+        f.set_property("tier", serde_json::to_value(&route.tier).unwrap());
+        Ok(f)
     }
 
     /// Returns the number of edits
