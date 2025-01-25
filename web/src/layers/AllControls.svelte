@@ -15,10 +15,6 @@
     "SIMD",
     "Population",
     "Core network",
-    "Existing network",
-    "Level of Service",
-    "Estimated traffic volume",
-    "Estimated speed limit",
     "Gradient",
     "Network disconnections",
   ]);
