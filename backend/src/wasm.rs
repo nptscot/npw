@@ -100,10 +100,11 @@ impl MapModel {
         self.autosplit_route(roads).map_err(err_to_js)
     }
 
-    /// Returns a GeoJSON string showing all routes
-    #[wasm_bindgen(js_name = renderRoutes)]
-    pub fn render_routes(&self) -> Result<String, JsValue> {
-        serde_json::to_string(&self.to_routes_gj()).map_err(err_to_js)
+    /// Returns one GJ Feature of the route
+    #[wasm_bindgen(js_name = getRoute)]
+    pub fn get_route_wasm(&self, id: usize) -> Result<String, JsValue> {
+        let route = self.get_route(id).map_err(err_to_js)?;
+        serde_json::to_string(&route).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = evaluateRoute)]

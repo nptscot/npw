@@ -1,24 +1,10 @@
 <script lang="ts">
-  import type { FeatureCollection } from "geojson";
-  import { onMount } from "svelte";
   import { SplitComponent } from "./common/layout";
-  import Link from "./common/Link.svelte";
   import ManageFiles from "./common/ManageFiles.svelte";
   import StreetView from "./common/StreetView.svelte";
   import AllControls from "./layers/AllControls.svelte";
   import Stats from "./stats/Stats.svelte";
-  import { backend, mode, mutationCounter } from "./stores";
-
-  let gj: FeatureCollection | null = null;
-  onMount(recalc);
-
-  $: if ($mutationCounter > 0) {
-    recalc();
-  }
-
-  async function recalc() {
-    gj = await $backend!.renderRoutes();
-  }
+  import { mode } from "./stores";
 
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "r") {
@@ -28,10 +14,6 @@
         $mode = { kind: "edit-route", id: null };
       }
     }
-  }
-
-  function editRouteSidebar(id: string | number | undefined) {
-    $mode = { kind: "edit-route", id: id as number };
   }
 </script>
 
@@ -46,25 +28,6 @@
       Draw new <u>r</u>
       oute line
     </button>
-
-    <details>
-      <summary>Current network routes</summary>
-
-      {#if gj}
-        <ol>
-          {#each gj.features as f}
-            <li>
-              <Link on:click={() => editRouteSidebar(f.id)}>
-                {f.properties?.name || `Untitled route ${f.id}`} ({f.properties
-                  ?.infra_type})
-              </Link>
-            </li>
-          {/each}
-        </ol>
-      {/if}
-    </details>
-
-    <hr />
 
     <AllControls />
   </div>

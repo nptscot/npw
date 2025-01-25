@@ -31,8 +31,7 @@
   onMount(async () => {
     $waypoints = [];
     if (id != null) {
-      let currentGj = await $backend!.renderRoutes();
-      let feature = currentGj.features.find((f) => f.id == id)!;
+      let feature = await $backend!.getRoute(id);
       name = feature.properties.name;
       notes = feature.properties.notes;
       infraType = feature.properties.infra_type;
