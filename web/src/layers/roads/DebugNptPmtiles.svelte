@@ -118,7 +118,7 @@
       "line-width": roadLineWidth(4),
     }}
     layout={{
-            visibility: $roadStyle == "cn" && $debugOriginalData ? "visible" : "none",
+      visibility: $roadStyle == "cn" && $debugOriginalData ? "visible" : "none",
     }}
   />
 </VectorTileSource>

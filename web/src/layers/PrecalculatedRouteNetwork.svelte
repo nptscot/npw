@@ -1,14 +1,11 @@
 <script lang="ts">
   import type { ExpressionSpecification } from "maplibre-gl";
   import { LineLayer, VectorTileSource } from "svelte-maplibre";
-  import { Popup } from "svelte-utils/map";
+  import { makeRamp, Popup } from "svelte-utils/map";
+  import { gradient } from "../colors";
   import { layerId } from "../common";
   import { assetUrl, roadStyle } from "../stores";
-  import {
-    lineColorForDemand,
-    lineColorForGradient,
-    lineWidthForDemand,
-  } from "../utils";
+  import { lineColorForDemand, lineWidthForDemand } from "../utils";
   import RoadLayerControls from "./RoadLayerControls.svelte";
 
   $: show = $roadStyle == "precalculated_rnet";
@@ -58,7 +55,11 @@
       101,
       "#000000",
     ],
-    gradient: lineColorForGradient(),
+    gradient: makeRamp(
+      ["abs", ["get", "gradient"]],
+      gradient.limits,
+      gradient.colorScale,
+    ),
   }[colorBy] as ExpressionSpecification;
 </script>
 

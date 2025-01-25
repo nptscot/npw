@@ -115,21 +115,3 @@ export function lineColorForDemand(key: string): ExpressionSpecification {
     "#FF00C5",
   ];
 }
-
-export function lineColorForGradient(): ExpressionSpecification {
-  return [
-    "step",
-    ["abs", ["get", "gradient"]],
-    "#59ee19",
-    3,
-    "#37a009",
-    5,
-    "#FFC300",
-    7,
-    "#C70039",
-    10,
-    "#581845",
-    100,
-    "#000000",
-  ];
-}
