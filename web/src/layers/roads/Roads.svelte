@@ -126,56 +126,68 @@
   ): DataDrivenPropertyValueSpecification<string> {
     if (severances) {
       return "red";
-    } else if (style == "current_infra") {
-      return constructMatchExpression(
+    }
+    let invisibile = "black";
+    return {
+      off: invisibile,
+      current_infra: constructMatchExpression(
         ["feature-state", "current_infra"],
         infraTypeColors,
         "black",
-      );
-    } else if (style == "current_tier") {
-      return constructMatchExpression(
+      ),
+      current_tier: constructMatchExpression(
         ["feature-state", "current_tier"],
         tierColors,
         "black",
-      );
-    } else if (style == "cn") {
-      return constructMatchExpression(["get", "cn"], tierColors, "cyan");
-    } else if (style == "existing_infra") {
-      return constructMatchExpression(
+      ),
+      cn: constructMatchExpression(["get", "cn"], tierColors, "cyan"),
+      existing_infra: constructMatchExpression(
         ["get", "existing_infra"],
         infraTypeColors,
         "black",
-      );
-    } else if (style == "traffic") {
-      return makeRamp(["get", "traffic"], traffic.limits, traffic.colorScale);
-    } else if (style == "gradient") {
-      return makeRamp(
+      ),
+      traffic: makeRamp(["get", "traffic"], traffic.limits, traffic.colorScale),
+      gradient: makeRamp(
         ["abs", ["get", "gradient"]],
         gradient.limits,
         gradient.colorScale,
-      );
-    } else if (style == "speed") {
-      return makeRamp(["get", "speed"], speed.limits, speed.colorScale);
-    } else if (style == "los") {
-      return constructMatchExpression(
+      ),
+      speed: makeRamp(["get", "speed"], speed.limits, speed.colorScale),
+      los: constructMatchExpression(
         ["feature-state", "los"],
         levelOfServiceColors,
         "black",
-      );
-    } else if (style == "reachability") {
-      return constructMatchExpression(
+      ),
+      reachability: constructMatchExpression(
         ["feature-state", "reachable"],
         reachabilityColors,
         "black",
-      );
-    } else {
-      // Not visible
-      return "black";
-    }
+      ),
+      disconnections: invisibile,
+      precalculated_rnet: invisibile,
+      calculated_rnet: invisibile,
+    }[style];
   }
 
   function showLayer(severances: boolean, style: RoadStyle): boolean {
-    return severances || style != "off";
+    if (severances) {
+      return true;
+    }
+    return {
+      off: false,
+      current_infra: true,
+      current_tier: true,
+      cn: true,
+      existing_infra: true,
+      traffic: true,
+      gradient: true,
+      speed: true,
+      los: true,
+      reachability: true,
+      disconnections: false,
+      precalculated_rnet: false,
+      calculated_rnet: false,
+    }[style];
   }
 </script>
 
