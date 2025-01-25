@@ -13,7 +13,6 @@
   import ExistingNetwork from "./roads/ExistingNetwork.svelte";
   import Gradient from "./roads/Gradient.svelte";
   import LevelOfService from "./roads/LevelOfService.svelte";
-  import ReachableNetwork from "./roads/ReachableNetwork.svelte";
   import Roads from "./roads/Roads.svelte";
   import SpeedLimit from "./roads/SpeedLimit.svelte";
   import TrafficVolume from "./roads/TrafficVolume.svelte";
@@ -41,7 +40,6 @@
 <LevelOfService />
 <TrafficVolume />
 <Gradient />
-<ReachableNetwork />
 <DeprivedPopulation />
 <AllPopulation />
 <AreaMeshDensity />

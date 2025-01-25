@@ -3,8 +3,12 @@
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { notNull } from "svelte-utils";
-  import { emptyGeojson, Popup } from "svelte-utils/map";
-  import { colorByInfraType } from "../colors";
+  import {
+    constructMatchExpression,
+    emptyGeojson,
+    Popup,
+  } from "svelte-utils/map";
+  import { infraTypeColors } from "../colors";
   import { layerId } from "../common";
   import {
     autosave,
@@ -167,7 +171,11 @@
         filter={["==", ["get", "kind"], "new"]}
         paint={{
           "line-width": 3,
-          "line-color": colorByInfraType,
+          "line-color": constructMatchExpression(
+            ["get", "infra_type"],
+            infraTypeColors,
+            "black",
+          ),
         }}
       >
         <Popup openOn="hover" let:props>

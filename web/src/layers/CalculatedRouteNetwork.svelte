@@ -1,8 +1,8 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { Loading } from "svelte-utils";
-  import { Popup } from "svelte-utils/map";
-  import { colorByInfraType, colorByLoS } from "../colors";
+  import { constructMatchExpression, Popup } from "svelte-utils/map";
+  import { infraTypeColors, levelOfServiceColors } from "../colors";
   import { layerId } from "../common";
   import ODBreakdowns from "../stats/ODBreakdowns.svelte";
   import { backend, mutationCounter, roadStyle } from "../stores";
@@ -77,8 +77,16 @@
         "line-width": lineWidthForDemand("count"),
         "line-color": {
           flow: lineColorForDemand("count"),
-          infra_type: colorByInfraType,
-          los: colorByLoS,
+          infra_type: constructMatchExpression(
+            ["get", "infra_type"],
+            infraTypeColors,
+            "black",
+          ),
+          los: constructMatchExpression(
+            ["get", "los"],
+            levelOfServiceColors,
+            "black",
+          ),
         }[colorBy],
       }}
       layout={{

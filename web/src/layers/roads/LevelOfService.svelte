@@ -1,8 +1,7 @@
 <script lang="ts">
   import { LineLayer, VectorTileSource } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
-  import { levelOfServiceColors } from "../../colors";
-  import { layerId, QualitativeLegend, roadLineWidth } from "../../common";
+  import { layerId, roadLineWidth } from "../../common";
   import { assetUrl, devMode, roadStyle } from "../../stores";
   import RoadLayerControls from "../RoadLayerControls.svelte";
 
@@ -23,8 +22,6 @@
       Show current derived data
     </label>
   {/if}
-
-  <QualitativeLegend colors={levelOfServiceColors} />
 </RoadLayerControls>
 
 <!-- TODO Continue showing this for debugging the map matching -->

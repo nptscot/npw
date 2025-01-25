@@ -14,7 +14,10 @@
   import {
     infraTypeColors,
     levelOfServiceColors,
+    reachabilityColors,
+    speed,
     tierColors,
+    traffic,
   } from "../../colors";
   import { layerId, Link, roadLineWidth } from "../../common";
   import {
@@ -144,25 +147,11 @@
         "black",
       );
     } else if (style == "traffic") {
-      // TODO Copied
-      let colorScale = ["#27918d", "#ffaa33", "#440154"];
-      let limits = [0, 2000, 4000, 10000];
-      return makeRamp(["get", "traffic"], limits, colorScale);
+      return makeRamp(["get", "traffic"], traffic.limits, traffic.colorScale);
     } else if (style == "gradient") {
       return lineColorForGradient();
     } else if (style == "speed") {
-      // TODO Copied
-      let colorScale = [
-        "#8a9a5b",
-        "#ffc300",
-        "#cc5500",
-        "#c70039",
-        "#900c3f",
-        "#581845",
-      ];
-      let limits = [20, 30, 40, 50, 60, 70];
-
-      return makeRamp(["get", "speed"], limits, colorScale);
+      return makeRamp(["get", "speed"], speed.limits, speed.colorScale);
     } else if (style == "los") {
       return constructMatchExpression(
         ["feature-state", "los"],
@@ -170,16 +159,9 @@
         "black",
       );
     } else if (style == "reachability") {
-      // TODO Copied
-      let colors = {
-        network: "green",
-        reachable: "purple",
-        severance: "red",
-      };
-
       return constructMatchExpression(
         ["feature-state", "reachable"],
-        colors,
+        reachabilityColors,
         "black",
       );
     } else {
