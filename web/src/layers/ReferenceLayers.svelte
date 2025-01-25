@@ -10,12 +10,9 @@
   import NetworkDisconnections from "./NetworkDisconnections.svelte";
   import PrecalculatedRouteNetwork from "./PrecalculatedRouteNetwork.svelte";
   import CoreNetwork from "./roads/CoreNetwork.svelte";
-  import ExistingNetwork from "./roads/ExistingNetwork.svelte";
+  import DebugNptPmtiles from "./roads/DebugNptPmtiles.svelte";
   import Gradient from "./roads/Gradient.svelte";
-  import LevelOfService from "./roads/LevelOfService.svelte";
   import Roads from "./roads/Roads.svelte";
-  import SpeedLimit from "./roads/SpeedLimit.svelte";
-  import TrafficVolume from "./roads/TrafficVolume.svelte";
   import Schools from "./Schools.svelte";
   import Settlements from "./Settlements.svelte";
   import { cyclingFlow1, cyclingFlow2, cyclingFlow3 } from "./stores";
@@ -24,7 +21,7 @@
 </script>
 
 <Roads />
-<ExistingNetwork />
+<DebugNptPmtiles />
 <PrecalculatedRouteNetwork />
 <CalculatedRouteNetwork />
 <CyclingFlowCoverage quintile={1} label="High" show={$cyclingFlow1} />
@@ -37,12 +34,9 @@
 <Greenspaces />
 <GpHospitals />
 <UrbanAreas />
-<LevelOfService />
-<TrafficVolume />
 <Gradient />
 <DeprivedPopulation />
 <AllPopulation />
 <AreaMeshDensity />
 <GridMeshDensity />
-<SpeedLimit />
 <NetworkDisconnections />

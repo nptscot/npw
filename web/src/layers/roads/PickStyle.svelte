@@ -9,7 +9,9 @@
     traffic,
   } from "../../colors";
   import { QualitativeLegend } from "../../common";
-  import { roadStyle } from "../../stores";
+  import { devMode, roadStyle } from "../../stores";
+  import ExistingNetwork from "./ExistingNetwork.svelte";
+  import { debugOriginalData } from "./stores";
 </script>
 
 <label>
@@ -41,14 +43,36 @@
     <QualitativeLegend colors={tierColors} horiz />
   {:else if $roadStyle == "existing_infra"}
     <QualitativeLegend colors={infraTypeColors} />
+    <ExistingNetwork />
   {:else if $roadStyle == "traffic"}
     <SequentialLegend colorScale={traffic.colorScale} limits={traffic.limits} />
+
+    {#if $devMode}
+      <label>
+        <input type="checkbox" bind:checked={$debugOriginalData} />
+        Show original data
+      </label>
+    {/if}
   {:else if $roadStyle == "gradient"}
     TODO
   {:else if $roadStyle == "speed"}
     <SequentialLegend colorScale={speed.colorScale} limits={speed.limits} />
+
+    {#if $devMode}
+      <label>
+        <input type="checkbox" bind:checked={$debugOriginalData} />
+        Show original data
+      </label>
+    {/if}
   {:else if $roadStyle == "los"}
     <QualitativeLegend colors={levelOfServiceColors} horiz />
+
+    {#if $devMode}
+      <label>
+        <input type="checkbox" bind:checked={$debugOriginalData} />
+        Show original data
+      </label>
+    {/if}
   {:else if $roadStyle == "reachability"}
     <QualitativeLegend colors={reachabilityColors} horiz />
   {:else if $roadStyle == "disconnections"}
