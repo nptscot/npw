@@ -99,3 +99,26 @@
     }}
   />
 </VectorTileSource>
+
+<VectorTileSource url={`pmtiles://${assetUrl("core_network.pmtiles")}`}>
+  <LineLayer
+    {...layerId("cn-debug")}
+    sourceLayer="coherent_networks"
+    paint={{
+      "line-color": constructMatchExpression(
+        ["get", "road_function"],
+        {
+          Primary: "#c00000",
+          Secondary: "#e97132",
+          "Local Access": "#ffc000",
+          "Long Distance": "#4ea72e",
+        },
+        "cyan",
+      ),
+      "line-width": roadLineWidth(4),
+    }}
+    layout={{
+            visibility: $roadStyle == "cn" && $debugOriginalData ? "visible" : "none",
+    }}
+  />
+</VectorTileSource>
