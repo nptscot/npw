@@ -9,7 +9,6 @@
   import GridMeshDensity from "./GridMeshDensity.svelte";
   import NetworkDisconnections from "./NetworkDisconnections.svelte";
   import PrecalculatedRouteNetwork from "./PrecalculatedRouteNetwork.svelte";
-  import CoreNetwork from "./roads/CoreNetwork.svelte";
   import DebugNptPmtiles from "./roads/DebugNptPmtiles.svelte";
   import Gradient from "./roads/Gradient.svelte";
   import Roads from "./roads/Roads.svelte";
@@ -27,7 +26,6 @@
 <CyclingFlowCoverage quintile={1} label="High" show={$cyclingFlow1} />
 <CyclingFlowCoverage quintile={2} label="Medium" show={$cyclingFlow2} />
 <CyclingFlowCoverage quintile={3} label="Above-minimum" show={$cyclingFlow3} />
-<CoreNetwork />
 <Schools />
 <TownCentres />
 <Settlements />

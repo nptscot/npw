@@ -12,6 +12,7 @@
   import { devMode, roadStyle } from "../../stores";
   import ExistingNetwork from "./ExistingNetwork.svelte";
   import { debugOriginalData } from "./stores";
+        import CoreNetwork from "./CoreNetwork.svelte";
 </script>
 
 <label>
@@ -41,6 +42,7 @@
     <QualitativeLegend colors={tierColors} horiz />
   {:else if $roadStyle == "cn"}
     <QualitativeLegend colors={tierColors} horiz />
+    <CoreNetwork />
   {:else if $roadStyle == "existing_infra"}
     <QualitativeLegend colors={infraTypeColors} />
     <ExistingNetwork />
