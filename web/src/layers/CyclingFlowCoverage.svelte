@@ -12,7 +12,7 @@
   export let quintile: number;
   export let label: string;
 
-  let onlyCovered = false;
+  let onlyNotCovered = true;
 
   let lastUpdate = 0;
   let data: PrecalculatedFlows = {
@@ -33,13 +33,13 @@
     recalc();
   }
 
-  function makeFilter(onlyCovered: boolean): ExpressionSpecification {
+  function makeFilter(onlyNotCovered: boolean): ExpressionSpecification {
     let filter: ExpressionSpecification = [
       "all",
       ["==", ["get", "quintile"], quintile],
     ];
-    if (onlyCovered) {
-      filter.push(["get", "covered"]);
+    if (onlyNotCovered) {
+      filter.push(["!", ["get", "covered"]]);
     }
     return filter;
   }
@@ -47,8 +47,8 @@
 
 <LayerControls name={label + " cycling flow"} bind:show>
   <label>
-    <input type="checkbox" bind:checked={onlyCovered} />
-    Only show routes covered by current edits
+    <input type="checkbox" bind:checked={onlyNotCovered} />
+    Only show routes yet covered
   </label>
 
   {#if data.total_quintile_sums.length > 0}
@@ -68,7 +68,7 @@
     layout={{
       visibility: show ? "visible" : "none",
     }}
-    filter={makeFilter(onlyCovered)}
+    filter={makeFilter(onlyNotCovered)}
     paint={{
       "line-width": lineWidthForDemand("flow"),
       "line-color": "grey",
