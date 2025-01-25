@@ -10,7 +10,6 @@
   import NetworkDisconnections from "./NetworkDisconnections.svelte";
   import PrecalculatedRouteNetwork from "./PrecalculatedRouteNetwork.svelte";
   import DebugNptPmtiles from "./roads/DebugNptPmtiles.svelte";
-  import Gradient from "./roads/Gradient.svelte";
   import Roads from "./roads/Roads.svelte";
   import Schools from "./Schools.svelte";
   import Settlements from "./Settlements.svelte";
@@ -32,7 +31,6 @@
 <Greenspaces />
 <GpHospitals />
 <UrbanAreas />
-<Gradient />
 <DeprivedPopulation />
 <AllPopulation />
 <AreaMeshDensity />

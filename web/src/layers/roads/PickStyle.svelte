@@ -1,6 +1,7 @@
 <script lang="ts">
   import { SequentialLegend } from "svelte-utils";
   import {
+    gradient,
     infraTypeColors,
     levelOfServiceColors,
     reachabilityColors,
@@ -10,9 +11,9 @@
   } from "../../colors";
   import { QualitativeLegend } from "../../common";
   import { devMode, roadStyle } from "../../stores";
+  import CoreNetwork from "./CoreNetwork.svelte";
   import ExistingNetwork from "./ExistingNetwork.svelte";
   import { debugOriginalData } from "./stores";
-        import CoreNetwork from "./CoreNetwork.svelte";
 </script>
 
 <label>
@@ -56,7 +57,10 @@
       </label>
     {/if}
   {:else if $roadStyle == "gradient"}
-    TODO
+    <SequentialLegend
+      colorScale={gradient.colorScale}
+      limits={gradient.limits}
+    />
   {:else if $roadStyle == "speed"}
     <SequentialLegend colorScale={speed.colorScale} limits={speed.limits} />
 

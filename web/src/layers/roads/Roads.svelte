@@ -12,6 +12,7 @@
   import { notNull } from "svelte-utils";
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
   import {
+    gradient,
     infraTypeColors,
     levelOfServiceColors,
     reachabilityColors,
@@ -29,7 +30,6 @@
     type RoadStyle,
   } from "../../stores";
   import { infraTypeMapping, type DynamicRoad } from "../../types";
-  import { lineColorForGradient } from "../../utils";
   import { severances } from "../stores";
 
   let lastUpdate = 0;
@@ -149,7 +149,11 @@
     } else if (style == "traffic") {
       return makeRamp(["get", "traffic"], traffic.limits, traffic.colorScale);
     } else if (style == "gradient") {
-      return lineColorForGradient();
+      return makeRamp(
+        ["abs", ["get", "gradient"]],
+        gradient.limits,
+        gradient.colorScale,
+      );
     } else if (style == "speed") {
       return makeRamp(["get", "speed"], speed.limits, speed.colorScale);
     } else if (style == "los") {
@@ -171,31 +175,7 @@
   }
 
   function showLayer(severances: boolean, style: RoadStyle): boolean {
-    if (severances) {
-      return true;
-    } else if (style == "current_tier" || style == "current_infra") {
-      return true;
-    } else if (style == "cn") {
-      // TODO another var from the other place
-      return true;
-    } else if (style == "existing_infra") {
-      // TODO another var from the other place
-      return true;
-    } else if (style == "traffic") {
-      // TODO another var from the other place
-      return true;
-    } else if (style == "gradient") {
-      return true;
-    } else if (style == "speed") {
-      return true;
-    } else if (style == "los") {
-      // TODO another var from the other place
-      return true;
-    } else if (style == "reachability") {
-      return true;
-    } else {
-      return false;
-    }
+    return severances || style != "off";
   }
 </script>
 

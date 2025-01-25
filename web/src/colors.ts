@@ -45,6 +45,18 @@ export let speed = {
   limits: [20, 30, 40, 50, 60, 70],
 };
 
+export let gradient = {
+  colorScale: [
+    "#59ee19",
+    "#37a009",
+    "#FFC300",
+    "#C70039",
+    "#581845",
+    "#000000",
+  ],
+  limits: [3, 5, 7, 10, 100],
+};
+
 export let reachabilityColors = {
   network: "green",
   reachable: "purple",

@@ -1,11 +1,6 @@
 <script lang="ts">
   import { Loading } from "svelte-utils";
-  import {
-    autosave,
-    backend,
-    devMode,
-    roadStyle,
-  } from "../../stores";
+  import { autosave, backend, devMode, roadStyle } from "../../stores";
   import { debugOriginalData } from "./stores";
 
   let loading = "";
@@ -18,14 +13,14 @@
       let noun = numChanges == 1 ? "route segment" : "route segments";
       await autosave();
       window.alert(`Imported ${numChanges} ${noun}`);
-            $roadStyle = "current_infra";
+      $roadStyle = "current_infra";
     }
   }
 </script>
 
 <Loading {loading} />
 
-  <button class="outline" on:click={importExisting}>Import core network</button>
+<button class="outline" on:click={importExisting}>Import core network</button>
 
 {#if $devMode}
   <label>

@@ -14,7 +14,6 @@
     "Route network (calculated)",
     "SIMD",
     "Population",
-    "Gradient",
     "Network disconnections",
   ]);
 
