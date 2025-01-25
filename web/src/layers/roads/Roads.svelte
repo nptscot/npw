@@ -85,6 +85,20 @@
         0.0,
       ];
     } else if (style == "current_infra" || style == "current_tier") {
+      // While editing an existing route, hide it
+      if ($mode.kind == "edit-route" && $mode.id != null) {
+        return [
+          "case",
+          [
+            "all",
+            ["to-boolean", ["feature-state", "current_infra"]],
+            ["!=", $mode.id, ["feature-state", "current_route_id"]],
+          ],
+          show,
+          0.0,
+        ];
+      }
+
       return [
         "case",
         ["to-boolean", ["feature-state", "current_infra"]],
