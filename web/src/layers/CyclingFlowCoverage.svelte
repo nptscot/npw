@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { ExpressionSpecification } from "maplibre-gl";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
@@ -11,8 +10,6 @@
   export let show: boolean;
   export let quintile: number;
   export let label: string;
-
-  let onlyNotCovered = true;
 
   let lastUpdate = 0;
   let data: PrecalculatedFlows = {
@@ -32,32 +29,17 @@
   $: if (show && $mutationCounter > 0) {
     recalc();
   }
-
-  function makeFilter(onlyNotCovered: boolean): ExpressionSpecification {
-    let filter: ExpressionSpecification = [
-      "all",
-      ["==", ["get", "quintile"], quintile],
-    ];
-    if (onlyNotCovered) {
-      filter.push(["!", ["get", "covered"]]);
-    }
-    return filter;
-  }
 </script>
 
 <LayerControls name={label + " cycling flow"} bind:show>
-  <label>
-    <input type="checkbox" bind:checked={onlyNotCovered} />
-    Only show routes yet covered
-  </label>
-
   {#if data.total_quintile_sums.length > 0}
+    <span class="legend" />
+
     <p>
-      Quintile {quintile} flow covered by current edits:
       {percent(
         data.covered_quintile_sums[quintile - 1],
         data.total_quintile_sums[quintile - 1],
-      )}
+      )} of quintile {quintile} flows covered
     </p>
   {/if}
 </LayerControls>
@@ -68,7 +50,7 @@
     layout={{
       visibility: show ? "visible" : "none",
     }}
-    filter={makeFilter(onlyNotCovered)}
+    filter={["==", ["get", "quintile"], quintile]}
     paint={{
       "line-width": lineWidthForDemand("flow"),
       "line-color": "grey",
@@ -80,3 +62,13 @@
     </Popup>
   </LineLayer>
 </GeoJSON>
+
+<style>
+  .legend {
+    float: left;
+    height: 16px;
+    width: 30px;
+    margin-right: 5px;
+    background-color: grey;
+  }
+</style>
