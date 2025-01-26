@@ -1,4 +1,7 @@
-import type { ExpressionSpecification } from "maplibre-gl";
+import type {
+  DataDrivenPropertyValueSpecification,
+  ExpressionSpecification,
+} from "maplibre-gl";
 
 export function percent(x: number, total: number): string {
   if (total == 0) {
@@ -13,8 +16,11 @@ export function sum(list: number[]): number {
   return list.reduce((total, x) => total + x, 0);
 }
 
-// Implements the formula y = (3 / (1 + exp(-3*(x/1000 - 1.6))) + 0.3)
-export function lineWidthForDemand(key: string): ExpressionSpecification {
+// Implements the formula y = (3 / (1 + exp(-3 * (x / 1000 - 1.6))) + 0.3)
+export function lineWidthForDemand(
+  input: DataDrivenPropertyValueSpecification<number>,
+): ExpressionSpecification {
+  // TODO Simplify, using "let"
   return [
     "interpolate",
     ["linear"],
@@ -26,11 +32,7 @@ export function lineWidthForDemand(key: string): ExpressionSpecification {
       [
         "+",
         0.3,
-        [
-          "/",
-          3,
-          ["+", 1, ["^", 2.718, ["-", 2.94, ["*", ["get", key], 0.0021]]]],
-        ],
+        ["/", 3, ["+", 1, ["^", 2.718, ["-", 2.94, ["*", input, 0.0021]]]]],
       ],
     ],
     14,
@@ -40,11 +42,7 @@ export function lineWidthForDemand(key: string): ExpressionSpecification {
       [
         "+",
         0.3,
-        [
-          "/",
-          3,
-          ["+", 1, ["^", 2.718, ["-", 2.94, ["*", ["get", key], 0.0021]]]],
-        ],
+        ["/", 3, ["+", 1, ["^", 2.718, ["-", 2.94, ["*", input, 0.0021]]]]],
       ],
     ],
     15,
@@ -54,11 +52,7 @@ export function lineWidthForDemand(key: string): ExpressionSpecification {
       [
         "+",
         0.3,
-        [
-          "/",
-          3,
-          ["+", 1, ["^", 2.718, ["-", 2.94, ["*", ["get", key], 0.0021]]]],
-        ],
+        ["/", 3, ["+", 1, ["^", 2.718, ["-", 2.94, ["*", input, 0.0021]]]]],
       ],
     ],
     16,
@@ -68,11 +62,7 @@ export function lineWidthForDemand(key: string): ExpressionSpecification {
       [
         "+",
         0.3,
-        [
-          "/",
-          3,
-          ["+", 1, ["^", 2.718, ["-", 2.94, ["*", ["get", key], 0.0021]]]],
-        ],
+        ["/", 3, ["+", 1, ["^", 2.718, ["-", 2.94, ["*", input, 0.0021]]]]],
       ],
     ],
     18,
@@ -82,20 +72,18 @@ export function lineWidthForDemand(key: string): ExpressionSpecification {
       [
         "+",
         0.3,
-        [
-          "/",
-          3,
-          ["+", 1, ["^", 2.718, ["-", 2.94, ["*", ["get", key], 0.0021]]]],
-        ],
+        ["/", 3, ["+", 1, ["^", 2.718, ["-", 2.94, ["*", input, 0.0021]]]]],
       ],
     ],
   ] as ExpressionSpecification;
 }
 
-export function lineColorForDemand(key: string): ExpressionSpecification {
+export function lineColorForDemand(
+  input: DataDrivenPropertyValueSpecification<number>,
+): ExpressionSpecification {
   return [
     "step",
-    ["get", key],
+    input,
     "rgba(0,0,0,0)",
     1,
     "#9C9C9C",
@@ -113,5 +101,5 @@ export function lineColorForDemand(key: string): ExpressionSpecification {
     "#0000FF",
     3000,
     "#FF00C5",
-  ];
+  ] as ExpressionSpecification;
 }

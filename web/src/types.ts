@@ -171,6 +171,7 @@ export interface StaticRoad {
   speed: number;
   gradient: number;
   existing_infra: string | null;
+  precalculated_flow_quintile: number;
 }
 
 export interface DynamicRoad {

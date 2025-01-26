@@ -74,9 +74,9 @@
     <LineLayer
       {...layerId("calculated-rnet")}
       paint={{
-        "line-width": lineWidthForDemand("count"),
+        "line-width": lineWidthForDemand(["get", "count"]),
         "line-color": {
-          flow: lineColorForDemand("count"),
+          flow: lineColorForDemand(["get", "count"]),
           infra_type: constructMatchExpression(
             ["get", "infra_type"],
             infraTypeColors,

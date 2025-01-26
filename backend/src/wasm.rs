@@ -345,11 +345,6 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
-    #[wasm_bindgen(js_name = renderPrecalculatedFlows)]
-    pub fn render_precalculated_flows_wasm(&self) -> Result<String, JsValue> {
-        self.render_precalculated_flows().map_err(err_to_js)
-    }
-
     #[wasm_bindgen(js_name = getConnectedComponents)]
     pub fn get_connected_components_wasm(&self) -> Result<String, JsValue> {
         serde_json::to_string(&self.get_connected_components()).map_err(err_to_js)

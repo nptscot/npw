@@ -41,7 +41,7 @@
 
   $: lineColor = {
     none: "#304ce7",
-    flow: lineColorForDemand(key),
+    flow: lineColorForDemand(["get", key]),
     quietness: [
       "step",
       ["get", "quietness"],
@@ -110,7 +110,7 @@
     sourceLayer="rnet"
     paint={{
       "line-color": lineColor,
-      "line-width": lineWidthForDemand(key),
+      "line-width": lineWidthForDemand(["get", key]),
     }}
     layout={{
       visibility: show ? "visible" : "none",

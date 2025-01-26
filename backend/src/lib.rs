@@ -24,7 +24,6 @@ mod level_of_service;
 mod mesh_density;
 pub mod od;
 pub mod places;
-mod precalculated_flow;
 mod reachable;
 mod route_snapper;
 mod routes;
@@ -190,6 +189,8 @@ impl MapModel {
     }
 
     pub fn render_static_roads(&self) -> GeoJson {
+        let stats = utils::Quintiles::new(&self.precalculated_flows);
+
         let mut features = Vec::new();
         for (idx, road) in self.graph.roads.iter().enumerate() {
             let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
@@ -198,12 +199,15 @@ impl MapModel {
 
             f.set_property("traffic", self.traffic_volumes[idx]);
             f.set_property("cn", serde_json::to_value(self.core_network[idx]).unwrap());
-            // TODO precalculated_flows
             f.set_property("speed", self.speeds[idx]);
             f.set_property("gradient", self.gradients[idx]);
             f.set_property(
                 "existing_infra",
                 serde_json::to_value(existing::classify(&road.osm_tags)).unwrap(),
+            );
+            f.set_property(
+                "precalculated_flow_quintile",
+                stats.quintile(self.precalculated_flows[idx]),
             );
 
             features.push(f);

@@ -31,6 +31,7 @@
   } from "../../stores";
   import { infraTypeMapping, type DynamicRoad } from "../../types";
   import { severances } from "../stores";
+  import CyclingFlowCoverage from "./CyclingFlowCoverage.svelte";
 
   let lastUpdate = 0;
   // The Popup code assumes that 'props.id' indexes into this
@@ -228,6 +229,9 @@
             {#if props.existing_infra}
               <p>{infraTypeMapping[props.existing_infra][0]}</p>
             {/if}
+            <p>
+              Precalculated cycling flow quintile: {props.precalculated_flow_quintile}
+            </p>
             <a href={props.way} target="_blank">Open OSM</a>
 
             <hr />
@@ -259,6 +263,8 @@
           </Popup>
         {/if}
       </LineLayer>
+
+      <CyclingFlowCoverage />
     </GeoJSON>
   {/await}
 {/if}

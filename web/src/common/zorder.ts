@@ -78,10 +78,7 @@ const layerZorder = [
   "mesh-density-grid-outline",
 
   // Reference layers (lines)
-  "cycling-flow-1",
-  "cycling-flow-2",
-  "cycling-flow-3",
-
+  "uncovered-cycling-flows",
   "npw-roads",
   "cn-debug",
   "existing-infra-debug",

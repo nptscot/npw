@@ -16,7 +16,6 @@ import type {
   GPHospitals,
   Greenspaces,
   GridMeshDensity,
-  PrecalculatedFlows,
   RouteGJ,
   RouteNode,
   RouteProps,
@@ -66,11 +65,6 @@ export class Backend {
   renderDynamicRoads(): DynamicRoad[] {
     this.checkReady();
     return JSON.parse(this.inner!.renderDynamicRoads());
-  }
-
-  renderPrecalculatedFlows(): PrecalculatedFlows {
-    this.checkReady();
-    return JSON.parse(this.inner!.renderPrecalculatedFlows());
   }
 
   toRouteSnapper(): Uint8Array {
