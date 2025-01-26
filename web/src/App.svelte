@@ -8,7 +8,7 @@
   import { init, RouteTool } from "route-snapper-ts";
   import { onMount } from "svelte";
   import { FillLayer, GeoJSON, MapLibre } from "svelte-maplibre";
-  import { Loading } from "svelte-utils";
+  import { fetchWithProgress, Loading } from "svelte-utils";
   import { emptyGeojson, Geocoder } from "svelte-utils/map";
   import { writable } from "svelte/store";
   import hospital1Icon from "../assets/hospital_reachable.png";
@@ -55,6 +55,7 @@
   }
 
   let loading = "";
+  let progress = 0;
 
   let map: Map;
   $: if (map) {
@@ -79,16 +80,23 @@
     let backendWorker = await new MyWorker();
 
     // Detect if we're running locally first
-    let resp = await fetch(`areas/${$boundaryName}.bin`);
-    if (resp.ok) {
+    let bytes: Uint8Array<ArrayBufferLike> = new Uint8Array();
+    try {
+      bytes = await fetchWithProgress(`areas/${$boundaryName}.bin`, (p) => {
+        progress = p;
+      });
       console.log(`Using locally hosted files`);
       $remoteStorage = false;
-    } else {
+    } catch (err) {
       console.log(`Using remote hosted files`);
-      resp = await fetch(assetUrl(`areas/${$boundaryName}.bin`));
+      bytes = await fetchWithProgress(
+        assetUrl(`areas/${$boundaryName}.bin`),
+        (p) => {
+          progress = p;
+        },
+      );
     }
 
-    let bytes = await resp.arrayBuffer();
     try {
       await backendWorker.loadFile(new Uint8Array(bytes));
     } catch (err) {
@@ -168,7 +176,7 @@
   <title>Network Planning Workspace - {$boundaryName}</title>
 </svelte:head>
 
-<Loading {loading} />
+<Loading {loading} {progress} />
 
 <Layout>
   <div slot="top" class="pico">
