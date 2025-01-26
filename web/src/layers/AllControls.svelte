@@ -19,13 +19,13 @@
 
   $: update(primary, $allControls, ["High cycling flow"]);
 
-  $: update(secondary, $allControls, ["Town centres", "Medium cycling flow"]);
+  $: update(secondary, $allControls, ["Medium cycling flow", "Town centres"]);
 
   $: update(localAccess, $allControls, [
+    "Above-minimum cycling flow",
     "Schools",
     "GPs and hospitals",
     "Greenspaces",
-    "Above-minimum cycling flow",
     "Mesh density (grid)",
     "Mesh density (area)",
   ]);
