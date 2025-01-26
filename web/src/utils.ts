@@ -20,60 +20,28 @@ export function sum(list: number[]): number {
 export function lineWidthForDemand(
   input: DataDrivenPropertyValueSpecification<number>,
 ): ExpressionSpecification {
-  // TODO Simplify, using "let"
   return [
-    "interpolate",
-    ["linear"],
-    ["zoom"],
-    12,
+    "let",
+    "base",
     [
-      "*",
-      2.1,
-      [
-        "+",
-        0.3,
-        ["/", 3, ["+", 1, ["^", 2.718, ["-", 2.94, ["*", input, 0.0021]]]]],
-      ],
+      "+",
+      0.3,
+      ["/", 3, ["+", 1, ["^", 2.718, ["-", 2.94, ["*", input, 0.0021]]]]],
     ],
-    14,
     [
-      "*",
-      5.25,
-      [
-        "+",
-        0.3,
-        ["/", 3, ["+", 1, ["^", 2.718, ["-", 2.94, ["*", input, 0.0021]]]]],
-      ],
-    ],
-    15,
-    [
-      "*",
-      7.5,
-      [
-        "+",
-        0.3,
-        ["/", 3, ["+", 1, ["^", 2.718, ["-", 2.94, ["*", input, 0.0021]]]]],
-      ],
-    ],
-    16,
-    [
-      "*",
+      "interpolate",
+      ["linear"],
+      ["zoom"],
+      12,
+      ["*", 2.1, ["var", "base"]],
+      14,
+      ["*", 5.25, ["var", "base"]],
+      15,
+      ["*", 7.5, ["var", "base"]],
+      16,
+      ["*", 18, ["var", "base"]],
       18,
-      [
-        "+",
-        0.3,
-        ["/", 3, ["+", 1, ["^", 2.718, ["-", 2.94, ["*", input, 0.0021]]]]],
-      ],
-    ],
-    18,
-    [
-      "*",
-      52.5,
-      [
-        "+",
-        0.3,
-        ["/", 3, ["+", 1, ["^", 2.718, ["-", 2.94, ["*", input, 0.0021]]]]],
-      ],
+      ["*", 52.5, ["var", "base"]],
     ],
   ] as ExpressionSpecification;
 }
