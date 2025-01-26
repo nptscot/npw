@@ -1,27 +1,43 @@
 <script lang="ts">
   import { tierColors } from "./colors";
   import { HelpButton } from "./common";
+  import { layersPerTier } from "./layers/stores";
   import { tier } from "./stores";
+  import type { Tier } from "./types";
+
+  function changeTier(newTier: Tier) {
+    // Disable old layers
+    for (let show of layersPerTier[$tier]) {
+      show.set(false);
+    }
+
+    $tier = newTier;
+
+    // Show new old layers
+    for (let show of layersPerTier[newTier]) {
+      show.set(true);
+    }
+  }
 </script>
 
 <div>
   <button
     style:background={$tier == "Primary" ? tierColors.Primary : "grey"}
-    on:click={() => ($tier = "Primary")}
+    on:click={() => changeTier("Primary")}
   >
     Primary routes
   </button>
 
   <button
     style:background={$tier == "Secondary" ? tierColors.Secondary : "grey"}
-    on:click={() => ($tier = "Secondary")}
+    on:click={() => changeTier("Secondary")}
   >
     Secondary routes
   </button>
 
   <button
     style:background={$tier == "LocalAccess" ? tierColors.LocalAccess : "grey"}
-    on:click={() => ($tier = "LocalAccess")}
+    on:click={() => changeTier("LocalAccess")}
   >
     Local access routes
   </button>
@@ -30,7 +46,7 @@
     style:background={$tier == "LongDistance"
       ? tierColors.LongDistance
       : "grey"}
-    on:click={() => ($tier = "LongDistance")}
+    on:click={() => changeTier("LongDistance")}
   >
     Long distance routes
   </button>
