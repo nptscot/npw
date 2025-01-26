@@ -50,7 +50,7 @@
     layout={{
       visibility: show ? "visible" : "none",
     }}
-    filter={["==", ["get", "quintile"], quintile]}
+    filter={["all", ["!", ["get", "covered"]], ["==", ["get", "quintile"], quintile]]}
     paint={{
       "line-width": lineWidthForDemand("flow"),
       "line-color": "grey",
