@@ -13,7 +13,7 @@
       let noun = numChanges == 1 ? "route segment" : "route segments";
       await autosave();
       window.alert(`Imported ${numChanges} ${noun}`);
-      $roadStyle = "current_infra";
+      $roadStyle = "current_tier";
     }
   }
 </script>

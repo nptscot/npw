@@ -16,7 +16,7 @@
   }
 
   function toggle() {
-    $roadStyle = $roadStyle == style ? "current_infra" : style;
+    $roadStyle = $roadStyle == style ? "current_tier" : style;
   }
 </script>
 
