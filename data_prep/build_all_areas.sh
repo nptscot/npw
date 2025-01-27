@@ -13,7 +13,7 @@ set -e
 function split_osm {
         # Download Scotland OSM data
         if [ ! -f scotland-latest.osm.pbf ]; then
-          wget http://download.geofabrik.de/europe/great-britain/scotland-latest.osm.pbf
+          wget https://download.geofabrik.de/europe/united-kingdom/scotland-latest.osm.pbf
         fi
 
         # Generate config for osmium
