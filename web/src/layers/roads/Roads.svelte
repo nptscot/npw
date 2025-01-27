@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Feature } from "geojson";
   import type {
     DataDrivenPropertyValueSpecification,
     ExpressionSpecification,
@@ -7,10 +8,15 @@
     GeoJSON,
     JoinedData,
     LineLayer,
+    Popup,
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { notNull } from "svelte-utils";
-  import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
+  import {
+    constructMatchExpression,
+    makeRamp,
+    Popup as WrappedPopup,
+  } from "svelte-utils/map";
   import {
     gradient,
     infraTypeColors,
@@ -190,6 +196,11 @@
       calculated_rnet: false,
     }[style];
   }
+
+  function showEditPopup(features: Feature[]): boolean {
+    let roadId = features[0]?.properties?.id;
+    return dynamicData[roadId].current_route_id != null;
+  }
 </script>
 
 {#if $backend}
@@ -213,13 +224,14 @@
         on:click={editRouteMap}
       >
         {#if clickToEdit}
-          <Popup openOn="hover" let:props>
-            {#if dynamicData[props.id].current_route_id != null}
+          <Popup openOn="hover" let:data canOpen={showEditPopup}>
+            {@const props = data?.properties}
+            {#if props && dynamicData[props.id].current_route_id != null}
               Edit {dynamicData[props.id].current_route_name}
             {/if}
           </Popup>
         {:else}
-          <Popup openOn="click" let:props>
+          <WrappedPopup openOn="click" let:props>
             <p>Traffic: {props.traffic.toLocaleString()}</p>
             <p>Gradient: {props.gradient.toFixed(1)}%</p>
             <p>Speed: {props.speed} mph</p>
@@ -260,7 +272,7 @@
 
             <p>Level of service: {dynamicData[props.id].los}</p>
             <p>Reachability: {dynamicData[props.id].reachable}</p>
-          </Popup>
+          </WrappedPopup>
         {/if}
       </LineLayer>
 
