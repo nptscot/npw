@@ -16,7 +16,7 @@
 </div>
 
 <style>
-  /* Note calling this "container" will clash with a pico built-in */
+  /* TODO Note calling this "container" will clash with a pico built-in */
   .flex-container {
     display: flex;
     flex-direction: column;

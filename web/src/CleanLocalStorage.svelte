@@ -1,5 +1,5 @@
 <script lang="ts">
-  import "@picocss/pico/css/pico.jade.min.css";
+  import "beercss";
   import { downloadGeneratedFile } from "svelte-utils";
   import { measureLocalStorageSizes } from "./common/files";
 
@@ -69,12 +69,8 @@
             <td>{filename}</td>
             <td>{formatBytes(size)}</td>
             <td>
-              <button class="secondary" on:click={() => download(filename)}>
-                Download
-              </button>
-              <button class="secondary" on:click={() => remove(filename)}>
-                Delete
-              </button>
+              <button on:click={() => download(filename)}>Download</button>
+              <button on:click={() => remove(filename)}>Delete</button>
             </td>
           </tr>
         {/each}

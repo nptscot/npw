@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Comlink from "comlink";
-  import "@picocss/pico/css/pico.conditional.jade.min.css";
+  import "beercss";
   import type { Map } from "maplibre-gl";
   import maplibregl from "maplibre-gl";
   // TODO Indirect dependencies
@@ -179,10 +179,10 @@
 <Loading {loading} {progress} />
 
 <Layout>
-  <div slot="top" class="pico">
+  <div slot="top">
     <TopBar />
   </div>
-  <div slot="left" class="pico">
+  <div slot="left">
     <div bind:this={leftSidebarDiv} />
   </div>
   <div slot="main" style="position:relative; width: 100%; height: 100%;">
@@ -235,7 +235,7 @@
       {/if}
     </MapLibre>
   </div>
-  <div slot="right" class="pico">
+  <div slot="right">
     <div bind:this={rightSidebarDiv} />
 
     <hr />

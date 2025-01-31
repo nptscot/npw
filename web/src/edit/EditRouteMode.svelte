@@ -174,11 +174,7 @@
       </select>
     </label>
 
-    <button
-      class="secondary"
-      on:click={evalRoute}
-      disabled={$waypoints.length < 2}
-    >
+    <button on:click={evalRoute} disabled={$waypoints.length < 2}>
       Evaluate this route
     </button>
 
@@ -250,10 +246,8 @@
 </RouteControls>
 
 {#if showOverrideModal}
-  <span class="pico">
-    <Modal on:close={() => (showOverrideModal = false)}>
-      <PickInfraType bind:current={infraType} />
-      <button on:click={() => (showOverrideModal = false)}>OK</button>
-    </Modal>
-  </span>
+  <Modal on:close={() => (showOverrideModal = false)}>
+    <PickInfraType bind:current={infraType} />
+    <button on:click={() => (showOverrideModal = false)}>OK</button>
+  </Modal>
 {/if}
