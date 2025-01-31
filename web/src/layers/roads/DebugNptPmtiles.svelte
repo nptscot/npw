@@ -3,7 +3,7 @@
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
   import { speed } from "../../colors";
   import { layerId, roadLineWidth } from "../../common";
-  import { assetUrl, roadStyle } from "../../stores";
+  import { assetUrl, referenceRoadStyle } from "../../stores";
   import { debugOriginalData } from "./stores";
 </script>
 
@@ -26,7 +26,9 @@
     }}
     layout={{
       visibility:
-        $roadStyle == "traffic" && $debugOriginalData ? "visible" : "none",
+        $referenceRoadStyle == "traffic" && $debugOriginalData
+          ? "visible"
+          : "none",
     }}
   />
 
@@ -48,7 +50,7 @@
     }}
     layout={{
       visibility:
-        $roadStyle == "los" && $debugOriginalData ? "visible" : "none",
+        $referenceRoadStyle == "los" && $debugOriginalData ? "visible" : "none",
     }}
   />
 
@@ -72,7 +74,7 @@
     }}
     layout={{
       visibility:
-        $roadStyle == "existing_infra" && $debugOriginalData
+        $referenceRoadStyle == "existing_infra" && $debugOriginalData
           ? "visible"
           : "none",
     }}
@@ -95,7 +97,9 @@
     }}
     layout={{
       visibility:
-        $roadStyle == "speed" && $debugOriginalData ? "visible" : "none",
+        $referenceRoadStyle == "speed" && $debugOriginalData
+          ? "visible"
+          : "none",
     }}
   />
 </VectorTileSource>
@@ -118,7 +122,8 @@
       "line-width": roadLineWidth(4),
     }}
     layout={{
-      visibility: $roadStyle == "cn" && $debugOriginalData ? "visible" : "none",
+      visibility:
+        $referenceRoadStyle == "cn" && $debugOriginalData ? "visible" : "none",
     }}
   />
 </VectorTileSource>

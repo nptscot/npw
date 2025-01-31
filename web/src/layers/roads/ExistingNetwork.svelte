@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Loading, Modal } from "svelte-utils";
-  import { autosave, backend, devMode, roadStyle } from "../../stores";
+  import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
   import { debugOriginalData } from "./stores";
 
   let showImportModal = false;
@@ -15,7 +15,7 @@
       let noun = numChanges == 1 ? "route segment" : "route segments";
       await autosave();
       window.alert(`Imported ${numChanges} ${noun}`);
-      $roadStyle = "current_tier";
+      $referenceRoadStyle = "off";
     }
   }
 </script>

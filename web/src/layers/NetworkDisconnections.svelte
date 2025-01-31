@@ -8,11 +8,11 @@
   } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
   import { layerId, roadLineWidth } from "../common";
-  import { backend, map, mutationCounter, roadStyle } from "../stores";
+  import { backend, map, mutationCounter, referenceRoadStyle } from "../stores";
   import type { ConnectedComponents } from "../types";
   import RoadLayerControls from "./RoadLayerControls.svelte";
 
-  $: show = $roadStyle == "disconnections";
+  $: show = $referenceRoadStyle == "disconnections";
 
   let lastUpdate = 0;
   let data: ConnectedComponents = {

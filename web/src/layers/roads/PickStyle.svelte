@@ -11,18 +11,34 @@
     traffic,
   } from "../../colors";
   import { QualitativeLegend } from "../../common";
-  import { devMode, roadStyle } from "../../stores";
+  import { devMode, editsRoadStyle, referenceRoadStyle } from "../../stores";
   import CoreNetwork from "./CoreNetwork.svelte";
   import ExistingNetwork from "./ExistingNetwork.svelte";
   import { debugOriginalData } from "./stores";
 </script>
 
 <label>
-  Show roads:
-  <select bind:value={$roadStyle}>
+  Show your current network edits:
+  <select bind:value={$editsRoadStyle}>
     <option value="off">Don't show</option>
-    <option value="current_infra">Current infrastructure type</option>
-    <option value="current_tier">Current tier</option>
+    <option value="edits_infra">By infrastructure type</option>
+    <option value="edits_tier">By tier</option>
+  </select>
+</label>
+
+<details open>
+  <summary>Legend</summary>
+  {#if $editsRoadStyle == "edits_infra"}
+    <QualitativeLegend colors={infraTypeColors} />
+  {:else if $editsRoadStyle == "edits_tier"}
+    <QualitativeLegend colors={tierColors} horiz />
+  {/if}
+</details>
+
+<label>
+  Reference layer roads:
+  <select bind:value={$referenceRoadStyle}>
+    <option value="off">Don't show</option>
     <option value="cn">Core network</option>
     <option value="existing_infra">Existing infrastructure type</option>
     <option value="traffic">Estimated traffic volume</option>
@@ -38,17 +54,13 @@
 
 <details open>
   <summary>Legend</summary>
-  {#if $roadStyle == "current_infra"}
-    <QualitativeLegend colors={infraTypeColors} />
-  {:else if $roadStyle == "current_tier"}
-    <QualitativeLegend colors={tierColors} horiz />
-  {:else if $roadStyle == "cn"}
+  {#if $referenceRoadStyle == "cn"}
     <QualitativeLegend colors={cnTierColors} horiz />
     <CoreNetwork />
-  {:else if $roadStyle == "existing_infra"}
+  {:else if $referenceRoadStyle == "existing_infra"}
     <QualitativeLegend colors={infraTypeColors} />
     <ExistingNetwork />
-  {:else if $roadStyle == "traffic"}
+  {:else if $referenceRoadStyle == "traffic"}
     <SequentialLegend colorScale={traffic.colorScale} limits={traffic.limits} />
 
     {#if $devMode}
@@ -57,12 +69,12 @@
         Show original data
       </label>
     {/if}
-  {:else if $roadStyle == "gradient"}
+  {:else if $referenceRoadStyle == "gradient"}
     <SequentialLegend
       colorScale={gradient.colorScale}
       limits={gradient.limits}
     />
-  {:else if $roadStyle == "speed"}
+  {:else if $referenceRoadStyle == "speed"}
     <SequentialLegend colorScale={speed.colorScale} limits={speed.limits} />
 
     {#if $devMode}
@@ -71,7 +83,7 @@
         Show original data
       </label>
     {/if}
-  {:else if $roadStyle == "los"}
+  {:else if $referenceRoadStyle == "los"}
     <QualitativeLegend colors={levelOfServiceColors} horiz />
 
     {#if $devMode}
@@ -80,13 +92,13 @@
         Show original data
       </label>
     {/if}
-  {:else if $roadStyle == "reachability"}
+  {:else if $referenceRoadStyle == "reachability"}
     <QualitativeLegend colors={reachabilityColors} horiz />
-  {:else if $roadStyle == "disconnections"}
+  {:else if $referenceRoadStyle == "disconnections"}
     TODO
-  {:else if $roadStyle == "precalculated_rnet"}
+  {:else if $referenceRoadStyle == "precalculated_rnet"}
     TODO
-  {:else if $roadStyle == "calculated_rnet"}
+  {:else if $referenceRoadStyle == "calculated_rnet"}
     TODO
   {/if}
 </details>

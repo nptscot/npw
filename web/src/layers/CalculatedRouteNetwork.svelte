@@ -5,12 +5,12 @@
   import { infraTypeColors, levelOfServiceColors } from "../colors";
   import { layerId } from "../common";
   import ODBreakdowns from "../stats/ODBreakdowns.svelte";
-  import { backend, mutationCounter, roadStyle } from "../stores";
+  import { backend, mutationCounter, referenceRoadStyle } from "../stores";
   import type { EvaluateODOut } from "../types";
   import { lineColorForDemand, lineWidthForDemand } from "../utils";
   import RoadLayerControls from "./RoadLayerControls.svelte";
 
-  $: show = $roadStyle == "calculated_rnet";
+  $: show = $referenceRoadStyle == "calculated_rnet";
   let fastSample = true;
   let colorBy: "flow" | "infra_type" | "los" = "los";
 

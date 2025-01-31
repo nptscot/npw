@@ -79,7 +79,8 @@ const layerZorder = [
 
   // Reference layers (lines)
   "uncovered-cycling-flows",
-  "npw-roads",
+  "edits-roads",
+  "reference-roads",
   "cn-debug",
   "existing-infra-debug",
   "traffic-debug",

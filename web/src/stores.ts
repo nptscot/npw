@@ -30,10 +30,11 @@ export let routeA: Writable<{ lng: number; lat: number } | null> =
 export let routeB: Writable<{ lng: number; lat: number } | null> =
   writable(null);
 
-export type RoadStyle =
+// TODO Move disconnections here?
+export type EditsRoadStyle = "off" | "edits_infra" | "edits_tier";
+
+export type ReferenceRoadStyle =
   | "off"
-  | "current_infra"
-  | "current_tier"
   | "cn"
   | "existing_infra"
   | "traffic"
@@ -45,7 +46,8 @@ export type RoadStyle =
   | "precalculated_rnet"
   | "calculated_rnet";
 
-export let roadStyle: Writable<RoadStyle> = writable("current_tier");
+export let editsRoadStyle: Writable<EditsRoadStyle> = writable("edits_tier");
+export let referenceRoadStyle: Writable<ReferenceRoadStyle> = writable("off");
 
 export let interactiveMapLayersEnabled = writable(true);
 

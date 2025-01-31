@@ -4,11 +4,11 @@
   import { makeRamp, Popup } from "svelte-utils/map";
   import { gradient } from "../colors";
   import { layerId } from "../common";
-  import { assetUrl, roadStyle } from "../stores";
+  import { assetUrl, referenceRoadStyle } from "../stores";
   import { lineColorForDemand, lineWidthForDemand } from "../utils";
   import RoadLayerControls from "./RoadLayerControls.svelte";
 
-  $: show = $roadStyle == "precalculated_rnet";
+  $: show = $referenceRoadStyle == "precalculated_rnet";
   let purpose = "all";
   let scenario = "bicycle_go_dutch";
   let networkType = "fastest";
