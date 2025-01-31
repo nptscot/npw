@@ -28,7 +28,6 @@
   import { routeTool } from "./edit/stores";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
-  import PickStyle from "./layers/roads/PickStyle.svelte";
   import MainMode from "./MainMode.svelte";
   import {
     assetUrl,
@@ -237,8 +236,6 @@
     <div bind:this={rightSidebarDiv} />
 
     <hr />
-
-    <PickStyle />
 
     <label>
       <input type="checkbox" bind:checked={$devMode} />

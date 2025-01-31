@@ -7,33 +7,14 @@
     levelOfServiceColors,
     reachabilityColors,
     speed,
-    tierColors,
     traffic,
   } from "../../colors";
   import { QualitativeLegend } from "../../common";
-  import { devMode, editsRoadStyle, referenceRoadStyle } from "../../stores";
+  import { devMode, referenceRoadStyle } from "../../stores";
   import CoreNetwork from "./CoreNetwork.svelte";
   import ExistingNetwork from "./ExistingNetwork.svelte";
   import { debugOriginalData } from "./stores";
 </script>
-
-<label>
-  Show your current network edits:
-  <select bind:value={$editsRoadStyle}>
-    <option value="off">Don't show</option>
-    <option value="edits_infra">By infrastructure type</option>
-    <option value="edits_tier">By tier</option>
-  </select>
-</label>
-
-<details open>
-  <summary>Legend</summary>
-  {#if $editsRoadStyle == "edits_infra"}
-    <QualitativeLegend colors={infraTypeColors} />
-  {:else if $editsRoadStyle == "edits_tier"}
-    <QualitativeLegend colors={tierColors} horiz />
-  {/if}
-</details>
 
 <label>
   Reference layer roads:

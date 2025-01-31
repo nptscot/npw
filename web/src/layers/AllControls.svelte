@@ -1,6 +1,7 @@
 <script lang="ts">
   import { tierColors } from "../colors";
   import { tier } from "../stores";
+  import PickReferenceStyle from "./roads/PickReferenceStyle.svelte";
   import { allControls } from "./stores";
 
   let basic: HTMLDivElement | null = null;
@@ -79,5 +80,6 @@
 
 <details open style:border="2px solid black">
   <summary>Basic Reference Layers</summary>
+  <PickReferenceStyle />
   <div bind:this={basic} />
 </details>

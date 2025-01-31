@@ -3,6 +3,7 @@
   import ManageFiles from "./common/ManageFiles.svelte";
   import StreetView from "./common/StreetView.svelte";
   import AllControls from "./layers/AllControls.svelte";
+  import PickEditsStyle from "./layers/roads/PickEditsStyle.svelte";
   import Stats from "./stats/Stats.svelte";
   import { mode } from "./stores";
 
@@ -28,6 +29,8 @@
       Draw new <u>r</u>
       oute line
     </button>
+
+    <PickEditsStyle />
 
     <AllControls />
   </div>

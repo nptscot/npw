@@ -10,6 +10,8 @@
   } from "svelte-utils/map";
   import { infraTypeColors } from "../colors";
   import { layerId } from "../common";
+  import PickEditsStyle from "../layers/roads/PickEditsStyle.svelte";
+  import PickReferenceStyle from "../layers/roads/PickReferenceStyle.svelte";
   import {
     autosave,
     backend,
@@ -162,6 +164,9 @@
     >
       Evaluate this route
     </button>
+
+    <PickEditsStyle />
+    <PickReferenceStyle />
   </div>
 
   <span slot="extra-map">
