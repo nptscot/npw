@@ -16,8 +16,10 @@
     editsRoadStyle,
     mode,
     mutationCounter,
+    referenceRoadStyle,
     type EditsRoadStyle,
     type Mode,
+    type ReferenceRoadStyle,
   } from "../../stores";
   import { type DynamicRoad } from "../../types";
   import CyclingFlowCoverage from "./CyclingFlowCoverage.svelte";
@@ -90,7 +92,13 @@
 
   function lineColor(
     style: EditsRoadStyle,
+    referenceStyle: ReferenceRoadStyle,
   ): DataDrivenPropertyValueSpecification<string> {
+    // If a reference layer is drawn on top, overlapping get confusing. Just show a bold outline.
+    if (referenceStyle != "off") {
+      return "black";
+    }
+
     let invisibile = "black";
     return {
       off: invisibile,
@@ -121,9 +129,9 @@
       <LineLayer
         {...layerId("edits-roads")}
         paint={{
-          "line-color": lineColor($editsRoadStyle),
+          "line-color": lineColor($editsRoadStyle, $referenceRoadStyle),
           "line-opacity": lineOpacity($mode, $editsRoadStyle),
-          "line-width": roadLineWidth(0),
+          "line-width": roadLineWidth($referenceRoadStyle == "off" ? 0 : 4),
         }}
         layout={{
           visibility: $editsRoadStyle == "off" ? "none" : "visible",
