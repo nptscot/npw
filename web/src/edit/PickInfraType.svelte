@@ -46,7 +46,7 @@
       on:click={() => (current = value)}
     >
       <img src={img} alt={label} />
-      <span style:color>{label}</span>
+      <h5 style:color>{label}</h5>
     </div>
   {/each}
 </div>

@@ -256,7 +256,11 @@
       <h2>Drawing a new route</h2>
     {/if}
 
-    <button on:click={finish} disabled={$waypoints.length < 2}>Finish</button>
+    <div>
+      <button on:click={finish} disabled={$waypoints.length < 2}>
+        Finish and back to overview
+      </button>
+    </div>
     <button class="secondary" disabled={undoStates.length == 0} on:click={undo}>
       {#if undoStates.length == 0}
         Undo
@@ -331,6 +335,8 @@
         )
       </label>
     </fieldset>
+
+    <hr />
 
     <slot name="extra-left" />
   </div>
