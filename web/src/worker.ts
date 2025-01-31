@@ -96,12 +96,13 @@ export class Backend {
 
   autosplitRoute(
     full_path: RouteNode[],
+    overrideInfraType: string | null,
   ): FeatureCollection<
     LineString,
     { kind: string; length: number; infra_type?: string }
   > {
     this.checkReady();
-    return JSON.parse(this.inner!.autosplitRoute(full_path));
+    return JSON.parse(this.inner!.autosplitRoute(full_path, overrideInfraType));
   }
 
   evaluateRoute(req: {

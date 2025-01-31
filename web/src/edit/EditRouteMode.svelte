@@ -2,7 +2,7 @@
   import type { Map } from "maplibre-gl";
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { notNull } from "svelte-utils";
+  import { Modal, notNull } from "svelte-utils";
   import {
     constructMatchExpression,
     emptyGeojson,
@@ -20,6 +20,7 @@
     routeA,
     routeB,
   } from "../stores";
+  import PickInfraType from "./PickInfraType.svelte";
   import RouteControls from "./RouteControls.svelte";
   import { routeTool, waypoints, type Waypoint } from "./stores";
 
@@ -28,11 +29,15 @@
 
   let name = "";
   let notes = "";
+  // This is not meaningful when overrideInfraType is false
   let infraType = "MixedTraffic";
+  let overrideInfraType = false;
   let tier = $currentTier;
 
+  let showOverrideModal = false;
+
   let sectionsGj = emptyGeojson();
-  $: recalculateSections($waypoints);
+  $: recalculateSections($waypoints, overrideInfraType, infraType);
 
   onMount(async () => {
     $waypoints = [];
@@ -41,6 +46,7 @@
       name = feature.properties.name;
       notes = feature.properties.notes;
       infraType = feature.properties.infra_type;
+      overrideInfraType = feature.properties.override_infra_type;
       tier = feature.properties.tier;
 
       // Transform into the correct format
@@ -100,6 +106,7 @@
         notes,
         full_path: feature.properties.full_path,
         infra_type: infraType,
+        override_infra_type: overrideInfraType,
         tier,
       });
       await autosave();
@@ -128,11 +135,18 @@
     };
   }
 
-  async function recalculateSections(waypts: Waypoint[]) {
+  async function recalculateSections(
+    waypts: Waypoint[],
+    overrideInfraType: boolean,
+    infraType: string,
+  ) {
     try {
       // TODO Wasteful; should RouteControls export a read-only view of this?
       let feature = JSON.parse($routeTool!.inner.calculateRoute(waypts));
-      sectionsGj = await $backend!.autosplitRoute(feature.properties.full_path);
+      sectionsGj = await $backend!.autosplitRoute(
+        feature.properties.full_path,
+        overrideInfraType ? infraType : null,
+      );
     } catch (err) {
       sectionsGj = emptyGeojson();
     }
@@ -196,17 +210,35 @@
       <input type="text" bind:value={name} />
     </label>
 
-    <!--<PickInfraType bind:current={infraType} />-->
     <label>
       Notes:
       <textarea rows="5" bind:value={notes} />
     </label>
 
     {#if sectionsGj.features.length > 0}
-      <p>
-        The route you've drawn has been split into sections, automatically
-        picking an infrastructure type to achieve high Level of Service:
-      </p>
+      {#if overrideInfraType}
+        <p>
+          You've forced this route to always use {infraType}, assuming high
+          Level of Service.
+        </p>
+        <button on:click={() => (overrideInfraType = false)}>
+          Remove override
+        </button>
+      {:else}
+        <p>
+          The route you've drawn has been split into sections, automatically
+          picking an infrastructure type to achieve high Level of Service.
+        </p>
+        <button
+          on:click={() => {
+            overrideInfraType = true;
+            showOverrideModal = true;
+          }}
+        >
+          Override infrastructure type
+        </button>
+      {/if}
+
       <table>
         <thead>
           <tr>
@@ -233,8 +265,15 @@
           {/each}
         </tbody>
       </table>
-
-      <ol></ol>
     {/if}
   </div>
 </RouteControls>
+
+{#if showOverrideModal}
+  <span class="pico">
+    <Modal on:close={() => (showOverrideModal = false)}>
+      <PickInfraType bind:current={infraType} />
+      <button on:click={() => (showOverrideModal = false)}>OK</button>
+    </Modal>
+  </span>
+{/if}

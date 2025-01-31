@@ -25,6 +25,16 @@
   ];
 </script>
 
+<p>
+  You can use one infrastructure type for this route, instead of automatically
+  picking the most appropriate type. If you do this, you're making the promise
+  that this type is appropriate to achieve high Level of Service.
+</p>
+<p>
+  Note if this route overlaps another one, this override won't apply there. You
+  have to go edit that other route to override it.
+</p>
+
 <div style="display: flex; flex-wrap: wrap; gap: 4px">
   {#each cases as [value, img, _url]}
     {@const [label, color] = infraTypeMapping[value]}

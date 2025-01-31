@@ -93,11 +93,18 @@ impl MapModel {
 
     /// Splits a route into sections, returning a FeatureCollection
     #[wasm_bindgen(js_name = autosplitRoute)]
-    pub fn autosplit_route_wasm(&self, input: JsValue) -> Result<String, JsValue> {
+    pub fn autosplit_route_wasm(
+        &self,
+        input: JsValue,
+        override_infra_type: JsValue,
+    ) -> Result<String, JsValue> {
         // TODO Or take a full Route as input and reuse parse_route?
         let full_path: Vec<RouteNode> = serde_wasm_bindgen::from_value(input)?;
         let roads = self.full_path_to_roads(full_path).map_err(err_to_js)?;
-        self.autosplit_route(roads).map_err(err_to_js)
+        let override_infra_type: Option<InfraType> =
+            serde_wasm_bindgen::from_value(override_infra_type)?;
+        self.autosplit_route(roads, override_infra_type)
+            .map_err(err_to_js)
     }
 
     /// Returns one GJ Feature of the route
@@ -370,6 +377,7 @@ impl MapModel {
             notes: route.notes,
             roads: self.full_path_to_roads(route.full_path)?,
             infra_type: route.infra_type,
+            override_infra_type: route.override_infra_type,
             tier: route.tier,
         })
     }
@@ -417,6 +425,7 @@ struct InputRoute {
     notes: String,
     full_path: Vec<RouteNode>,
     infra_type: InfraType,
+    override_infra_type: bool,
     tier: Tier,
 }
 

@@ -68,6 +68,9 @@ pub struct MapModel {
     // Derived things per RoadID maintained by recalculate_after_edits
     #[serde(skip_serializing, skip_deserializing, default)]
     infra_types: Vec<Option<InfraType>>,
+    /// Does this route have a manually specified InfraType? If so, its LoS is always high
+    #[serde(skip_serializing, skip_deserializing, default)]
+    override_infra_type: Vec<bool>,
     #[serde(skip_serializing, skip_deserializing, default)]
     tiers: Vec<Option<Tier>>,
     #[serde(skip_serializing, skip_deserializing, default)]
@@ -83,6 +86,7 @@ pub struct Route {
     // Derived from full_path. The direction is only plumbed along for rendering/splitting purposes
     roads: Vec<(RoadID, Dir)>,
     infra_type: InfraType,
+    override_infra_type: bool,
     tier: Tier,
 }
 
@@ -136,6 +140,7 @@ impl MapModel {
             .map(|r| level_of_service::get_speed_mph(&r.osm_tags))
             .collect();
         let infra_types = std::iter::repeat(None).take(graph.roads.len()).collect();
+        let override_infra_type = std::iter::repeat(false).take(graph.roads.len()).collect();
         let tiers = std::iter::repeat(None).take(graph.roads.len()).collect();
         let los = std::iter::repeat(LevelOfService::ShouldNotBeUsed)
             .take(graph.roads.len())
@@ -159,6 +164,7 @@ impl MapModel {
             speeds,
             gradients,
             infra_types,
+            override_infra_type,
             tiers,
             los,
         }
@@ -168,6 +174,9 @@ impl MapModel {
         self.infra_types = std::iter::repeat(None)
             .take(self.graph.roads.len())
             .collect();
+        self.override_infra_type = std::iter::repeat(false)
+            .take(self.graph.roads.len())
+            .collect();
         self.tiers = std::iter::repeat(None)
             .take(self.graph.roads.len())
             .collect();
@@ -175,6 +184,7 @@ impl MapModel {
         for route in self.routes.values() {
             for (road, _) in &route.roads {
                 self.infra_types[road.0] = Some(route.infra_type);
+                self.override_infra_type[road.0] = route.override_infra_type;
                 self.tiers[road.0] = Some(route.tier);
             }
         }

@@ -25,7 +25,7 @@ impl MapModel {
 
         // TODO Refactor with autosplit_route
         // Split when:
-        // - the auto-recommended infrastructure type changes
+        // - the auto-recommended infrastructure type changes (unless manually overriden)
         // - the route crosses something existing
         #[derive(PartialEq)]
         enum Case {
@@ -36,7 +36,11 @@ impl MapModel {
             if used_roads.contains(&r) {
                 Case::AlreadyExists
             } else {
-                Case::New(self.best_infra_type(r))
+                if orig_route.override_infra_type {
+                    Case::New(orig_route.infra_type)
+                } else {
+                    Case::New(self.best_infra_type(r))
+                }
             }
         };
 
@@ -59,6 +63,7 @@ impl MapModel {
                 notes: orig_route.notes.clone(),
                 roads: roads.to_vec(),
                 infra_type,
+                override_infra_type: orig_route.override_infra_type,
                 tier: orig_route.tier,
             });
         }
@@ -100,6 +105,7 @@ impl MapModel {
             "infra_type",
             serde_json::to_value(&route.infra_type).unwrap(),
         );
+        f.set_property("override_infra_type", route.override_infra_type);
         f.set_property("tier", serde_json::to_value(&route.tier).unwrap());
         Ok(f)
     }
@@ -166,11 +172,15 @@ impl MapModel {
     }
 
     /// Split a route into sections, returning a FeatureCollection
-    pub fn autosplit_route(&self, route: Vec<(RoadID, Dir)>) -> Result<String> {
+    pub fn autosplit_route(
+        &self,
+        route: Vec<(RoadID, Dir)>,
+        override_infra_type: Option<InfraType>,
+    ) -> Result<String> {
         let used_roads = self.used_roads();
 
         // Split when:
-        // - the auto-recommended infrastructure type changes
+        // - the auto-recommended or manual infrastructure type changes
         // - the route crosses something existing
         #[derive(PartialEq)]
         enum Case {
@@ -180,6 +190,8 @@ impl MapModel {
         let case = |(r, _)| {
             if used_roads.contains(&r) {
                 Case::AlreadyExists
+            } else if let Some(it) = override_infra_type {
+                Case::New(it)
             } else {
                 Case::New(self.best_infra_type(r))
             }
@@ -236,6 +248,7 @@ impl MapModel {
                 notes: "imported from existing network".to_string(),
                 roads: line.ids,
                 infra_type: line.key,
+                override_infra_type: false,
                 tier,
             };
             let route_id = self.id_counter;

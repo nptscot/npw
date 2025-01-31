@@ -144,6 +144,7 @@ export interface SetRouteInput {
   notes: string;
   full_path: RouteNode[];
   infra_type: string;
+  override_infra_type: boolean;
   tier: Tier;
 }
 
@@ -153,6 +154,7 @@ export interface RouteProps {
   full_path: RouteNode[];
   waypoints: any[];
   infra_type: string;
+  override_infra_type: boolean;
   tier: Tier;
 }
 
