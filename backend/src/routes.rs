@@ -174,14 +174,20 @@ impl MapModel {
     /// Split a route into sections, returning a FeatureCollection
     pub fn autosplit_route(
         &self,
+        editing_route_id: Option<usize>,
         route: Vec<(RoadID, Dir)>,
         override_infra_type: Option<InfraType>,
     ) -> Result<String> {
-        let used_roads = self.used_roads();
+        let mut used_roads = self.used_roads();
+        if let Some(id) = editing_route_id {
+            for (r, _) in &self.routes[&id].roads {
+                used_roads.remove(r);
+            }
+        }
 
         // Split when:
         // - the auto-recommended or manual infrastructure type changes
-        // - the route crosses something existing
+        // - the route crosses something existing (except the existing route)
         #[derive(PartialEq)]
         enum Case {
             AlreadyExists,

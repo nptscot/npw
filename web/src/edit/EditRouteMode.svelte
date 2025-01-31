@@ -144,6 +144,7 @@
       // TODO Wasteful; should RouteControls export a read-only view of this?
       let feature = JSON.parse($routeTool!.inner.calculateRoute(waypts));
       sectionsGj = await $backend!.autosplitRoute(
+        id,
         feature.properties.full_path,
         overrideInfraType ? infraType : null,
       );

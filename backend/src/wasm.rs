@@ -95,6 +95,7 @@ impl MapModel {
     #[wasm_bindgen(js_name = autosplitRoute)]
     pub fn autosplit_route_wasm(
         &self,
+        editing_route_id: Option<usize>,
         input: JsValue,
         override_infra_type: JsValue,
     ) -> Result<String, JsValue> {
@@ -103,7 +104,7 @@ impl MapModel {
         let roads = self.full_path_to_roads(full_path).map_err(err_to_js)?;
         let override_infra_type: Option<InfraType> =
             serde_wasm_bindgen::from_value(override_infra_type)?;
-        self.autosplit_route(roads, override_infra_type)
+        self.autosplit_route(editing_route_id, roads, override_infra_type)
             .map_err(err_to_js)
     }
 
