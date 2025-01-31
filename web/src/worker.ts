@@ -24,6 +24,7 @@ import type {
   Settlements,
   StaticRoad,
   Stats,
+  ODStats,
   TownCentres,
 } from "./types";
 
@@ -122,10 +123,16 @@ export class Backend {
     return JSON.parse(this.inner!.evaluateOD(fastSample));
   }
 
-  // Needs loading screen
+  // Fast
   recalculateStats(): Stats {
     this.checkReady();
     return JSON.parse(this.inner!.recalculateStats());
+  }
+
+  // Needs loading screen
+  recalculateODStats(): ODStats {
+    this.checkReady();
+    return JSON.parse(this.inner!.recalculateODStats());
   }
 
   getAreaMeshDensity(): AreaMeshDensity {

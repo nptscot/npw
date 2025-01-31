@@ -2,7 +2,7 @@ import * as Comlink from "comlink";
 import type { Map } from "maplibre-gl";
 import { get, writable, type Writable } from "svelte/store";
 import { getKey, setLocalStorage } from "./common/files";
-import type { Stats, Tier, WorstRoutes } from "./types";
+import type { ODStats, Stats, Tier, WorstRoutes } from "./types";
 import type { Backend } from "./worker";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
@@ -54,8 +54,9 @@ export let interactiveMapLayersEnabled = writable(true);
 export let remoteStorage = writable(true);
 export let devMode = writable(import.meta.env.MODE == "development");
 
-// For now, the user manually recalculates this
 export let stats: Writable<Stats | null> = writable(null);
+// For now, the user manually recalculates this
+export let odStats: Writable<ODStats | null> = writable(null);
 
 export async function autosave() {
   mutationCounter.update((x) => {

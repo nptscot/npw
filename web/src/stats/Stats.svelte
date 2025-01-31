@@ -13,19 +13,32 @@
     settlements,
     townCentres,
   } from "../layers/stores";
-  import { backend, mode, mutationCounter, stats, tier } from "../stores";
+  import { backend, mode, mutationCounter, stats, odStats,tier } from "../stores";
   import Metric from "./Metric.svelte";
   import ODBreakdowns from "./ODBreakdowns.svelte";
 
   // Start less than $mutationCounter
-  let lastUpdate = 0;
+  let lastUpdateFast = 0;
+  let lastUpdateOD = 0;
   let loading = "";
 
-  async function recalc() {
-    loading = "Recalculating stats";
-    $stats = await $backend!.recalculateStats();
+  async function recalcFast() {
+    if ($backend && lastUpdateFast != $mutationCounter) {
+      console.time("Recalculate fast stats");
+      $stats = await $backend.recalculateStats();
+      console.timeEnd("Recalculate fast stats");
+      lastUpdateFast = $mutationCounter;
+    }
+  }
+  $: if ($mutationCounter > 0) {
+    recalcFast();
+  }
+
+  async function recalcOD() {
+    loading = "Recalculating OD stats";
+    $odStats = await $backend!.recalculateODStats();
     loading = "";
-    lastUpdate = $mutationCounter;
+    lastUpdateOD = $mutationCounter;
   }
 
   // Returns something [0, 1]
@@ -38,10 +51,6 @@
 </script>
 
 <Loading {loading} />
-
-<button on:click={recalc} disabled={$mutationCounter == lastUpdate}>
-  Recalculate
-</button>
 
 {#if $stats}
   <div style:border="2px solid {tierColors.Primary}">
@@ -132,7 +141,13 @@
       />
     </div>
   {/if}
+{/if}
 
+
+<button class="outline" on:click={recalcOD} disabled={$mutationCounter == lastUpdateOD}>
+  Recalculate
+</button>
+{#if $odStats}
   <div style:margin-top="4px" style:border="2px solid black">
     <p>
       <!-- svelte-ignore a11y-invalid-attribute -->
@@ -142,15 +157,15 @@
           ($mode = {
             kind: "evaluate-route",
             prevMode: { kind: "main" },
-            browse: notNull($stats).worst_directness_routes,
+            browse: notNull($odStats).worst_directness_routes,
           })}
       >
         Average weighted directness
       </a>
-      : {$stats.average_weighted_directness.toFixed(1)}x
+      : {$odStats.average_weighted_directness.toFixed(1)}x
     </p>
 
-    <ODBreakdowns od={$stats} />
+    <ODBreakdowns od={$odStats} />
   </div>
 {:else}
   <p>

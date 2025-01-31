@@ -173,8 +173,16 @@ impl MapModel {
 
     #[wasm_bindgen(js_name = recalculateStats)]
     pub fn recalculate_stats_wasm(&mut self) -> Result<String, JsValue> {
-        let mut timer = Timer::new("recalculate after edits", None);
+        let mut timer = Timer::new("recalculate fast stats", None);
         let result = self.recalculate_stats(&mut timer).map_err(err_to_js);
+        timer.done();
+        result
+    }
+
+    #[wasm_bindgen(js_name = recalculateODStats)]
+    pub fn recalculate_od_stats_wasm(&mut self) -> Result<String, JsValue> {
+        let mut timer = Timer::new("recalculate OD stats", None);
+        let result = self.recalculate_od_stats(&mut timer).map_err(err_to_js);
         timer.done();
         result
     }

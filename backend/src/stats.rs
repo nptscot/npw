@@ -4,14 +4,14 @@ use graph::Timer;
 use crate::{utils::Quintiles, MapModel};
 
 impl MapModel {
-    /// After any edit, calculate summary stats. Returns JSON.
+    /// After any edit, calculate summary stats. Returns JSON. This must be fast, since it's
+    /// automatically done after every edit.
     pub fn recalculate_stats(&mut self, timer: &mut Timer) -> Result<String> {
         let mut out = serde_json::Map::new();
 
-        self.recalculate_router(timer);
-
-        timer.step("calculate reachable network");
+        timer.step("get reachable network");
         let roads = self.get_reachable_network();
+        timer.step("reachable stats");
         out.insert(
             "percent_reachable_schools".to_string(),
             percent(
@@ -94,11 +94,8 @@ impl MapModel {
             percent(population_sum, population_total).into(),
         );
 
-        timer.step("calculate OD routes and stats");
-        let fast_sample = true;
-        let od = self.od_counts(fast_sample)?;
-        od.describe(self, &mut out)?;
-
+        // TODO Cache this?
+        timer.step("covered flows");
         let flow_stats = Quintiles::new(&self.precalculated_flows);
         let mut covered_quintile_sums = [0; 5];
         for (idx, flow) in self.precalculated_flows.iter().enumerate() {
@@ -119,6 +116,18 @@ impl MapModel {
             flow_stats.total_quintile_sums.to_vec().into(),
         );
 
+        Ok(serde_json::to_string(&out)?)
+    }
+
+    /// Returns JSON. This is slow and user-triggered.
+    pub fn recalculate_od_stats(&mut self, timer: &mut Timer) -> Result<String> {
+        self.recalculate_router(timer);
+
+        timer.step("calculate OD routes and stats");
+        let fast_sample = true;
+        let od = self.od_counts(fast_sample)?;
+        let mut out = serde_json::Map::new();
+        od.describe(self, &mut out)?;
         Ok(serde_json::to_string(&out)?)
     }
 }

@@ -62,7 +62,7 @@ export interface ODStats {
   worst_directness_routes: WorstRoutes;
 }
 
-export interface Stats extends ODStats {
+export interface Stats {
   percent_reachable_schools: number;
   percent_reachable_gp_hospitals: number;
   percent_reachable_town_centres: number;
