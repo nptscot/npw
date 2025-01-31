@@ -1,5 +1,4 @@
 <script lang="ts">
-  import "@picocss/pico/css/pico.conditional.jade.min.css";
   import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
   import { onMount } from "svelte";
   import {
@@ -49,7 +48,7 @@
   }
 </script>
 
-<div class="left pico">
+<div class="left">
   <h2>Network Planning Workspace</h2>
   <p>
     This is an

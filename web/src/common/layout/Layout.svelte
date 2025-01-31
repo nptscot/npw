@@ -16,7 +16,14 @@
 </div>
 
 <style>
-  /* Note calling this "container" will clash with a pico built-in */
+  * {
+    box-sizing: border-box;
+  }
+
+  :global(body) {
+    margin: 0;
+  }
+
   .flex-container {
     display: flex;
     flex-direction: column;

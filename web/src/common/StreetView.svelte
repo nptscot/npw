@@ -54,9 +54,9 @@
 <svelte:window on:keydown={onKeyDown} />
 
 {#if $interactiveMapLayersEnabled}
-  <button class="secondary" on:click={start}>StreetView</button>
+  <button on:click={start}>StreetView</button>
 {:else}
-  <button class="secondary" on:click={stop}>Stop StreetView</button>
+  <button on:click={stop}>Stop StreetView</button>
 
   <fieldset>
     <legend>Source:</legend>

@@ -45,7 +45,6 @@
 
     <div>
       <button
-        class="secondary"
         on:click={() =>
           ($mode = {
             kind: "evaluate-route",

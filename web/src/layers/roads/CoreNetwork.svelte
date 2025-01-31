@@ -26,7 +26,7 @@
 <RoadLayerControls name="Core network" style="cn">
   <QualitativeLegend colors={cnTierColors} horiz />
 
-  <button class="outline" on:click={importExisting}>Import core network</button>
+  <button on:click={importExisting}>Import core network</button>
 
   {#if $devMode}
     <label>
