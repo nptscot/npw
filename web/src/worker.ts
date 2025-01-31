@@ -9,6 +9,7 @@ import type {
 } from "geojson";
 import type {
   AreaMeshDensity,
+  AutosplitRoute,
   ConnectedComponents,
   DataZones,
   DynamicRoad,
@@ -98,13 +99,14 @@ export class Backend {
     editingRouteId: number | null,
     full_path: RouteNode[],
     overrideInfraType: string | null,
-  ): FeatureCollection<
-    LineString,
-    { kind: string; length: number; infra_type?: string }
-  > {
+  ): AutosplitRoute {
     this.checkReady();
     return JSON.parse(
-      this.inner!.autosplitRoute(editingRouteId, full_path, overrideInfraType),
+      this.inner!.autosplitRoute(
+        editingRouteId == null ? undefined : editingRouteId,
+        full_path,
+        overrideInfraType,
+      ),
     );
   }
 

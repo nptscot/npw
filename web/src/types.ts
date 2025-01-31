@@ -165,6 +165,11 @@ export type ConnectedComponents = FeatureCollection<
   component_sizes: number[];
 };
 
+export type AutosplitRoute = FeatureCollection<
+  LineString,
+  { kind: string; length: number; infra_type?: string }
+>;
+
 export interface StaticRoad {
   id: number;
   way: number;

@@ -2,14 +2,14 @@
   import type { Map } from "maplibre-gl";
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { Modal, notNull } from "svelte-utils";
+  import { Modal } from "svelte-utils";
   import {
     constructMatchExpression,
     emptyGeojson,
     Popup,
   } from "svelte-utils/map";
   import { infraTypeColors } from "../colors";
-  import { layerId, prettyPrintDistance } from "../common";
+  import { layerId } from "../common";
   import AllControls from "../layers/AllControls.svelte";
   import PickEditsStyle from "../layers/roads/PickEditsStyle.svelte";
   import {
@@ -20,8 +20,10 @@
     routeA,
     routeB,
   } from "../stores";
+  import type { AutosplitRoute } from "../types";
   import PickInfraType from "./PickInfraType.svelte";
   import RouteControls from "./RouteControls.svelte";
+  import SectionDiagram from "./SectionDiagram.svelte";
   import { routeTool, waypoints, type Waypoint } from "./stores";
 
   export let map: Map;
@@ -36,7 +38,7 @@
 
   let showOverrideModal = false;
 
-  let sectionsGj = emptyGeojson();
+  let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
   $: recalculateSections($waypoints, overrideInfraType, infraType);
 
   onMount(async () => {
@@ -149,7 +151,7 @@
         overrideInfraType ? infraType : null,
       );
     } catch (err) {
-      sectionsGj = emptyGeojson();
+      sectionsGj = emptyGeojson() as AutosplitRoute;
     }
   }
 </script>
@@ -240,32 +242,9 @@
         </button>
       {/if}
 
-      <table>
-        <thead>
-          <tr>
-            <th>Length</th>
-            <th>Infrastructure type</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each sectionsGj.features as f}
-            <tr>
-              <td>{prettyPrintDistance(notNull(f.properties).length)}</td>
-              {#if notNull(f.properties).kind == "new"}
-                <td
-                  style:background={infraTypeColors[
-                    notNull(f.properties).infra_type
-                  ]}
-                >
-                  {notNull(f.properties).infra_type}
-                </td>
-              {:else}
-                <td>existing section from another route</td>
-              {/if}
-            </tr>
-          {/each}
-        </tbody>
-      </table>
+      <br />
+
+      <SectionDiagram {sectionsGj} />
     {/if}
   </div>
 </RouteControls>
