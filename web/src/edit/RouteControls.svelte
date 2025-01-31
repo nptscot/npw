@@ -68,6 +68,7 @@
     undoStates = [...undoStates, JSON.parse(JSON.stringify($waypoints))];
   }
 
+  // @ts-expect-error Unused, but eventually will be implemented
   function toggleSnap() {
     snapMode = snapMode == "snap" ? "free" : "snap";
     if (cursor) {
@@ -100,6 +101,7 @@
     };
   }
 
+  // @ts-expect-error Unused, but eventually will be implemented
   function toggleSnapped(idx: number) {
     captureUndoState();
     waypoints.update((w) => {
@@ -226,8 +228,6 @@
     } else if (e.key === "Escape") {
       e.stopPropagation();
       cancel();
-    } else if (e.key == "s" && !formFocused) {
-      toggleSnap();
     } else if (e.key == "1" && !formFocused) {
       drawMode = "append-start";
     } else if (e.key == "2" && !formFocused) {
@@ -277,10 +277,6 @@
           any point to move it
         </li>
         <li>
-          <b>Click</b>
-          a waypoint to toggle snapping
-        </li>
-        <li>
           <b>Right click</b>
           a waypoint to delete it
         </li>
@@ -301,10 +297,6 @@
           to drag middle points
         </li>
         <li>
-          <b>s</b>
-          to switch between snapping to roads and drawing anywhere
-        </li>
-        <li>
           <b>Control+Z</b>
           to undo your last change
         </li>
@@ -318,27 +310,6 @@
         </li>
       </ul>
     </HelpButton>
-
-    <fieldset>
-      <label>
-        <input
-          type="radio"
-          value="snap"
-          bind:group={snapMode}
-          on:change={toggleSnap}
-        />
-        Snap to roads
-      </label>
-      <label>
-        <input
-          type="radio"
-          value="free"
-          bind:group={snapMode}
-          on:change={toggleSnap}
-        />
-        Draw anywhere
-      </label>
-    </fieldset>
 
     <fieldset>
       <label>
@@ -389,7 +360,6 @@
       <Marker
         draggable
         bind:lngLat={waypt.point}
-        on:click={() => toggleSnapped(idx)}
         on:contextmenu={() => removeWaypoint(idx)}
         on:mouseenter={() => (hoveringOnMarker = true)}
         on:mouseleave={() => (hoveringOnMarker = false)}
