@@ -1,6 +1,7 @@
 <script lang="ts">
   import { SequentialLegend } from "svelte-utils";
   import {
+    cnTierColors,
     gradient,
     infraTypeColors,
     levelOfServiceColors,
@@ -42,7 +43,7 @@
   {:else if $roadStyle == "current_tier"}
     <QualitativeLegend colors={tierColors} horiz />
   {:else if $roadStyle == "cn"}
-    <QualitativeLegend colors={tierColors} horiz />
+    <QualitativeLegend colors={cnTierColors} horiz />
     <CoreNetwork />
   {:else if $roadStyle == "existing_infra"}
     <QualitativeLegend colors={infraTypeColors} />

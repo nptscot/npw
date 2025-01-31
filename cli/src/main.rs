@@ -330,7 +330,10 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
         let tier = match function.as_str() {
             "Primary" => Tier::Primary,
             "Secondary" => Tier::Secondary,
-            "Local Access" => Tier::LocalAccess,
+            // TODO After this is removed upstream, delete this case
+            "Local Access" => {
+                continue;
+            }
             x => bail!("Unknown road_function {x}"),
         };
 

@@ -13,6 +13,12 @@ export let tierColors: { [name: string]: string } = {
   LongDistance: "#4ea72e",
 };
 
+// Only Primary and Secondary
+export let cnTierColors: { [name: string]: string } = {
+  Primary: tierColors.Primary,
+  Secondary: tierColors.Secondary,
+};
+
 export let levelOfServiceColors: { [name: string]: string } = {
   High: "mediumseagreen",
   Medium: "orange",

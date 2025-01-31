@@ -18,6 +18,7 @@
     Popup as WrappedPopup,
   } from "svelte-utils/map";
   import {
+    cnTierColors,
     gradient,
     infraTypeColors,
     levelOfServiceColors,
@@ -147,7 +148,7 @@
         tierColors,
         "black",
       ),
-      cn: constructMatchExpression(["get", "cn"], tierColors, "cyan"),
+      cn: constructMatchExpression(["get", "cn"], cnTierColors, "cyan"),
       existing_infra: constructMatchExpression(
         ["get", "existing_infra"],
         infraTypeColors,
