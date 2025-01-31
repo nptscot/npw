@@ -17,14 +17,12 @@
     {/each}
   </div>
 {:else}
-  <ul>
-    {#each Object.entries(colors) as [label, color]}
-      <li>
-        <span style:background={color} class="vertical-block" />
-        {label}
-      </li>
-    {/each}
-  </ul>
+  {#each Object.entries(colors) as [label, color]}
+    <div>
+      <span style:background={color} class="vertical-block" />
+      {label}
+    </div>
+  {/each}
 {/if}
 
 <style>

@@ -13,9 +13,9 @@
   $: update(basic, $allControls, [
     "Route network (precalculated)",
     "Route network (calculated)",
+    "Network disconnections",
     "SIMD",
     "Population",
-    "Network disconnections",
   ]);
 
   $: update(primary, $allControls, ["High cycling flow"]);

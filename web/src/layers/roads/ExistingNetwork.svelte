@@ -1,6 +1,9 @@
 <script lang="ts">
   import { Loading, Modal } from "svelte-utils";
+  import { infraTypeColors } from "../../colors";
+  import { QualitativeLegend } from "../../common";
   import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
+  import RoadLayerControls from "../RoadLayerControls.svelte";
   import { debugOriginalData } from "./stores";
 
   let showImportModal = false;
@@ -22,16 +25,20 @@
 
 <Loading {loading} />
 
-<button class="outline" on:click={() => (showImportModal = true)}>
-  Import existing routes
-</button>
+<RoadLayerControls name="Existing infrastructure type" style="existing_infra">
+  <QualitativeLegend colors={infraTypeColors} />
 
-{#if $devMode}
-  <label>
-    <input type="checkbox" bind:checked={$debugOriginalData} />
-    Show osmactive data
-  </label>
-{/if}
+  <button class="outline" on:click={() => (showImportModal = true)}>
+    Import existing routes
+  </button>
+
+  {#if $devMode}
+    <label>
+      <input type="checkbox" bind:checked={$debugOriginalData} />
+      Show osmactive data
+    </label>
+  {/if}
+</RoadLayerControls>
 
 {#if showImportModal}
   <span class="pico">

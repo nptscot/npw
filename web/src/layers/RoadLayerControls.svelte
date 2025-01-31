@@ -5,6 +5,7 @@
   export let name: string;
   // TODO Use name for this
   export let style: ReferenceRoadStyle;
+  export let empty = false;
 
   let contents: HTMLDivElement | null = null;
 
@@ -30,12 +31,14 @@
     {name}
   </label>
 
-  <div
-    style:display={$referenceRoadStyle == style ? "block" : "none"}
-    style:border="1px solid black"
-    style:padding="4px"
-    style:background="#fffff2"
-  >
-    <slot />
-  </div>
+  {#if !empty}
+    <div
+      style:display={$referenceRoadStyle == style ? "block" : "none"}
+      style:border="1px solid black"
+      style:padding="4px"
+      style:background="#fffff2"
+    >
+      <slot />
+    </div>
+  {/if}
 </div>

@@ -1,6 +1,9 @@
 <script lang="ts">
   import { Loading } from "svelte-utils";
+  import { cnTierColors } from "../../colors";
+  import { QualitativeLegend } from "../../common";
   import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
+  import RoadLayerControls from "../RoadLayerControls.svelte";
   import { debugOriginalData } from "./stores";
 
   let loading = "";
@@ -20,11 +23,15 @@
 
 <Loading {loading} />
 
-<button class="outline" on:click={importExisting}>Import core network</button>
+<RoadLayerControls name="Core network" style="cn">
+  <QualitativeLegend colors={cnTierColors} horiz />
 
-{#if $devMode}
-  <label>
-    <input type="checkbox" bind:checked={$debugOriginalData} />
-    Show original data
-  </label>
-{/if}
+  <button class="outline" on:click={importExisting}>Import core network</button>
+
+  {#if $devMode}
+    <label>
+      <input type="checkbox" bind:checked={$debugOriginalData} />
+      Show original data
+    </label>
+  {/if}
+</RoadLayerControls>
