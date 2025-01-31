@@ -9,7 +9,7 @@
     Popup,
   } from "svelte-utils/map";
   import { infraTypeColors } from "../colors";
-  import { layerId } from "../common";
+  import { layerId, prettyPrintDistance } from "../common";
   import PickEditsStyle from "../layers/roads/PickEditsStyle.svelte";
   import PickReferenceStyle from "../layers/roads/PickReferenceStyle.svelte";
   import {
@@ -203,18 +203,38 @@
     </label>
 
     {#if sectionsGj.features.length > 0}
-      <p>The route you've drawn has been split into sections:</p>
-      <ol>
-        {#each sectionsGj.features as f}
-          {#if notNull(f.properties).kind == "new"}
-            <li>
-              A section where {notNull(f.properties).infra_type} is most appropriate
-            </li>
-          {:else}
-            <li>An existing section from another route</li>
-          {/if}
-        {/each}
-      </ol>
+      <p>
+        The route you've drawn has been split into sections, automatically
+        picking an infrastructure type to achieve high Level of Service:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Length</th>
+            <th>Infrastructure type</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each sectionsGj.features as f}
+            <tr>
+              <td>{prettyPrintDistance(notNull(f.properties).length)}</td>
+              {#if notNull(f.properties).kind == "new"}
+                <td
+                  style:background={infraTypeColors[
+                    notNull(f.properties).infra_type
+                  ]}
+                >
+                  {notNull(f.properties).infra_type}
+                </td>
+              {:else}
+                <td>existing section from another route</td>
+              {/if}
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+
+      <ol></ol>
     {/if}
   </div>
 </RouteControls>

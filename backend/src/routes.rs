@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use anyhow::Result;
 use enum_map::EnumMap;
-use geo::LineString;
+use geo::{Euclidean, Length, LineString};
 use geojson::{feature::Id, Feature, GeoJson};
 use graph::{Graph, PathStep, Position, RoadID};
 
@@ -188,10 +188,8 @@ impl MapModel {
         let mut sections = Vec::new();
         for roads in route.chunk_by(|a, b| case(*a) == case(*b)) {
             let c = case(roads[0]);
-            let mut f = self
-                .graph
-                .mercator
-                .to_wgs84_gj(&glue_route(&self.graph, roads));
+            let linestring = glue_route(&self.graph, roads);
+            let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
             match c {
                 Case::AlreadyExists => {
                     f.set_property("kind", "overlap");
@@ -201,6 +199,7 @@ impl MapModel {
                     f.set_property("infra_type", serde_json::to_value(&infra_type).unwrap());
                 }
             }
+            f.set_property("length", linestring.length::<Euclidean>());
             sections.push(f);
         }
         Ok(serde_json::to_string(&GeoJson::from(sections))?)

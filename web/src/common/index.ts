@@ -26,3 +26,10 @@ export function roadLineWidth(extraWidth: number): ExpressionSpecification {
     24 + extraWidth,
   ];
 }
+
+export function prettyPrintDistance(meters: number): string {
+  if (meters < 1000.0) {
+    return Math.round(meters) + "m";
+  }
+  return (meters / 1000.0).toFixed(1) + "km";
+}

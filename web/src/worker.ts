@@ -16,6 +16,7 @@ import type {
   GPHospitals,
   Greenspaces,
   GridMeshDensity,
+  ODStats,
   RouteGJ,
   RouteNode,
   RouteProps,
@@ -24,7 +25,6 @@ import type {
   Settlements,
   StaticRoad,
   Stats,
-  ODStats,
   TownCentres,
 } from "./types";
 
@@ -94,7 +94,12 @@ export class Backend {
     this.inner!.clearAllRoutes();
   }
 
-  autosplitRoute(full_path: RouteNode[]): FeatureCollection {
+  autosplitRoute(
+    full_path: RouteNode[],
+  ): FeatureCollection<
+    LineString,
+    { kind: string; length: number; infra_type?: string }
+  > {
     this.checkReady();
     return JSON.parse(this.inner!.autosplitRoute(full_path));
   }

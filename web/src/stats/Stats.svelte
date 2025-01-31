@@ -13,7 +13,14 @@
     settlements,
     townCentres,
   } from "../layers/stores";
-  import { backend, mode, mutationCounter, stats, odStats,tier } from "../stores";
+  import {
+    backend,
+    mode,
+    mutationCounter,
+    odStats,
+    stats,
+    tier,
+  } from "../stores";
   import Metric from "./Metric.svelte";
   import ODBreakdowns from "./ODBreakdowns.svelte";
 
@@ -143,8 +150,11 @@
   {/if}
 {/if}
 
-
-<button class="outline" on:click={recalcOD} disabled={$mutationCounter == lastUpdateOD}>
+<button
+  class="outline"
+  on:click={recalcOD}
+  disabled={$mutationCounter == lastUpdateOD}
+>
   Recalculate
 </button>
 {#if $odStats}
