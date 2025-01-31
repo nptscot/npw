@@ -15,19 +15,11 @@
       return map;
     });
   }
-
-  function toggle() {
-    $referenceRoadStyle = $referenceRoadStyle == style ? "off" : style;
-  }
 </script>
 
 <div bind:this={contents}>
   <label>
-    <input
-      type="checkbox"
-      checked={$referenceRoadStyle == style}
-      on:change={toggle}
-    />
+    <input type="radio" value={style} bind:group={$referenceRoadStyle} />
     {name}
   </label>
 
