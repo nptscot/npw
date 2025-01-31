@@ -28,6 +28,13 @@
   // Array<Record<string, string | number | undefined>>
   let dynamicData: DynamicRoad[] = [];
 
+  function castToRecord(
+    d: DynamicRoad[],
+  ): Record<string, string | number | undefined>[] {
+    // @ts-expect-error TODO Change DynamicRoad definition and/or upstream to allow null as well
+    return d as Record<string, string | number | undefined>[];
+  }
+
   async function recalc() {
     if ($backend && lastUpdate != $mutationCounter) {
       dynamicData = await $backend.renderDynamicRoads();
@@ -109,7 +116,7 @@
 {#if $backend}
   {#await $backend.renderStaticRoads() then data}
     <GeoJSON {data} promoteId="id">
-      <JoinedData data={dynamicData} idCol="id" />
+      <JoinedData data={castToRecord(dynamicData)} idCol="id" />
 
       <LineLayer
         {...layerId("edits-roads")}
