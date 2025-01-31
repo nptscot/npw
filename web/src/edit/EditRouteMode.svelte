@@ -10,8 +10,8 @@
   } from "svelte-utils/map";
   import { infraTypeColors } from "../colors";
   import { layerId, prettyPrintDistance } from "../common";
+  import AllControls from "../layers/AllControls.svelte";
   import PickEditsStyle from "../layers/roads/PickEditsStyle.svelte";
-  import PickReferenceStyle from "../layers/roads/PickReferenceStyle.svelte";
   import {
     autosave,
     backend,
@@ -180,7 +180,7 @@
     </button>
 
     <PickEditsStyle />
-    <PickReferenceStyle />
+    <AllControls />
   </div>
 
   <span slot="extra-map">

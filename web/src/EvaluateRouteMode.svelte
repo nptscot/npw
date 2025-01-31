@@ -16,8 +16,8 @@
   import { layerId, QualitativeLegend } from "./common";
   import { SplitComponent } from "./common/layout";
   import Directions from "./Directions.svelte";
+  import AllControls from "./layers/AllControls.svelte";
   import PickEditsStyle from "./layers/roads/PickEditsStyle.svelte";
-  import PickReferenceStyle from "./layers/roads/PickReferenceStyle.svelte";
   import { backend, mode, routeA, routeB, type Mode } from "./stores";
   import type { RouteGJ, WorstRoutes } from "./types";
 
@@ -214,7 +214,7 @@
     {/if}
 
     <PickEditsStyle />
-    <PickReferenceStyle />
+    <AllControls />
   </div>
 </SplitComponent>
 

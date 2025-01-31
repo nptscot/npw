@@ -14,6 +14,7 @@
     "Route network (precalculated)",
     "Route network (calculated)",
     "Network disconnections",
+    // TODO Ideally visually separate these, above are radios
     "SIMD",
     "Population",
   ]);
