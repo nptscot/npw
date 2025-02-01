@@ -64,7 +64,7 @@
 </script>
 
 <RoadLayerControls
-  name="Route network (precalculated)"
+  name="NPT full network"
   style="precalculated_rnet"
 >
   <label>

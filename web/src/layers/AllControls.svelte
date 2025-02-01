@@ -11,7 +11,7 @@
   let longDistance: HTMLDivElement | null = null;
 
   $: update(basic, $allControls, [
-    "Route network (precalculated)",
+    "NPT full network",
     "Route network (calculated)",
     "Network disconnections",
     // TODO Ideally visually separate these, above are radios

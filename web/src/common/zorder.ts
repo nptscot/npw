@@ -78,6 +78,7 @@ const layerZorder = [
   "mesh-density-grid-outline",
 
   // Reference layers (lines)
+  "precalculated-rnet",
   "uncovered-cycling-flows",
   "edits-roads",
   "reference-roads",
@@ -86,7 +87,6 @@ const layerZorder = [
   "traffic-debug",
   "speed_limit-debug",
   "los-debug",
-  "precalculated-rnet",
   "calculated-rnet",
   "network-disconnections",
   "debug-reachability-settlements",
