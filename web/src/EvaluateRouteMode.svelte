@@ -28,7 +28,7 @@
   let gj: RouteGJ | null = null;
   let err = "";
   let breakdown: "" | "los" | "infra_type" | "gradient" = "los";
-  let showDirectBikeRoute = false;
+  let showQuietBikeRoute = false;
   let showCarRoute = false;
 
   async function update(
@@ -89,6 +89,11 @@
       <b>B</b>
       pins to find a route. (Hint: right-click to set the first pin somewhere.)
     </p>
+    <p>
+      Note the direct route is shown, ignoring bad infrastructure. This is to
+      emphasize whether or not that direct route has been adequately improved by
+      your network edits so far.
+    </p>
 
     {#if err}
       <p>{err}</p>
@@ -111,7 +116,25 @@
     {/if}
 
     {#if gj}
-      <Directions {gj} bind:showDirectBikeRoute bind:showCarRoute />
+      <label>
+        <input type="checkbox" bind:checked={showCarRoute} />
+        <b>{(gj.direct_bike_length / gj.car_length).toFixed(1)}x</b>
+        longer than the driving route (in
+        <span style:color="red">red</span>
+        )
+      </label>
+
+      <label>
+        <input type="checkbox" bind:checked={showQuietBikeRoute} />
+        <b>{(gj.direct_bike_length / gj.quiet_bike_length).toFixed(1)}x</b>
+        longer than the quiet cycling route (in
+        <span style:color="blue">blue</span>
+        )
+      </label>
+
+      <hr />
+
+      <Directions {gj} />
     {/if}
   </div>
 
@@ -131,7 +154,7 @@
       <GeoJSON data={gj} generateId>
         <LineLayer
           {...layerId("eval-route-breakdown")}
-          filter={["==", ["get", "kind"], "actual"]}
+          filter={["==", ["get", "kind"], "bicycle_direct"]}
           paint={{
             "line-width": 20,
             "line-color": {
@@ -172,10 +195,10 @@
         />
 
         <LineLayer
-          {...layerId("eval-direct-bike-route")}
-          filter={["==", ["get", "kind"], "direct_bike"]}
+          {...layerId("eval-quiet-bike-route")}
+          filter={["==", ["get", "kind"], "quiet_bike"]}
           layout={{
-            visibility: showDirectBikeRoute ? "visible" : "none",
+            visibility: showQuietBikeRoute ? "visible" : "none",
           }}
           paint={{
             "line-width": 10,

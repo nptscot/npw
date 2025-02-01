@@ -1,5 +1,5 @@
 use anyhow::Result;
-use geo::{Coord, Euclidean, Length, LineString};
+use geo::{Coord, Euclidean, Length};
 use geojson::FeatureCollection;
 use graph::PathStep;
 use serde::Serialize;
@@ -15,7 +15,9 @@ pub enum Breakdown {
 
 impl MapModel {
     pub fn evaluate_route(&self, pt1: Coord, pt2: Coord, breakdown: Breakdown) -> Result<String> {
-        let profile = self.graph.profile_names["bicycle"];
+        assert!(self.quiet_router_ok);
+
+        let profile = self.graph.profile_names["bicycle_direct"];
         let start = self.graph.snap_to_road(pt1, profile);
         let end = self.graph.snap_to_road(pt2, profile);
         let route = self.graph.routers[profile.0].route(&self.graph, start, end)?;
@@ -40,13 +42,13 @@ impl MapModel {
             Breakdown::None => {
                 features.push(self.graph.mercator.to_wgs84_gj(&full_route_linestring));
                 let mut f = self.graph.mercator.to_wgs84_gj(&full_route_linestring);
-                f.set_property("kind", "actual");
+                f.set_property("kind", "bicycle_direct");
                 features.push(f);
             }
             Breakdown::LevelOfService => {
                 for (linestring, los) in route.split_linestrings(&self.graph, |r| self.los[r.0]) {
                     let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
-                    f.set_property("kind", "actual");
+                    f.set_property("kind", "bicycle_direct");
                     f.set_property("los", serde_json::to_value(los)?);
                     features.push(f);
                 }
@@ -56,7 +58,7 @@ impl MapModel {
                     route.split_linestrings(&self.graph, |r| self.get_infra_type(r))
                 {
                     let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
-                    f.set_property("kind", "actual");
+                    f.set_property("kind", "bicycle_direct");
                     f.set_property("infra_type", serde_json::to_value(infra_type)?);
                     features.push(f);
                 }
@@ -66,19 +68,12 @@ impl MapModel {
                     route.split_linestrings(&self.graph, |r| gradient_group(self.gradients[r.0]))
                 {
                     let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
-                    f.set_property("kind", "actual");
+                    f.set_property("kind", "bicycle_direct");
                     f.set_property("gradient_group", gradient);
                     features.push(f);
                 }
             }
         }
-
-        // TODO We should use the snapped position on the roads, for a fair comparison with
-        // full_route_linestring
-        let direct_line = LineString::new(vec![
-            self.graph.intersections[start.intersection.0].point.into(),
-            self.graph.intersections[end.intersection.0].point.into(),
-        ]);
 
         let car_profile = self.graph.profile_names["car"];
         let car_start = self.graph.snap_to_road(pt1, car_profile);
@@ -91,18 +86,19 @@ impl MapModel {
             features.push(f);
         }
 
-        let direct_bike_profile = self.graph.profile_names["bicycle_direct"];
-        let direct_bike_start = self.graph.snap_to_road(pt1, direct_bike_profile);
-        let direct_bike_end = self.graph.snap_to_road(pt2, direct_bike_profile);
-        let direct_bike_route = self.graph.routers[direct_bike_profile.0].route(
+        let quiet_bike_profile = self.graph.profile_names["bicycle_quiet"];
+        // TODO Guaranteed to be the same
+        let quiet_bike_start = self.graph.snap_to_road(pt1, quiet_bike_profile);
+        let quiet_bike_end = self.graph.snap_to_road(pt2, quiet_bike_profile);
+        let quiet_bike_route = self.graph.routers[quiet_bike_profile.0].route(
             &self.graph,
-            direct_bike_start,
-            direct_bike_end,
+            quiet_bike_start,
+            quiet_bike_end,
         )?;
-        let direct_bike_linestring = direct_bike_route.linestring(&self.graph);
+        let quiet_bike_linestring = quiet_bike_route.linestring(&self.graph);
         {
-            let mut f = self.graph.mercator.to_wgs84_gj(&direct_bike_linestring);
-            f.set_property("kind", "direct_bike");
+            let mut f = self.graph.mercator.to_wgs84_gj(&quiet_bike_linestring);
+            f.set_property("kind", "quiet_bike");
             features.push(f);
         }
 
@@ -111,10 +107,9 @@ impl MapModel {
             bbox: None,
             foreign_members: Some(
                 serde_json::json!({
-                    "direct_length": direct_line.length::<Euclidean>(),
                     "car_length": car_linestring.length::<Euclidean>(),
-                    "direct_bike_length": direct_bike_linestring.length::<Euclidean>(),
-                    "route_length": full_route_linestring.length::<Euclidean>(),
+                    "direct_bike_length": full_route_linestring.length::<Euclidean>(),
+                    "quiet_bike_length": quiet_bike_linestring.length::<Euclidean>(),
                     "directions": directions,
                 })
                 .as_object()

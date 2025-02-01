@@ -99,6 +99,7 @@ impl CountsOD {
 impl MapModel {
     pub fn od_counts(&self, fast_sample: bool) -> Result<CountsOD> {
         let keep_directness_routes = 10;
+        let profile = self.graph.profile_names["bicycle_direct"];
 
         let mut rng = WyRand::new_seed(42);
 
@@ -123,7 +124,6 @@ impl MapModel {
                 let pt1 = self.od_zones[zone1].random_point(&mut rng);
                 let pt2 = self.od_zones[zone2].random_point(&mut rng);
 
-                let profile = self.graph.profile_names["bicycle"];
                 let start = self.graph.snap_to_road(pt1, profile);
                 let end = self.graph.snap_to_road(pt2, profile);
                 let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) else {

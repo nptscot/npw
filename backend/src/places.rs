@@ -40,7 +40,7 @@ impl School {
             if boundary_wgs84.contains(&x.geometry) {
                 let point = graph.mercator.to_mercator(&x.geometry);
                 let road = graph
-                    .snap_to_road(point.into(), graph.profile_names["bicycle"])
+                    .snap_to_road(point.into(), graph.profile_names["bicycle_direct"])
                     .road;
                 schools.push(School {
                     point,
@@ -97,7 +97,7 @@ impl GPHospital {
                 if boundary_wgs84.contains(&x.geometry) {
                     let point = graph.mercator.to_mercator(&x.geometry);
                     let road = graph
-                        .snap_to_road(point.into(), graph.profile_names["bicycle"])
+                        .snap_to_road(point.into(), graph.profile_names["bicycle_direct"])
                         .road;
                     gp_hospitals.push(GPHospital {
                         point,
@@ -258,7 +258,7 @@ impl DataZone {
     }
 
     pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
-        let profile = graph.profile_names["bicycle"];
+        let profile = graph.profile_names["bicycle_direct"];
 
         let mut zones = Vec::new();
         let mut densities = Vec::new();
