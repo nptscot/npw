@@ -63,10 +63,7 @@
   }[colorBy] as ExpressionSpecification;
 </script>
 
-<RoadLayerControls
-  name="NPT full network"
-  style="precalculated_rnet"
->
+<RoadLayerControls name="NPT full network" style="precalculated_rnet">
   <label>
     Trip purpose:
     <select bind:value={purpose}>

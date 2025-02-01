@@ -9,7 +9,7 @@ use crate::{Dir, MapModel};
 
 impl MapModel {
     pub fn to_route_snapper_graph(&self) -> RouteSnapperMap {
-        let profile = self.graph.profile_names["bicycle"];
+        let profile = self.graph.profile_names["bicycle_direct"];
 
         let mut nodes = Vec::new();
         for i in &self.graph.intersections {

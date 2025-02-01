@@ -2,8 +2,6 @@
   import type { RouteGJ, Step } from "./types";
 
   export let gj: RouteGJ;
-  export let showDirectBikeRoute: boolean;
-  export let showCarRoute: boolean;
 
   let byInfraType = (step: Step) => step.infra_type;
   let byLos = (step: Step) => step.los;
@@ -45,29 +43,6 @@
     return results.join(", ");
   }
 </script>
-
-<p>
-  Detour factor: <b>{(gj.route_length / gj.direct_length).toFixed(1)}x</b>
-  longer than straight line
-</p>
-
-<label>
-  <input type="checkbox" bind:checked={showCarRoute} />
-  <b>{(gj.route_length / gj.car_length).toFixed(1)}x</b>
-  longer than the driving route (in
-  <span style:color="red">red</span>
-  )
-</label>
-
-<label>
-  <input type="checkbox" bind:checked={showDirectBikeRoute} />
-  <b>{(gj.route_length / gj.direct_bike_length).toFixed(1)}x</b>
-  longer than the direct cycling route (in
-  <span style:color="blue">blue</span>
-  )
-</label>
-
-<hr />
 
 <p>{numChanges(gj, byInfraType)} changes in infrastructure type</p>
 <p>By length: {percentages(gj, byInfraType)}</p>

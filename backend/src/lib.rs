@@ -75,6 +75,8 @@ pub struct MapModel {
     tiers: Vec<Option<Tier>>,
     #[serde(skip_serializing, skip_deserializing, default)]
     los: Vec<LevelOfService>,
+    #[serde(skip_serializing, skip_deserializing, default)]
+    quiet_router_ok: bool,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -167,6 +169,7 @@ impl MapModel {
             override_infra_type,
             tiers,
             los,
+            quiet_router_ok: false,
         }
     }
 
@@ -192,6 +195,8 @@ impl MapModel {
         self.los = (0..self.graph.roads.len())
             .map(|idx| self.calculate_level_of_service(RoadID(idx)))
             .collect();
+
+        self.quiet_router_ok = false;
     }
 
     pub fn get_infra_type(&self, r: RoadID) -> InfraType {

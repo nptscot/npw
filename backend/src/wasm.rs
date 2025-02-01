@@ -116,7 +116,13 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = evaluateRoute)]
-    pub fn evaluate_route_wasm(&self, input: JsValue) -> Result<String, JsValue> {
+    pub fn evaluate_route_wasm(&mut self, input: JsValue) -> Result<String, JsValue> {
+        if !self.quiet_router_ok {
+            let mut timer = Timer::new("recalculate bicycle_quiet", None);
+            self.recalculate_router(&mut timer);
+            self.quiet_router_ok = true;
+        }
+
         let req: EvaluateRouteRequest = serde_wasm_bindgen::from_value(input)?;
         self.evaluate_route(
             self.graph.mercator.pt_to_mercator(Coord {

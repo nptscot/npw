@@ -71,6 +71,7 @@ impl Highway {
 }
 
 /// This determines what's in the graph. The cost function is just based on distance.
+// TODO Incorporate gradient
 pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration) {
     let exclude = (Direction::None, Duration::ZERO);
 

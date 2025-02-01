@@ -56,10 +56,10 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         Box::new(remove_disconnected_components),
         vec![
             (
-                "bicycle".to_string(),
+                "bicycle_quiet".to_string(),
                 Box::new(backend::existing::bicycle_profile),
             ),
-            // TODO This is wasteful in a few ways. bicycle will change with edits, but
+            // TODO This is wasteful in a few ways. bicycle_quiet will change with edits, but
             // bicycle_direct is immutable. At least clone the Router.
             (
                 "bicycle_direct".to_string(),
@@ -391,7 +391,7 @@ fn read_greenspaces(
     graph: &Graph,
 ) -> Result<Vec<backend::places::Greenspace>> {
     let mut access_points_per_site = read_access_points(access_pts_path, graph)?;
-    let profile = graph.profile_names["bicycle"];
+    let profile = graph.profile_names["bicycle_direct"];
 
     let dataset = Dataset::open(main_path)?;
     let mut layer = dataset.layer(0)?;
