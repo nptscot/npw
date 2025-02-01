@@ -102,7 +102,7 @@ impl MapModel {
         let direct_bike_linestring = direct_bike_route.linestring(&self.graph);
         {
             let mut f = self.graph.mercator.to_wgs84_gj(&direct_bike_linestring);
-            f.set_property("kin", "direct_bike");
+            f.set_property("kind", "direct_bike");
             features.push(f);
         }
 
