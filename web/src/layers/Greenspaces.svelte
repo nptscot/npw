@@ -7,10 +7,9 @@
     hoverStateFilter,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { layerId, QualitativeLegend } from "../common";
+  import { layerId, percent, QualitativeLegend } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { Greenspaces } from "../types";
-  import { percent } from "../utils";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
   import { greenspaces as show } from "./stores";

@@ -3,9 +3,8 @@
   import { LineLayer, VectorTileSource } from "svelte-maplibre";
   import { makeRamp, Popup } from "svelte-utils/map";
   import { gradient } from "../colors";
-  import { layerId } from "../common";
+  import { layerId, lineColorForDemand, lineWidthForDemand } from "../common";
   import { assetUrl, referenceRoadStyle } from "../stores";
-  import { lineColorForDemand, lineWidthForDemand } from "../utils";
   import RoadLayerControls from "./RoadLayerControls.svelte";
 
   $: show = $referenceRoadStyle == "precalculated_rnet";

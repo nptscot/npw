@@ -7,10 +7,9 @@
   } from "svelte-maplibre";
   import { SequentialLegend } from "svelte-utils";
   import { makeRamp, Popup } from "svelte-utils/map";
-  import { layerId } from "../common";
+  import { layerId, percent, sum } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { DataZones } from "../types";
-  import { percent, sum } from "../utils";
   import LayerControls from "./LayerControls.svelte";
   import { allPopulation as show } from "./stores";
 

@@ -2,10 +2,9 @@
   import type { Feature, Point } from "geojson";
   import { GeoJSON, SymbolLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { layerId, QualitativeLegend } from "../common";
+  import { layerId, percent, QualitativeLegend } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { GPHospitals } from "../types";
-  import { percent } from "../utils";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
   import { gpHospitals as show } from "./stores";

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { layerId, roadLineWidth } from "../../common";
+  import { layerId, lineWidthForDemand, roadLineWidth } from "../../common";
   import {
     cyclingFlow1,
     cyclingFlow2,
@@ -30,9 +30,7 @@
     : ["==", ["get", "precalculated_flow_quintile"], quintile]}
   layout={{
     visibility:
-      $cyclingFlow1 || $cyclingFlow2 || $cyclingFlow3 || $debugAllCyclingFlow
-        ? "visible"
-        : "none",
+      $cyclingFlow1 || $cyclingFlow2 || $cyclingFlow3 ? "visible" : "none",
   }}
   paint={{
     "line-color": "grey",
@@ -42,7 +40,9 @@
       0.0,
       1.0,
     ],
-    "line-width": roadLineWidth(4),
+    "line-width": $debugAllCyclingFlow
+      ? lineWidthForDemand(["get", "precalculated_flow"])
+      : roadLineWidth(4),
   }}
 >
   {#if $debugAllCyclingFlow}

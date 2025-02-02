@@ -3,11 +3,10 @@
   import { Loading } from "svelte-utils";
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { infraTypeColors, levelOfServiceColors } from "../colors";
-  import { layerId } from "../common";
+  import { layerId, lineColorForDemand, lineWidthForDemand } from "../common";
   import ODBreakdowns from "../stats/ODBreakdowns.svelte";
   import { backend, mutationCounter, referenceRoadStyle } from "../stores";
   import type { EvaluateODOut } from "../types";
-  import { lineColorForDemand, lineWidthForDemand } from "../utils";
   import RoadLayerControls from "./RoadLayerControls.svelte";
 
   $: show = $referenceRoadStyle == "calculated_rnet";

@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { percent } from "../common";
   import { devMode, stats } from "../stores";
-  import { percent } from "../utils";
   import LayerControls from "./LayerControls.svelte";
   import { debugAllCyclingFlow } from "./stores";
 
