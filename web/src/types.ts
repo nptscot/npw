@@ -123,7 +123,10 @@ export type DataZones = FeatureCollection<
 >;
 
 export type AreaMeshDensity = FeatureCollection<Polygon, { area: number }>;
-export type GridMeshDensity = FeatureCollection<Polygon, { length: number }>;
+export type GridMeshDensity = FeatureCollection<
+  Polygon,
+  { routes: number; total: number }
+>;
 
 export type PrecalculatedFlows = FeatureCollection<
   LineString,

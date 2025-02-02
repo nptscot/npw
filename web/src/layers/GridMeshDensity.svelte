@@ -7,7 +7,7 @@
   } from "svelte-maplibre";
   import { SequentialLegend } from "svelte-utils";
   import { makeRamp, Popup } from "svelte-utils/map";
-  import { layerId } from "../common";
+  import { layerId, percent } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { GridMeshDensity } from "../types";
   import LayerControls from "./LayerControls.svelte";
@@ -19,6 +19,7 @@
   };
 
   let colorScale = ["#d7191c", "#fdae61", "#a6d96a", "#1a9641"];
+  // TODO Percents?
   let limits = [0, 100, 200, 300, 1000];
 
   let resolution = 200;
@@ -65,7 +66,7 @@
     {...layerId("mesh-density-grid")}
     manageHoverState
     paint={{
-      "fill-color": makeRamp(["get", "length"], limits, colorScale),
+      "fill-color": makeRamp(["get", "routes"], limits, colorScale),
       "fill-opacity": hoverStateFilter(0.5, 0.8),
     }}
     layout={{
@@ -73,9 +74,9 @@
     }}
   >
     <Popup openOn="hover" let:props>
-      {props.length.toFixed(1)} meters of routes inside ({Math.round(
-        props.score,
-      )} score)
+      <p>{props.routes.toFixed(1)} meters of routes inside</p>
+      <p>{props.total.toFixed(1)} meters of all roads inside</p>
+      <p>So that's {percent(props.routes, props.total)}</p>
     </Popup>
   </FillLayer>
 
