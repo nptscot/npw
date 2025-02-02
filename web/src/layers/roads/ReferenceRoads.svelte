@@ -151,7 +151,8 @@
       <p>{infraTypeMapping[props.existing_infra][0]}</p>
     {/if}
     <p>
-      Precalculated cycling flow quintile: {props.precalculated_flow_quintile}
+      Precalculated cycling flow: {props.precalculated_flow.toLocaleString()} (quintile
+      {props.precalculated_flow_quintile})
     </p>
     <a href={props.way} target="_blank">Open OSM</a>
 

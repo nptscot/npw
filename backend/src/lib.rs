@@ -221,6 +221,10 @@ impl MapModel {
                 serde_json::to_value(existing::classify(&road.osm_tags)).unwrap(),
             );
             f.set_property(
+                "precalculated_flow",
+                self.precalculated_flows[idx],
+            );
+            f.set_property(
                 "precalculated_flow_quintile",
                 stats.quintile(self.precalculated_flows[idx]),
             );

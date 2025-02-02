@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { stats } from "../stores";
+  import { devMode, stats } from "../stores";
   import { percent } from "../utils";
   import LayerControls from "./LayerControls.svelte";
+  import { debugAllCyclingFlow } from "./stores";
 
   export let quintile: number;
   export let show: boolean;
@@ -18,6 +19,13 @@
         $stats.total_flow_quintile_sums[quintile - 1],
       )} of quintile {quintile} flows covered
     </p>
+  {/if}
+
+  {#if $devMode}
+    <label>
+      <input type="checkbox" bind:checked={$debugAllCyclingFlow} />
+      Debug all flows
+    </label>
   {/if}
 </LayerControls>
 

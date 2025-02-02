@@ -258,7 +258,6 @@ fn read_precalculated_flows(path: &str, graph: &Graph, timer: &mut Timer) -> Res
     for input in layer.features() {
         let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
         graph.mercator.to_mercator_in_place(&mut geom);
-        // TODO Or quietest?
         let Some(flow) = input.field_as_integer_by_name("all_fastest_bicycle_go_dutch")? else {
             bail!("combined_network is missing all_fastest_bicycle_go_dutch");
         };
