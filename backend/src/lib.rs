@@ -205,6 +205,7 @@ impl MapModel {
 
     pub fn render_static_roads(&self) -> GeoJson {
         let stats = utils::Quintiles::new(&self.precalculated_flows);
+        info!("precalculated_flows quintiles: {stats:?}");
 
         let mut features = Vec::new();
         for (idx, road) in self.graph.roads.iter().enumerate() {
@@ -220,10 +221,7 @@ impl MapModel {
                 "existing_infra",
                 serde_json::to_value(existing::classify(&road.osm_tags)).unwrap(),
             );
-            f.set_property(
-                "precalculated_flow",
-                self.precalculated_flows[idx],
-            );
+            f.set_property("precalculated_flow", self.precalculated_flows[idx]);
             f.set_property(
                 "precalculated_flow_quintile",
                 stats.quintile(self.precalculated_flows[idx]),

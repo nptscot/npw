@@ -99,10 +99,9 @@ impl MapModel {
         let flow_stats = Quintiles::new(&self.precalculated_flows);
         let mut covered_quintile_sums = [0; 5];
         for (idx, flow) in self.precalculated_flows.iter().enumerate() {
-            // TODO Check definition here -- should this look at LoS, so small high-flow roads are
-            // fine?
-            let covered = self.infra_types[idx].is_some();
-            if covered {
+            // Only count coverage where something has been explicitly drawn, no matter what that
+            // is
+            if self.infra_types[idx].is_some() {
                 let quintile = flow_stats.quintile(*flow);
                 covered_quintile_sums[quintile - 1] += *flow;
             }

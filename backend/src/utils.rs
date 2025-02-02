@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Quintiles {
     // 20% of values are >= this amount
     quintile1: usize,
@@ -10,8 +11,10 @@ pub struct Quintiles {
 }
 
 impl Quintiles {
+    /// 0s are ignored
     pub fn new(values: &Vec<usize>) -> Self {
         let mut sorted = values.clone();
+        sorted.retain(|x| *x > 0);
         sorted.sort();
         sorted.reverse();
         let n = ((sorted.len() as f64) / 5.0).ceil() as usize;
