@@ -29,6 +29,9 @@
       Draw new <u>r</u>
       oute line
     </button>
+    <button class="outline" on:click={() => ($mode = { kind: "bulk-edit" })}>
+      Bulk edit
+    </button>
 
     <PickEditsStyle />
 

@@ -79,7 +79,7 @@
 
 <SplitComponent>
   <div slot="left">
-    <h2>Evaluate a route mode</h2>
+    <h2>Evaluate a route</h2>
 
     <button on:click={() => ($mode = prevMode)}>Back</button>
 

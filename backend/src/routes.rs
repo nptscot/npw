@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use anyhow::Result;
 use enum_map::EnumMap;
 use geo::{Euclidean, Length, LineString};
-use geojson::{feature::Id, Feature, GeoJson};
+use geojson::{Feature, GeoJson};
 use graph::{Graph, PathStep, Position, RoadID};
 
 use crate::join_lines::KeyedLineString;
@@ -78,12 +78,14 @@ impl MapModel {
         Ok(())
     }
 
-    pub fn delete_route(&mut self, id: usize) -> Result<()> {
-        if self.routes.remove(&id).is_some() {
-            self.recalculate_after_edits();
-            return Ok(());
+    pub fn delete_routes(&mut self, ids: Vec<usize>) -> Result<()> {
+        for id in ids {
+            if !self.routes.remove(&id).is_some() {
+                bail!("Unknown route {id}");
+            }
         }
-        bail!("Unknown route {id}");
+        self.recalculate_after_edits();
+        return Ok(());
     }
 
     pub fn clear_all_routes(&mut self) {
@@ -92,22 +94,20 @@ impl MapModel {
         self.recalculate_after_edits();
     }
 
+    pub fn get_all_routes(&self) -> GeoJson {
+        GeoJson::from(
+            self.routes
+                .iter()
+                .map(|(id, r)| r.to_gj(*id))
+                .collect::<Vec<_>>(),
+        )
+    }
+
     pub fn get_route(&self, id: usize) -> Result<Feature> {
         let Some(route) = self.routes.get(&id) else {
             bail!("No route {id}");
         };
-
-        let mut f = route.feature.clone();
-        f.id = Some(Id::Number((id).into()));
-        f.set_property("name", route.name.clone());
-        f.set_property("notes", route.notes.clone());
-        f.set_property(
-            "infra_type",
-            serde_json::to_value(&route.infra_type).unwrap(),
-        );
-        f.set_property("override_infra_type", route.override_infra_type);
-        f.set_property("tier", serde_json::to_value(&route.tier).unwrap());
-        Ok(f)
+        Ok(route.to_gj(id))
     }
 
     /// Returns the number of edits
@@ -315,4 +315,20 @@ pub fn end_pos((road, dir): (RoadID, Dir), graph: &Graph) -> Position {
         Dir::Backwards => Dir::Forwards,
     };
     start_pos((road, opposite), graph)
+}
+
+impl Route {
+    fn to_gj(&self, id: usize) -> Feature {
+        let mut f = self.feature.clone();
+        f.set_property("id", id);
+        f.set_property("name", self.name.clone());
+        f.set_property("notes", self.notes.clone());
+        f.set_property(
+            "infra_type",
+            serde_json::to_value(&self.infra_type).unwrap(),
+        );
+        f.set_property("override_infra_type", self.override_infra_type);
+        f.set_property("tier", serde_json::to_value(&self.tier).unwrap());
+        f
+    }
 }

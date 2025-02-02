@@ -81,9 +81,9 @@ impl MapModel {
         self.set_route(id, route).map_err(err_to_js)
     }
 
-    #[wasm_bindgen(js_name = deleteRoute)]
-    pub fn delete_route_wasm(&mut self, id: usize) -> Result<(), JsValue> {
-        self.delete_route(id).map_err(err_to_js)
+    #[wasm_bindgen(js_name = deleteRoutes)]
+    pub fn delete_routes_wasm(&mut self, ids: Vec<usize>) -> Result<(), JsValue> {
+        self.delete_routes(ids).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = clearAllRoutes)]
@@ -106,6 +106,12 @@ impl MapModel {
             serde_wasm_bindgen::from_value(override_infra_type)?;
         self.autosplit_route(editing_route_id, roads, override_infra_type)
             .map_err(err_to_js)
+    }
+
+    /// Returns GJ Features of every route
+    #[wasm_bindgen(js_name = getAllRoutes)]
+    pub fn get_all_routes_wasm(&self) -> Result<String, JsValue> {
+        serde_json::to_string(&self.get_all_routes()).map_err(err_to_js)
     }
 
     /// Returns one GJ Feature of the route

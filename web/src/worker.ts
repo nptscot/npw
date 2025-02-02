@@ -74,6 +74,11 @@ export class Backend {
     return this.inner!.toRouteSnapper();
   }
 
+  getAllRoutes(): FeatureCollection<LineString, RouteProps> {
+    this.checkReady();
+    return JSON.parse(this.inner!.getAllRoutes());
+  }
+
   getRoute(id: number): Feature<LineString, RouteProps> {
     this.checkReady();
     return JSON.parse(this.inner!.getRoute(id));
@@ -85,9 +90,9 @@ export class Backend {
     this.inner!.setRoute(id == null ? undefined : id, input);
   }
 
-  deleteRoute(id: number) {
+  deleteRoutes(ids: number[]) {
     this.checkReady();
-    this.inner!.deleteRoute(id);
+    this.inner!.deleteRoutes(new Uint32Array(ids));
   }
 
   clearAllRoutes() {

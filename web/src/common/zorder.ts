@@ -115,6 +115,9 @@ const layerZorder = [
   "eval-car-route",
   "eval-quiet-bike-route",
 
+  "draw-rectangle-fill",
+  "draw-rectangle-outline",
+
   streets("Road labels"),
 
   "fade-study-area",

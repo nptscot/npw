@@ -87,7 +87,7 @@
 
   async function deleteRoute() {
     if (id != null) {
-      await $backend!.deleteRoute(id);
+      await $backend!.deleteRoutes([id]);
       await autosave();
     }
     $mode = { kind: "main" };

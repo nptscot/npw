@@ -151,6 +151,7 @@ export interface SetRouteInput {
 }
 
 export interface RouteProps {
+  id: number;
   name: string;
   notes: string;
   full_path: RouteNode[];

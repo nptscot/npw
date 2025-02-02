@@ -15,6 +15,7 @@
   import hospital2Icon from "../assets/hospital_unreachable.png";
   import school1Icon from "../assets/school_reachable.png";
   import school2Icon from "../assets/school_unreachable.png";
+  import BulkEditMode from "./BulkEditMode.svelte";
   import { layerId } from "./common";
   import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";
   import { getKey, getLastOpenedFileKey } from "./common/files";
@@ -228,6 +229,8 @@
           <EditRouteMode id={$mode.id} {map} />
         {:else if $mode.kind == "evaluate-route"}
           <EvaluateRouteMode prevMode={$mode.prevMode} browse={$mode.browse} />
+        {:else if $mode.kind == "bulk-edit"}
+          <BulkEditMode />
         {/if}
       {/if}
     </MapLibre>
