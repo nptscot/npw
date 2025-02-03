@@ -12,6 +12,7 @@
   let scenario = "bicycle_go_dutch";
   let networkType = "fastest";
   let colorBy = "flow";
+  let minFlow = 0;
 
   $: key = `${purpose}_${networkType}_${scenario}`;
 
@@ -98,12 +99,18 @@
       {/each}
     </select>
   </label>
+
+  <label>
+    Show flows above:
+    <input type="number" bind:value={minFlow} />
+  </label>
 </RoadLayerControls>
 
 <VectorTileSource url={`pmtiles://${assetUrl("route_network.pmtiles")}`}>
   <LineLayer
     {...layerId("precalculated-rnet")}
     sourceLayer="rnet"
+    filter={[">=", ["get", key], minFlow]}
     paint={{
       "line-color": lineColor,
       "line-width": lineWidthForDemand(["get", key]),
