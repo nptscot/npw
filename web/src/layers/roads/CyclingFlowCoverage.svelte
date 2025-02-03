@@ -7,6 +7,7 @@
     cyclingFlow2,
     cyclingFlow3,
     debugAllCyclingFlow,
+    debugCyclingFlowMin,
   } from "../stores";
 
   // Depending on the current tier, show one quintile of precalculated
@@ -26,7 +27,7 @@
 <LineLayer
   {...layerId("uncovered-cycling-flows")}
   filter={quintile == null
-    ? undefined
+    ? [">=", ["get", "precalculated_flow"], $debugCyclingFlowMin]
     : ["==", ["get", "precalculated_flow_quintile"], quintile]}
   layout={{
     visibility:

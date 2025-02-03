@@ -6,6 +6,7 @@ export let allControls: Writable<Map<string, HTMLDivElement>> = writable(
 
 // Only layers that need to be controlled remotely need to be here
 export let debugAllCyclingFlow = writable(false);
+export let debugCyclingFlowMin = writable(0);
 export let cyclingFlow1 = writable(true);
 
 export let cyclingFlow2 = writable(false);

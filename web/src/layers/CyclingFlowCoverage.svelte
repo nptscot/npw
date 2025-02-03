@@ -2,7 +2,7 @@
   import { percent } from "../common";
   import { devMode, stats } from "../stores";
   import LayerControls from "./LayerControls.svelte";
-  import { debugAllCyclingFlow } from "./stores";
+  import { debugAllCyclingFlow, debugCyclingFlowMin } from "./stores";
 
   export let quintile: number;
   export let show: boolean;
@@ -26,6 +26,13 @@
       <input type="checkbox" bind:checked={$debugAllCyclingFlow} />
       Debug all flows
     </label>
+
+    {#if $debugAllCyclingFlow}
+      <label>
+        Show flows above:
+        <input type="number" bind:value={$debugCyclingFlowMin} />
+      </label>
+    {/if}
   {/if}
 </LayerControls>
 

@@ -8,6 +8,9 @@ pub struct Quintiles {
     quintile4: usize,
     // quintile5 is the minimum value
     pub total_quintile_sums: [usize; 5],
+    // Just show in Debug
+    #[allow(dead_code)]
+    max: usize,
 }
 
 impl Quintiles {
@@ -30,6 +33,7 @@ impl Quintiles {
             quintile3: sorted[n * 3],
             quintile4: sorted[n * 4],
             total_quintile_sums,
+            max: sorted[0],
         }
     }
 
