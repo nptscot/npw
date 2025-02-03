@@ -51,33 +51,41 @@
   }
 </script>
 
-{#if $tier == "Primary"}
-  <details open style:border="2px solid {tierColors.Primary}">
-    <summary>Primary Route Reference Layers</summary>
-    <div bind:this={primary} />
-  </details>
-{/if}
+<details
+  open
+  style:border="2px solid {tierColors.Primary}"
+  style:display={$tier == "Primary" ? "block" : "none"}
+>
+  <summary>Primary Route Reference Layers</summary>
+  <div bind:this={primary} />
+</details>
 
-{#if $tier == "Secondary"}
-  <details open style:border="2px solid {tierColors.Secondary}">
-    <summary>Secondary Route Reference Layers</summary>
-    <div bind:this={secondary} />
-  </details>
-{/if}
+<details
+  open
+  style:border="2px solid {tierColors.Secondary}"
+  style:display={$tier == "Secondary" ? "block" : "none"}
+>
+  <summary>Secondary Route Reference Layers</summary>
+  <div bind:this={secondary} />
+</details>
 
-{#if $tier == "LocalAccess"}
-  <details open style:border="2px solid {tierColors.LocalAccess}">
-    <summary>Local Access Route Reference Layers</summary>
-    <div bind:this={localAccess} />
-  </details>
-{/if}
+<details
+  open
+  style:border="2px solid {tierColors.LocalAccess}"
+  style:display={$tier == "LocalAccess" ? "block" : "none"}
+>
+  <summary>Local Access Route Reference Layers</summary>
+  <div bind:this={localAccess} />
+</details>
 
-{#if $tier == "LongDistance"}
-  <details open style:border="2px solid {tierColors.LongDistance}">
-    <summary>Long Disance Route Reference Layers</summary>
-    <div bind:this={longDistance} />
-  </details>
-{/if}
+<details
+  open
+  style:border="2px solid {tierColors.LongDistance}"
+  style:display={$tier == "LongDistance" ? "block" : "none"}
+>
+  <summary>Long Disance Route Reference Layers</summary>
+  <div bind:this={longDistance} />
+</details>
 
 <details open style:border="2px solid black">
   <summary>Basic Reference Layers</summary>
