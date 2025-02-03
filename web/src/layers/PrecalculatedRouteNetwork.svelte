@@ -110,7 +110,7 @@
   <LineLayer
     {...layerId("precalculated-rnet")}
     sourceLayer="rnet"
-    filter={[">=", ["get", key], minFlow]}
+    filter={key ? [">=", ["get", key], minFlow] : undefined}
     paint={{
       "line-color": lineColor,
       "line-width": lineWidthForDemand(["get", key]),

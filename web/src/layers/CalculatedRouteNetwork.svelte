@@ -12,6 +12,7 @@
   $: show = $referenceRoadStyle == "calculated_rnet";
   let fastSample = true;
   let colorBy: "flow" | "infra_type" | "los" = "los";
+  let minFlow = 0;
 
   // Until we have loading screens, don't automatically update this layer
   let lastUpdate = 0;
@@ -57,6 +58,11 @@
     </select>
   </label>
 
+  <label>
+    Show flows above:
+    <input type="number" bind:value={minFlow} />
+  </label>
+
   {#if gj}
     <p>
       {gj.succeeded.toLocaleString()} routes succeeded, {gj.failed.toLocaleString()}
@@ -72,6 +78,7 @@
   <GeoJSON data={gj} generateId>
     <LineLayer
       {...layerId("calculated-rnet")}
+      filter={[">=", ["get", "count"], minFlow]}
       paint={{
         "line-width": lineWidthForDemand(["get", "count"]),
         "line-color": {
