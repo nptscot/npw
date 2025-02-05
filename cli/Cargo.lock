@@ -568,7 +568,7 @@ dependencies = [
 [[package]]
 name = "geojson"
 version = "0.24.1"
-source = "git+https://github.com/georust/geojson#5532d2d05dea0767d0e856a4ca9293bebff4f1b7"
+source = "git+https://github.com/georust/geojson#341f937790b7d75964f1a07198671257f9bf005a"
 dependencies = [
  "geo-types",
  "log",
@@ -588,7 +588,7 @@ dependencies = [
 [[package]]
 name = "graph"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/15m#1b33bfd2a12ba06043ed32bd94d01b3d2a188b4c"
+source = "git+https://github.com/a-b-street/15m#5cf78c1dc12550471d1c4f16de377aeb38114af3"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1370,7 +1370,7 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 [[package]]
 name = "utils"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/utils#88666e7363f1693597e5ed6afe5a1ba498fd187c"
+source = "git+https://github.com/a-b-street/utils#10d8bf23282fb601ffc3eeb78b5ea8b9b1acd496"
 dependencies = [
  "anyhow",
  "fast_paths",
