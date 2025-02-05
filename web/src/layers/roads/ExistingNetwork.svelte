@@ -50,22 +50,30 @@
         this tool's interpretation of it are imperfect, so please check the
         results carefully and remove / adjust any errors.
       </p>
-      <p>
-        You can choose to import only Segregated Tracks (wide and narrow) and
-        Off Road Cycleways, or any infrastructure that achieves a high level of
-        service. For the latter option, if the result shows Painted Cycle Lanes,
-        then they are adequate to improve the level of service given the
-        estimated speed and traffic volumes.
-      </p>
 
-      <button on:click={() => importExisting("infra-type")}>
-        Import existing Segregated Tracks and Off Road Cycleways
-      </button>
-      <br />
-      <button on:click={() => importExisting("los")}>
-        Import existing routes that achieve a high level of service
-      </button>
-      <br />
+      <div style="display: flex; gap: 16px">
+        <div style="width: 50%">
+          <button on:click={() => importExisting("infra-type")}>
+            Import existing Segregated Tracks and Off Road Cycleways
+          </button>
+
+          <p>These will all be imported, regardless of the level of service.</p>
+        </div>
+
+        <div style="width: 50%">
+          <button on:click={() => importExisting("los")}>
+            Import existing routes that achieve a high level of service
+          </button>
+
+          <p>
+            If any existing infrastructure is adequate to achieve a high level
+            of service, it will be imported. If this adds painted cycle lanes,
+            then this means the speed and traffic volumes are low enough for
+            this to be acceptable. Note shared footways are never imported.
+          </p>
+        </div>
+      </div>
+
       <button class="secondary" on:click={() => (showImportModal = false)}>
         Cancel
       </button>
