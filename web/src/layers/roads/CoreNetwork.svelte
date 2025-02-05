@@ -4,7 +4,7 @@
   import { QualitativeLegend } from "../../common";
   import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
   import RoadLayerControls from "../RoadLayerControls.svelte";
-  import { debugOriginalData } from "./stores";
+  import { debugOriginalData } from "../stores";
 
   let loading = "";
 

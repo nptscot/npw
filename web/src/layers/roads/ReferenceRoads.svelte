@@ -23,7 +23,7 @@
     type ReferenceRoadStyle,
   } from "../../stores";
   import { infraTypeMapping, type DynamicRoad } from "../../types";
-  import { severances } from "../stores";
+  import { debugOriginalData, severances } from "../stores";
 
   export let dynamicData: DynamicRoad[];
 
@@ -108,9 +108,19 @@
     }[style];
   }
 
-  function showLayer(severances: boolean, style: ReferenceRoadStyle): boolean {
+  function showLayer(
+    severances: boolean,
+    debugOriginalData: boolean,
+    style: ReferenceRoadStyle,
+  ): boolean {
     if (severances) {
       return true;
+    }
+    if (
+      debugOriginalData &&
+      ["traffic", "los", "existing_infra", "speed", "cn"].includes(style)
+    ) {
+      return false;
     }
     return {
       off: false,
@@ -137,7 +147,7 @@
     "line-width": roadLineWidth(0),
   }}
   layout={{
-    visibility: showLayer($severances, $referenceRoadStyle)
+    visibility: showLayer($severances, $debugOriginalData, $referenceRoadStyle)
       ? "visible"
       : "none",
   }}

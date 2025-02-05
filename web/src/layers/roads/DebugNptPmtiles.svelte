@@ -4,7 +4,7 @@
   import { speed } from "../../colors";
   import { layerId, roadLineWidth } from "../../common";
   import { assetUrl, referenceRoadStyle } from "../../stores";
-  import { debugOriginalData } from "./stores";
+  import { debugOriginalData } from "../stores";
 </script>
 
 <VectorTileSource url={`pmtiles://${assetUrl("cbd.pmtiles")}`}>
@@ -22,7 +22,7 @@
         },
         "cyan",
       ),
-      "line-width": roadLineWidth(4),
+      "line-width": roadLineWidth(0),
     }}
     layout={{
       visibility:
@@ -46,7 +46,7 @@
         },
         "cyan",
       ),
-      "line-width": roadLineWidth(4),
+      "line-width": roadLineWidth(1),
     }}
     layout={{
       visibility:
@@ -66,11 +66,11 @@
           "Off Road Cycleway": "#3a9120",
           "Segregated Track (narrow)": "#87d668",
           "Shared Footway": "#ffbf00",
-          "Painted Cycle Lane": "#FF0000",
+          "Painted Cycle Lane": "#7faedd",
         },
         "cyan",
       ),
-      "line-width": roadLineWidth(4),
+      "line-width": roadLineWidth(1),
     }}
     layout={{
       visibility:
@@ -93,7 +93,7 @@
         speed.limits,
         speed.colorScale,
       ),
-      "line-width": roadLineWidth(4),
+      "line-width": roadLineWidth(1),
     }}
     layout={{
       visibility:
@@ -108,18 +108,17 @@
   <LineLayer
     {...layerId("cn-debug")}
     sourceLayer="coherent_networks"
+    filter={["!=", ["get", "road_function"], "Local Access"]}
     paint={{
       "line-color": constructMatchExpression(
         ["get", "road_function"],
         {
           Primary: "#c00000",
           Secondary: "#e97132",
-          "Local Access": "#ffc000",
-          "Long Distance": "#4ea72e",
         },
         "cyan",
       ),
-      "line-width": roadLineWidth(4),
+      "line-width": roadLineWidth(1),
     }}
     layout={{
       visibility:

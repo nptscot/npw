@@ -10,9 +10,9 @@
   import { QualitativeLegend } from "../../common";
   import { devMode } from "../../stores";
   import RoadLayerControls from "../RoadLayerControls.svelte";
+  import { debugOriginalData } from "../stores";
   import CoreNetwork from "./CoreNetwork.svelte";
   import ExistingNetwork from "./ExistingNetwork.svelte";
-  import { debugOriginalData } from "./stores";
 </script>
 
 <RoadLayerControls name="Don't show" style="off" empty />
