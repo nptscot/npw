@@ -28,8 +28,12 @@
   export let dynamicData: DynamicRoad[];
 
   function makeFilter(
+    severances: boolean,
     style: ReferenceRoadStyle,
   ): ExpressionSpecification | undefined {
+    if (severances) {
+      return undefined;
+    }
     if (style == "cn") {
       return ["to-boolean", ["get", "cn"]];
     } else if (style == "existing_infra") {
@@ -126,7 +130,7 @@
 
 <LineLayer
   {...layerId("reference-roads")}
-  filter={makeFilter($referenceRoadStyle)}
+  filter={makeFilter($severances, $referenceRoadStyle)}
   paint={{
     "line-color": lineColor($severances, $referenceRoadStyle),
     "line-opacity": lineOpacity($mode, $severances, $referenceRoadStyle),
