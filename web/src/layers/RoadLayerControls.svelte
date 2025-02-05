@@ -1,6 +1,6 @@
 <script lang="ts">
   import { referenceRoadStyle, type ReferenceRoadStyle } from "../stores";
-  import { allControls } from "./stores";
+  import { allControls, lastReferenceStyle } from "./stores";
 
   export let name: string;
   // TODO Use name for this
@@ -15,12 +15,24 @@
       return map;
     });
   }
+
+  function updateLast() {}
 </script>
 
 <div bind:this={contents}>
   <label>
-    <input type="radio" value={style} bind:group={$referenceRoadStyle} />
+    <input
+      type="radio"
+      value={style}
+      bind:group={$referenceRoadStyle}
+      on:change={updateLast}
+    />
     {name}
+    {#if style == $lastReferenceStyle && $referenceRoadStyle != $lastReferenceStyle}
+      (
+      <kbd>s</kbd>
+      )
+    {/if}
   </label>
 
   {#if !empty}

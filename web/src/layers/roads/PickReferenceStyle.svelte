@@ -8,12 +8,30 @@
     traffic,
   } from "../../colors";
   import { QualitativeLegend } from "../../common";
-  import { devMode } from "../../stores";
+  import { devMode, referenceRoadStyle } from "../../stores";
   import RoadLayerControls from "../RoadLayerControls.svelte";
-  import { debugOriginalData } from "../stores";
+  import { debugOriginalData, lastReferenceStyle } from "../stores";
   import CoreNetwork from "./CoreNetwork.svelte";
   import ExistingNetwork from "./ExistingNetwork.svelte";
+
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.key == "s") {
+      let tag = (e.target as HTMLElement).tagName;
+      if (tag != "INPUT") {
+        e.preventDefault();
+
+        if ($referenceRoadStyle == "off") {
+          $referenceRoadStyle = $lastReferenceStyle;
+        } else {
+          $lastReferenceStyle = $referenceRoadStyle;
+          $referenceRoadStyle = "off";
+        }
+      }
+    }
+  }
 </script>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <RoadLayerControls name="Don't show" style="off" empty />
 
