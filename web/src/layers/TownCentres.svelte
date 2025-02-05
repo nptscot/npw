@@ -40,7 +40,10 @@
       data.features.length,
     )}) reachable
   </p>
-  <QualitativeLegend colors={{ Reachable: "purple", "Not reachable": "red" }} />
+  <QualitativeLegend
+    horiz
+    colors={{ Reachable: "purple", "Not reachable": "red" }}
+  />
 </LayerControls>
 
 <GeoJSON {data} generateId>

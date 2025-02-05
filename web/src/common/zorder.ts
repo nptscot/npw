@@ -100,7 +100,8 @@ const layerZorder = [
   "schools",
   "settlements",
   "town-centres",
-  "greenspaces",
+  "greenspaces-fill",
+  "greenspaces-outline",
   "greenspace-access-points",
 
   "block-reference-layers",

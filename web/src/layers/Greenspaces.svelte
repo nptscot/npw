@@ -5,6 +5,7 @@
     FillLayer,
     GeoJSON,
     hoverStateFilter,
+    LineLayer,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId, percent, QualitativeLegend } from "../common";
@@ -45,16 +46,19 @@
       data.features.length,
     )}) reachable
   </p>
-  <QualitativeLegend colors={{ Reachable: "purple", "Not reachable": "red" }} />
+  <QualitativeLegend
+    horiz
+    colors={{ Reachable: "purple", "Not reachable": "red" }}
+  />
 </LayerControls>
 
 <GeoJSON {data} generateId>
   <FillLayer
-    {...layerId("greenspaces")}
+    {...layerId("greenspaces-fill")}
     manageHoverState
     paint={{
       "fill-color": ["case", ["get", "reachable"], "purple", "red"],
-      "fill-opacity": hoverStateFilter(0.7, 0.9),
+      "fill-opacity": hoverStateFilter(0.1, 0.9),
     }}
     layout={{
       visibility: $show ? "visible" : "none",
@@ -68,8 +72,21 @@
     </Popup>
   </FillLayer>
 
+  <LineLayer
+    {...layerId("greenspaces-outline")}
+    interactive={false}
+    paint={{
+      "line-color": ["case", ["get", "reachable"], "purple", "red"],
+      "line-width": 2,
+    }}
+    layout={{
+      visibility: $show ? "visible" : "none",
+    }}
+  />
+
   <CircleLayer
     {...layerId("greenspace-access-points")}
+    interactive={false}
     filter={["==", ["get", "kind"], "access point"]}
     paint={{
       "circle-color": "green",
