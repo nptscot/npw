@@ -110,7 +110,7 @@ pub enum InfraType {
     MixedTraffic,
 }
 
-#[derive(Clone, Copy, Debug, Enum, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Enum, Serialize, Deserialize)]
 pub enum Tier {
     Primary,
     Secondary,

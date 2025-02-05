@@ -7,6 +7,7 @@ use utils::Tags;
 use crate::{level_of_service::get_speed_mph, InfraType};
 
 /// All of the OSM highway types used anywhere. This forces exhaustive matching of all cases.
+#[derive(PartialEq)]
 pub enum Highway {
     Motorway,
     Trunk,

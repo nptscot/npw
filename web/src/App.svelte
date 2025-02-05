@@ -189,7 +189,7 @@
     <MapLibre
       style={offlineMode
         ? "http://localhost:5173/offline/light_style.json"
-        : `https://api.maptiler.com/maps/streets-v2/style.json?key=${maptilerApiKey}`}
+        : `https://api.maptiler.com/maps/openstreetmap/style.json?key=${maptilerApiKey}`}
       standardControls
       bind:map
       on:error={(e) => {

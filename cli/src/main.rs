@@ -369,16 +369,22 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
 
     let mut results = Vec::new();
     for (idx, road) in graph.roads.iter().enumerate() {
-        // The core network can never be on the motorway, but in Glasgow, it's hard to distinguish
-        // some of the parallel roads
-        if matches!(
-            Highway::classify(&road.osm_tags).unwrap(),
-            Highway::Motorway
-        ) {
-            results.push(None);
-            continue;
+        let tier = get_anime_match(&matches, &source_data, idx);
+        let highway = Highway::classify(&road.osm_tags).unwrap();
+        if let Some(tier) = tier {
+            // The core network is only on primary and secondary roads. Distinguishing parallel roads
+            // is often hard, so only allow some OSM highway types per tier.
+            if tier == Tier::Primary && highway != Highway::Primary {
+                results.push(None);
+                continue;
+            }
+            if tier == Tier::Secondary && !matches!(highway, Highway::Secondary | Highway::Tertiary)
+            {
+                results.push(None);
+                continue;
+            }
         }
-        results.push(get_anime_match(&matches, &source_data, idx));
+        results.push(tier);
     }
     Ok(results)
 }
