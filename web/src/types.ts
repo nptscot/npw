@@ -165,7 +165,7 @@ export type ConnectedComponents = FeatureCollection<
   LineString,
   { component: number }
 > & {
-  component_sizes: number[];
+  component_lengths: number[];
 };
 
 export type AutosplitRoute = FeatureCollection<

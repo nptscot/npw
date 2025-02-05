@@ -16,12 +16,25 @@ impl MapModel {
             }
         }
 
-        let mut features = Vec::new();
-        let mut component_sizes = Vec::new();
+        // (Roads, total length)
+        let mut components: Vec<(BTreeSet<RoadID>, usize)> = Vec::new();
         for nodes in petgraph::algo::kosaraju_scc(&graph) {
-            let component = component_sizes.len();
             let roads = nodes_to_edges(self, nodes);
-            component_sizes.push(roads.len());
+            let length = roads
+                .iter()
+                .map(|r| self.graph.roads[r.0].length_meters)
+                .sum::<f64>()
+                .round() as usize;
+            components.push((roads, length));
+        }
+        components.sort_by_key(|(_, len)| *len);
+        components.reverse();
+
+        let mut features = Vec::new();
+        let mut component_lengths = Vec::new();
+        for (roads, length) in components {
+            let component = component_lengths.len();
+            component_lengths.push(length);
 
             for r in roads {
                 let mut f = self.graph.roads[r.0].to_gj(&self.graph);
@@ -29,15 +42,13 @@ impl MapModel {
                 features.push(f);
             }
         }
-        component_sizes.sort();
-        component_sizes.reverse();
 
         FeatureCollection {
             features,
             bbox: None,
             foreign_members: Some(
                 serde_json::json!({
-                    "component_sizes": component_sizes,
+                    "component_lengths": component_lengths,
                 })
                 .as_object()
                 .unwrap()

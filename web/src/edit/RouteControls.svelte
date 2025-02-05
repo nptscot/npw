@@ -319,19 +319,19 @@
       <label>
         <input type="radio" value="append-start" bind:group={drawMode} />
         Extend from start (
-        <b>1</b>
+        <kbd>1</kbd>
         )
       </label>
       <label>
         <input type="radio" value="append-end" bind:group={drawMode} />
         Extend from end (
-        <b>2</b>
+        <kbd>2</kbd>
         )
       </label>
       <label>
         <input type="radio" value="adjust" bind:group={drawMode} />
         Adjust middle points (
-        <b>3</b>
+        <kbd>3</kbd>
         )
       </label>
     </fieldset>

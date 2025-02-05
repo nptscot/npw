@@ -26,7 +26,7 @@
     <ManageFiles />
 
     <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
-      Draw new <u>r</u>
+      Draw new <kbd>r</kbd>
       oute line
     </button>
     <button class="outline" on:click={() => ($mode = { kind: "bulk-edit" })}>

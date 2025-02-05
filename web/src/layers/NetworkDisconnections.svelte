@@ -7,7 +7,7 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
-  import { layerId, roadLineWidth } from "../common";
+  import { layerId, prettyPrintDistance, roadLineWidth } from "../common";
   import { backend, map, mutationCounter, referenceRoadStyle } from "../stores";
   import type { ConnectedComponents } from "../types";
   import RoadLayerControls from "./RoadLayerControls.svelte";
@@ -18,7 +18,7 @@
   let data: ConnectedComponents = {
     type: "FeatureCollection",
     features: [],
-    component_sizes: [],
+    component_lengths: [],
   };
 
   async function recalc() {
@@ -34,7 +34,7 @@
 
   let colors = ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e"];
   let colorByComponent = constructMatchExpression(
-    ["to-string", ["%", ["get", "component"], colors.length]],
+    ["to-string", ["get", "component"]],
     Object.fromEntries(colors.map((color, i) => [i.toString(), color])),
     "black",
   ) as ExpressionSpecification;
@@ -74,14 +74,16 @@
     The network you create should usually all be connected as one component.
   </p>
 
-  <p>Component sizes:</p>
+  <p>Components:</p>
   <ul>
-    {#each data.component_sizes.slice(0, 5) as size, idx}
-      <li style:color={colors[idx % colors.length]}>{size}</li>
+    {#each data.component_lengths.slice(0, 5) as length, idx}
+      <li style:color={colors[idx]}>
+        {prettyPrintDistance(length)}
+      </li>
     {/each}
-    {#if data.component_sizes.length > 5}
+    {#if data.component_lengths.length > 5}
       <p>
-        ({data.component_sizes.length} components total; only 5 largest shown)
+        ({data.component_lengths.length} components total; only 5 largest shown)
       </p>
     {/if}
   </ul>
