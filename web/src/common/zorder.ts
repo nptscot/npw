@@ -98,8 +98,10 @@ const layerZorder = [
   // Reference layers (points or small polygons)
   "gp-hospitals",
   "schools",
-  "settlements",
-  "town-centres",
+  "settlements-fill",
+  "settlements-outline",
+  "town-centres-fill",
+  "town-centres-outline",
   "greenspaces-fill",
   "greenspaces-outline",
   "greenspace-access-points",

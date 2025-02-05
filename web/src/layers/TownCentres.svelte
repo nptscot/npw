@@ -1,6 +1,11 @@
 <script lang="ts">
   import type { Feature, MultiPolygon } from "geojson";
-  import { FillLayer, GeoJSON, hoverStateFilter } from "svelte-maplibre";
+  import {
+    FillLayer,
+    GeoJSON,
+    hoverStateFilter,
+    LineLayer,
+  } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId, percent, QualitativeLegend } from "../common";
   import { backend, mutationCounter } from "../stores";
@@ -48,11 +53,11 @@
 
 <GeoJSON {data} generateId>
   <FillLayer
-    {...layerId("town-centres")}
+    {...layerId("town-centres-fill")}
     manageHoverState
     paint={{
       "fill-color": ["case", ["get", "reachable"], "purple", "red"],
-      "fill-opacity": hoverStateFilter(0.7, 0.9),
+      "fill-opacity": hoverStateFilter(0.1, 0.9),
     }}
     layout={{
       visibility: $show ? "visible" : "none",
@@ -65,6 +70,18 @@
       {props.reachable ? "is" : "is not"} reachable.
     </Popup>
   </FillLayer>
+
+  <LineLayer
+    {...layerId("town-centres-outline")}
+    interactive={false}
+    paint={{
+      "line-color": ["case", ["get", "reachable"], "purple", "red"],
+      "line-width": 2,
+    }}
+    layout={{
+      visibility: $show ? "visible" : "none",
+    }}
+  />
 </GeoJSON>
 
 <DebugReachability kind="town_centres" {hovered} />
