@@ -89,11 +89,6 @@ const layerZorder = [
   "los-debug",
   "calculated-rnet",
   "network-disconnections",
-  "debug-reachability-settlements",
-  "debug-reachability-town_centres",
-  "debug-reachability-greenspaces",
-  "debug-reachability-schools",
-  "debug-reachability-gp_hospitals",
 
   // Reference layers (points or small polygons)
   "gp-hospitals",
@@ -105,6 +100,14 @@ const layerZorder = [
   "greenspaces-fill",
   "greenspaces-outline",
   "greenspace-access-points",
+
+  // Draw these on top of the respective objects, in case the path goes through
+  // the middle of a polygon
+  "debug-reachability-settlements",
+  "debug-reachability-town_centres",
+  "debug-reachability-greenspaces",
+  "debug-reachability-schools",
+  "debug-reachability-gp_hospitals",
 
   "block-reference-layers",
 
