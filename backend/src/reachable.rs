@@ -39,6 +39,8 @@ impl MapModel {
             // count it as part of the network
             if self.los[idx] != LevelOfService::High {
                 severances.insert(id);
+                visited.insert(id);
+                continue;
             }
 
             if self.infra_types[idx].is_some() {
@@ -49,19 +51,16 @@ impl MapModel {
 
         // Flood, avoiding severances
         while let Some(r) = queue.pop() {
-            // TODO Simplify and just put these in visited upfront?
-            if visited.contains(&r) || severances.contains(&r) {
+            if visited.contains(&r) {
                 continue;
             }
             visited.insert(r);
 
-            let road = &self.graph.roads[r.0];
             if !network.contains(&r) {
                 reachable.insert(r);
             }
-            for i in [road.src_i, road.dst_i] {
-                queue.extend(self.graph.intersections[i.0].roads.clone());
-            }
+
+            queue.extend(self.next_reachable_roads(r));
         }
 
         Reachability {
@@ -83,25 +82,25 @@ impl MapModel {
         let mut features = Vec::new();
 
         while let Some(item) = queue.pop() {
-            let r = item.value;
-            if visited.contains(&r) {
+            let r1 = item.value;
+            if visited.contains(&r1) {
                 continue;
             }
-            visited.insert(r);
+            visited.insert(r1);
 
-            if self.los[r.0] != LevelOfService::High {
+            if self.los[r1.0] != LevelOfService::High {
                 continue;
             }
 
-            if self.infra_types[r.0].is_some() {
+            if self.infra_types[r1.0].is_some() {
                 // We don't even need the path in order; just draw all of the roads part of the
                 // path
                 features.push(
                     self.graph
                         .mercator
-                        .to_wgs84_gj(&self.graph.roads[r.0].linestring),
+                        .to_wgs84_gj(&self.graph.roads[r1.0].linestring),
                 );
-                let mut current = r;
+                let mut current = r1;
                 while let Some(next) = backrefs.get(&current) {
                     features.push(
                         self.graph
@@ -113,19 +112,17 @@ impl MapModel {
                 break;
             }
 
-            let road = &self.graph.roads[r.0];
-            for i in [road.src_i, road.dst_i] {
-                for r2 in &self.graph.intersections[i.0].roads {
-                    if start_roads.contains(r2) {
-                        continue;
-                    }
-                    if !backrefs.contains_key(&r2) {
-                        backrefs.insert(*r2, r);
-                        queue.push(PriorityQueueItem::new(
-                            item.cost + meters(road.length_meters),
-                            *r2,
-                        ));
-                    }
+            let road1 = &self.graph.roads[r1.0];
+            for r2 in self.next_reachable_roads(r1) {
+                if start_roads.contains(&r2) {
+                    continue;
+                }
+                if !backrefs.contains_key(&r2) {
+                    backrefs.insert(r2, r1);
+                    queue.push(PriorityQueueItem::new(
+                        item.cost + meters(road1.length_meters),
+                        r2,
+                    ));
                 }
             }
         }
@@ -163,9 +160,7 @@ impl MapModel {
             let road = &self.graph.roads[r.0];
             features.push(self.graph.mercator.to_wgs84_gj(&road.linestring));
 
-            for i in [road.src_i, road.dst_i] {
-                queue.extend(self.graph.intersections[i.0].roads.clone());
-            }
+            queue.extend(self.next_reachable_roads(r));
         }
 
         Ok(serde_json::to_string(&FeatureCollection {
@@ -174,9 +169,119 @@ impl MapModel {
             foreign_members: None,
         })?)
     }
+
+    /// From a road, find all possible next roads that're reachable. This avoids crossing
+    /// perpendicular over anything that isn't high LoS.
+    fn next_reachable_roads(&self, r1: RoadID) -> Vec<RoadID> {
+        let road1 = &self.graph.roads[r1.0];
+        let mut results = Vec::new();
+        for i in [road1.src_i, road1.dst_i] {
+            let roads_clockwise = &self.graph.intersections[i.0].roads;
+            for r2 in roads_clockwise {
+                if *r2 == r1 {
+                    continue;
+                }
+
+                // If both r1 and r2 explicitly have infrastructure, then assume there's a crossing
+                if self.infra_types[r1.0].is_some() && self.infra_types[r2.0].is_some() {
+                    results.push(*r2);
+                    continue;
+                }
+
+                // Otherwise, check what roads we need to cross. If any of them aren't high LoS,
+                // don't allow this movement.
+                if all_crossed_roads(roads_clockwise, r1, *r2)
+                    .into_iter()
+                    .all(|r| self.los[r.0] == LevelOfService::High)
+                {
+                    results.push(*r2);
+                }
+            }
+        }
+        results
+    }
 }
 
 // to cm
 fn meters(x: f64) -> usize {
     (x * 100.0).round() as usize
+}
+
+fn all_crossed_roads(clockwise: &Vec<RoadID>, r1: RoadID, r2: RoadID) -> Vec<RoadID> {
+    // TODO Do we care about left vs right turns?
+
+    // No possible crossings for small intersections
+    if clockwise.len() < 4 {
+        return Vec::new();
+    }
+
+    let mut idx1 = clockwise.iter().position(|&x| x == r1).unwrap();
+    let mut idx2 = clockwise.iter().position(|&x| x == r2).unwrap();
+
+    // If these are adjacent, then no crossings
+    if idx2 < idx1 {
+        std::mem::swap(&mut idx1, &mut idx2);
+    }
+    if idx1 == 0 && idx2 == clockwise.len() - 1 {
+        return Vec::new();
+    }
+    if idx2 == idx1 + 1 {
+        return Vec::new();
+    }
+
+    // Otherwise, every other road aside from r1 and r2 could be crossed
+    let mut crossed = clockwise.clone();
+    crossed.retain(|x| *x != r1 && *x != r2);
+    crossed
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_all_crossed_roads_4_way() {
+        // 4-way
+        //
+        //   N
+        //   |
+        // W---E
+        //   |
+        //   S
+        let n = RoadID(0);
+        let s = RoadID(1);
+        let e = RoadID(2);
+        let w = RoadID(3);
+
+        let clockwise = vec![n, e, s, w];
+        // Note the expected outputs need to follow clockwise ordering
+        assert_eq!(all_crossed_roads(&clockwise, n, s), vec![e, w]);
+        assert_eq!(all_crossed_roads(&clockwise, s, n), vec![e, w]);
+        assert_eq!(all_crossed_roads(&clockwise, e, w), vec![n, s]);
+        assert_eq!(all_crossed_roads(&clockwise, w, e), vec![n, s]);
+
+        assert_eq!(all_crossed_roads(&clockwise, n, w), Vec::new());
+        assert_eq!(all_crossed_roads(&clockwise, w, n), Vec::new());
+        assert_eq!(all_crossed_roads(&clockwise, w, s), Vec::new());
+        assert_eq!(all_crossed_roads(&clockwise, s, w), Vec::new());
+    }
+
+    #[test]
+    fn test_all_crossed_roads_2_or_3_way() {
+        // 3-way
+        //
+        // W---E
+        //   |
+        //   S
+        let s = RoadID(0);
+        let e = RoadID(1);
+        let w = RoadID(2);
+
+        let clockwise = vec![e, s, w];
+        assert_eq!(all_crossed_roads(&clockwise, w, e), Vec::new());
+        assert_eq!(all_crossed_roads(&clockwise, w, s), Vec::new());
+
+        let clockwise = vec![e, w];
+        assert_eq!(all_crossed_roads(&clockwise, w, e), Vec::new());
+    }
 }
