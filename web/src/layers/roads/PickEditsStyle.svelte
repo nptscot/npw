@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { QualitativeLegend } from "svelte-utils";
   import { infraTypeColors, tierColors } from "../../colors";
-  import { QualitativeLegend } from "../../common";
   import { editsRoadStyle } from "../../stores";
 </script>
 

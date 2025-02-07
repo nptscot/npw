@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SequentialLegend } from "svelte-utils";
+  import { QualitativeLegend, SequentialLegend } from "svelte-utils";
   import {
     gradient,
     levelOfServiceColors,
@@ -7,7 +7,6 @@
     speed,
     traffic,
   } from "../../colors";
-  import { QualitativeLegend } from "../../common";
   import { devMode, referenceRoadStyle } from "../../stores";
   import RoadLayerControls from "../RoadLayerControls.svelte";
   import { debugOriginalData, lastReferenceStyle } from "../stores";

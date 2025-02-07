@@ -5,7 +5,6 @@ import type {
 
 export { default as HelpButton } from "./HelpButton.svelte";
 export { default as Link } from "./Link.svelte";
-export { default as QualitativeLegend } from "./QualitativeLegend.svelte";
 export { layerId } from "./zorder";
 
 // Zoom-dependant line width, adapted from from the Minor road layer (secondary

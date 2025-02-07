@@ -6,8 +6,9 @@
     hoverStateFilter,
     LineLayer,
   } from "svelte-maplibre";
+  import { QualitativeLegend } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
-  import { layerId, percent, QualitativeLegend } from "../common";
+  import { layerId, percent } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { TownCentres } from "../types";
   import DebugReachability from "./DebugReachability.svelte";

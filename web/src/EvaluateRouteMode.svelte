@@ -7,13 +7,14 @@
     MapEvents,
     Marker,
   } from "svelte-maplibre";
+  import { QualitativeLegend } from "svelte-utils";
   import { constructMatchExpression } from "svelte-utils/map";
   import {
     gradientColors,
     infraTypeColors,
     levelOfServiceColors,
   } from "./colors";
-  import { layerId, QualitativeLegend } from "./common";
+  import { layerId } from "./common";
   import { SplitComponent } from "./common/layout";
   import Directions from "./Directions.svelte";
   import AllControls from "./layers/AllControls.svelte";

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { notNull } from "svelte-utils";
+  import { notNull, QualitativeLegend } from "svelte-utils";
   import { infraTypeColors } from "../colors";
-  import { QualitativeLegend, sum } from "../common";
+  import { sum } from "../common";
   import type { AutosplitRoute } from "../types";
 
   export let sectionsGj: AutosplitRoute;

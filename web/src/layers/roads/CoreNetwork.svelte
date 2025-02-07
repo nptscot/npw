@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { Loading } from "svelte-utils";
+  import { Loading, QualitativeLegend } from "svelte-utils";
   import { cnTierColors } from "../../colors";
-  import { QualitativeLegend } from "../../common";
   import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
   import RoadLayerControls from "../RoadLayerControls.svelte";
   import { debugOriginalData } from "../stores";

@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { Feature, Point } from "geojson";
   import { GeoJSON, SymbolLayer } from "svelte-maplibre";
+  import { QualitativeLegend } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
-  import { layerId, percent, QualitativeLegend } from "../common";
+  import { layerId, percent } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { Schools } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
