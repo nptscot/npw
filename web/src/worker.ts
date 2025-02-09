@@ -234,6 +234,12 @@ export class Backend {
     return JSON.parse(this.inner!.getConnectedComponents());
   }
 
+  changeTier(routeIds: number[], tier: string) {
+    this.checkReady();
+    // Wrap in quotes for JSON parsing
+    this.inner!.changeTier(routeIds, `"${tier}"`);
+  }
+
   private checkReady() {
     if (!this.inner) {
       throw new Error("Backend used without a file loaded");

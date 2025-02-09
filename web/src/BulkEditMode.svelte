@@ -17,7 +17,7 @@
     LineLayer,
     type LayerClickInfo,
   } from "svelte-maplibre";
-  import { QualitativeLegend } from "svelte-utils";
+  import { Modal, QualitativeLegend } from "svelte-utils";
   import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
   import { infraTypeColors, tierColors } from "./colors";
   import DrawRectangle from "./common/DrawRectangle.svelte";
@@ -30,7 +30,7 @@
     mode,
     referenceRoadStyle,
   } from "./stores";
-  import type { RouteProps } from "./types";
+  import { infraTypeMapping, type RouteProps } from "./types";
 
   let allRoutes = emptyGeojson() as FeatureCollection<LineString, RouteProps>;
   onMount(async () => {
@@ -49,7 +49,20 @@
   let colorBy: "infra" | "tier" =
     origEditsStyle != "edits_tier" ? "infra" : "tier";
 
+  let showTierModal = false;
+  let overrideTier = "Primary";
+  let showInfraTypeModal = false;
+
   let selectedIds: Set<number> = new Set();
+
+  $: selectedRoutes = allRoutes.features.filter((f) =>
+    selectedIds.has(f.properties.id),
+  );
+  $: selectedTiers = countCases(selectedRoutes.map((f) => f.properties.tier));
+  $: selectedInfraTypes = countCases(
+    selectedRoutes.map((f) => infraTypeMapping[f.properties.infra_type][0]),
+  );
+
   function toggle(e: CustomEvent<LayerClickInfo>) {
     let id = e.detail.features[0].properties!.id;
     if (selectedIds.has(id)) {
@@ -100,6 +113,31 @@
       }[colorBy] as ExpressionSpecification,
     ];
   }
+
+  function countCases(values: string[]): [string, number][] {
+    let counts = new Map();
+    for (let x of values) {
+      if (counts.has(x)) {
+        counts.set(x, counts.get(x) + 1);
+      } else {
+        counts.set(x, 1);
+      }
+    }
+    let list: [string, number][] = [...counts];
+    list.sort((a, b) => b[1] - a[1]);
+    return list;
+  }
+
+  function describeCounts(list: [string, number][]): string {
+    return list.map(([x, count]) => `${x} (${count})`).join(", ");
+  }
+
+  async function changeTier() {
+    await $backend!.changeTier([...selectedIds], overrideTier);
+    window.alert("Tier changed");
+    allRoutes = await $backend!.getAllRoutes();
+    showTierModal = false;
+  }
 </script>
 
 <SplitComponent>
@@ -147,6 +185,24 @@
     <button on:click={deleteAll} disabled={selectedIds.size == 0}>
       Delete all
     </button>
+
+    {#if selectedIds.size > 0}
+      <p>They have tiers: {describeCounts(selectedTiers)}</p>
+      {#if selectedTiers.length > 1}
+        <button class="secondary" on:click={() => (showTierModal = true)}>
+          Change tier
+        </button>
+      {/if}
+
+      <p>
+        They have infrastructure types: {describeCounts(selectedInfraTypes)}
+      </p>
+      {#if selectedInfraTypes.length > 1}
+        <button class="secondary" on:click={() => (showInfraTypeModal = true)}>
+          Change infrastructure type
+        </button>
+      {/if}
+    {/if}
   </div>
 
   <div slot="map">
@@ -169,3 +225,26 @@
 
   <div slot="right" />
 </SplitComponent>
+
+{#if showTierModal}
+  <span class="pico">
+    <Modal on:close={() => (showTierModal = false)}>
+      <p>
+        The routes you've selected have tiers: {describeCounts(selectedTiers)}
+      </p>
+
+      <label>
+        Change their tier to:
+        <select bind:value={overrideTier}>
+          <option value="Primary">Primary routes</option>
+          <option value="Secondary">Secondary routes</option>
+          <option value="LocalAccess">Local access routes</option>
+          <option value="LongDistance">Long distance routes</option>
+        </select>
+      </label>
+
+      <button on:click={changeTier}>Change tier</button>
+      <button on:click={() => (showTierModal = false)}>Cancel</button>
+    </Modal>
+  </span>
+{/if}

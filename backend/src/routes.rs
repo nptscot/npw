@@ -227,6 +227,18 @@ impl MapModel {
         Ok(serde_json::to_string(&GeoJson::from(sections))?)
     }
 
+    pub fn change_tier(&mut self, route_ids: Vec<usize>, tier: Tier) -> Result<()> {
+        for id in route_ids {
+            if let Some(route) = self.routes.get_mut(&id) {
+                route.tier = tier;
+            } else {
+                bail!("Unknown route {id}");
+            }
+        }
+        self.recalculate_after_edits();
+        Ok(())
+    }
+
     fn import_roads(&mut self, imports: Vec<(RoadID, InfraType)>, tier: Tier) -> usize {
         // Create individual segments to import
         let mut pieces = Vec::new();

@@ -378,6 +378,14 @@ impl MapModel {
         serde_json::to_string(&self.get_connected_components()).map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = changeTier)]
+    pub fn change_tier_wasm(&mut self, route_ids: JsValue, tier: String) -> Result<(), JsValue> {
+        let route_ids: Vec<usize> = serde_wasm_bindgen::from_value(route_ids)?;
+        let tier: Tier = serde_json::from_str(&tier).map_err(err_to_js)?;
+        self.change_tier(route_ids, tier).map_err(err_to_js)?;
+        Ok(())
+    }
+
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
         // TODO map_err?
         let route: InputRoute = match serde_wasm_bindgen::from_value(input) {
