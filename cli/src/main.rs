@@ -51,7 +51,7 @@ fn main() -> Result<()> {
 
     std::fs::write(
         &args.stats_output,
-        serde_json::to_string(&model.get_baseline_stats_for_cli())?,
+        serde_json::to_string(&model.get_baseline_stats())?,
     )?;
 
     timer.done();

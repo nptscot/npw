@@ -187,8 +187,7 @@ impl MapModel {
         model
     }
 
-    // Just to avoid a pub field for WASM
-    pub fn get_baseline_stats_for_cli(&self) -> &stats::Stats {
+    pub fn get_baseline_stats(&self) -> &stats::Stats {
         &self.baseline_stats
     }
 

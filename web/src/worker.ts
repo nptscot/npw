@@ -157,6 +157,11 @@ export class Backend {
     return JSON.parse(this.inner!.recalculateStats());
   }
 
+  getBaselineStats(): Stats {
+    this.checkReady();
+    return JSON.parse(this.inner!.getBaselineStats());
+  }
+
   // Needs loading screen
   recalculateODStats(): ODStats {
     this.checkReady();

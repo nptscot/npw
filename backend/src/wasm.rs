@@ -218,6 +218,11 @@ impl MapModel {
         result
     }
 
+    #[wasm_bindgen(js_name = getBaselineStats)]
+    pub fn get_baseline_stats_wasm(&self) -> Result<String, JsValue> {
+        serde_json::to_string(&self.baseline_stats).map_err(err_to_js)
+    }
+
     #[wasm_bindgen(js_name = recalculateODStats)]
     pub fn recalculate_od_stats_wasm(&mut self) -> Result<String, JsValue> {
         let mut timer = Timer::new("recalculate OD stats", None);

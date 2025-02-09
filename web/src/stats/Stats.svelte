@@ -21,6 +21,7 @@
     stats,
     tier,
   } from "../stores";
+  import FinalReport from "./FinalReport.svelte";
   import Metric from "./Metric.svelte";
   import ODBreakdowns from "./ODBreakdowns.svelte";
 
@@ -117,7 +118,7 @@
       />
 
       <Metric
-        label="Reachable greenspaces"
+        label="Greenspaces"
         bind:showLayer={$greenspaces}
         pct={$stats.percent_reachable_greenspaces}
       />
@@ -142,12 +143,14 @@
       style:border="2px solid {tierColors.LongDistance}"
     >
       <Metric
-        label="Reachable settlements"
+        label="Settlements"
         bind:showLayer={$settlements}
         pct={$stats.percent_reachable_settlements}
       />
     </div>
   {/if}
+
+  <FinalReport />
 {/if}
 
 <button
