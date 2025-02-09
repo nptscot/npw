@@ -43,7 +43,7 @@ function build_graph_files {
           geojson=$(basename $osm .osm.pbf).geojson
           out=$(basename $osm .osm.pbf).bin
           stats=$(basename $osm .osm.pbf).json
-          task=$(pueue add --print-task-id --escape $bin --input "$osm" --boundary "osm/$geojson" --output "graph-files/$out") --stats-output "baseline_stats/$stats"
+          task=$(pueue add --print-task-id --escape $bin --input "$osm" --boundary "osm/$geojson" --output "graph-files/$out" --stats-output "baseline_stats/$stats")
           # TODO get gzip encoding to work on cloudflare
           #pueue add --after $task --escape gzip "graph-files/$out"
         done
