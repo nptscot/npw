@@ -6,4 +6,5 @@ web/public/
 data_prep/scotland-latest.osm.pbf
 data_prep/osm/
 data_prep/graph-files/
+data_prep/baseline_stats/
 data_prep/tmp/

@@ -27,9 +27,13 @@ struct Args {
     #[arg(long)]
     boundary: String,
 
-    /// Output file to write
+    /// Map model output file to write
     #[arg(long)]
     output: String,
+
+    /// Baseline stats output file to write
+    #[arg(long)]
+    stats_output: String,
 }
 
 fn main() -> Result<()> {
@@ -44,6 +48,11 @@ fn main() -> Result<()> {
     timer.step("writing");
     let writer = BufWriter::new(File::create(&args.output)?);
     bincode::serialize_into(writer, &model)?;
+
+    std::fs::write(
+        &args.stats_output,
+        serde_json::to_string(&model.get_baseline_stats_for_cli())?,
+    )?;
 
     timer.done();
     Ok(())

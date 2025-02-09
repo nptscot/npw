@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{utils::Quintiles, MapModel};
 
 /// A summary of metrics. All percents are 0 to 1.
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Stats {
     percent_reachable_schools: f64,
     percent_reachable_gp_hospitals: f64,

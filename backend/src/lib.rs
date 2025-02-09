@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use enum_map::Enum;
 use geo::MultiPolygon;
 use geojson::{Feature, GeoJson};
-use graph::{Graph, RoadID};
+use graph::{Graph, RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
@@ -64,6 +64,9 @@ pub struct MapModel {
     speeds: Vec<usize>,
     // A percent. Positive if uphill in the forwards direction, negative if downhill
     gradients: Vec<f64>,
+
+    // Stats calculated on a network only with existing infrastructure imported
+    baseline_stats: stats::Stats,
 
     // Derived things per RoadID maintained by recalculate_after_edits
     #[serde(skip_serializing, skip_deserializing, default)]
@@ -147,7 +150,7 @@ impl MapModel {
         let los = std::iter::repeat(LevelOfService::ShouldNotBeUsed)
             .take(graph.roads.len())
             .collect();
-        Self {
+        let mut model = Self {
             graph,
             routes: HashMap::new(),
             id_counter: 0,
@@ -165,12 +168,28 @@ impl MapModel {
             precalculated_flows,
             speeds,
             gradients,
+            // Calculated below
+            baseline_stats: stats::Stats::default(),
             infra_types,
             override_infra_type,
             tiers,
             los,
             quiet_router_ok: false,
-        }
+        };
+
+        // Calculate baseline stats, relative to existing infrastructure
+        let only_some_infra_types = true;
+        model.import_existing_routes(only_some_infra_types);
+        model.baseline_stats = model.get_stats(&mut Timer::new("calculate baseline stats", None));
+        // Clear those edits
+        model.clear_all_routes();
+
+        model
+    }
+
+    // Just to avoid a pub field for WASM
+    pub fn get_baseline_stats_for_cli(&self) -> &stats::Stats {
+        &self.baseline_stats
     }
 
     pub fn recalculate_after_edits(&mut self) {
