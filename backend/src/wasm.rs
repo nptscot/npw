@@ -86,6 +86,25 @@ impl MapModel {
         self.delete_routes(ids).map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = changeTier)]
+    pub fn change_tier_wasm(&mut self, route_ids: Vec<usize>, tier: String) -> Result<(), JsValue> {
+        let tier: Tier = serde_json::from_str(&tier).map_err(err_to_js)?;
+        self.change_tier(route_ids, tier).map_err(err_to_js)?;
+        Ok(())
+    }
+
+    #[wasm_bindgen(js_name = changeInfraType)]
+    pub fn change_infra_type_wasm(
+        &mut self,
+        route_ids: Vec<usize>,
+        infra_type: String,
+    ) -> Result<(), JsValue> {
+        let infra_type: InfraType = serde_json::from_str(&infra_type).map_err(err_to_js)?;
+        self.change_infra_type(route_ids, infra_type)
+            .map_err(err_to_js)?;
+        Ok(())
+    }
+
     #[wasm_bindgen(js_name = clearAllRoutes)]
     pub fn clear_all_routes_wasm(&mut self) {
         self.clear_all_routes()
@@ -376,14 +395,6 @@ impl MapModel {
     #[wasm_bindgen(js_name = getConnectedComponents)]
     pub fn get_connected_components_wasm(&self) -> Result<String, JsValue> {
         serde_json::to_string(&self.get_connected_components()).map_err(err_to_js)
-    }
-
-    #[wasm_bindgen(js_name = changeTier)]
-    pub fn change_tier_wasm(&mut self, route_ids: JsValue, tier: String) -> Result<(), JsValue> {
-        let route_ids: Vec<usize> = serde_wasm_bindgen::from_value(route_ids)?;
-        let tier: Tier = serde_json::from_str(&tier).map_err(err_to_js)?;
-        self.change_tier(route_ids, tier).map_err(err_to_js)?;
-        Ok(())
     }
 
     fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {

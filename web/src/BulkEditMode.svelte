@@ -1,5 +1,6 @@
 <script lang="ts">
   import booleanIntersects from "@turf/boolean-intersects";
+        import PickInfraType from "./edit/PickInfraType.svelte";
   import type {
     Feature,
     FeatureCollection,
@@ -51,6 +52,7 @@
 
   let showTierModal = false;
   let overrideTier = "Primary";
+        let overrideInfraType = "SegregatedWide";
   let showInfraTypeModal = false;
 
   let selectedIds: Set<number> = new Set();
@@ -135,8 +137,17 @@
   async function changeTier() {
     await $backend!.changeTier([...selectedIds], overrideTier);
     window.alert("Tier changed");
+    await autosave();
     allRoutes = await $backend!.getAllRoutes();
     showTierModal = false;
+  }
+
+  async function changeInfraType() {
+    await $backend!.changeInfraType([...selectedIds], overrideInfraType);
+    window.alert("Infrastructure type changed");
+    await autosave();
+    allRoutes = await $backend!.getAllRoutes();
+    showInfraTypeModal = false;
   }
 </script>
 
@@ -245,6 +256,22 @@
 
       <button on:click={changeTier}>Change tier</button>
       <button on:click={() => (showTierModal = false)}>Cancel</button>
+    </Modal>
+  </span>
+{/if}
+
+{#if showInfraTypeModal}
+  <span class="pico">
+    <Modal on:close={() => (showInfraTypeModal = false)}>
+      <p>
+        The routes you've selected have infrastructure types: {describeCounts(selectedInfraTypes)}
+      </p>
+      <p>You can override the infrastructure type for these routes, instead of automatically picking the most appropriate type. If you do this, you're making the promise that this type is appropriate to achieve high Level of Service.</p>
+
+      <PickInfraType bind:current={overrideInfraType} />
+
+      <button on:click={changeInfraType}>Change infrastructure type</button>
+      <button on:click={() => (showInfraTypeModal = false)}>Cancel</button>
     </Modal>
   </span>
 {/if}

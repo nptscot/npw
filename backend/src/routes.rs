@@ -239,6 +239,25 @@ impl MapModel {
         Ok(())
     }
 
+    pub fn change_infra_type(
+        &mut self,
+        route_ids: Vec<usize>,
+        infra_type: InfraType,
+    ) -> Result<()> {
+        for id in route_ids {
+            if let Some(route) = self.routes.get_mut(&id) {
+                if route.infra_type != infra_type {
+                    route.infra_type = infra_type;
+                    route.override_infra_type = true;
+                }
+            } else {
+                bail!("Unknown route {id}");
+            }
+        }
+        self.recalculate_after_edits();
+        Ok(())
+    }
+
     fn import_roads(&mut self, imports: Vec<(RoadID, InfraType)>, tier: Tier) -> usize {
         // Create individual segments to import
         let mut pieces = Vec::new();

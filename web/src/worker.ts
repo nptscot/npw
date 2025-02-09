@@ -95,6 +95,18 @@ export class Backend {
     this.inner!.deleteRoutes(new Uint32Array(ids));
   }
 
+  changeTier(routeIds: number[], tier: string) {
+    this.checkReady();
+    // Wrap in quotes for JSON parsing
+    this.inner!.changeTier(new Uint32Array(routeIds), `"${tier}"`);
+  }
+
+  changeInfraType(routeIds: number[], infraType: string) {
+    this.checkReady();
+    // Wrap in quotes for JSON parsing
+    this.inner!.changeInfraType(new Uint32Array(routeIds), `"${infraType}"`);
+  }
+
   clearAllRoutes() {
     this.checkReady();
     this.inner!.clearAllRoutes();
@@ -232,12 +244,6 @@ export class Backend {
   getConnectedComponents(): ConnectedComponents {
     this.checkReady();
     return JSON.parse(this.inner!.getConnectedComponents());
-  }
-
-  changeTier(routeIds: number[], tier: string) {
-    this.checkReady();
-    // Wrap in quotes for JSON parsing
-    this.inner!.changeTier(routeIds, `"${tier}"`);
   }
 
   private checkReady() {
