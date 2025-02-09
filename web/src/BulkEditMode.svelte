@@ -1,6 +1,5 @@
 <script lang="ts">
   import booleanIntersects from "@turf/boolean-intersects";
-        import PickInfraType from "./edit/PickInfraType.svelte";
   import type {
     Feature,
     FeatureCollection,
@@ -23,6 +22,7 @@
   import { infraTypeColors, tierColors } from "./colors";
   import DrawRectangle from "./common/DrawRectangle.svelte";
   import { SplitComponent } from "./common/layout";
+  import PickInfraType from "./edit/PickInfraType.svelte";
   import {
     autosave,
     backend,
@@ -52,7 +52,7 @@
 
   let showTierModal = false;
   let overrideTier = "Primary";
-        let overrideInfraType = "SegregatedWide";
+  let overrideInfraType = "SegregatedWide";
   let showInfraTypeModal = false;
 
   let selectedIds: Set<number> = new Set();
@@ -264,9 +264,16 @@
   <span class="pico">
     <Modal on:close={() => (showInfraTypeModal = false)}>
       <p>
-        The routes you've selected have infrastructure types: {describeCounts(selectedInfraTypes)}
+        The routes you've selected have infrastructure types: {describeCounts(
+          selectedInfraTypes,
+        )}
       </p>
-      <p>You can override the infrastructure type for these routes, instead of automatically picking the most appropriate type. If you do this, you're making the promise that this type is appropriate to achieve high Level of Service.</p>
+      <p>
+        You can override the infrastructure type for these routes, instead of
+        automatically picking the most appropriate type. If you do this, you're
+        making the promise that this type is appropriate to achieve high Level
+        of Service.
+      </p>
 
       <PickInfraType bind:current={overrideInfraType} />
 

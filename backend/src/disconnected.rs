@@ -1,5 +1,6 @@
 use std::collections::BTreeSet;
 
+use geo::{BoundingRect, Geometry, GeometryCollection, Rect};
 use geojson::FeatureCollection;
 use graph::{IntersectionID, RoadID};
 use petgraph::graphmap::UnGraphMap;
@@ -32,15 +33,28 @@ impl MapModel {
 
         let mut features = Vec::new();
         let mut component_lengths = Vec::new();
+        let mut component_bboxes = Vec::new();
         for (roads, length) in components {
             let component = component_lengths.len();
             component_lengths.push(length);
 
+            let mut collection = Vec::new();
             for r in roads {
                 let mut f = self.graph.roads[r.0].to_gj(&self.graph);
                 f.set_property("component", component);
                 features.push(f);
+
+                // TODO Expensive, make a bbox accumulator
+                collection.push(Geometry::LineString(
+                    self.graph.roads[r.0].linestring.clone(),
+                ));
             }
+            let mut bbox: Rect = GeometryCollection(collection)
+                .bounding_rect()
+                .unwrap()
+                .into();
+            self.graph.mercator.to_wgs84_in_place(&mut bbox);
+            component_bboxes.push(vec![bbox.min().x, bbox.min().y, bbox.max().x, bbox.max().y]);
         }
 
         FeatureCollection {
@@ -49,6 +63,7 @@ impl MapModel {
             foreign_members: Some(
                 serde_json::json!({
                     "component_lengths": component_lengths,
+                    "component_bboxes": component_bboxes,
                 })
                 .as_object()
                 .unwrap()

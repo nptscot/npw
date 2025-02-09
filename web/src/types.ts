@@ -166,6 +166,7 @@ export type ConnectedComponents = FeatureCollection<
   { component: number }
 > & {
   component_lengths: number[];
+  component_bboxes: [number, number, number, number][];
 };
 
 export type AutosplitRoute = FeatureCollection<

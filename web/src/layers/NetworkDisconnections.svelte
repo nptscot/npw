@@ -7,7 +7,7 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
-  import { layerId, prettyPrintDistance, roadLineWidth } from "../common";
+  import { layerId, Link, prettyPrintDistance, roadLineWidth } from "../common";
   import { backend, map, mutationCounter, referenceRoadStyle } from "../stores";
   import type { ConnectedComponents } from "../types";
   import RoadLayerControls from "./RoadLayerControls.svelte";
@@ -19,6 +19,7 @@
     type: "FeatureCollection",
     features: [],
     component_lengths: [],
+    component_bboxes: [],
   };
 
   async function recalc() {
@@ -78,7 +79,9 @@
   <ul>
     {#each data.component_lengths.slice(0, 5) as length, idx}
       <li style:color={colors[idx]}>
-        {prettyPrintDistance(length)}
+        <Link on:click={() => $map?.fitBounds(data.component_bboxes[idx])}>
+          {prettyPrintDistance(length)}
+        </Link>
       </li>
     {/each}
     {#if data.component_lengths.length > 5}
