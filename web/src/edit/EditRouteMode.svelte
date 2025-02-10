@@ -192,7 +192,7 @@
         {...layerId("edit-route-sections")}
         filter={["==", ["get", "kind"], "new"]}
         paint={{
-          "line-width": 3,
+          "line-width": 10,
           "line-color": constructMatchExpression(
             ["get", "infra_type"],
             infraTypeColors,

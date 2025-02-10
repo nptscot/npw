@@ -396,7 +396,7 @@
         {...layerId("snapper-lines")}
         paint={{
           "line-color": "black",
-          "line-width": 10,
+          "line-width": 12,
         }}
       />
     </GeoJSON>
@@ -444,17 +444,14 @@
 
   .free-node,
   .snapped-node {
-    width: 20px;
-    height: 20px;
-    background-color: grey;
+    width: 10px;
+    height: 10px;
+    background-color: white;
   }
 
+  .free-node,
   .snapped-node:hover {
-    border: 3px solid red;
-  }
-
-  .free-node:hover {
-    border: 3px solid blue;
+    background-color: red;
   }
 
   .hide {
