@@ -1,10 +1,9 @@
 <script lang="ts">
   import type { MapMouseEvent } from "maplibre-gl";
   import { onDestroy } from "svelte";
-  import { MapEvents } from "svelte-maplibre";
+  import { Control, MapEvents } from "svelte-maplibre";
+  import icon from "../../assets/streetview.svg?url";
   import { interactiveMapLayersEnabled, map } from "../stores";
-
-  let source: "google" | "bing" = "google";
 
   function start() {
     $interactiveMapLayersEnabled = false;
@@ -28,17 +27,10 @@
     }
     let lon = e.detail.lngLat.lng;
     let lat = e.detail.lngLat.lat;
-    if (source == "google") {
-      window.open(
-        `http://maps.google.com/maps?q=&layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0`,
-        "_blank",
-      );
-    } else if (source == "bing") {
-      window.open(
-        `https://www.bing.com/maps?cp=${lat}~${lon}&style=x`,
-        "_blank",
-      );
-    }
+    window.open(
+      `http://maps.google.com/maps?q=&layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0`,
+      "_blank",
+    );
   }
 
   function onKeyDown(e: KeyboardEvent) {
@@ -53,20 +45,16 @@
 
 <svelte:window on:keydown={onKeyDown} />
 
-{#if $interactiveMapLayersEnabled}
-  <button class="secondary" on:click={start}>StreetView</button>
-{:else}
-  <button class="secondary" on:click={stop}>Stop StreetView</button>
-
-  <fieldset>
-    <legend>Source:</legend>
-    <label>
-      <input type="radio" value="google" bind:group={source} />
-      Google Street View
-    </label>
-    <label>
-      <input type="radio" value="bing" bind:group={source} />
-      Bing Streetside
-    </label>
-  </fieldset>
-{/if}
+<Control position="bottom-left">
+  {#if $interactiveMapLayersEnabled}
+    <button on:click={start}>
+      <img src={icon} title="StreetView" alt="StreetView" />
+      StreetView
+    </button>
+  {:else}
+    <button style:background="green" on:click={stop}>
+      <img src={icon} title="StreetView" alt="StreetView" />
+      Stop
+    </button>
+  {/if}
+</Control>

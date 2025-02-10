@@ -1,7 +1,6 @@
 <script lang="ts">
   import { SplitComponent } from "./common/layout";
   import ManageFiles from "./common/ManageFiles.svelte";
-  import StreetView from "./common/StreetView.svelte";
   import AllControls from "./layers/AllControls.svelte";
   import PickEditsStyle from "./layers/roads/PickEditsStyle.svelte";
   import Stats from "./stats/Stats.svelte";
@@ -56,7 +55,5 @@
         Evaluate a route
       </button>
     </div>
-
-    <StreetView />
   </div>
 </SplitComponent>

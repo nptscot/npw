@@ -25,6 +25,7 @@
     mapContents,
     rightSidebarContents,
   } from "./common/layout";
+  import StreetView from "./common/StreetView.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import { routeTool } from "./edit/stores";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
@@ -208,6 +209,7 @@
         <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
       {/if}
       <DisableInteractiveLayers />
+      <StreetView />
 
       <div bind:this={mapDiv} />
 
