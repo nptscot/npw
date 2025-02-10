@@ -244,6 +244,19 @@
     captureUndoState();
     draggingMarker = true;
   }
+
+  function onClickWaypoint(idx: number) {
+    if ($waypoints.length < 2) {
+      return;
+    }
+    // Click the end to finish if we're appending to the end, or the start otherwise
+    if (
+      (drawMode == "append-start" && idx == 0) ||
+      (drawMode == "append-end" && idx == $waypoints.length - 1)
+    ) {
+      finish();
+    }
+  }
 </script>
 
 <svelte:window on:keydown={keyDown} />
@@ -366,6 +379,7 @@
       <Marker
         draggable
         bind:lngLat={waypt.point}
+        on:click={() => onClickWaypoint(idx)}
         on:contextmenu={() => removeWaypoint(idx)}
         on:mouseenter={() => (hoveringOnMarker = true)}
         on:mouseleave={() => (hoveringOnMarker = false)}
