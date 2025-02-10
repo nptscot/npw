@@ -213,11 +213,6 @@
       <input type="text" bind:value={name} />
     </label>
 
-    <label>
-      Notes:
-      <textarea rows="5" bind:value={notes} />
-    </label>
-
     {#if sectionsGj.features.length > 0}
       {#if overrideInfraType}
         <p>
@@ -246,6 +241,11 @@
 
       <SectionDiagram {sectionsGj} />
     {/if}
+
+    <label>
+      Notes:
+      <textarea rows="5" bind:value={notes} />
+    </label>
   </div>
 </RouteControls>
 
