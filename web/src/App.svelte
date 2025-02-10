@@ -7,7 +7,13 @@
   import * as pmtiles from "pmtiles";
   import { init, RouteTool } from "route-snapper-ts";
   import { onMount } from "svelte";
-  import { FillLayer, GeoJSON, MapLibre } from "svelte-maplibre";
+  import {
+    FillLayer,
+    GeoJSON,
+    MapLibre,
+    NavigationControl,
+    ScaleControl,
+  } from "svelte-maplibre";
   import { fetchWithProgress, Loading } from "svelte-utils";
   import { emptyGeojson, Geocoder } from "svelte-utils/map";
   import { writable } from "svelte/store";
@@ -191,7 +197,6 @@
       style={offlineMode
         ? "http://localhost:5173/offline/light_style.json"
         : `https://api.maptiler.com/maps/streets-v2/style.json?key=${maptilerApiKey}`}
-      standardControls
       bind:map
       on:error={(e) => {
         // @ts-expect-error ErrorEvent isn't exported
@@ -205,6 +210,8 @@
       ]}
       hash
     >
+      <NavigationControl />
+      <ScaleControl />
       {#if !offlineMode}
         <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
       {/if}
