@@ -108,10 +108,10 @@
   <LineLayer
     {...layerId("cn-debug")}
     sourceLayer="coherent_networks"
-    filter={["!=", ["get", "road_function"], "Local Access"]}
+    filter={["!=", ["get", "road_function_npt"], "Local Access"]}
     paint={{
       "line-color": constructMatchExpression(
-        ["get", "road_function"],
+        ["get", "road_function_npt"],
         {
           Primary: "#c00000",
           Secondary: "#e97132",

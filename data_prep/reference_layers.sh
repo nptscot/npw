@@ -6,19 +6,19 @@ mkdir -p tmp
 
 function core_net {
   # From https://github.com/nptscot/outputdata/releases
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-01-01/combined_CN_4_2025-01-01_OS.gpkg -O tmp/core_network.gpkg
+  wget https://github.com/nptscot/outputdata/releases/download/v2025-02-01/combined_CN_4_2025-02-01_OS.gpkg -O tmp/core_network.gpkg
   # While we're still comparing map-matched results, include this too
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-01-01/combined_CN_4_2025-01-01_OS.pmtiles -O ../web/public/core_network.pmtiles
+  wget https://github.com/nptscot/outputdata/releases/download/v2025-02-01/combined_CN_4_2025-02-01_OS.pmtiles -O ../web/public/core_network.pmtiles
 }
 
 function rnet {
   # From https://github.com/nptscot/outputdata/releases
 
   # For visualization
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-01-01/rnet_2025-01-01.pmtiles -O ../web/public/route_network.pmtiles
+  wget https://github.com/nptscot/outputdata/releases/download/v2025-02-01/rnet_2025-02-01.pmtiles -O ../web/public/route_network.pmtiles
 
   # For analysis
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-01-01/combined_network.gpkg -O tmp/combined_network.gpkg
+  wget https://github.com/nptscot/outputdata/releases/download/v2025-02-01/combined_network.gpkg -O tmp/combined_network.gpkg
 }
 
 function schools {
@@ -158,3 +158,6 @@ function greenspace {
 #elevation
 #settlements
 #greenspace ~/Downloads/opgrsp_gpkg_gb.zip
+
+# Keep track of input files
+md5sum tmp/* ../web/public/*pmtiles > manifest

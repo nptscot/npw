@@ -332,17 +332,17 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
     let mut source_geometry = Vec::new();
     let mut source_data = Vec::new();
     for input in layer.features() {
-        let Some(function) = input.field_as_string_by_name("road_function")? else {
-            bail!("Missing road_function");
+        let Some(function) = input.field_as_string_by_name("road_function_npt")? else {
+            bail!("Missing road_function_npt");
         };
         let tier = match function.as_str() {
             "Primary" => Tier::Primary,
             "Secondary" => Tier::Secondary,
-            // TODO After this is removed upstream, delete this case
+            // TODO This is supposed to be gone, but it's still here
             "Local Access" => {
                 continue;
             }
-            x => bail!("Unknown road_function {x}"),
+            x => bail!("Unknown road_function_npt {x}"),
         };
 
         let geo = input.geometry().unwrap().to_geo()?;
