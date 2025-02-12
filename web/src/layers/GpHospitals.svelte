@@ -6,8 +6,7 @@
   import { backend, mutationCounter } from "../stores";
   import type { GPHospitals } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
-  import LayerControls from "./LayerControls.svelte";
-  import { gpHospitals as show } from "./stores";
+  import { localPOIs as show } from "./stores";
 
   let lastUpdate = 0;
   let data: GPHospitals = {
@@ -27,8 +26,6 @@
     recalc();
   }
 </script>
-
-<LayerControls name="GPs and hospitals" bind:show={$show} empty />
 
 <GeoJSON {data} generateId>
   <SymbolLayer

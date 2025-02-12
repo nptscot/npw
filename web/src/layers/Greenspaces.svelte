@@ -12,8 +12,7 @@
   import { backend, mutationCounter } from "../stores";
   import type { Greenspaces } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
-  import LayerControls from "./LayerControls.svelte";
-  import { greenspaces as show } from "./stores";
+  import { localPOIs as show } from "./stores";
 
   let lastUpdate = 0;
   let data: Greenspaces = {
@@ -36,8 +35,6 @@
     recalc();
   }
 </script>
-
-<LayerControls name="Greenspaces" bind:show={$show} empty />
 
 <GeoJSON {data} generateId>
   <FillLayer

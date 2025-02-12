@@ -7,7 +7,7 @@
   import type { Schools } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
-  import { schools as show } from "./stores";
+  import { localPOIs as show } from "./stores";
 
   let lastUpdate = 0;
   let data: Schools = {
@@ -28,7 +28,7 @@
   }
 </script>
 
-<LayerControls name="Schools" bind:show={$show} empty />
+<LayerControls name="POIs" bind:show={$show} empty />
 
 <GeoJSON {data} generateId>
   <SymbolLayer

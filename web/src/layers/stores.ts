@@ -14,9 +14,7 @@ export let cyclingFlow2 = writable(false);
 export let townCentres = writable(false);
 
 export let cyclingFlow3 = writable(false);
-export let schools = writable(false);
-export let gpHospitals = writable(false);
-export let greenspaces = writable(false);
+export let localPOIs = writable(false);
 
 export let settlements = writable(false);
 
@@ -31,7 +29,7 @@ export let debugOriginalData = writable(false);
 export let layersPerTier = {
   Primary: [cyclingFlow1],
   Secondary: [cyclingFlow2, townCentres],
-  LocalAccess: [schools, gpHospitals, greenspaces],
+  LocalAccess: [localPOIs],
   LongDistance: [settlements],
 };
 

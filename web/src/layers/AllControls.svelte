@@ -25,9 +25,7 @@
 
   $: update(localAccess, $allControls, [
     "Above-minimum cycling flow",
-    "Schools",
-    "GPs and hospitals",
-    "Greenspaces",
+    "POIs",
     "Mesh density (grid)",
     "Mesh density (area)",
   ]);
