@@ -15,7 +15,7 @@
   import ExistingNetwork from "./ExistingNetwork.svelte";
   import NetworkDisconnections from "./NetworkDisconnections.svelte";
   import NptFullNetwork from "./NptFullNetwork.svelte";
-  import RoadLayerControls from "./RoadLayerControls.svelte";
+  import Toggle from "./Toggle.svelte";
 
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "s") {
@@ -37,12 +37,12 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <Control position="bottom-left">
-  <div>
+  <div class="panel">
     <CoreNetwork />
 
     <ExistingNetwork />
 
-    <RoadLayerControls name="Estimated traffic volume" style="traffic">
+    {#if $referenceRoadStyle == "traffic"}
       <SequentialLegend
         colorScale={traffic.colorScale}
         limits={traffic.limits}
@@ -54,16 +54,16 @@
           Show original data
         </label>
       {/if}
-    </RoadLayerControls>
+    {/if}
 
-    <RoadLayerControls name="Gradient" style="gradient">
+    {#if $referenceRoadStyle == "gradient"}
       <SequentialLegend
         colorScale={gradient.colorScale}
         limits={gradient.limits}
       />
-    </RoadLayerControls>
+    {/if}
 
-    <RoadLayerControls name="Estimated speed limit" style="speed">
+    {#if $referenceRoadStyle == "speed"}
       <SequentialLegend colorScale={speed.colorScale} limits={speed.limits} />
 
       {#if $devMode}
@@ -72,13 +72,11 @@
           Show original data
         </label>
       {/if}
-    </RoadLayerControls>
+    {/if}
 
     <NptFullNetwork />
 
-    <span style:min-width="30px">&nbsp;</span>
-
-    <RoadLayerControls name="Level of Service" style="los">
+    {#if $referenceRoadStyle == "los"}
       <QualitativeLegend colors={levelOfServiceColors} horiz />
 
       {#if $devMode}
@@ -87,20 +85,33 @@
           Show original data
         </label>
       {/if}
-    </RoadLayerControls>
+    {/if}
 
-    <RoadLayerControls name="Reachability" style="reachability">
+    {#if $referenceRoadStyle == "reachability"}
       <QualitativeLegend colors={reachabilityColors} horiz />
-    </RoadLayerControls>
+    {/if}
 
     <CalculatedRouteNetwork />
     <NetworkDisconnections />
+
+    <div style:display="flex">
+      <Toggle name="Core network" style="cn" />
+      <Toggle name="Existing infrastructure type" style="existing_infra" />
+      <Toggle name="Estimated traffic volume" style="traffic" />
+      <Toggle name="Gradient" style="gradient" />
+      <Toggle name="Estimated speed limit" style="speed" />
+      <Toggle name="NPT full network" style="precalculated_rnet" />
+      <span style:min-width="30px">&nbsp;</span>
+      <Toggle name="Level of Service" style="los" />
+      <Toggle name="Reachability" style="reachability" />
+      <Toggle name="Route network (calculated)" style="calculated_rnet" />
+      <Toggle name="Network disconnections" style="disconnections" />
+    </div>
   </div>
 </Control>
 
 <style>
-  div {
-    display: flex;
+  .panel {
     background: white;
     width: 80%;
   }

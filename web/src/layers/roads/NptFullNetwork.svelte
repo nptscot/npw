@@ -9,7 +9,6 @@
     lineWidthForDemand,
   } from "../../common";
   import { assetUrl, referenceRoadStyle } from "../../stores";
-  import RoadLayerControls from "./RoadLayerControls.svelte";
 
   $: show = $referenceRoadStyle == "precalculated_rnet";
   let purpose = "all";
@@ -67,7 +66,7 @@
   }[colorBy] as ExpressionSpecification;
 </script>
 
-<RoadLayerControls name="NPT full network" style="precalculated_rnet">
+{#if $referenceRoadStyle == "precalculated_rnet"}
   <label>
     Trip purpose:
     <select bind:value={purpose}>
@@ -108,7 +107,7 @@
     Show flows above:
     <input type="number" bind:value={minFlow} />
   </label>
-</RoadLayerControls>
+{/if}
 
 <VectorTileSource url={`pmtiles://${assetUrl("route_network.pmtiles")}`}>
   <LineLayer

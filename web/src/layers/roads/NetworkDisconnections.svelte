@@ -20,7 +20,6 @@
     referenceRoadStyle,
   } from "../../stores";
   import type { ConnectedComponents } from "../../types";
-  import RoadLayerControls from "./RoadLayerControls.svelte";
 
   $: show = $referenceRoadStyle == "disconnections";
 
@@ -80,7 +79,7 @@
   }
 </script>
 
-<RoadLayerControls name="Network disconnections" style="disconnections">
+{#if $referenceRoadStyle == "disconnections"}
   <p>
     The network you create should usually all be connected as one component.
   </p>
@@ -100,7 +99,7 @@
       </p>
     {/if}
   </ul>
-</RoadLayerControls>
+{/if}
 
 <MapEvents on:click={onClick} />
 

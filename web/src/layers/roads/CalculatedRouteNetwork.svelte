@@ -11,7 +11,6 @@
   import ODBreakdowns from "../../stats/ODBreakdowns.svelte";
   import { backend, mutationCounter, referenceRoadStyle } from "../../stores";
   import type { EvaluateODOut } from "../../types";
-  import RoadLayerControls from "./RoadLayerControls.svelte";
 
   $: show = $referenceRoadStyle == "calculated_rnet";
   let fastSample = true;
@@ -40,7 +39,7 @@
 
 <Loading {loading} />
 
-<RoadLayerControls name="Route network (calculated)" style="calculated_rnet">
+{#if $referenceRoadStyle == "calculated_rnet"}
   <button
     on:click={recalc}
     disabled={$mutationCounter == lastUpdate && fastSample == lastFastSample}
@@ -76,7 +75,7 @@
 
     <ODBreakdowns od={gj} />
   {/if}
-</RoadLayerControls>
+{/if}
 
 {#if gj}
   <GeoJSON data={gj} generateId>

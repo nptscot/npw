@@ -3,7 +3,6 @@
   import { infraTypeColors } from "../../colors";
   import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
   import { debugOriginalData } from "../stores";
-  import RoadLayerControls from "./RoadLayerControls.svelte";
 
   let showImportModal = false;
   let loading = "";
@@ -24,7 +23,7 @@
 
 <Loading {loading} />
 
-<RoadLayerControls name="Existing infrastructure type" style="existing_infra">
+{#if $referenceRoadStyle == "existing_infra"}
   <QualitativeLegend colors={infraTypeColors} />
 
   <button class="outline" on:click={() => (showImportModal = true)}>
@@ -37,7 +36,7 @@
       Show osmactive data
     </label>
   {/if}
-</RoadLayerControls>
+{/if}
 
 {#if showImportModal}
   <span class="pico">

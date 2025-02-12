@@ -3,7 +3,6 @@
   import { cnTierColors } from "../../colors";
   import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
   import { debugOriginalData } from "../stores";
-  import RoadLayerControls from "./RoadLayerControls.svelte";
 
   let loading = "";
 
@@ -22,7 +21,7 @@
 
 <Loading {loading} />
 
-<RoadLayerControls name="Core network" style="cn">
+{#if $referenceRoadStyle == "cn"}
   <QualitativeLegend colors={cnTierColors} horiz />
 
   <button class="outline" on:click={importExisting}>Import core network</button>
@@ -33,4 +32,4 @@
       Show original data
     </label>
   {/if}
-</RoadLayerControls>
+{/if}
