@@ -192,7 +192,14 @@
   </div>
   <div slot="left" class="pico">
     <div bind:this={leftSidebarDiv} />
+    <hr />
+
+    <label>
+      <input type="checkbox" bind:checked={$devMode} />
+      Dev mode
+    </label>
   </div>
+
   <div slot="main" style="position:relative; width: 100%; height: 100%;">
     <MapLibre
       style={offlineMode
@@ -246,14 +253,8 @@
       {/if}
     </MapLibre>
   </div>
+
   <div slot="right" class="pico">
     <div bind:this={rightSidebarDiv} />
-
-    <hr />
-
-    <label>
-      <input type="checkbox" bind:checked={$devMode} />
-      Dev mode
-    </label>
   </div>
 </Layout>

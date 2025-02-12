@@ -30,6 +30,17 @@
     <button class="outline" on:click={() => ($mode = { kind: "bulk-edit" })}>
       Bulk edit
     </button>
+    <button
+      class="secondary"
+      on:click={() =>
+        ($mode = {
+          kind: "evaluate-route",
+          prevMode: { kind: "main" },
+          browse: [],
+        })}
+    >
+      Evaluate a route
+    </button>
 
     <AllControls />
   </div>
@@ -38,19 +49,5 @@
 
   <div slot="right">
     <Stats />
-
-    <div>
-      <button
-        class="secondary"
-        on:click={() =>
-          ($mode = {
-            kind: "evaluate-route",
-            prevMode: { kind: "main" },
-            browse: [],
-          })}
-      >
-        Evaluate a route
-      </button>
-    </div>
   </div>
 </SplitComponent>
