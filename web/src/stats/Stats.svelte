@@ -54,7 +54,7 @@
 <Loading {loading} />
 
 {#if $stats}
-  <div style:border="2px solid {tierColors.Primary}">
+  <div style:padding="4px" style:border="2px solid {tierColors.Primary}">
     <Metric
       label="High cycling flow coverage"
       bind:showLayer={$cyclingFlow1}
@@ -65,7 +65,11 @@
     />
   </div>
 
-  <div style:margin-top="4px" style:border="2px solid {tierColors.Secondary}">
+  <div
+    style:padding="4px"
+    style:margin-top="4px"
+    style:border="2px solid {tierColors.Secondary}"
+  >
     <Metric
       label="Medium cycling flow coverage"
       bind:showLayer={$cyclingFlow2}
@@ -82,7 +86,11 @@
     />
   </div>
 
-  <div style:margin-top="4px" style:border="2px solid {tierColors.LocalAccess}">
+  <div
+    style:padding="4px"
+    style:margin-top="4px"
+    style:border="2px solid {tierColors.LocalAccess}"
+  >
     <Metric
       label="Above-minimum cycling flow coverage"
       bind:showLayer={$cyclingFlow3}
@@ -124,6 +132,7 @@
   </div>
 
   <div
+    style:padding="4px"
     style:margin-top="4px"
     style:border="2px solid {tierColors.LongDistance}"
   >
