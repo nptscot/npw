@@ -1,32 +1,16 @@
 <script lang="ts">
   import { referenceRoadStyle, type ReferenceRoadStyle } from "../stores";
-  import { allControls, lastReferenceStyle } from "./stores";
+  import { lastReferenceStyle } from "./stores";
 
   export let name: string;
   // TODO Use name for this
   export let style: ReferenceRoadStyle;
   export let empty = false;
-
-  let contents: HTMLDivElement | null = null;
-
-  $: if (contents) {
-    allControls.update((map) => {
-      map.set(name, contents!);
-      return map;
-    });
-  }
-
-  function updateLast() {}
 </script>
 
-<div bind:this={contents}>
+<div>
   <label>
-    <input
-      type="radio"
-      value={style}
-      bind:group={$referenceRoadStyle}
-      on:change={updateLast}
-    />
+    <input type="radio" value={style} bind:group={$referenceRoadStyle} />
     {name}
     {#if style == $lastReferenceStyle && $referenceRoadStyle != $lastReferenceStyle}
       (

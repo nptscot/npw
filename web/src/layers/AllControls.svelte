@@ -10,14 +10,7 @@
   let localAccess: HTMLDivElement | null = null;
   let longDistance: HTMLDivElement | null = null;
 
-  $: update(basic, $allControls, [
-    "NPT full network",
-    "Route network (calculated)",
-    "Network disconnections",
-    // TODO Ideally visually separate these, above are radios
-    "SIMD",
-    "Population",
-  ]);
+  $: update(basic, $allControls, ["SIMD", "Population"]);
 
   $: update(primary, $allControls, ["High cycling flow"]);
 
@@ -78,7 +71,11 @@
 {/if}
 
 <details open style:border="2px solid black">
-  <summary>Basic Reference Layers</summary>
+  <summary>Road Reference Layers</summary>
   <PickReferenceStyle />
+</details>
+
+<details open style:border="2px solid black">
+  <summary>Basic Reference Layers</summary>
   <div bind:this={basic} />
 </details>

@@ -7,10 +7,20 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
-  import { layerId, Link, prettyPrintDistance, roadLineWidth } from "../common";
-  import { backend, map, mutationCounter, referenceRoadStyle } from "../stores";
-  import type { ConnectedComponents } from "../types";
-  import RoadLayerControls from "./RoadLayerControls.svelte";
+  import {
+    layerId,
+    Link,
+    prettyPrintDistance,
+    roadLineWidth,
+  } from "../../common";
+  import {
+    backend,
+    map,
+    mutationCounter,
+    referenceRoadStyle,
+  } from "../../stores";
+  import type { ConnectedComponents } from "../../types";
+  import RoadLayerControls from "../RoadLayerControls.svelte";
 
   $: show = $referenceRoadStyle == "disconnections";
 

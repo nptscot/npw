@@ -10,8 +10,11 @@
   import { devMode, referenceRoadStyle } from "../../stores";
   import RoadLayerControls from "../RoadLayerControls.svelte";
   import { debugOriginalData, lastReferenceStyle } from "../stores";
+  import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
   import CoreNetwork from "./CoreNetwork.svelte";
   import ExistingNetwork from "./ExistingNetwork.svelte";
+  import NetworkDisconnections from "./NetworkDisconnections.svelte";
+  import NptFullNetwork from "./NptFullNetwork.svelte";
 
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "s") {
@@ -64,6 +67,10 @@
   {/if}
 </RoadLayerControls>
 
+<NptFullNetwork />
+
+<h3>Derived layers</h3>
+
 <RoadLayerControls name="Level of Service" style="los">
   <QualitativeLegend colors={levelOfServiceColors} horiz />
 
@@ -78,3 +85,6 @@
 <RoadLayerControls name="Reachability" style="reachability">
   <QualitativeLegend colors={reachabilityColors} horiz />
 </RoadLayerControls>
+
+<CalculatedRouteNetwork />
+<NetworkDisconnections />

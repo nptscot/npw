@@ -2,10 +2,14 @@
   import type { ExpressionSpecification } from "maplibre-gl";
   import { LineLayer, VectorTileSource } from "svelte-maplibre";
   import { makeRamp, Popup } from "svelte-utils/map";
-  import { gradient } from "../colors";
-  import { layerId, lineColorForDemand, lineWidthForDemand } from "../common";
-  import { assetUrl, referenceRoadStyle } from "../stores";
-  import RoadLayerControls from "./RoadLayerControls.svelte";
+  import { gradient } from "../../colors";
+  import {
+    layerId,
+    lineColorForDemand,
+    lineWidthForDemand,
+  } from "../../common";
+  import { assetUrl, referenceRoadStyle } from "../../stores";
+  import RoadLayerControls from "../RoadLayerControls.svelte";
 
   $: show = $referenceRoadStyle == "precalculated_rnet";
   let purpose = "all";
