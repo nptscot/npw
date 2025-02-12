@@ -51,6 +51,7 @@
 <GeoJSON data={debug} generateId>
   <LineLayer
     {...layerId("debug-reachability-" + kind)}
+    interactive={false}
     paint={{
       "line-width": 3,
       "line-color": "blue",

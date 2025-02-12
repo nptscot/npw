@@ -1,9 +1,8 @@
 <script lang="ts">
   import type { Feature, Point } from "geojson";
   import { GeoJSON, SymbolLayer } from "svelte-maplibre";
-  import { QualitativeLegend } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
-  import { layerId, percent } from "../common";
+  import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { GPHospitals } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
@@ -27,22 +26,9 @@
   $: if ($show && $mutationCounter > 0) {
     recalc();
   }
-
-  $: reachable = data.features.filter((f) => f.properties.reachable).length;
 </script>
 
-<LayerControls name="GPs and hospitals" bind:show={$show}>
-  <p>
-    {reachable.toLocaleString()} / {data.features.length.toLocaleString()} ({percent(
-      reachable,
-      data.features.length,
-    )}) reachable
-  </p>
-  <QualitativeLegend
-    horiz
-    colors={{ Reachable: "purple", "Not reachable": "red" }}
-  />
-</LayerControls>
+<LayerControls name="GPs and hospitals" bind:show={$show} empty />
 
 <GeoJSON {data} generateId>
   <SymbolLayer
@@ -51,7 +37,7 @@
     layout={{
       visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
-      "icon-size": 0.5,
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
       "icon-image": [
         "case",
         ["get", "reachable"],

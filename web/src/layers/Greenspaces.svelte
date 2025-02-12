@@ -7,9 +7,8 @@
     hoverStateFilter,
     LineLayer,
   } from "svelte-maplibre";
-  import { QualitativeLegend } from "svelte-utils";
   import { Popup } from "svelte-utils/map";
-  import { layerId, percent } from "../common";
+  import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { Greenspaces } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
@@ -36,30 +35,17 @@
   $: if ($show && $mutationCounter > 0) {
     recalc();
   }
-
-  $: reachable = data.features.filter((f) => f.properties.reachable).length;
 </script>
 
-<LayerControls name="Greenspaces" bind:show={$show}>
-  <p>
-    {reachable.toLocaleString()} / {data.features.length.toLocaleString()} ({percent(
-      reachable,
-      data.features.length,
-    )}) reachable
-  </p>
-  <QualitativeLegend
-    horiz
-    colors={{ Reachable: "purple", "Not reachable": "red" }}
-  />
-</LayerControls>
+<LayerControls name="Greenspaces" bind:show={$show} empty />
 
 <GeoJSON {data} generateId>
   <FillLayer
     {...layerId("greenspaces-fill")}
     manageHoverState
     paint={{
-      "fill-color": ["case", ["get", "reachable"], "purple", "red"],
-      "fill-opacity": hoverStateFilter(0.1, 0.9),
+      "fill-color": ["case", ["get", "reachable"], "green", "red"],
+      "fill-opacity": hoverStateFilter(0.0, 0.5),
     }}
     layout={{
       visibility: $show ? "visible" : "none",
@@ -74,11 +60,25 @@
   </FillLayer>
 
   <LineLayer
-    {...layerId("greenspaces-outline")}
+    {...layerId("greenspaces-outline-reachable")}
     interactive={false}
+    filter={["get", "reachable"]}
     paint={{
-      "line-color": ["case", ["get", "reachable"], "purple", "red"],
+      "line-color": "green",
       "line-width": 2,
+    }}
+    layout={{
+      visibility: $show ? "visible" : "none",
+    }}
+  />
+  <LineLayer
+    {...layerId("greenspaces-outline-unreachable")}
+    interactive={false}
+    filter={["!", ["get", "reachable"]]}
+    paint={{
+      "line-color": "red",
+      "line-width": 2,
+      "line-dasharray": [3, 2],
     }}
     layout={{
       visibility: $show ? "visible" : "none",
@@ -91,7 +91,7 @@
     filter={["==", ["get", "kind"], "access point"]}
     paint={{
       "circle-color": "green",
-      "circle-radius": 3,
+      "circle-radius": ["step", ["zoom"], 0, 13, 5],
     }}
     layout={{
       visibility: $show ? "visible" : "none",

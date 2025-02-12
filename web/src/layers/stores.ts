@@ -31,7 +31,7 @@ export let debugOriginalData = writable(false);
 export let layersPerTier = {
   Primary: [cyclingFlow1],
   Secondary: [cyclingFlow2, townCentres],
-  LocalAccess: [cyclingFlow3, schools, gpHospitals, greenspaces],
+  LocalAccess: [schools, gpHospitals, greenspaces],
   LongDistance: [settlements],
 };
 

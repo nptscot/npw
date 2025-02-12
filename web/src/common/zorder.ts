@@ -98,7 +98,8 @@ const layerZorder = [
   "town-centres-fill",
   "town-centres-outline",
   "greenspaces-fill",
-  "greenspaces-outline",
+  "greenspaces-outline-reachable",
+  "greenspaces-outline-unreachable",
   "greenspace-access-points",
 
   // Draw these on top of the respective objects, in case the path goes through
