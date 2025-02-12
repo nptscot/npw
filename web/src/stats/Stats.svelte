@@ -1,18 +1,6 @@
 <script lang="ts">
   import { Loading, notNull } from "svelte-utils";
   import { tierColors } from "../colors";
-  import {
-    allPopulation,
-    cyclingFlow1,
-    cyclingFlow2,
-    cyclingFlow3,
-    deprivedPopulation,
-    gpHospitals,
-    greenspaces,
-    schools,
-    settlements,
-    townCentres,
-  } from "../layers/stores";
   import { backend, mode, mutationCounter, odStats, stats } from "../stores";
   import FinalReport from "./FinalReport.svelte";
   import Metric from "./Metric.svelte";
@@ -57,7 +45,6 @@
   <div style:padding="4px" style:border="2px solid {tierColors.Primary}">
     <Metric
       label="High cycling flow coverage"
-      bind:showLayer={$cyclingFlow1}
       pct={percent(
         $stats.covered_flow_quintile_sums[0],
         $stats.total_flow_quintile_sums[0],
@@ -72,18 +59,13 @@
   >
     <Metric
       label="Medium cycling flow coverage"
-      bind:showLayer={$cyclingFlow2}
       pct={percent(
         $stats.covered_flow_quintile_sums[1],
         $stats.total_flow_quintile_sums[1],
       )}
     />
 
-    <Metric
-      label="Town centres"
-      bind:showLayer={$townCentres}
-      pct={$stats.percent_reachable_town_centres}
-    />
+    <Metric label="Town centres" pct={$stats.percent_reachable_town_centres} />
   </div>
 
   <div
@@ -93,40 +75,28 @@
   >
     <Metric
       label="Above-minimum cycling flow coverage"
-      bind:showLayer={$cyclingFlow3}
       pct={percent(
         $stats.covered_flow_quintile_sums[2],
         $stats.total_flow_quintile_sums[2],
       )}
     />
 
-    <Metric
-      label="Schools"
-      bind:showLayer={$schools}
-      pct={$stats.percent_reachable_schools}
-    />
+    <Metric label="Schools" pct={$stats.percent_reachable_schools} />
 
     <Metric
       label="GPs and hospitals"
-      bind:showLayer={$gpHospitals}
       pct={$stats.percent_reachable_gp_hospitals}
     />
 
-    <Metric
-      label="Greenspaces"
-      bind:showLayer={$greenspaces}
-      pct={$stats.percent_reachable_greenspaces}
-    />
+    <Metric label="Greenspaces" pct={$stats.percent_reachable_greenspaces} />
 
     <Metric
       label="Deprived population coverage"
-      bind:showLayer={$deprivedPopulation}
       pct={$stats.percent_reachable_imd_population}
     />
 
     <Metric
       label="Population coverage"
-      bind:showLayer={$allPopulation}
       pct={$stats.percent_reachable_population}
     />
   </div>
@@ -136,11 +106,7 @@
     style:margin-top="4px"
     style:border="2px solid {tierColors.LongDistance}"
   >
-    <Metric
-      label="Settlements"
-      bind:showLayer={$settlements}
-      pct={$stats.percent_reachable_settlements}
-    />
+    <Metric label="Settlements" pct={$stats.percent_reachable_settlements} />
   </div>
 
   <FinalReport />
