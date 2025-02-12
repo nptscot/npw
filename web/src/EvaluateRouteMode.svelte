@@ -84,6 +84,30 @@
 
     <button on:click={() => ($mode = prevMode)}>Back</button>
 
+    {#if browse.length > 0}
+      <p>
+        These routes, from a sample of the OD data, have the worst directness.
+      </p>
+
+      <div>
+        <button
+          class="secondary"
+          on:click={() => currentBrowse--}
+          disabled={currentBrowse == 0}
+        >
+          Previous
+        </button>
+        {currentBrowse + 1} / {browse.length}
+        <button
+          class="secondary"
+          on:click={() => currentBrowse++}
+          disabled={currentBrowse == browse.length - 1}
+        >
+          Next
+        </button>
+      </div>
+    {/if}
+
     <p>
       Move the <b>A</b>
       and
@@ -137,6 +161,11 @@
 
       <Directions {gj} />
     {/if}
+
+    <hr />
+
+    <PickEditsStyle />
+    <AllControls />
   </div>
 
   <div slot="map">
@@ -210,35 +239,6 @@
         />
       </GeoJSON>
     {/if}
-  </div>
-
-  <div slot="right">
-    {#if browse.length > 0}
-      <p>
-        These routes, from a sample of the OD data, have the worst directness.
-      </p>
-
-      <div>
-        <button
-          class="secondary"
-          on:click={() => currentBrowse--}
-          disabled={currentBrowse == 0}
-        >
-          Previous
-        </button>
-        {currentBrowse + 1} / {browse.length}
-        <button
-          class="secondary"
-          on:click={() => currentBrowse++}
-          disabled={currentBrowse == browse.length - 1}
-        >
-          Next
-        </button>
-      </div>
-    {/if}
-
-    <PickEditsStyle />
-    <AllControls />
   </div>
 </SplitComponent>
 
