@@ -5,20 +5,30 @@
 </script>
 
 <div style="border: 2px solid black; padding: 4px">
-  <div><b>Your current network edits</b></div>
-
-  <label>
-    <input type="radio" value="off" bind:group={$editsRoadStyle} />
-    Don't show
-  </label>
-  <label>
-    <input type="radio" value="edits_tier" bind:group={$editsRoadStyle} />
-    Tier
-  </label>
-  <label>
-    <input type="radio" value="edits_infra" bind:group={$editsRoadStyle} />
-    Infrastructure type
-  </label>
+  <b>Show your new network as:</b>
+  <div style:display="flex">
+    <button
+      style:font-size="12px"
+      style:background={$editsRoadStyle == "edits_tier" ? "green" : "grey"}
+      on:click={() => ($editsRoadStyle = "edits_tier")}
+    >
+      Tier
+    </button>
+    <button
+      style:font-size="12px"
+      style:background={$editsRoadStyle == "edits_infra" ? "green" : "grey"}
+      on:click={() => ($editsRoadStyle = "edits_infra")}
+    >
+      Infrastructure type
+    </button>
+    <button
+      style:font-size="12px"
+      style:background={$editsRoadStyle == "off" ? "green" : "grey"}
+      on:click={() => ($editsRoadStyle = "off")}
+    >
+      Hidden
+    </button>
+  </div>
 
   <details>
     <summary>Legend</summary>
