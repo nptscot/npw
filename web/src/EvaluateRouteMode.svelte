@@ -18,7 +18,6 @@
   import { SplitComponent } from "./common/layout";
   import Directions from "./Directions.svelte";
   import AllControls from "./layers/AllControls.svelte";
-  import PickEditsStyle from "./layers/roads/PickEditsStyle.svelte";
   import { backend, mode, routeA, routeB, type Mode } from "./stores";
   import type { RouteGJ, WorstRoutes } from "./types";
 
@@ -164,7 +163,6 @@
 
     <hr />
 
-    <PickEditsStyle />
     <AllControls />
   </div>
 

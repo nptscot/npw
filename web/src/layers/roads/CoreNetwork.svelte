@@ -2,8 +2,8 @@
   import { Loading, QualitativeLegend } from "svelte-utils";
   import { cnTierColors } from "../../colors";
   import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
-  import RoadLayerControls from "../RoadLayerControls.svelte";
   import { debugOriginalData } from "../stores";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
   let loading = "";
 

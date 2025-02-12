@@ -2,7 +2,6 @@
   import { SplitComponent } from "./common/layout";
   import ManageFiles from "./common/ManageFiles.svelte";
   import AllControls from "./layers/AllControls.svelte";
-  import PickEditsStyle from "./layers/roads/PickEditsStyle.svelte";
   import Stats from "./stats/Stats.svelte";
   import { mode } from "./stores";
 
@@ -31,8 +30,6 @@
     <button class="outline" on:click={() => ($mode = { kind: "bulk-edit" })}>
       Bulk edit
     </button>
-
-    <PickEditsStyle />
 
     <AllControls />
   </div>

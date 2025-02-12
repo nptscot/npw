@@ -2,8 +2,8 @@
   import { Loading, Modal, QualitativeLegend } from "svelte-utils";
   import { infraTypeColors } from "../../colors";
   import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
-  import RoadLayerControls from "../RoadLayerControls.svelte";
   import { debugOriginalData } from "../stores";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
   let showImportModal = false;
   let loading = "";

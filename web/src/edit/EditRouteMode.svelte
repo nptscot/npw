@@ -11,7 +11,6 @@
   import { infraTypeColors } from "../colors";
   import { layerId } from "../common";
   import AllControls from "../layers/AllControls.svelte";
-  import PickEditsStyle from "../layers/roads/PickEditsStyle.svelte";
   import {
     autosave,
     backend,
@@ -182,7 +181,6 @@
       Evaluate this route
     </button>
 
-    <PickEditsStyle />
     <AllControls />
   </div>
 

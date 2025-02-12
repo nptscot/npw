@@ -9,7 +9,7 @@
     lineWidthForDemand,
   } from "../../common";
   import { assetUrl, referenceRoadStyle } from "../../stores";
-  import RoadLayerControls from "../RoadLayerControls.svelte";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
   $: show = $referenceRoadStyle == "precalculated_rnet";
   let purpose = "all";

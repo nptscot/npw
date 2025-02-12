@@ -11,7 +11,7 @@
   import ODBreakdowns from "../../stats/ODBreakdowns.svelte";
   import { backend, mutationCounter, referenceRoadStyle } from "../../stores";
   import type { EvaluateODOut } from "../../types";
-  import RoadLayerControls from "../RoadLayerControls.svelte";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
   $: show = $referenceRoadStyle == "calculated_rnet";
   let fastSample = true;

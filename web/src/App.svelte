@@ -36,6 +36,7 @@
   import { routeTool } from "./edit/stores";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
+  import PickReferenceStyle from "./layers/roads/PickReferenceStyle.svelte";
   import MainMode from "./MainMode.svelte";
   import {
     assetUrl,
@@ -231,6 +232,7 @@
         {/await}
 
         <ReferenceLayers />
+        <PickReferenceStyle />
 
         {#if $mode.kind == "main"}
           <MainMode />

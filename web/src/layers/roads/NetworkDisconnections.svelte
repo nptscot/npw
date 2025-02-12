@@ -20,7 +20,7 @@
     referenceRoadStyle,
   } from "../../stores";
   import type { ConnectedComponents } from "../../types";
-  import RoadLayerControls from "../RoadLayerControls.svelte";
+  import RoadLayerControls from "./RoadLayerControls.svelte";
 
   $: show = $referenceRoadStyle == "disconnections";
 
