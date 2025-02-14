@@ -8,6 +8,7 @@
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
   import { localPOIs as show } from "./stores";
+  import WarpToPOIs from "./WarpToPOIs.svelte";
 
   let lastUpdate = 0;
   let data: Schools = {
@@ -28,7 +29,9 @@
   }
 </script>
 
-<LayerControls name="POIs" bind:show={$show} empty />
+<LayerControls name="POIs" bind:show={$show}>
+  <WarpToPOIs />
+</LayerControls>
 
 <GeoJSON {data} generateId>
   <SymbolLayer
