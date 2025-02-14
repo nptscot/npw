@@ -5,7 +5,9 @@ use geojson::FeatureCollection;
 use graph::{Graph, RoadID};
 use utils::PriorityQueueItem;
 
-use crate::{Dir, LevelOfService, MapModel};
+use crate::route_snapper::make_route_snapper_feature;
+use crate::routes::glue_route;
+use crate::{Dir, InfraType, LevelOfService, MapModel, Route, Tier};
 
 pub struct Reachability {
     pub network: HashSet<RoadID>,
@@ -200,7 +202,18 @@ impl MapModel {
                 }
 
                 let steps = roads_to_steps(&self.graph, roads_in_order)?;
-                return self.autosplit_route(None, steps, None);
+                let linestring = glue_route(&self.graph, &steps);
+
+                return Ok(serde_json::to_string(&Route {
+                    feature: make_route_snapper_feature(&self.graph, &steps, &linestring),
+                    name: "connection to local POI".to_string(),
+                    notes: String::new(),
+                    roads: steps.clone(),
+                    // Doesn't matter
+                    infra_type: InfraType::MixedTraffic,
+                    override_infra_type: false,
+                    tier: Tier::LocalAccess,
+                })?);
             }
 
             let road1 = &self.graph.roads[r1.0];

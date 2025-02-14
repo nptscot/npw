@@ -310,7 +310,7 @@ impl MapModel {
 }
 
 // TODO Upstream to graph
-fn glue_route(graph: &Graph, roads: &[(RoadID, Dir)]) -> LineString {
+pub fn glue_route(graph: &Graph, roads: &[(RoadID, Dir)]) -> LineString {
     graph::Route {
         start: start_pos(roads[0], graph),
         end: end_pos(*roads.last().unwrap(), graph),

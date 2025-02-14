@@ -4,7 +4,7 @@
   import { emptyGeojson } from "svelte-utils/map";
   import { layerId } from "../common";
   import { backend } from "../stores";
-  import type { AutosplitRoute } from "../types";
+  import type { SetRouteInput } from "../types";
   import { severances } from "./stores";
 
   export let kind: string;
@@ -14,7 +14,7 @@
   > | null;
 
   let debug = emptyGeojson();
-  let fixUnreachable: AutosplitRoute = emptyGeojson() as AutosplitRoute;
+  let fixUnreachable: SetRouteInput | null = null;
   $: updateDebug(hovered);
 
   async function updateDebug(
@@ -27,7 +27,7 @@
     if ($backend && hovered) {
       if (hovered.properties.reachable) {
         debug = await $backend.debugReachablePath(kind, hovered.properties.idx);
-        fixUnreachable = emptyGeojson() as AutosplitRoute;
+        fixUnreachable = null;
       } else {
         debug = await $backend.debugUnreachablePath(
           kind,
@@ -41,7 +41,7 @@
       }
     } else {
       debug = emptyGeojson();
-      fixUnreachable = emptyGeojson() as AutosplitRoute;
+      fixUnreachable = null;
     }
   }
 </script>
@@ -57,7 +57,7 @@
   />
 </GeoJSON>
 
-<GeoJSON data={fixUnreachable}>
+<GeoJSON data={fixUnreachable?.feature || emptyGeojson()}>
   <LineLayer
     {...layerId("fix-reachability-" + kind)}
     interactive={false}

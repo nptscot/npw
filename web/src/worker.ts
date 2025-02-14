@@ -246,7 +246,7 @@ export class Backend {
     return JSON.parse(this.inner!.debugUnreachablePath(kind, idx));
   }
 
-  fixUnreachablePath(kind: string, idx: number): AutosplitRoute {
+  fixUnreachablePath(kind: string, idx: number): SetRouteInput {
     this.checkReady();
     return JSON.parse(this.inner!.fixUnreachablePath(kind, idx));
   }
