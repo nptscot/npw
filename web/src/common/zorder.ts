@@ -112,6 +112,12 @@ const layerZorder = [
   "debug-reachability-schools",
   "debug-reachability-gp_hospitals",
 
+  "fix-reachability-settlements",
+  "fix-reachability-town_centres",
+  "fix-reachability-greenspaces",
+  "fix-reachability-schools",
+  "fix-reachability-gp_hospitals",
+
   "block-reference-layers",
 
   // Edit mode

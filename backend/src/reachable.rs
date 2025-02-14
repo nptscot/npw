@@ -2,10 +2,10 @@ use std::collections::{BinaryHeap, HashMap, HashSet};
 
 use anyhow::Result;
 use geojson::FeatureCollection;
-use graph::RoadID;
+use graph::{Graph, RoadID};
 use utils::PriorityQueueItem;
 
-use crate::{LevelOfService, MapModel};
+use crate::{Dir, LevelOfService, MapModel};
 
 pub struct Reachability {
     pub network: HashSet<RoadID>,
@@ -170,6 +170,59 @@ impl MapModel {
         })?)
     }
 
+    /// Calculates a route to connect any of start_roads with the network. Returns a stringified
+    /// FeatureCollection of the autosplit segments.
+    pub fn fix_unreachable_path(&self, start_roads: HashSet<RoadID>) -> Result<String> {
+        let mut visited: HashSet<RoadID> = HashSet::new();
+        let mut backrefs: HashMap<RoadID, RoadID> = HashMap::new();
+        let mut queue: BinaryHeap<PriorityQueueItem<usize, RoadID>> = BinaryHeap::new();
+        for r in &start_roads {
+            queue.push(PriorityQueueItem::new(0, *r));
+        }
+
+        while let Some(item) = queue.pop() {
+            let r1 = item.value;
+            if visited.contains(&r1) {
+                continue;
+            }
+            visited.insert(r1);
+
+            // Unlike debug_unreachable_path, ignore LoS -- anything is fine
+
+            if self.infra_types[r1.0].is_some() {
+                // The order will go from the network to the POI, but that's fine -- it doesn't
+                // matter either way
+                let mut roads_in_order = Vec::new();
+                let mut current = r1;
+                while let Some(next) = backrefs.get(&current) {
+                    roads_in_order.push(*next);
+                    current = *next;
+                }
+
+                let steps = roads_to_steps(&self.graph, roads_in_order)?;
+                return self.autosplit_route(None, steps, None);
+            }
+
+            let road1 = &self.graph.roads[r1.0];
+            for i in [road1.src_i, road1.dst_i] {
+                for r2 in &self.graph.intersections[i.0].roads {
+                    if *r2 == r1 || start_roads.contains(&r2) {
+                        continue;
+                    }
+                    if !backrefs.contains_key(&r2) {
+                        backrefs.insert(*r2, r1);
+                        queue.push(PriorityQueueItem::new(
+                            item.cost + meters(road1.length_meters),
+                            *r2,
+                        ));
+                    }
+                }
+            }
+        }
+
+        bail!("No path from POI to the network")
+    }
+
     /// From a road, find all possible next roads that're reachable. This avoids crossing
     /// perpendicular over anything that isn't high LoS.
     fn next_reachable_roads(&self, r1: RoadID) -> Vec<RoadID> {
@@ -233,6 +286,24 @@ fn all_crossed_roads(clockwise: &Vec<RoadID>, r1: RoadID, r2: RoadID) -> Vec<Roa
     let mut crossed = clockwise.clone();
     crossed.retain(|x| *x != r1 && *x != r2);
     crossed
+}
+
+// TODO Have I written this somewhere else already, or can we track direction as we go?
+fn roads_to_steps(graph: &Graph, roads: Vec<RoadID>) -> Result<Vec<(RoadID, Dir)>> {
+    let mut steps = Vec::new();
+    for pair in roads.windows(2) {
+        let r1 = &graph.roads[pair[0].0];
+        let r2 = &graph.roads[pair[1].0];
+        if r1.dst_i == r2.src_i || r1.dst_i == r2.dst_i {
+            steps.push((r1.id, Dir::Forwards));
+        } else if r1.src_i == r2.src_i || r1.src_i == r2.dst_i {
+            steps.push((r1.id, Dir::Backwards));
+        } else {
+            bail!("No intersection in common from {:?} to {:?}", r1.id, r2.id);
+        }
+    }
+    // TODO Deal with last road
+    Ok(steps)
 }
 
 #[cfg(test)]

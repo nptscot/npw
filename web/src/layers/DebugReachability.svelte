@@ -1,13 +1,10 @@
 <script lang="ts">
-  import type {
-    Feature,
-    FeatureCollection,
-    MultiPolygon,
-    Point,
-  } from "geojson";
+  import type { Feature, MultiPolygon, Point } from "geojson";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import { emptyGeojson } from "svelte-utils/map";
   import { layerId } from "../common";
   import { backend } from "../stores";
+  import type { AutosplitRoute } from "../types";
   import { severances } from "./stores";
 
   export let kind: string;
@@ -16,10 +13,8 @@
     { reachable: boolean; idx: number }
   > | null;
 
-  let debug: FeatureCollection = {
-    type: "FeatureCollection",
-    features: [],
-  };
+  let debug = emptyGeojson();
+  let fixUnreachable: AutosplitRoute = emptyGeojson() as AutosplitRoute;
   $: updateDebug(hovered);
 
   async function updateDebug(
@@ -32,29 +27,43 @@
     if ($backend && hovered) {
       if (hovered.properties.reachable) {
         debug = await $backend.debugReachablePath(kind, hovered.properties.idx);
+        fixUnreachable = emptyGeojson() as AutosplitRoute;
       } else {
         debug = await $backend.debugUnreachablePath(
+          kind,
+          hovered.properties.idx,
+        );
+        fixUnreachable = await $backend.fixUnreachablePath(
           kind,
           hovered.properties.idx,
         );
         $severances = true;
       }
     } else {
-      debug = {
-        type: "FeatureCollection",
-        features: [],
-      };
+      debug = emptyGeojson();
+      fixUnreachable = emptyGeojson() as AutosplitRoute;
     }
   }
 </script>
 
-<GeoJSON data={debug} generateId>
+<GeoJSON data={debug}>
   <LineLayer
     {...layerId("debug-reachability-" + kind)}
     interactive={false}
     paint={{
       "line-width": 3,
       "line-color": "blue",
+    }}
+  />
+</GeoJSON>
+
+<GeoJSON data={fixUnreachable}>
+  <LineLayer
+    {...layerId("fix-reachability-" + kind)}
+    interactive={false}
+    paint={{
+      "line-width": 5,
+      "line-color": "black",
     }}
   />
 </GeoJSON>

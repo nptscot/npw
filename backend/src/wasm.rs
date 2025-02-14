@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::Once;
 
 use geo::{Coord, LineString, Polygon};
@@ -173,36 +173,20 @@ impl MapModel {
 
     #[wasm_bindgen(js_name = debugReachablePath)]
     pub fn debug_reachable_path_wasm(&self, kind: &str, idx: usize) -> Result<String, JsValue> {
-        let roads = match kind {
-            "schools" => [self.schools[idx].road].into(),
-            "gp_hospitals" => [self.gp_hospitals[idx].road].into(),
-            "town_centres" => self.town_centres[idx].roads.clone(),
-            "settlements" => self.settlements[idx].roads.clone(),
-            "greenspaces" => self.greenspaces[idx].roads.clone(),
-            _ => {
-                return Err(err_to_js(format!(
-                    "debug_reachable_path_wasm got bad kind {kind}"
-                )));
-            }
-        };
+        let roads = self.get_poi_roads(kind, idx)?;
         self.debug_reachable_path(roads).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = debugUnreachablePath)]
-    pub fn debug_unrreachable_path_wasm(&self, kind: &str, idx: usize) -> Result<String, JsValue> {
-        let roads = match kind {
-            "schools" => [self.schools[idx].road].into(),
-            "gp_hospitals" => [self.gp_hospitals[idx].road].into(),
-            "town_centres" => self.town_centres[idx].roads.clone(),
-            "settlements" => self.settlements[idx].roads.clone(),
-            "greenspaces" => self.greenspaces[idx].roads.clone(),
-            _ => {
-                return Err(err_to_js(format!(
-                    "debug_reachable_path_wasm got bad kind {kind}"
-                )));
-            }
-        };
+    pub fn debug_unreachable_path_wasm(&self, kind: &str, idx: usize) -> Result<String, JsValue> {
+        let roads = self.get_poi_roads(kind, idx)?;
         self.debug_unreachable_path(roads).map_err(err_to_js)
+    }
+
+    #[wasm_bindgen(js_name = fixUnreachablePath)]
+    pub fn fix_unreachable_path_wasm(&self, kind: &str, idx: usize) -> Result<String, JsValue> {
+        let roads = self.get_poi_roads(kind, idx)?;
+        self.fix_unreachable_path(roads).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = evaluateOD)]
@@ -452,6 +436,19 @@ impl MapModel {
             }
         }
         Ok(roads)
+    }
+
+    fn get_poi_roads(&self, kind: &str, idx: usize) -> Result<HashSet<RoadID>, JsValue> {
+        match kind {
+            "schools" => Ok([self.schools[idx].road].into()),
+            "gp_hospitals" => Ok([self.gp_hospitals[idx].road].into()),
+            "town_centres" => Ok(self.town_centres[idx].roads.clone()),
+            "settlements" => Ok(self.settlements[idx].roads.clone()),
+            "greenspaces" => Ok(self.greenspaces[idx].roads.clone()),
+            _ => Err(err_to_js(format!(
+                "debug_reachable_path_wasm got bad kind {kind}"
+            ))),
+        }
     }
 }
 
