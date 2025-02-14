@@ -9,8 +9,7 @@ use crate::{Dir, MapModel};
 
 impl MapModel {
     pub fn snap_route(&self, input_waypoints: Vec<InputRouteWaypoint>) -> Result<String> {
-        let path_entries = self.get_path_entries(&input_waypoints);
-        let linestring = self.get_entire_line_string(&path_entries)?;
+        let (path_entries, linestring) = self.get_path_entries(&input_waypoints);
         let length = linestring.length::<Euclidean>();
 
         let mut feature = self.graph.mercator.to_wgs84_gj(&linestring);
@@ -96,7 +95,7 @@ impl MapModel {
             }
         }
 
-        let path_entries = self.get_path_entries(&vec![waypt1, waypt2]);
+        let (path_entries, _) = self.get_path_entries(&vec![waypt1, waypt2]);
 
         let mut extra_nodes: Vec<(f64, f64, bool)> = Vec::new();
         for (idx, entry) in path_entries.iter().enumerate() {
@@ -117,13 +116,16 @@ impl MapModel {
         Ok(serde_json::to_string(&extra_nodes)?)
     }
 
-    fn get_path_entries(&self, waypts: &Vec<InputRouteWaypoint>) -> Vec<PathEntry> {
+    // TODO and the full linestring
+    fn get_path_entries(&self, waypts: &Vec<InputRouteWaypoint>) -> (Vec<PathEntry>, LineString) {
         let profile = self.graph.profile_names["bicycle_direct"];
         let mut path_entries = Vec::new();
+        let mut pts: Vec<Coord> = Vec::new();
 
         for pair in waypts.windows(2) {
             // Always add every waypoint
             path_entries.push(self.waypt_to_path_entry(&pair[0]));
+            pts.push(pair[0].point.into());
 
             if pair[0].snapped && pair[1].snapped {
                 let start = self.graph.snap_to_road(pair[0].point.into(), profile);
@@ -135,6 +137,7 @@ impl MapModel {
                         path_entries.pop(),
                         Some(PathEntry::SnappedPoint(start.intersection))
                     );*/
+                    pts.extend(route.linestring(&self.graph).into_inner());
                     for step in route.steps {
                         match step {
                             PathStep::Road { road, forwards } => {
@@ -170,43 +173,13 @@ impl MapModel {
             if path_entries.last() != Some(&add) {
                 path_entries.push(add);
             }
-        }
-
-        path_entries
-    }
-
-    fn get_entire_line_string(&self, path_entries: &Vec<PathEntry>) -> Result<LineString> {
-        if path_entries.is_empty() {
-            bail!("no path_entries");
-        }
-        let mut pts: Vec<Coord> = Vec::new();
-        for entry in path_entries {
-            match entry {
-                PathEntry::SnappedPoint(i) => {
-                    // There may be an adjacent Edge that contributes geometry, but maybe not near
-                    // free points. We'll dedupe later anyway.
-                    pts.push(self.graph.intersections[i.0].point.into());
-                }
-                PathEntry::FreePoint(pt) => {
-                    pts.push(*pt);
-                }
-                PathEntry::Edge(r, dir) => {
-                    let mut road = self.graph.roads[r.0].linestring.clone().into_inner();
-                    if *dir == Dir::Backwards {
-                        road.reverse();
-                    }
-                    for pt in road {
-                        pts.push(pt.into());
-                    }
-                }
+            if !last.snapped {
+                pts.push(last.point.into());
             }
         }
 
         pts.dedup();
-        if pts.len() < 2 {
-            bail!("not enough points");
-        }
-        Ok(LineString::new(pts))
+        (path_entries, LineString::new(pts))
     }
 
     fn waypt_to_path_entry(&self, waypt: &InputRouteWaypoint) -> PathEntry {
