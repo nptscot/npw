@@ -24,7 +24,7 @@
         }
       }
       for (let f of (await $backend.getGreenspaces()).features) {
-        if (!f.properties.reachable) {
+        if (f.properties.kind != "access point" && !f.properties.reachable) {
           // TODO Slow to calculate this constantly
           unreachablePOIs.push(centroid(f).geometry.coordinates);
         }
