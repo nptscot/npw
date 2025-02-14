@@ -8,7 +8,8 @@ use std::collections::HashMap;
 use enum_map::Enum;
 use geo::MultiPolygon;
 use geojson::{Feature, GeoJson};
-use graph::{Graph, RoadID, Timer};
+use graph::{Graph, IntersectionID, RoadID, Timer};
+use rstar::{primitives::GeomWithData, RTree};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
@@ -36,6 +37,8 @@ mod wasm;
 #[derive(Serialize, Deserialize)]
 pub struct MapModel {
     graph: Graph,
+    // TODO Should this be in Graph?
+    closest_intersection: RTree<GeomWithData<[f64; 2], IntersectionID>>,
 
     #[serde(skip_serializing, skip_deserializing, default)]
     routes: HashMap<usize, Route>,
@@ -95,7 +98,7 @@ pub struct Route {
     tier: Tier,
 }
 
-#[derive(Clone, Copy, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub enum Dir {
     Forwards,
     Backwards,
@@ -150,8 +153,16 @@ impl MapModel {
         let los = std::iter::repeat(LevelOfService::ShouldNotBeUsed)
             .take(graph.roads.len())
             .collect();
+        let closest_intersection = RTree::bulk_load(
+            graph
+                .intersections
+                .iter()
+                .map(|i| GeomWithData::new(i.point.into(), i.id))
+                .collect(),
+        );
         let mut model = Self {
             graph,
+            closest_intersection,
             routes: HashMap::new(),
             id_counter: 0,
             boundary_wgs84,

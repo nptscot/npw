@@ -7,6 +7,7 @@ use graph::{IntersectionID, RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
+use crate::route_snapper::InputRouteWaypoint;
 use crate::{evaluate::Breakdown, Dir, InfraType, MapModel, Route, Tier};
 
 static START: Once = Once::new();
@@ -400,23 +401,22 @@ impl MapModel {
 
     /// For the route snapper, return a Feature with the full geometry and properties.
     #[wasm_bindgen(js_name = snapRoute)]
-    pub fn snap_route(&self, raw_waypoints: JsValue) -> Result<String, JsValue> {
-        let waypoints: Vec<RouteWaypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
-        Err(JsValue::from_str("TODO"))
+    pub fn snap_route_wasm(&self, raw_waypoints: JsValue) -> Result<String, JsValue> {
+        let waypoints: Vec<InputRouteWaypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
+        self.snap_route(waypoints).map_err(err_to_js)
     }
 
     /// From exactly two waypoints, return a list of extra intermediate nodes and a boolean to
     /// indicate if they're snappable or not.
     #[wasm_bindgen(js_name = getExtraNodes)]
-    pub fn get_extra_nodes(
+    pub fn get_extra_nodes_wasm(
         &self,
         raw_waypt1: JsValue,
         raw_waypt2: JsValue,
     ) -> Result<String, JsValue> {
-        let waypt1: RouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt1)?;
-        let waypt2: RouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt2)?;
-
-        Err(JsValue::from_str("TODO"))
+        let waypt1: InputRouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt1)?;
+        let waypt2: InputRouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt2)?;
+        self.get_extra_nodes(waypt1, waypt2).map_err(err_to_js)
     }
 
     // Returns (Road, forwards) pairs
@@ -499,12 +499,6 @@ struct EvaluateRouteRequest {
 struct Savefile {
     routes: HashMap<usize, Route>,
     id_counter: usize,
-}
-
-#[derive(Deserialize)]
-struct RouteWaypoint {
-    point: [f64; 2],
-    snapped: bool,
 }
 
 fn err_to_js<E: std::fmt::Display>(err: E) -> JsValue {

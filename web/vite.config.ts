@@ -14,5 +14,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [svelte(), wasmPack(["../backend"], ["route-snapper"])]
+  plugins: [svelte(), wasmPack(["../backend"], [])]
 })

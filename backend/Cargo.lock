@@ -74,7 +74,6 @@ dependencies = [
  "log",
  "nanorand",
  "petgraph",
- "route-snapper-graph",
  "rstar",
  "serde",
  "serde-wasm-bindgen",
@@ -769,15 +768,6 @@ name = "robust"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cbf4a6aa5f6d6888f39e980649f3ad6b666acdce1d78e95b8a2cb076e687ae30"
-
-[[package]]
-name = "route-snapper-graph"
-version = "0.1.0"
-source = "git+https://github.com/dabreegster/route_snapper#0834519b09152168ee4908dcd630d54605aa759b"
-dependencies = [
- "geo",
- "serde",
-]
 
 [[package]]
 name = "roxmltree"
