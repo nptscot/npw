@@ -37,7 +37,7 @@
   }
 
   async function fixUnreachable(e: CustomEvent<LayerClickInfo>) {
-    let input = await $backend!.fixUnreachablePath(
+    let input = await $backend!.fixUnreachablePOI(
       "greenspaces",
       e.detail.features[0].properties!.idx,
     );

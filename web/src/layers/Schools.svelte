@@ -29,7 +29,7 @@
   }
 
   async function fixUnreachable(e: CustomEvent<LayerClickInfo>) {
-    let input = await $backend!.fixUnreachablePath(
+    let input = await $backend!.fixUnreachablePOI(
       "schools",
       e.detail.features[0].properties!.idx,
     );

@@ -246,9 +246,9 @@ export class Backend {
     return JSON.parse(this.inner!.debugUnreachablePath(kind, idx));
   }
 
-  fixUnreachablePath(kind: string, idx: number): SetRouteInput {
+  fixUnreachablePOI(kind: string, idx: number): SetRouteInput {
     this.checkReady();
-    let route = JSON.parse(this.inner!.fixUnreachablePath(kind, idx));
+    let route = JSON.parse(this.inner!.fixUnreachablePOI(kind, idx));
     // TODO Hack around this necessary duplication
     route.full_path = route.feature.properties.full_path;
     return route;

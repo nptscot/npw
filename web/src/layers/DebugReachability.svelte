@@ -33,7 +33,7 @@
           kind,
           hovered.properties.idx,
         );
-        fixUnreachable = await $backend.fixUnreachablePath(
+        fixUnreachable = await $backend.fixUnreachablePOI(
           kind,
           hovered.properties.idx,
         );

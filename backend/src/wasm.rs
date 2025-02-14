@@ -183,10 +183,10 @@ impl MapModel {
         self.debug_unreachable_path(roads).map_err(err_to_js)
     }
 
-    #[wasm_bindgen(js_name = fixUnreachablePath)]
-    pub fn fix_unreachable_path_wasm(&self, kind: &str, idx: usize) -> Result<String, JsValue> {
+    #[wasm_bindgen(js_name = fixUnreachablePOI)]
+    pub fn fix_unreachable_poi_wasm(&self, kind: &str, idx: usize) -> Result<String, JsValue> {
         let roads = self.get_poi_roads(kind, idx)?;
-        self.fix_unreachable_path(roads).map_err(err_to_js)
+        self.fix_unreachable_poi(roads).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = evaluateOD)]

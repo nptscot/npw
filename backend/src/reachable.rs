@@ -174,7 +174,7 @@ impl MapModel {
 
     /// Calculates a route to connect any of start_roads with the network. Returns a stringified
     /// FeatureCollection of the autosplit segments.
-    pub fn fix_unreachable_path(&self, start_roads: HashSet<RoadID>) -> Result<String> {
+    pub fn fix_unreachable_poi(&self, start_roads: HashSet<RoadID>) -> Result<String> {
         let mut visited: HashSet<RoadID> = HashSet::new();
         let mut backrefs: HashMap<RoadID, RoadID> = HashMap::new();
         let mut queue: BinaryHeap<PriorityQueueItem<usize, RoadID>> = BinaryHeap::new();
@@ -303,6 +303,11 @@ fn all_crossed_roads(clockwise: &Vec<RoadID>, r1: RoadID, r2: RoadID) -> Vec<Roa
 
 // TODO Have I written this somewhere else already, or can we track direction as we go?
 fn roads_to_steps(graph: &Graph, roads: Vec<RoadID>) -> Result<Vec<(RoadID, Dir)>> {
+    // Edge case
+    if roads.len() == 1 {
+        return Ok(vec![(roads[0], Dir::Forwards)]);
+    }
+
     let mut steps = Vec::new();
     for pair in roads.windows(2) {
         let r1 = &graph.roads[pair[0].0];
