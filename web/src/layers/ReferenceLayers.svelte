@@ -10,7 +10,7 @@
   import Roads from "./roads/Roads.svelte";
   import Schools from "./Schools.svelte";
   import Settlements from "./Settlements.svelte";
-  import { cyclingFlow1, cyclingFlow2, cyclingFlow3 } from "./stores";
+  import { cyclingFlow1, cyclingFlow2 } from "./stores";
   import TownCentres from "./TownCentres.svelte";
   import UrbanAreas from "./UrbanAreas.svelte";
 </script>
@@ -19,11 +19,6 @@
 <DebugNptPmtiles />
 <CyclingFlowCoverage quintile={1} label="High" bind:show={$cyclingFlow1} />
 <CyclingFlowCoverage quintile={2} label="Medium" bind:show={$cyclingFlow2} />
-<CyclingFlowCoverage
-  quintile={3}
-  label="Above-minimum"
-  bind:show={$cyclingFlow3}
-/>
 <Schools />
 <TownCentres />
 <Settlements />

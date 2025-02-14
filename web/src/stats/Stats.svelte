@@ -73,14 +73,6 @@
     style:margin-top="4px"
     style:border="2px solid {tierColors.LocalAccess}"
   >
-    <Metric
-      label="Above-minimum cycling flow coverage"
-      pct={percent(
-        $stats.covered_flow_quintile_sums[2],
-        $stats.total_flow_quintile_sums[2],
-      )}
-    />
-
     <Metric label="Schools" pct={$stats.percent_reachable_schools} />
 
     <Metric

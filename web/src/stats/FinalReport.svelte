@@ -56,21 +56,6 @@
                   )}
                 </td>
               </tr>
-              <tr>
-                <th>Above-minimum cycling flow coverage</th>
-                <td>
-                  {percent2(
-                    baseline.covered_flow_quintile_sums[2],
-                    baseline.total_flow_quintile_sums[2],
-                  )}
-                </td>
-                <td>
-                  {percent2(
-                    $stats.covered_flow_quintile_sums[2],
-                    $stats.total_flow_quintile_sums[2],
-                  )}
-                </td>
-              </tr>
 
               <tr>
                 <th>Town centres</th>

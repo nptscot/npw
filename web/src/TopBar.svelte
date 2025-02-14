@@ -67,8 +67,8 @@
     {:else if $tier == "LocalAccess"}
       <p>
         To draw the local access route, connect schools, GPs, hospitals, green
-        spaces, neighbourhoods (especially deprived and densely populated ones),
-        and above-minimum cycling flow routes on the base map.
+        spaces, and neighbourhoods (especially deprived and densely populated
+        ones).
       </p>
     {:else if $tier == "LongDistance"}
       <ul>

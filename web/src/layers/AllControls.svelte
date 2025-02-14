@@ -17,7 +17,6 @@
   $: update(secondary, $allControls, ["Medium cycling flow", "Town centres"]);
 
   $: update(localAccess, $allControls, [
-    "Above-minimum cycling flow",
     "POIs",
     "Mesh density (grid)",
     "Mesh density (area)",

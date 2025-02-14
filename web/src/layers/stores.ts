@@ -13,7 +13,6 @@ export let cyclingFlow1 = writable(true);
 export let cyclingFlow2 = writable(false);
 export let townCentres = writable(false);
 
-export let cyclingFlow3 = writable(false);
 export let localPOIs = writable(false);
 
 export let settlements = writable(false);

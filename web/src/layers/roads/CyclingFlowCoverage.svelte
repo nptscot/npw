@@ -5,7 +5,6 @@
   import {
     cyclingFlow1,
     cyclingFlow2,
-    cyclingFlow3,
     debugAllCyclingFlow,
     debugCyclingFlowMin,
   } from "../stores";
@@ -19,9 +18,7 @@
       ? 1
       : $cyclingFlow2
         ? 2
-        : $cyclingFlow3
-          ? 3
-          : null;
+        : null;
 </script>
 
 <LineLayer
@@ -30,8 +27,7 @@
     ? [">=", ["get", "precalculated_flow"], $debugCyclingFlowMin]
     : ["==", ["get", "precalculated_flow_quintile"], quintile]}
   layout={{
-    visibility:
-      $cyclingFlow1 || $cyclingFlow2 || $cyclingFlow3 ? "visible" : "none",
+    visibility: $cyclingFlow1 || $cyclingFlow2 ? "visible" : "none",
   }}
   paint={{
     "line-color": "grey",
