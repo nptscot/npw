@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as Comlink from "comlink";
+  import Stats from "./stats/Stats.svelte";
   import "@picocss/pico/css/pico.conditional.jade.min.css";
   import type { Map } from "maplibre-gl";
   import maplibregl from "maplibre-gl";
@@ -25,12 +26,7 @@
   import { layerId } from "./common";
   import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";
   import { getKey, getLastOpenedFileKey } from "./common/files";
-  import {
-    Layout,
-    leftSidebarContents,
-    mapContents,
-    rightSidebarContents,
-  } from "./common/layout";
+  import { Layout, leftSidebarContents, mapContents } from "./common/layout";
   import StreetView from "./common/StreetView.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import { routeTool } from "./edit/stores";
@@ -165,7 +161,6 @@
 
   let leftSidebarDiv: HTMLDivElement;
   let mapDiv: HTMLDivElement;
-  let rightSidebarDiv: HTMLDivElement;
   $: if (leftSidebarDiv && $leftSidebarContents) {
     leftSidebarDiv.innerHTML = "";
     leftSidebarDiv.appendChild($leftSidebarContents);
@@ -173,10 +168,6 @@
   $: if (mapDiv && $mapContents) {
     mapDiv.innerHTML = "";
     mapDiv.appendChild($mapContents);
-  }
-  $: if (rightSidebarDiv && $rightSidebarContents) {
-    rightSidebarDiv.innerHTML = "";
-    rightSidebarDiv.appendChild($rightSidebarContents);
   }
 </script>
 
@@ -229,6 +220,8 @@
       <div bind:this={mapDiv} />
 
       {#if $backend}
+        <Stats />
+
         {#await $backend.getInvertedBoundary() then data}
           <GeoJSON {data}>
             <FillLayer
@@ -252,9 +245,5 @@
         {/if}
       {/if}
     </MapLibre>
-  </div>
-
-  <div slot="right" class="pico">
-    <div bind:this={rightSidebarDiv} />
   </div>
 </Layout>

@@ -5,6 +5,4 @@ export { default as SplitComponent } from "./SplitComponent.svelte";
 
 export let leftSidebarContents: Writable<HTMLDivElement | null> =
   writable(null);
-export let rightSidebarContents: Writable<HTMLDivElement | null> =
-  writable(null);
 export let mapContents: Writable<HTMLDivElement | null> = writable(null);

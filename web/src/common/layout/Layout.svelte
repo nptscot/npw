@@ -9,9 +9,6 @@
     <div class="main">
       <slot name="main" />
     </div>
-    <div class="right">
-      <slot name="right" />
-    </div>
   </div>
 </div>
 
@@ -35,14 +32,13 @@
     overflow: hidden;
   }
 
-  .left,
-  .right {
+  .left {
     width: 25%;
     overflow-y: auto;
     padding: 4px;
   }
 
   .main {
-    width: 50%;
+    width: 75%;
   }
 </style>
