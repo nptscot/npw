@@ -89,6 +89,7 @@ impl MapModel {
                 waypt2.point
             };
 
+            // TODO More careful with coord transforms for this case
             let line = Line::new(pt1, pt2);
             if let Some(midpt) = line.line_interpolate_point(0.5) {
                 return Ok(serde_json::to_string(&vec![(midpt.x(), midpt.y(), false)])?);
@@ -105,8 +106,11 @@ impl MapModel {
             }
 
             if let PathEntry::SnappedPoint(i) = entry {
-                let pt = self.graph.intersections[i.0].point;
-                extra_nodes.push((pt.x(), pt.y(), true));
+                let pt = self
+                    .graph
+                    .mercator
+                    .pt_to_wgs84(self.graph.intersections[i.0].point.into());
+                extra_nodes.push((pt.x, pt.y, true));
             }
         }
 
