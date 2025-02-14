@@ -413,10 +413,6 @@
 
     <slot name="extra-map" />
   </div>
-
-  <div slot="right">
-    <slot name="extra-right" />
-  </div>
 </SplitComponent>
 
 <style>

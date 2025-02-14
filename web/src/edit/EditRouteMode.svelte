@@ -164,6 +164,45 @@
 >
   <div slot="extra-left">
     <label>
+      Name:
+      <input type="text" bind:value={name} />
+    </label>
+
+    {#if sectionsGj.features.length > 0}
+      {#if overrideInfraType}
+        <p>
+          You've forced this route to always use {infraType}, assuming high
+          Level of Service.
+        </p>
+        <button on:click={() => (overrideInfraType = false)}>
+          Remove override
+        </button>
+      {:else}
+        <p>
+          The route you've drawn has been split into sections, automatically
+          picking an infrastructure type to achieve high Level of Service.
+        </p>
+        <button
+          on:click={() => {
+            overrideInfraType = true;
+            showOverrideModal = true;
+          }}
+        >
+          Override infrastructure type
+        </button>
+      {/if}
+
+      <br />
+
+      <SectionDiagram {sectionsGj} />
+    {/if}
+
+    <label>
+      Notes:
+      <textarea rows="5" bind:value={notes} />
+    </label>
+
+    <label>
       Tier:
       <select bind:value={tier}>
         <option value="Primary">Primary routes</option>
@@ -204,47 +243,6 @@
       </LineLayer>
     </GeoJSON>
   </span>
-
-  <div slot="extra-right">
-    <label>
-      Name:
-      <input type="text" bind:value={name} />
-    </label>
-
-    {#if sectionsGj.features.length > 0}
-      {#if overrideInfraType}
-        <p>
-          You've forced this route to always use {infraType}, assuming high
-          Level of Service.
-        </p>
-        <button on:click={() => (overrideInfraType = false)}>
-          Remove override
-        </button>
-      {:else}
-        <p>
-          The route you've drawn has been split into sections, automatically
-          picking an infrastructure type to achieve high Level of Service.
-        </p>
-        <button
-          on:click={() => {
-            overrideInfraType = true;
-            showOverrideModal = true;
-          }}
-        >
-          Override infrastructure type
-        </button>
-      {/if}
-
-      <br />
-
-      <SectionDiagram {sectionsGj} />
-    {/if}
-
-    <label>
-      Notes:
-      <textarea rows="5" bind:value={notes} />
-    </label>
-  </div>
 </RouteControls>
 
 {#if showOverrideModal}

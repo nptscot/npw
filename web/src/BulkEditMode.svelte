@@ -233,8 +233,6 @@
       <DrawRectangle map={$map} {newRectangle} />
     {/if}
   </div>
-
-  <div slot="right" />
 </SplitComponent>
 
 {#if showTierModal}
