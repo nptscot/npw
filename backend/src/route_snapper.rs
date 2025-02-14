@@ -71,21 +71,24 @@ impl MapModel {
         // If both waypoints aren't snapped, just return one extra node in the middle
         if !waypt1.snapped || !waypt2.snapped {
             // If one waypoint is snapped, use its snapped position for finding the middle
+            let profile = self.graph.profile_names["bicycle_direct"];
             let pt1 = if waypt1.snapped {
-                self.closest_intersection
-                    .nearest_neighbor(&waypt1.point)
-                    .map(|obj| *obj.geom())
-                    .unwrap_or(waypt1.point)
+                let i = self
+                    .graph
+                    .snap_to_road(waypt1.point.into(), profile)
+                    .intersection;
+                self.graph.intersections[i.0].point
             } else {
-                waypt1.point
+                waypt1.point.into()
             };
             let pt2 = if waypt2.snapped {
-                self.closest_intersection
-                    .nearest_neighbor(&waypt2.point)
-                    .map(|obj| *obj.geom())
-                    .unwrap_or(waypt2.point)
+                let i = self
+                    .graph
+                    .snap_to_road(waypt2.point.into(), profile)
+                    .intersection;
+                self.graph.intersections[i.0].point
             } else {
-                waypt2.point
+                waypt2.point.into()
             };
 
             // TODO More careful with coord transforms for this case
@@ -133,10 +136,10 @@ impl MapModel {
 
                 if let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) {
                     // Don't repeat that snapped point
-                    /*assert_eq!(
+                    assert_eq!(
                         path_entries.pop(),
                         Some(PathEntry::SnappedPoint(start.intersection))
-                    );*/
+                    );
                     pts.extend(route.linestring(&self.graph).into_inner());
                     for step in route.steps {
                         match step {
@@ -184,11 +187,11 @@ impl MapModel {
 
     fn waypt_to_path_entry(&self, waypt: &InputRouteWaypoint) -> PathEntry {
         if waypt.snapped {
+            let profile = self.graph.profile_names["bicycle_direct"];
             PathEntry::SnappedPoint(
-                self.closest_intersection
-                    .nearest_neighbor(&waypt.point)
-                    .unwrap()
-                    .data,
+                self.graph
+                    .snap_to_road(waypt.point.into(), profile)
+                    .intersection,
             )
         } else {
             PathEntry::FreePoint(waypt.point.into())
