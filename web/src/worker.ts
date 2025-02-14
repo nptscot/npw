@@ -248,7 +248,10 @@ export class Backend {
 
   fixUnreachablePath(kind: string, idx: number): SetRouteInput {
     this.checkReady();
-    return JSON.parse(this.inner!.fixUnreachablePath(kind, idx));
+    let route = JSON.parse(this.inner!.fixUnreachablePath(kind, idx));
+    // TODO Hack around this necessary duplication
+    route.full_path = route.feature.properties.full_path;
+    return route;
   }
 
   getConnectedComponents(): ConnectedComponents {

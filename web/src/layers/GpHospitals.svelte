@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { Feature, Point } from "geojson";
-  import { GeoJSON, SymbolLayer } from "svelte-maplibre";
+  import { GeoJSON, SymbolLayer, type LayerClickInfo } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
-  import { backend, mutationCounter } from "../stores";
+  import { autosave, backend, mutationCounter } from "../stores";
   import type { GPHospitals } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
   import { localPOIs as show } from "./stores";
@@ -25,6 +25,16 @@
   $: if ($show && $mutationCounter > 0) {
     recalc();
   }
+
+  async function fixUnreachable(e: CustomEvent<LayerClickInfo>) {
+    let input = await $backend!.fixUnreachablePath(
+      "gp_hospitals",
+      e.detail.features[0].properties!.idx,
+    );
+    await $backend!.setRoute(null, input);
+    await autosave();
+    hovered = null;
+  }
 </script>
 
 <GeoJSON {data} generateId>
@@ -44,9 +54,14 @@
     }}
     bind:hovered
     hoverCursor="pointer"
+    on:click={fixUnreachable}
   >
-    <Popup openOn="click" let:props>
-      {props.name} is a {props.kind}. It {props.reachable ? "is" : "is not"} reachable.
+    <Popup openOn="hover" let:props>
+      <div style="max-width: 30vw; max-height: 60vh; overflow: auto;">
+        {props.name} is a {props.kind}. It {props.reachable ? "is" : "is not"} reachable.
+        {#if !props.reachable}Click to add the black route to connect it to the
+          network.{/if}
+      </div>
     </Popup>
   </SymbolLayer>
 </GeoJSON>
