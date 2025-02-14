@@ -402,7 +402,10 @@ impl MapModel {
     /// For the route snapper, return a Feature with the full geometry and properties.
     #[wasm_bindgen(js_name = snapRoute)]
     pub fn snap_route_wasm(&self, raw_waypoints: JsValue) -> Result<String, JsValue> {
-        let waypoints: Vec<InputRouteWaypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
+        let mut waypoints: Vec<InputRouteWaypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
+        for w in &mut waypoints {
+            self.to_mercator(&mut w.point);
+        }
         self.snap_route(waypoints).map_err(err_to_js)
     }
 
@@ -414,9 +417,17 @@ impl MapModel {
         raw_waypt1: JsValue,
         raw_waypt2: JsValue,
     ) -> Result<String, JsValue> {
-        let waypt1: InputRouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt1)?;
-        let waypt2: InputRouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt2)?;
+        let mut waypt1: InputRouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt1)?;
+        let mut waypt2: InputRouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt2)?;
+        self.to_mercator(&mut waypt1.point);
+        self.to_mercator(&mut waypt2.point);
         self.get_extra_nodes(waypt1, waypt2).map_err(err_to_js)
+    }
+
+    fn to_mercator(&self, pt: &mut [f64; 2]) {
+        let c: Coord = Coord { x: pt[0], y: pt[1] };
+        let out = self.graph.mercator.pt_to_mercator(c);
+        *pt = [out.x, out.y];
     }
 
     // Returns (Road, forwards) pairs

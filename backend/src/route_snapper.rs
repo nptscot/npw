@@ -127,10 +127,10 @@ impl MapModel {
 
                 if let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) {
                     // Don't repeat that snapped point
-                    assert_eq!(
+                    /*assert_eq!(
                         path_entries.pop(),
                         Some(PathEntry::SnappedPoint(start.intersection))
-                    );
+                    );*/
                     for step in route.steps {
                         match step {
                             PathStep::Road { road, forwards } => {
@@ -143,6 +143,12 @@ impl MapModel {
                                         Dir::Backwards
                                     },
                                 ));
+                                let road = &self.graph.roads[road.0];
+                                path_entries.push(PathEntry::SnappedPoint(if forwards {
+                                    road.dst_i
+                                } else {
+                                    road.src_i
+                                }));
                             }
                             _ => unreachable!(),
                         }
@@ -308,9 +314,9 @@ fn find_minimal_waypoints(
     intersections.iter().cloned().collect()
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct InputRouteWaypoint {
-    point: [f64; 2],
+    pub point: [f64; 2],
     snapped: bool,
 }
 
