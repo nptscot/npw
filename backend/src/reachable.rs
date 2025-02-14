@@ -320,7 +320,18 @@ fn roads_to_steps(graph: &Graph, roads: Vec<RoadID>) -> Result<Vec<(RoadID, Dir)
             bail!("No intersection in common from {:?} to {:?}", r1.id, r2.id);
         }
     }
-    // TODO Deal with last road
+
+    // Handle the last pair
+    let r1 = &graph.roads[roads[roads.len() - 2].0];
+    let r2 = &graph.roads[roads[roads.len() - 1].0];
+    if r2.src_i == r1.src_i || r2.src_i == r1.dst_i {
+        steps.push((r2.id, Dir::Forwards));
+    } else if r2.dst_i == r1.src_i || r2.dst_i == r1.dst_i {
+        steps.push((r2.id, Dir::Backwards));
+    } else {
+        bail!("No intersection in common from {:?} to {:?}", r1.id, r2.id);
+    }
+
     Ok(steps)
 }
 
