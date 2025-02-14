@@ -27,6 +27,7 @@ import type {
   StaticRoad,
   Stats,
   TownCentres,
+  Waypoint,
 } from "./types";
 
 export class Backend {
@@ -67,11 +68,6 @@ export class Backend {
   renderDynamicRoads(): DynamicRoad[] {
     this.checkReady();
     return JSON.parse(this.inner!.renderDynamicRoads());
-  }
-
-  toRouteSnapper(): Uint8Array {
-    this.checkReady();
-    return this.inner!.toRouteSnapper();
   }
 
   getAllRoutes(): FeatureCollection<LineString, RouteProps> {
@@ -257,6 +253,19 @@ export class Backend {
   getConnectedComponents(): ConnectedComponents {
     this.checkReady();
     return JSON.parse(this.inner!.getConnectedComponents());
+  }
+
+  snapRoute(waypoints: Waypoint[]): Feature<LineString, RouteProps> {
+    this.checkReady();
+    return JSON.parse(this.inner!.snapRoute(waypoints));
+  }
+
+  getExtraNodes(
+    waypt1: Waypoint,
+    waypt2: Waypoint,
+  ): [number, number, boolean][] {
+    this.checkReady();
+    return JSON.parse(this.inner!.getExtraNodes(waypt1, waypt2));
   }
 
   private checkReady() {

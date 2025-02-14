@@ -69,11 +69,6 @@ impl MapModel {
         vec![b.min().x, b.min().y, b.max().x, b.max().y]
     }
 
-    #[wasm_bindgen(js_name = toRouteSnapper)]
-    pub fn to_route_snapper(&self) -> Vec<u8> {
-        bincode::serialize(&self.to_route_snapper_graph()).unwrap()
-    }
-
     /// Create or edit a route. Returns the ID
     #[wasm_bindgen(js_name = setRoute)]
     pub fn set_route_wasm(&mut self, id: Option<usize>, input: JsValue) -> Result<(), JsValue> {
@@ -403,6 +398,27 @@ impl MapModel {
         })
     }
 
+    /// For the route snapper, return a Feature with the full geometry and properties.
+    #[wasm_bindgen(js_name = snapRoute)]
+    pub fn snap_route(&self, raw_waypoints: JsValue) -> Result<String, JsValue> {
+        let waypoints: Vec<RouteWaypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
+        Err(JsValue::from_str("TODO"))
+    }
+
+    /// From exactly two waypoints, return a list of extra intermediate nodes and a boolean to
+    /// indicate if they're snappable or not.
+    #[wasm_bindgen(js_name = getExtraNodes)]
+    pub fn get_extra_nodes(
+        &self,
+        raw_waypt1: JsValue,
+        raw_waypt2: JsValue,
+    ) -> Result<String, JsValue> {
+        let waypt1: RouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt1)?;
+        let waypt2: RouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt2)?;
+
+        Err(JsValue::from_str("TODO"))
+    }
+
     // Returns (Road, forwards) pairs
     fn full_path_to_roads(&self, full_path: Vec<RouteNode>) -> anyhow::Result<Vec<(RoadID, Dir)>> {
         let mut intersections = Vec::new();
@@ -483,6 +499,12 @@ struct EvaluateRouteRequest {
 struct Savefile {
     routes: HashMap<usize, Route>,
     id_counter: usize,
+}
+
+#[derive(Deserialize)]
+struct RouteWaypoint {
+    point: [f64; 2],
+    snapped: bool,
 }
 
 fn err_to_js<E: std::fmt::Display>(err: E) -> JsValue {

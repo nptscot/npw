@@ -6,7 +6,6 @@
   import maplibregl from "maplibre-gl";
   // TODO Indirect dependencies
   import * as pmtiles from "pmtiles";
-  import { init, RouteTool } from "route-snapper-ts";
   import { onMount } from "svelte";
   import {
     FillLayer,
@@ -16,8 +15,7 @@
     ScaleControl,
   } from "svelte-maplibre";
   import { fetchWithProgress, Loading } from "svelte-utils";
-  import { emptyGeojson, Geocoder } from "svelte-utils/map";
-  import { writable } from "svelte/store";
+  import { Geocoder } from "svelte-utils/map";
   import hospital1Icon from "../assets/hospital_reachable.png";
   import hospital2Icon from "../assets/hospital_unreachable.png";
   import school1Icon from "../assets/school_reachable.png";
@@ -29,7 +27,6 @@
   import { Layout, leftSidebarContents, mapContents } from "./common/layout";
   import StreetView from "./common/StreetView.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
-  import { routeTool } from "./edit/stores";
   import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
   import PickReferenceStyle from "./layers/roads/PickReferenceStyle.svelte";
@@ -67,9 +64,6 @@
   }
 
   onMount(async () => {
-    // Note this is for the route-snapper, which doesn't run in a web worker
-    await init();
-
     let params = new URLSearchParams(window.location.search);
     $boundaryName = params.get("boundary") || "LAD_City of Edinburgh";
     loading = `Loading ${$boundaryName}`;
@@ -135,15 +129,6 @@
       lng: lerp(0.6, bbox[0], bbox[2]),
       lat: lerp(0.6, bbox[1], bbox[3]),
     };
-
-    // The stores are unused; the WASM API is used directly. This TS wrapper is unused.
-    $routeTool = new RouteTool(
-      map,
-      await backendWorker.toRouteSnapper(),
-      writable(emptyGeojson()),
-      writable(true),
-      writable(0),
-    );
 
     backend.set(backendWorker);
     await zoomToFit();

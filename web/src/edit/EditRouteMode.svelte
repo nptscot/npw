@@ -19,11 +19,11 @@
     routeA,
     routeB,
   } from "../stores";
-  import type { AutosplitRoute } from "../types";
+  import type { AutosplitRoute, Waypoint } from "../types";
   import PickInfraType from "./PickInfraType.svelte";
   import RouteControls from "./RouteControls.svelte";
   import SectionDiagram from "./SectionDiagram.svelte";
-  import { routeTool, waypoints, type Waypoint } from "./stores";
+  import { waypoints } from "./stores";
 
   export let map: Map;
   export let id: number | null;
@@ -64,7 +64,7 @@
         let full_path1 = JSON.parse(
           JSON.stringify(feature.properties.full_path),
         );
-        let output = JSON.parse($routeTool!.inner.calculateRoute($waypoints));
+        let output = await $backend!.snapRoute($waypoints);
         let waypts2 = JSON.parse(JSON.stringify(output.properties.waypoints));
         let full_path2 = JSON.parse(
           JSON.stringify(output.properties.full_path),
@@ -94,7 +94,7 @@
 
   async function finish() {
     try {
-      let feature = JSON.parse($routeTool!.inner.calculateRoute($waypoints));
+      let feature = await $backend!.snapRoute($waypoints);
       // TODO Is this possible still?
       if (!feature) {
         window.alert("No route drawn");
@@ -122,8 +122,8 @@
   }
 
   // TODO Unless we recalculate immediately, this will be very misleading!
-  function evalRoute() {
-    let feature = JSON.parse($routeTool!.inner.calculateRoute($waypoints));
+  async function evalRoute() {
+    let feature = await $backend!.snapRoute($waypoints);
     let pt1 = feature.geometry.coordinates[0];
     let pt2 =
       feature.geometry.coordinates[feature.geometry.coordinates.length - 1];
@@ -143,7 +143,7 @@
   ) {
     try {
       // TODO Wasteful; should RouteControls export a read-only view of this?
-      let feature = JSON.parse($routeTool!.inner.calculateRoute(waypts));
+      let feature = await $backend!.snapRoute(waypts);
       sectionsGj = await $backend!.autosplitRoute(
         id,
         feature.properties.full_path,

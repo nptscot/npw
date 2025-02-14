@@ -197,3 +197,10 @@ export interface DynamicRoad {
   current_infra: string | null;
   current_tier: Tier | null;
 }
+
+// Route snapper
+
+export interface Waypoint {
+  point: [number, number];
+  snapped: boolean;
+}

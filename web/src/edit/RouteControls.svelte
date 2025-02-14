@@ -1,13 +1,14 @@
 <script lang="ts">
-  import type { FeatureCollection } from "geojson";
+  import type { Feature, FeatureCollection } from "geojson";
   import type { Map, MapMouseEvent } from "maplibre-gl";
-  import { RouteTool } from "route-snapper-ts";
   import { onDestroy } from "svelte";
   import { GeoJSON, LineLayer, MapEvents, Marker } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
   import { HelpButton, layerId } from "../common";
   import { SplitComponent } from "../common/layout";
-  import { routeTool, waypoints, type Waypoint } from "./stores";
+  import { backend } from "../stores";
+  import type { Waypoint } from "../types";
+  import { waypoints } from "./stores";
 
   export let map: Map;
   export let finish: () => void;
@@ -17,7 +18,6 @@
 
   onDestroy(() => {
     $waypoints = [];
-    $routeTool?.stop();
     map.getCanvas().style.cursor = "inherit";
   });
 
@@ -33,19 +33,23 @@
     snapped: boolean;
   }
   let extraNodes: ExtraNode[] = [];
-  $: updateExtraNodes($routeTool, $waypoints, drawMode, draggingExtraNode);
+  $: updateExtraNodes($waypoints, drawMode, draggingExtraNode);
 
   let cursor: Waypoint | null = null;
   let hoveringOnMarker = false;
   let draggingMarker = false;
   let draggingExtraNode = false;
-  $: previewGj = getPreview(
-    $routeTool,
+
+  let previewGj: Feature | FeatureCollection = emptyGeojson();
+  $: updatePreview(
     $waypoints,
     drawMode,
     cursor,
     hoveringOnMarker || draggingMarker,
   );
+
+  let currentRouteGj: Feature | FeatureCollection = emptyGeojson();
+  $: updateCurrentRoute($waypoints);
 
   $: updateCursor($waypoints);
   function updateCursor(waypoints: Waypoint[]) {
@@ -119,49 +123,42 @@
     hoveringOnMarker = false;
   }
 
-  function calculateRoutes(
-    routeTool: RouteTool | null,
-    waypoints: Waypoint[],
-  ): FeatureCollection {
+  async function updateCurrentRoute(waypoints: Waypoint[]) {
     try {
-      if (routeTool) {
-        return JSON.parse(routeTool.inner.calculateRoute(waypoints));
-      }
-    } catch (err) {}
-    return emptyGeojson();
+      currentRouteGj = await $backend!.snapRoute(waypoints);
+    } catch (err) {
+      currentRouteGj = emptyGeojson();
+    }
   }
 
-  function getPreview(
-    routeTool: RouteTool | null,
+  async function updatePreview(
     waypoints: Waypoint[],
     drawMode: "append-start" | "append-end" | "adjust",
     cursor: Waypoint | null,
     suppress: boolean,
-  ): FeatureCollection {
+  ) {
     if (suppress) {
-      return emptyGeojson();
+      previewGj = emptyGeojson();
+      return;
     }
     try {
-      if (routeTool && waypoints.length > 0 && cursor) {
+      if (waypoints.length > 0 && cursor) {
         if (drawMode == "append-start") {
-          return JSON.parse(
-            routeTool.inner.calculateRoute([cursor, waypoints[0]]),
-          );
+          previewGj = await $backend!.snapRoute([cursor, waypoints[0]]);
+          return;
         } else if (drawMode == "append-end") {
-          return JSON.parse(
-            routeTool.inner.calculateRoute([
-              waypoints[waypoints.length - 1],
-              cursor,
-            ]),
-          );
+          previewGj = await $backend!.snapRoute([
+            waypoints[waypoints.length - 1],
+            cursor,
+          ]);
+          return;
         }
       }
     } catch (err) {}
-    return emptyGeojson();
+    previewGj = emptyGeojson();
   }
 
-  function updateExtraNodes(
-    routeTool: RouteTool | null,
+  async function updateExtraNodes(
     waypoints: Waypoint[],
     drawMode: "append-start" | "append-end" | "adjust",
     draggingExtraNode: boolean,
@@ -169,7 +166,7 @@
     if (draggingExtraNode) {
       return;
     }
-    if (!routeTool || drawMode != "adjust") {
+    if (drawMode != "adjust") {
       extraNodes = [];
       return;
     }
@@ -178,9 +175,7 @@
     let insertIdx = 1;
 
     for (let i = 0; i < waypoints.length - 1; i++) {
-      let extra = JSON.parse(
-        routeTool.inner.getExtraNodes(waypoints[i], waypoints[i + 1]),
-      );
+      let extra = await $backend!.getExtraNodes(waypoints[i], waypoints[i + 1]);
       for (let [x, y, snapped] of extra) {
         nodes.push({ point: [x, y], snapped, insertIdx });
       }
@@ -391,7 +386,7 @@
       </Marker>
     {/each}
 
-    <GeoJSON data={calculateRoutes($routeTool, $waypoints)} generateId>
+    <GeoJSON data={currentRouteGj}>
       <LineLayer
         {...layerId("snapper-lines")}
         paint={{
