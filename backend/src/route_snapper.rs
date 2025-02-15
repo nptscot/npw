@@ -15,10 +15,6 @@ impl MapModel {
         let mut feature = self.graph.mercator.to_wgs84_gj(&linestring);
         feature.set_property("length_meters", length);
 
-        /*let from_name = self.name_waypoint(&self.route.waypoints[0]);
-        let to_name = self.name_waypoint(self.route.waypoints.last().as_ref().unwrap());
-        feature.set_property("route_name", format!("Route from {from_name} to {to_name}"));*/
-
         let mut full_path = Vec::new();
         for entry in &path_entries {
             match entry {
@@ -46,7 +42,7 @@ impl MapModel {
         full_path.dedup();
         feature.set_property("full_path", serde_json::Value::Array(full_path));
 
-        // TODO These seem to get corrected to the snapped thing. Is it important?
+        // TODO These used to be corrected to the snapped position. Is that important?
         let mut waypoints = Vec::new();
         for waypt in input_waypoints {
             waypoints.push(
@@ -91,7 +87,8 @@ impl MapModel {
                 waypt2.point.into()
             };
 
-            // TODO More careful with coord transforms for this case
+            // TODO Need to be more careful with CRS here. But the frontend disabled freehand for
+            // now
             let line = Line::new(pt1, pt2);
             if let Some(midpt) = line.line_interpolate_point(0.5) {
                 return Ok(serde_json::to_string(&vec![(midpt.x(), midpt.y(), false)])?);
@@ -119,7 +116,7 @@ impl MapModel {
         Ok(serde_json::to_string(&extra_nodes)?)
     }
 
-    // TODO and the full linestring
+    /// Turns waypoints into a full path description and a LineString
     fn get_path_entries(&self, waypts: &Vec<InputRouteWaypoint>) -> (Vec<PathEntry>, LineString) {
         let profile = self.graph.profile_names["bicycle_direct"];
         let mut path_entries = Vec::new();
@@ -144,7 +141,6 @@ impl MapModel {
                     for step in route.steps {
                         match step {
                             PathStep::Road { road, forwards } => {
-                                // TODO What about the intersections?
                                 path_entries.push(PathEntry::Edge(
                                     road,
                                     if forwards {
@@ -208,7 +204,7 @@ enum PathEntry {
     // build up the line-string, they'll happen anyway.
 }
 
-// Mimic enough of what the route snapper creates, so the segment can be edited in the web app
+// Mimic the same output as snap_route, generating it from a different description.
 pub fn make_route_snapper_feature(
     graph: &Graph,
     ids: &[(RoadID, Dir)],
@@ -258,7 +254,7 @@ pub fn make_route_snapper_feature(
 }
 
 // From the full sequence of intersections in a route, find the snapped waypoints that will
-// reproduce this in the route snapper, which uses the bicycle_direct profile.
+// reproduce this using the bicycle_direct profile.
 fn find_minimal_waypoints(
     graph: &Graph,
     steps: &[(RoadID, Dir)],
