@@ -91,6 +91,8 @@
         gradient.limits,
         gradient.colorScale,
       ),
+      // TODO
+      street_space: invisibile,
       speed: makeRamp(["get", "speed"], speed.limits, speed.colorScale),
       los: constructMatchExpression(
         ["feature-state", "los"],
@@ -128,6 +130,8 @@
       existing_infra: true,
       traffic: true,
       gradient: true,
+      // TODO
+      street_space: false,
       speed: true,
       los: true,
       reachability: true,

@@ -84,6 +84,7 @@ const layerZorder = [
   "reference-roads",
   "cn-debug",
   "existing-infra-debug",
+  "street_space-debug",
   "traffic-debug",
   "speed_limit-debug",
   "los-debug",

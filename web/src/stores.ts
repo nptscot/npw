@@ -40,6 +40,7 @@ export type ReferenceRoadStyle =
   | "existing_infra"
   | "traffic"
   | "gradient"
+  | "street_space"
   | "speed"
   | "los"
   | "reachability"

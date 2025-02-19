@@ -1,7 +1,7 @@
 <script lang="ts">
   import { LineLayer, VectorTileSource } from "svelte-maplibre";
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
-  import { speed } from "../../colors";
+  import { speed, streetSpaceColors } from "../../colors";
   import { layerId, roadLineWidth } from "../../common";
   import { assetUrl, referenceRoadStyle } from "../../stores";
   import { debugOriginalData } from "../stores";
@@ -123,6 +123,27 @@
     layout={{
       visibility:
         $referenceRoadStyle == "cn" && $debugOriginalData ? "visible" : "none",
+    }}
+  />
+</VectorTileSource>
+
+<VectorTileSource url={`pmtiles://${assetUrl("streetspace.pmtiles")}`}>
+  <LineLayer
+    {...layerId("street_space-debug")}
+    sourceLayer="street_space"
+    paint={{
+      "line-color": constructMatchExpression(
+        ["get", "carriageway_2way"],
+        streetSpaceColors,
+        "cyan",
+      ),
+      "line-width": roadLineWidth(1),
+    }}
+    layout={{
+      visibility:
+        $referenceRoadStyle == "street_space" && $debugOriginalData
+          ? "visible"
+          : "none",
     }}
   />
 </VectorTileSource>

@@ -21,6 +21,14 @@ function rnet {
   wget https://github.com/nptscot/outputdata/releases/download/v2025-02-01/combined_network.gpkg -O tmp/combined_network.gpkg
 }
 
+function streetspace {
+  # For visualization
+  wget https://github.com/nptscot/outputdata/releases/download/v2025-02-01/os_networks_categorized_street_space_with_widths.pmtiles -O ../web/public/streetspace.pmtiles
+
+  # For analysis
+  wget https://github.com/nptscot/outputdata/releases/download/v2025-02-01/os_networks_categorized_street_space_with_widths.gpkg -O tmp/streetspace.gpkg
+}
+
 function schools {
   # From https://www.data.gov.uk/dataset/9a6f9d86-9698-4a5d-a2c8-89f3b212c52c/scottish-school-roll-and-locations
   wget https://maps.gov.scot/ATOM/shapefiles/SG_SchoolRoll_2023.zip
@@ -148,6 +156,7 @@ function greenspace {
 
 #core_net
 #rnet
+#streetspace
 #schools
 #town_centres ~/Downloads/Town_Centres_-_Scotland.json
 #gp_and_hospitals ~/Downloads/GP_Practices_-_Scotland.json ~/Downloads/NHS_Hospitals_-_Scotland.json

@@ -68,3 +68,9 @@ export let reachabilityColors = {
   reachable: "purple",
   severance: "red",
 };
+
+export let streetSpaceColors = {
+  "Not enough space": "red",
+  "Absolute minimum": "yellow",
+  "Desirable minimum": "green",
+};
