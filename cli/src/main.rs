@@ -13,7 +13,7 @@ use log::{info, warn};
 use serde::Deserialize;
 
 use self::disconnected::remove_disconnected_components;
-use backend::{Highway, MapModel, Tier};
+use backend::{AvailableWidth, Highway, MapModel, Tier};
 
 mod disconnected;
 
@@ -141,6 +141,8 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
     let precalculated_flows =
         read_precalculated_flows("../data_prep/tmp/combined_network.gpkg", &graph, timer)?;
 
+    let street_space = read_street_space("../data_prep/tmp/streetspace.gpkg", &graph, timer)?;
+
     let gradients = read_gradients("../data_prep/tmp/UK-dem-50m-4326.tif", &graph, timer)?;
 
     Ok(MapModel::create(
@@ -157,6 +159,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
         traffic_volumes,
         core_network,
         precalculated_flows,
+        street_space,
         gradients,
     ))
 }
@@ -290,6 +293,58 @@ fn read_precalculated_flows(path: &str, graph: &Graph, timer: &mut Timer) -> Res
     let mut results = Vec::new();
     for idx in 0..graph.roads.len() {
         results.push(get_anime_match(&matches, &source_data, idx).unwrap_or(0));
+    }
+    Ok(results)
+}
+
+fn read_street_space(
+    path: &str,
+    graph: &Graph,
+    timer: &mut Timer,
+) -> Result<Vec<Option<AvailableWidth>>> {
+    timer.step("read streetspace");
+    let dataset = Dataset::open(path)?;
+    let mut layer = dataset.layer(0)?;
+    let b = &graph.mercator.wgs84_bounds;
+    layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+
+    let mut source_geometry = Vec::new();
+    let mut source_data = Vec::new();
+    for input in layer.features() {
+        let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
+        graph.mercator.to_mercator_in_place(&mut geom);
+        let Some(space) = input.field_as_string_by_name("carriageway_2way")? else {
+            // Some are just missing
+            continue;
+        };
+        let space = match space.as_str() {
+            "Not enough space" => AvailableWidth::NotEnoughSpace,
+            "Absolute minimum" => AvailableWidth::AbsoluteMinimum,
+            "Desirable minimum" => AvailableWidth::DesirableMinimum,
+            x => bail!("Unknown carriageway_2way {x}"),
+        };
+
+        source_geometry.push(geom);
+        source_data.push(space);
+    }
+
+    timer.step("match roads to streetspace");
+    let distance_tolerance = 15.0;
+    let angle_tolerance = 10.0;
+    let matches = Anime::new(
+        source_geometry.into_iter(),
+        graph.roads.iter().map(|r| r.linestring.clone()),
+        distance_tolerance,
+        angle_tolerance,
+    )
+    .matches
+    .take()
+    .unwrap();
+
+    // TODO Only for big roads
+    let mut results = Vec::new();
+    for idx in 0..graph.roads.len() {
+        results.push(get_anime_match(&matches, &source_data, idx));
     }
     Ok(results)
 }

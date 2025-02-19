@@ -60,6 +60,7 @@ pub struct MapModel {
     core_network: Vec<Option<Tier>>,
     // Go Dutch totals for all purposes
     precalculated_flows: Vec<usize>,
+    street_space: Vec<Option<AvailableWidth>>,
     // mph
     speeds: Vec<usize>,
     // A percent. Positive if uphill in the forwards direction, negative if downhill
@@ -121,6 +122,13 @@ pub enum Tier {
     LongDistance,
 }
 
+#[derive(Clone, Copy, Debug, Enum, Serialize, Deserialize)]
+pub enum AvailableWidth {
+    NotEnoughSpace,
+    AbsoluteMinimum,
+    DesirableMinimum,
+}
+
 impl MapModel {
     // TODO For main.rs to create this. Can't make fields public without wasm_bindgen on them
     pub fn create(
@@ -137,6 +145,7 @@ impl MapModel {
         traffic_volumes: Vec<usize>,
         core_network: Vec<Option<Tier>>,
         precalculated_flows: Vec<usize>,
+        street_space: Vec<Option<AvailableWidth>>,
         gradients: Vec<f64>,
     ) -> Self {
         let speeds = graph
@@ -166,6 +175,7 @@ impl MapModel {
             traffic_volumes,
             core_network,
             precalculated_flows,
+            street_space,
             speeds,
             gradients,
             // Calculated below
@@ -243,6 +253,10 @@ impl MapModel {
             f.set_property(
                 "precalculated_flow_quintile",
                 stats.quintile(self.precalculated_flows[idx]),
+            );
+            f.set_property(
+                "street_space",
+                serde_json::to_value(self.street_space[idx]).unwrap(),
             );
 
             features.push(f);

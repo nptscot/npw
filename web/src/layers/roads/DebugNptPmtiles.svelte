@@ -1,7 +1,7 @@
 <script lang="ts">
   import { LineLayer, VectorTileSource } from "svelte-maplibre";
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
-  import { speed, streetSpaceColors } from "../../colors";
+  import { speed } from "../../colors";
   import { layerId, roadLineWidth } from "../../common";
   import { assetUrl, referenceRoadStyle } from "../../stores";
   import { debugOriginalData } from "../stores";
@@ -134,7 +134,11 @@
     paint={{
       "line-color": constructMatchExpression(
         ["get", "carriageway_2way"],
-        streetSpaceColors,
+        {
+          "Not enough space": "red",
+          "Absolute minimum": "yellow",
+          "Desirable minimum": "green",
+        },
         "cyan",
       ),
       "line-width": roadLineWidth(1),

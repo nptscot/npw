@@ -13,6 +13,7 @@
     levelOfServiceColors,
     reachabilityColors,
     speed,
+    streetSpaceColors,
     traffic,
   } from "../../colors";
   import { layerId, Link, roadLineWidth } from "../../common";
@@ -38,6 +39,8 @@
       return ["to-boolean", ["get", "cn"]];
     } else if (style == "existing_infra") {
       return ["to-boolean", ["get", "existing_infra"]];
+    } else if (style == "street_space") {
+      return ["to-boolean", ["get", "street_space"]];
     }
     return undefined;
   }
@@ -91,8 +94,11 @@
         gradient.limits,
         gradient.colorScale,
       ),
-      // TODO
-      street_space: invisibile,
+      street_space: constructMatchExpression(
+        ["get", "street_space"],
+        streetSpaceColors,
+        "cyan",
+      ),
       speed: makeRamp(["get", "speed"], speed.limits, speed.colorScale),
       los: constructMatchExpression(
         ["feature-state", "los"],
@@ -130,8 +136,7 @@
       existing_infra: true,
       traffic: true,
       gradient: true,
-      // TODO
-      street_space: false,
+      street_space: true,
       speed: true,
       los: true,
       reachability: true,
@@ -172,6 +177,11 @@
       Precalculated cycling flow: {props.precalculated_flow.toLocaleString()} (quintile
       {props.precalculated_flow_quintile})
     </p>
+    {#if props.street_space}
+      <p>
+        Does a two-way cycletrack fit within the carriageway? {props.street_space}
+      </p>
+    {/if}
     <a href={props.way} target="_blank">Open OSM</a>
 
     <hr />

@@ -184,6 +184,7 @@ export interface StaticRoad {
   existing_infra: string | null;
   precalculated_flow: number;
   precalculated_flow_quintile: number;
+  street_space: string;
 }
 
 export interface DynamicRoad {
