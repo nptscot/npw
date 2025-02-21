@@ -79,7 +79,7 @@
 
 <SplitComponent>
   <div slot="left">
-    <h2>Evaluate a route</h2>
+    <h2>Evaluate a journey</h2>
 
     <button on:click={() => ($mode = prevMode)}>Back</button>
 
@@ -111,7 +111,7 @@
       Move the <b>A</b>
       and
       <b>B</b>
-      pins to find a route. (Hint: right-click to set the first pin somewhere.)
+      pins. (Hint: right-click to set the first pin somewhere.)
     </p>
     <p>
       Note the direct route is shown, ignoring bad infrastructure. This is to

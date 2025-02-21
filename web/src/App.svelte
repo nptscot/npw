@@ -27,7 +27,7 @@
   import { Layout, leftSidebarContents, mapContents } from "./common/layout";
   import StreetView from "./common/StreetView.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
-  import EvaluateRouteMode from "./EvaluateRouteMode.svelte";
+  import EvaluateJourneyMode from "./EvaluateJourneyMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
   import PickReferenceStyle from "./layers/roads/PickReferenceStyle.svelte";
   import MainMode from "./MainMode.svelte";
@@ -223,8 +223,11 @@
           <MainMode />
         {:else if $mode.kind == "edit-route" && map}
           <EditRouteMode id={$mode.id} {map} />
-        {:else if $mode.kind == "evaluate-route"}
-          <EvaluateRouteMode prevMode={$mode.prevMode} browse={$mode.browse} />
+        {:else if $mode.kind == "evaluate-journey"}
+          <EvaluateJourneyMode
+            prevMode={$mode.prevMode}
+            browse={$mode.browse}
+          />
         {:else if $mode.kind == "bulk-edit"}
           <BulkEditMode />
         {/if}

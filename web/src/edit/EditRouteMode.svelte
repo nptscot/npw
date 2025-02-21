@@ -130,7 +130,7 @@
     $routeA = { lng: pt1[0], lat: pt1[1] };
     $routeB = { lng: pt2[0], lat: pt2[1] };
     $mode = {
-      kind: "evaluate-route",
+      kind: "evaluate-journey",
       prevMode: { kind: "edit-route", id },
       browse: [],
     };

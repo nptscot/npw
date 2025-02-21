@@ -33,12 +33,12 @@
       class="secondary"
       on:click={() =>
         ($mode = {
-          kind: "evaluate-route",
+          kind: "evaluate-journey",
           prevMode: { kind: "main" },
           browse: [],
         })}
     >
-      Evaluate a route
+      Evaluate a journey
     </button>
 
     <AllControls />
