@@ -2,7 +2,7 @@ use anyhow::Result;
 use graph::Timer;
 use serde::{Deserialize, Serialize};
 
-use crate::{utils::Quintiles, Highway, MapModel};
+use crate::{utils::Quintiles, MapModel};
 
 /// A summary of metrics. All percents are 0 to 1.
 #[derive(Default, Serialize, Deserialize)]
@@ -112,7 +112,7 @@ impl MapModel {
                 total_low_gradient_length += road.length_meters;
             }
 
-            if Highway::classify(&road.osm_tags).unwrap().is_main_road() {
+            if self.highways[idx].is_main_road() {
                 total_main_road_length += road.length_meters;
                 if self.infra_types[idx].is_some() {
                     covered_main_road_length += road.length_meters;

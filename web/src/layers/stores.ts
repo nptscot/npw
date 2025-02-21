@@ -27,7 +27,8 @@ export let severances = writable(false);
 export let debugOriginalData = writable(false);
 
 export let layersPerTier = {
-  Primary: [cyclingFlow1],
+  // TODO We want to auto-hide this one, but not auto-show it...
+  Primary: [cyclingFlow1, mainRoadCoverage],
   Secondary: [cyclingFlow2, townCentres],
   LocalAccess: [localPOIs],
   LongDistance: [settlements],

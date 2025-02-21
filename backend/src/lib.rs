@@ -56,6 +56,7 @@ pub struct MapModel {
     greenspaces: Vec<places::Greenspace>,
 
     // Per RoadID, static data
+    highways: Vec<Highway>,
     traffic_volumes: Vec<usize>,
     core_network: Vec<Option<Tier>>,
     // Go Dutch totals for all purposes
@@ -148,10 +149,16 @@ impl MapModel {
         street_space: Vec<Option<AvailableWidth>>,
         gradients: Vec<f64>,
     ) -> Self {
+        let highways: Vec<_> = graph
+            .roads
+            .iter()
+            .map(|r| Highway::classify(&r.osm_tags).unwrap())
+            .collect();
         let speeds = graph
             .roads
             .iter()
-            .map(|r| level_of_service::get_speed_mph(&r.osm_tags))
+            .enumerate()
+            .map(|(idx, r)| level_of_service::get_speed_mph(highways[idx], &r.osm_tags))
             .collect();
         let infra_types = std::iter::repeat(None).take(graph.roads.len()).collect();
         let override_infra_type = std::iter::repeat(false).take(graph.roads.len()).collect();
@@ -172,6 +179,7 @@ impl MapModel {
             settlements,
             data_zones,
             greenspaces,
+            highways,
             traffic_volumes,
             core_network,
             precalculated_flows,
@@ -240,10 +248,7 @@ impl MapModel {
             let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
             f.set_property("id", idx);
             f.set_property("way", road.way.to_string());
-            f.set_property(
-                "is_main_road",
-                Highway::classify(&road.osm_tags).unwrap().is_main_road(),
-            );
+            f.set_property("is_main_road", self.highways[idx].is_main_road());
 
             f.set_property("traffic", self.traffic_volumes[idx]);
             f.set_property("cn", serde_json::to_value(self.core_network[idx]).unwrap());

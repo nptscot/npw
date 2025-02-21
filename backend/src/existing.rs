@@ -2,11 +2,13 @@ use std::time::Duration;
 
 use geo::{Euclidean, Length, LineString};
 use graph::Direction;
+use serde::{Deserialize, Serialize};
 use utils::Tags;
 
 use crate::{level_of_service::get_speed_mph, InfraType};
 
 /// All of the OSM highway types used anywhere. This forces exhaustive matching of all cases.
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub enum Highway {
     Motorway,
     Trunk,
@@ -98,14 +100,13 @@ pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Dura
 pub fn car_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration) {
     let exclude = (Direction::None, Duration::ZERO);
 
-    if let Some(hwy) = Highway::classify(tags) {
-        if matches!(
-            hwy,
-            Highway::Footway | Highway::Cycleway | Highway::Pedestrian | Highway::Path
-        ) {
-            return exclude;
-        }
-    } else {
+    let Some(hwy) = Highway::classify(tags) else {
+        return exclude;
+    };
+    if matches!(
+        hwy,
+        Highway::Footway | Highway::Cycleway | Highway::Pedestrian | Highway::Path
+    ) {
         return exclude;
     }
 
@@ -117,7 +118,7 @@ pub fn car_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration
         Direction::Both
     };
     // mph to m/s
-    let speed = (get_speed_mph(tags) as f64) / 0.44704;
+    let speed = (get_speed_mph(hwy, tags) as f64) / 0.44704;
     let cost = Duration::from_secs_f64(linestring.length::<Euclidean>() / speed);
     (dir, cost)
 }

@@ -154,9 +154,7 @@ pub fn get_level_of_service(infra_type: InfraType, speed: usize, traffic: usize)
 }
 
 // TODO Unit test
-pub fn get_speed_mph(tags: &Tags) -> usize {
-    let hwy = Highway::classify(tags).unwrap();
-
+pub fn get_speed_mph(hwy: Highway, tags: &Tags) -> usize {
     if tags.is("maxspeed", "national") {
         return if matches!(hwy, Highway::Motorway) {
             70
