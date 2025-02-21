@@ -8,7 +8,6 @@ import type {
   Position,
 } from "geojson";
 import type {
-  AreaMeshDensity,
   AutosplitRoute,
   AutosplitRouteByGradient,
   ConnectedComponents,
@@ -168,11 +167,6 @@ export class Backend {
   recalculateODStats(): ODStats {
     this.checkReady();
     return JSON.parse(this.inner!.recalculateODStats());
-  }
-
-  getAreaMeshDensity(): AreaMeshDensity {
-    this.checkReady();
-    return JSON.parse(this.inner!.getAreaMeshDensity());
   }
 
   getGridMeshDensity(

@@ -21,7 +21,6 @@ export let settlements = writable(false);
 export let deprivedPopulation = writable(false);
 export let allPopulation = writable(false);
 export let gridMeshDensity = writable(false);
-export let areaMeshDensity = writable(false);
 
 export let severances = writable(false);
 export let debugOriginalData = writable(false);

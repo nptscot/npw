@@ -252,11 +252,6 @@ impl MapModel {
         Ok(())
     }
 
-    #[wasm_bindgen(js_name = getAreaMeshDensity)]
-    pub fn get_area_mesh_density(&self) -> Result<String, JsValue> {
-        self.calculate_area_mesh_density().map_err(err_to_js)
-    }
-
     #[wasm_bindgen(js_name = getGridMeshDensity)]
     pub fn get_grid_mesh_density(
         &self,

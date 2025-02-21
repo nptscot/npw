@@ -1,6 +1,5 @@
 <script lang="ts">
   import AllPopulation from "./AllPopulation.svelte";
-  import AreaMeshDensity from "./AreaMeshDensity.svelte";
   import CyclingFlowCoverage from "./CyclingFlowCoverage.svelte";
   import DeprivedPopulation from "./DeprivedPopulation.svelte";
   import GpHospitals from "./GpHospitals.svelte";
@@ -29,5 +28,4 @@
 <UrbanAreas />
 <DeprivedPopulation />
 <AllPopulation />
-<AreaMeshDensity />
 <GridMeshDensity />

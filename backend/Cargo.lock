@@ -68,8 +68,6 @@ dependencies = [
  "geo",
  "geojson",
  "graph",
- "i_float",
- "i_overlay",
  "js-sys",
  "log",
  "nanorand",

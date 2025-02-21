@@ -1,13 +1,8 @@
 <script lang="ts">
-  import {
-    FillLayer,
-    GeoJSON,
-    hoverStateFilter,
-    LineLayer,
-  } from "svelte-maplibre";
+  import { FillLayer, GeoJSON, LineLayer } from "svelte-maplibre";
   import { SequentialLegend } from "svelte-utils";
-  import { makeRamp, Popup } from "svelte-utils/map";
-  import { layerId, percent } from "../common";
+  import { makeRamp } from "svelte-utils/map";
+  import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { GridMeshDensity } from "../types";
   import LayerControls from "./LayerControls.svelte";
@@ -44,28 +39,21 @@
   }
 </script>
 
-<LayerControls name="Mesh density (grid)" bind:show={$show}>
+<LayerControls name="Mesh density" bind:show={$show}>
   <SequentialLegend {colorScale} limits={legendLimits} />
 </LayerControls>
 
 <GeoJSON {data} generateId>
   <FillLayer
     {...layerId("mesh-density-grid")}
-    manageHoverState
     paint={{
       "fill-color": makeRamp(["get", "routes"], limits, colorScale),
-      "fill-opacity": hoverStateFilter(0.5, 0.8),
+      "fill-opacity": 0.5,
     }}
     layout={{
       visibility: $show ? "visible" : "none",
     }}
-  >
-    <Popup openOn="hover" let:props>
-      <p>{props.routes.toFixed(1)} meters of routes inside</p>
-      <p>{props.total.toFixed(1)} meters of all roads inside</p>
-      <p>So that's {percent(props.routes, props.total)}</p>
-    </Popup>
-  </FillLayer>
+  />
 
   <LineLayer
     {...layerId("mesh-density-grid-outline")}

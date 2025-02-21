@@ -16,11 +16,7 @@
 
   $: update(secondary, $allControls, ["Medium cycling flow", "Town centres"]);
 
-  $: update(localAccess, $allControls, [
-    "POIs",
-    "Mesh density (grid)",
-    "Mesh density (area)",
-  ]);
+  $: update(localAccess, $allControls, ["POIs", "Mesh density"]);
 
   $: update(longDistance, $allControls, ["Urban areas", "Settlements"]);
 
