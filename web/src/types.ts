@@ -193,6 +193,7 @@ export interface StaticRoad {
   id: number;
   way: number;
   is_main_road: boolean;
+  within_settlement: boolean;
   traffic: number;
   cn: Tier | null;
   speed: number;

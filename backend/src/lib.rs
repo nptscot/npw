@@ -57,6 +57,7 @@ pub struct MapModel {
 
     // Per RoadID, static data
     highways: Vec<Highway>,
+    within_settlement: Vec<bool>,
     traffic_volumes: Vec<usize>,
     core_network: Vec<Option<Tier>>,
     // Go Dutch totals for all purposes
@@ -154,6 +155,12 @@ impl MapModel {
             .iter()
             .map(|r| Highway::classify(&r.osm_tags).unwrap())
             .collect();
+        let within_settlement = graph
+            .roads
+            .iter()
+            // We could make one set, but this isn't that slow
+            .map(|r| settlements.iter().any(|s| s.roads.contains(&r.id)))
+            .collect();
         let speeds = graph
             .roads
             .iter()
@@ -180,6 +187,7 @@ impl MapModel {
             data_zones,
             greenspaces,
             highways,
+            within_settlement,
             traffic_volumes,
             core_network,
             precalculated_flows,
@@ -249,6 +257,7 @@ impl MapModel {
             f.set_property("id", idx);
             f.set_property("way", road.way.to_string());
             f.set_property("is_main_road", self.highways[idx].is_main_road());
+            f.set_property("within_settlement", self.within_settlement[idx]);
 
             f.set_property("traffic", self.traffic_volumes[idx]);
             f.set_property("cn", serde_json::to_value(self.core_network[idx]).unwrap());

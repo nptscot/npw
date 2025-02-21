@@ -6,7 +6,7 @@
 
 <LineLayer
   {...layerId("uncovered-main-roads")}
-  filter={["get", "is_main_road"]}
+  filter={["all", ["get", "is_main_road"], ["get", "within_settlement"]]}
   layout={{
     visibility: $mainRoadCoverage ? "visible" : "none",
   }}

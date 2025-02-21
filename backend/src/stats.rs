@@ -112,7 +112,7 @@ impl MapModel {
                 total_low_gradient_length += road.length_meters;
             }
 
-            if self.highways[idx].is_main_road() {
+            if self.highways[idx].is_main_road() && self.within_settlement[idx] {
                 total_main_road_length += road.length_meters;
                 if self.infra_types[idx].is_some() {
                     covered_main_road_length += road.length_meters;
