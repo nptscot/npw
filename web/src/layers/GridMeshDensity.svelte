@@ -18,11 +18,13 @@
     features: [],
   };
 
-  let colorScale = ["#d7191c", "#fdae61", "#a6d96a", "#1a9641"];
-  // TODO Percents?
-  let limits = [0, 100, 200, 300, 1000];
+  let colorScale = ["#d7191c", "#87d668", "#3a9120", "#054d05"];
+  // Route length
+  let limits = [0, 1_600, 3_200, 6_400];
+  // Mesh density units
+  let legendLimits = [">800m", "≤800m", "≤400m", "≤200m"];
 
-  let resolution = 200;
+  let resolution = 800;
   let xOffset = 0;
   let yOffset = 0;
 
@@ -43,22 +45,7 @@
 </script>
 
 <LayerControls name="Mesh density (grid)" bind:show={$show}>
-  <SequentialLegend {colorScale} {limits} />
-
-  <label>
-    Resolution (m): {resolution}
-    <input type="range" bind:value={resolution} min="100" max="1000" />
-  </label>
-
-  <label>
-    X-offset (%): {xOffset}
-    <input type="range" bind:value={xOffset} min="0" max="1" step="0.1" />
-  </label>
-
-  <label>
-    Y-offset (%): {yOffset}
-    <input type="range" bind:value={yOffset} min="0" max="1" step="0.1" />
-  </label>
+  <SequentialLegend {colorScale} limits={legendLimits} />
 </LayerControls>
 
 <GeoJSON {data} generateId>

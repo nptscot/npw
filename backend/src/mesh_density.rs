@@ -1,7 +1,7 @@
 use anyhow::Result;
 use geo::{
-    Area, BooleanOps, BoundingRect, Coord, Euclidean, Length, LineString, MultiLineString, Polygon,
-    Rect,
+    Area, BooleanOps, BoundingRect, Coord, Euclidean, Intersects, Length, LineString,
+    MultiLineString, Polygon, Rect,
 };
 use geojson::FeatureCollection;
 use i_float::f64_point::F64Point;
@@ -99,10 +99,9 @@ impl MapModel {
         x_offset: f64,
         y_offset: f64,
     ) -> Result<String> {
-        // TODO Resolution depends on urban/rural. And weight by population?
-
         // Make a 2D grid covering the entire area. Each tile counts (total length of routes built
         // inside, total length of all roads inside).
+        // TODO We can stop counting the total length of roads inside?
         // TODO We don't actually use the grid structure at all
         let mut grid: Grid<(f64, f64)> = Grid::new(
             (self.graph.mercator.width / resolution).ceil() as usize,
@@ -160,6 +159,15 @@ impl MapModel {
                     },
                 )
                 .to_polygon();
+
+                // Also check if any settlement intersects this
+                if self
+                    .settlements
+                    .iter()
+                    .all(|s| !s.polygon.intersects(&square))
+                {
+                    continue;
+                }
 
                 let mut f = self.graph.mercator.to_wgs84_gj(&square);
                 f.set_property("routes", routes);
