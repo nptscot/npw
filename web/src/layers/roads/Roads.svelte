@@ -21,6 +21,7 @@
   } from "../../stores";
   import { type DynamicRoad } from "../../types";
   import CyclingFlowCoverage from "./CyclingFlowCoverage.svelte";
+  import MainRoadCoverage from "./MainRoadCoverage.svelte";
   import ReferenceRoads from "./ReferenceRoads.svelte";
 
   let lastUpdate = 0;
@@ -142,6 +143,7 @@
       <ReferenceRoads {dynamicData} />
 
       <CyclingFlowCoverage />
+      <MainRoadCoverage />
     </GeoJSON>
   {/await}
 {/if}

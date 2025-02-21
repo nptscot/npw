@@ -2,7 +2,7 @@ use anyhow::Result;
 use graph::Timer;
 use serde::{Deserialize, Serialize};
 
-use crate::{utils::Quintiles, MapModel};
+use crate::{utils::Quintiles, Highway, MapModel};
 
 /// A summary of metrics. All percents are 0 to 1.
 #[derive(Default, Serialize, Deserialize)]
@@ -17,6 +17,9 @@ pub struct Stats {
 
     covered_flow_quintile_sums: Vec<usize>,
     total_flow_quintile_sums: Vec<usize>,
+
+    total_main_road_length: f64,
+    covered_main_road_length: f64,
 
     total_network_length: f64,
     total_low_gradient_length: f64,
@@ -101,10 +104,19 @@ impl MapModel {
 
         let mut total_network_length = 0.0;
         let mut total_low_gradient_length = 0.0;
+        let mut total_main_road_length = 0.0;
+        let mut covered_main_road_length = 0.0;
         for (idx, road) in self.graph.roads.iter().enumerate() {
             total_network_length += road.length_meters;
             if self.gradients[idx].abs() <= 3.0 {
                 total_low_gradient_length += road.length_meters;
+            }
+
+            if Highway::classify(&road.osm_tags).unwrap().is_main_road() {
+                total_main_road_length += road.length_meters;
+                if self.infra_types[idx].is_some() {
+                    covered_main_road_length += road.length_meters;
+                }
             }
         }
 
@@ -122,6 +134,9 @@ impl MapModel {
 
             total_network_length,
             total_low_gradient_length,
+
+            total_main_road_length,
+            covered_main_road_length,
         }
     }
 

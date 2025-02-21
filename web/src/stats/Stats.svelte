@@ -56,6 +56,14 @@
               $stats.total_network_length,
             )}
           />
+
+          <Metric
+            label="Coherence (main road coverage)"
+            pct={percent(
+              $stats.covered_main_road_length,
+              $stats.total_main_road_length,
+            )}
+          />
         </div>
 
         <div style:padding="4px" style:border="2px solid {tierColors.Primary}">

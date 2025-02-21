@@ -6,6 +6,7 @@
   import GpHospitals from "./GpHospitals.svelte";
   import Greenspaces from "./Greenspaces.svelte";
   import GridMeshDensity from "./GridMeshDensity.svelte";
+  import MainRoadCoverage from "./MainRoadCoverage.svelte";
   import DebugNptPmtiles from "./roads/DebugNptPmtiles.svelte";
   import Roads from "./roads/Roads.svelte";
   import Schools from "./Schools.svelte";
@@ -19,6 +20,7 @@
 <DebugNptPmtiles />
 <CyclingFlowCoverage quintile={1} label="High" bind:show={$cyclingFlow1} />
 <CyclingFlowCoverage quintile={2} label="Medium" bind:show={$cyclingFlow2} />
+<MainRoadCoverage />
 <Schools />
 <TownCentres />
 <Settlements />

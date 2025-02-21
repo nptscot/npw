@@ -12,7 +12,7 @@
 
   $: update(basic, $allControls, ["SIMD", "Population"]);
 
-  $: update(primary, $allControls, ["High cycling flow"]);
+  $: update(primary, $allControls, ["High cycling flow", "Main road coverage"]);
 
   $: update(secondary, $allControls, ["Medium cycling flow", "Town centres"]);
 

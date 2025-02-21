@@ -240,6 +240,10 @@ impl MapModel {
             let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
             f.set_property("id", idx);
             f.set_property("way", road.way.to_string());
+            f.set_property(
+                "is_main_road",
+                Highway::classify(&road.osm_tags).unwrap().is_main_road(),
+            );
 
             f.set_property("traffic", self.traffic_volumes[idx]);
             f.set_property("cn", serde_json::to_value(self.core_network[idx]).unwrap());

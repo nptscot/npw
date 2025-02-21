@@ -75,6 +75,9 @@ export interface Stats {
 
   total_network_length: number;
   total_low_gradient_length: number;
+
+  total_main_road_length: number;
+  covered_main_road_length: number;
 }
 
 export type Schools = FeatureCollection<
@@ -189,6 +192,7 @@ export type AutosplitRouteByGradient = FeatureCollection<
 export interface StaticRoad {
   id: number;
   way: number;
+  is_main_road: boolean;
   traffic: number;
   cn: Tier | null;
   speed: number;

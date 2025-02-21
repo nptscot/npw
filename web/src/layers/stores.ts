@@ -9,6 +9,7 @@ export let allControls: Writable<Map<string, HTMLDivElement>> = writable(
 export let debugAllCyclingFlow = writable(false);
 export let debugCyclingFlowMin = writable(0);
 export let cyclingFlow1 = writable(true);
+export let mainRoadCoverage = writable(false);
 
 export let cyclingFlow2 = writable(false);
 export let townCentres = writable(false);

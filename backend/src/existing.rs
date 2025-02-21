@@ -68,6 +68,14 @@ impl Highway {
 
         Some(hwy)
     }
+
+    pub fn is_main_road(&self) -> bool {
+        // Motorway can't be drawn on, so ignore it
+        matches!(
+            self,
+            Highway::Trunk | Highway::Primary | Highway::Secondary | Highway::Tertiary
+        )
+    }
 }
 
 /// This determines what's in the graph. The cost function is just based on distance.

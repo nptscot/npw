@@ -164,6 +164,7 @@
   hoverCursor="pointer"
 >
   <Popup openOn="click" let:props>
+    <p>Main road? {props.is_main_road ? "yes" : "no"}</p>
     <p>Traffic: {props.traffic.toLocaleString()}</p>
     <p>Gradient: {props.gradient.toFixed(1)}%</p>
     <p>Speed: {props.speed} mph</p>
