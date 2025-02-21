@@ -48,6 +48,16 @@
       <details open>
         <summary>Stats</summary>
 
+        <div style:padding="4px" style:border="2px solid black">
+          <Metric
+            label="Comfort (low gradient)"
+            pct={percent(
+              $stats.total_low_gradient_length,
+              $stats.total_network_length,
+            )}
+          />
+        </div>
+
         <div style:padding="4px" style:border="2px solid {tierColors.Primary}">
           <Metric
             label="High cycling flow coverage"

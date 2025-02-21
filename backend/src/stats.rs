@@ -14,8 +14,12 @@ pub struct Stats {
     percent_reachable_greenspaces: f64,
     percent_reachable_imd_population: f64,
     percent_reachable_population: f64,
+
     covered_flow_quintile_sums: Vec<usize>,
     total_flow_quintile_sums: Vec<usize>,
+
+    total_network_length: f64,
+    total_low_gradient_length: f64,
 }
 
 impl MapModel {
@@ -95,6 +99,15 @@ impl MapModel {
             }
         }
 
+        let mut total_network_length = 0.0;
+        let mut total_low_gradient_length = 0.0;
+        for (idx, road) in self.graph.roads.iter().enumerate() {
+            total_network_length += road.length_meters;
+            if self.gradients[idx].abs() <= 3.0 {
+                total_low_gradient_length += road.length_meters;
+            }
+        }
+
         Stats {
             percent_reachable_schools,
             percent_reachable_gp_hospitals,
@@ -103,8 +116,12 @@ impl MapModel {
             percent_reachable_greenspaces,
             percent_reachable_imd_population,
             percent_reachable_population,
+
             covered_flow_quintile_sums: covered_quintile_sums.to_vec(),
             total_flow_quintile_sums: flow_stats.total_quintile_sums.to_vec(),
+
+            total_network_length,
+            total_low_gradient_length,
         }
     }
 

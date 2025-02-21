@@ -69,8 +69,12 @@ export interface Stats {
   percent_reachable_greenspaces: number;
   percent_reachable_imd_population: number;
   percent_reachable_population: number;
+
   covered_flow_quintile_sums: number[];
   total_flow_quintile_sums: number[];
+
+  total_network_length: number;
+  total_low_gradient_length: number;
 }
 
 export type Schools = FeatureCollection<
