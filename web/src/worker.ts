@@ -10,6 +10,7 @@ import type {
 import type {
   AreaMeshDensity,
   AutosplitRoute,
+  AutosplitRouteByGradient,
   ConnectedComponents,
   DataZones,
   DynamicRoad,
@@ -123,9 +124,7 @@ export class Backend {
     );
   }
 
-  autosplitRouteByGradient(
-    full_path: RouteNode[],
-  ): FeatureCollection<LineString, { gradient_group: string }> {
+  autosplitRouteByGradient(full_path: RouteNode[]): AutosplitRouteByGradient {
     this.checkReady();
     return JSON.parse(this.inner!.autosplitRouteByGradient(full_path));
   }

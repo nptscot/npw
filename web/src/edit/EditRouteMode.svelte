@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { FeatureCollection } from "geojson";
   import type { Map } from "maplibre-gl";
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
@@ -16,10 +15,15 @@
     routeA,
     routeB,
   } from "../stores";
-  import type { AutosplitRoute, Waypoint } from "../types";
+  import type {
+    AutosplitRoute,
+    AutosplitRouteByGradient,
+    Waypoint,
+  } from "../types";
+  import GradientSectionDiagram from "./GradientSectionDiagram.svelte";
+  import InfraTypeSectionDiagram from "./InfraTypeSectionDiagram.svelte";
   import PickInfraType from "./PickInfraType.svelte";
   import RouteControls from "./RouteControls.svelte";
-  import SectionDiagram from "./SectionDiagram.svelte";
   import { waypoints } from "./stores";
 
   export let map: Map;
@@ -37,7 +41,8 @@
   let breakdown: "infra_type" | "gradient" = "infra_type";
 
   let infraSectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
-  let gradientSectionsGj: FeatureCollection = emptyGeojson();
+  let gradientSectionsGj: AutosplitRouteByGradient =
+    emptyGeojson() as AutosplitRouteByGradient;
   $: recalculateSections($waypoints, overrideInfraType, infraType, breakdown);
 
   onMount(async () => {
@@ -143,7 +148,7 @@
     breakdown: "infra_type" | "gradient",
   ) {
     infraSectionsGj = emptyGeojson() as AutosplitRoute;
-    gradientSectionsGj = emptyGeojson();
+    gradientSectionsGj = emptyGeojson() as AutosplitRouteByGradient;
 
     try {
       // TODO Wasteful; should RouteControls export a read-only view of this?
@@ -212,9 +217,11 @@
       <br />
 
       {#if breakdown == "infra_type"}
-        <SectionDiagram sectionsGj={infraSectionsGj} />
+        <QualitativeLegend colors={infraTypeColors} />
+        <InfraTypeSectionDiagram sectionsGj={infraSectionsGj} />
       {:else}
         <QualitativeLegend colors={gradientColors} horiz />
+        <GradientSectionDiagram sectionsGj={gradientSectionsGj} />
       {/if}
     {/if}
 

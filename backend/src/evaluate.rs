@@ -128,6 +128,7 @@ impl MapModel {
         {
             let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
             f.set_property("gradient_group", gradient);
+            f.set_property("length", linestring.length::<Euclidean>());
             features.push(f);
         }
         Ok(serde_json::to_string(&GeoJson::from(features))?)

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { notNull, QualitativeLegend } from "svelte-utils";
+  import { notNull } from "svelte-utils";
   import { infraTypeColors } from "../colors";
   import { sum } from "../common";
   import type { AutosplitRoute } from "../types";
@@ -8,8 +8,6 @@
 
   $: total = sum(sectionsGj.features.map((f) => f.properties.length));
 </script>
-
-<QualitativeLegend colors={infraTypeColors} />
 
 <div style="display: flex">
   {#each sectionsGj.features as f}

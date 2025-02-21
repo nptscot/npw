@@ -174,6 +174,14 @@ export type AutosplitRoute = FeatureCollection<
   { kind: string; length: number; infra_type?: string }
 >;
 
+export type AutosplitRouteByGradient = FeatureCollection<
+  LineString,
+  {
+    gradient_group: "<= 3%" | "3 - 5%" | "5 - 7%" | "7 - 10%" | "> 10%";
+    length: number;
+  }
+>;
+
 export interface StaticRoad {
   id: number;
   way: number;
