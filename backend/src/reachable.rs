@@ -202,7 +202,7 @@ impl MapModel {
                 }
 
                 let steps = roads_to_steps(&self.graph, roads_in_order)?;
-                let linestring = glue_route(&self.graph, &steps);
+                let linestring = glue_route(&self.graph, &steps).linestring(&self.graph);
 
                 return Ok(serde_json::to_string(&Route {
                     feature: make_route_snapper_feature(&self.graph, &steps, &linestring),

@@ -123,6 +123,15 @@ impl MapModel {
             .map_err(err_to_js)
     }
 
+    /// Splits a route into sections by gradient, returning a FeatureCollection
+    #[wasm_bindgen(js_name = autosplitRouteByGradient)]
+    pub fn autosplit_route_by_gradient_wasm(&self, input: JsValue) -> Result<String, JsValue> {
+        // TODO Or take a full Route as input and reuse parse_route?
+        let full_path: Vec<RouteNode> = serde_wasm_bindgen::from_value(input)?;
+        let roads = self.full_path_to_roads(full_path).map_err(err_to_js)?;
+        self.autosplit_route_by_gradient(roads).map_err(err_to_js)
+    }
+
     /// Returns GJ Features of every route
     #[wasm_bindgen(js_name = getAllRoutes)]
     pub fn get_all_routes_wasm(&self) -> Result<String, JsValue> {

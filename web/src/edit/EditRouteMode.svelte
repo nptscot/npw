@@ -1,14 +1,11 @@
 <script lang="ts">
+  import type { FeatureCollection } from "geojson";
   import type { Map } from "maplibre-gl";
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { Modal } from "svelte-utils";
-  import {
-    constructMatchExpression,
-    emptyGeojson,
-    Popup,
-  } from "svelte-utils/map";
-  import { infraTypeColors } from "../colors";
+  import { Modal, QualitativeLegend } from "svelte-utils";
+  import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
+  import { gradientColors, infraTypeColors } from "../colors";
   import { layerId } from "../common";
   import AllControls from "../layers/AllControls.svelte";
   import {
@@ -37,8 +34,11 @@
 
   let showOverrideModal = false;
 
-  let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
-  $: recalculateSections($waypoints, overrideInfraType, infraType);
+  let breakdown: "infra_type" | "gradient" = "infra_type";
+
+  let infraSectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
+  let gradientSectionsGj: FeatureCollection = emptyGeojson();
+  $: recalculateSections($waypoints, overrideInfraType, infraType, breakdown);
 
   onMount(async () => {
     $waypoints = [];
@@ -140,18 +140,27 @@
     waypts: Waypoint[],
     overrideInfraType: boolean,
     infraType: string,
+    breakdown: "infra_type" | "gradient",
   ) {
+    infraSectionsGj = emptyGeojson() as AutosplitRoute;
+    gradientSectionsGj = emptyGeojson();
+
     try {
       // TODO Wasteful; should RouteControls export a read-only view of this?
       let feature = await $backend!.snapRoute(waypts);
-      sectionsGj = await $backend!.autosplitRoute(
-        id,
-        feature.properties.full_path,
-        overrideInfraType ? infraType : null,
-      );
-    } catch (err) {
-      sectionsGj = emptyGeojson() as AutosplitRoute;
-    }
+
+      if (breakdown == "infra_type") {
+        infraSectionsGj = await $backend!.autosplitRoute(
+          id,
+          feature.properties.full_path,
+          overrideInfraType ? infraType : null,
+        );
+      } else if (breakdown == "gradient") {
+        gradientSectionsGj = await $backend!.autosplitRouteByGradient(
+          feature.properties.full_path,
+        );
+      }
+    } catch (err) {}
   }
 </script>
 
@@ -168,7 +177,15 @@
       <input type="text" bind:value={name} />
     </label>
 
-    {#if sectionsGj.features.length > 0}
+    {#if $waypoints.length >= 2}
+      <label>
+        Show details along route
+        <select bind:value={breakdown}>
+          <option value="infra_type">Infrastructure type</option>
+          <option value="gradient">Gradient</option>
+        </select>
+      </label>
+
       {#if overrideInfraType}
         <p>
           You've forced this route to always use {infraType}, assuming high
@@ -194,7 +211,11 @@
 
       <br />
 
-      <SectionDiagram {sectionsGj} />
+      {#if breakdown == "infra_type"}
+        <SectionDiagram sectionsGj={infraSectionsGj} />
+      {:else}
+        <QualitativeLegend colors={gradientColors} horiz />
+      {/if}
     {/if}
 
     <label>
@@ -224,9 +245,9 @@
   </div>
 
   <span slot="extra-map">
-    <GeoJSON data={sectionsGj}>
+    <GeoJSON data={infraSectionsGj}>
       <LineLayer
-        {...layerId("edit-route-sections")}
+        {...layerId("edit-route-infra-sections")}
         filter={["==", ["get", "kind"], "new"]}
         paint={{
           "line-width": 10,
@@ -236,11 +257,21 @@
             "black",
           ),
         }}
-      >
-        <Popup openOn="hover" let:props>
-          <p>This section will be {props.infra_type}</p>
-        </Popup>
-      </LineLayer>
+      />
+    </GeoJSON>
+
+    <GeoJSON data={gradientSectionsGj}>
+      <LineLayer
+        {...layerId("edit-route-gradient-sections")}
+        paint={{
+          "line-width": 10,
+          "line-color": constructMatchExpression(
+            ["get", "gradient_group"],
+            gradientColors,
+            "black",
+          ),
+        }}
+      />
     </GeoJSON>
   </span>
 </RouteControls>

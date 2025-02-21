@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use anyhow::Result;
 use enum_map::EnumMap;
-use geo::{Euclidean, Length, LineString};
+use geo::{Euclidean, Length};
 use geojson::{Feature, GeoJson};
 use graph::{Graph, PathStep, Position, RoadID};
 
@@ -55,7 +55,7 @@ impl MapModel {
                 Case::New(infra_type) => infra_type,
             };
 
-            let linestring = glue_route(&self.graph, roads);
+            let linestring = glue_route(&self.graph, roads).linestring(&self.graph);
 
             new_routes.push(Route {
                 feature: make_route_snapper_feature(&self.graph, roads, &linestring),
@@ -210,7 +210,7 @@ impl MapModel {
         let mut sections = Vec::new();
         for roads in route.chunk_by(|a, b| case(*a) == case(*b)) {
             let c = case(roads[0]);
-            let linestring = glue_route(&self.graph, roads);
+            let linestring = glue_route(&self.graph, roads).linestring(&self.graph);
             let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
             match c {
                 Case::AlreadyExists => {
@@ -310,7 +310,7 @@ impl MapModel {
 }
 
 // TODO Upstream to graph
-pub fn glue_route(graph: &Graph, roads: &[(RoadID, Dir)]) -> LineString {
+pub fn glue_route(graph: &Graph, roads: &[(RoadID, Dir)]) -> graph::Route {
     graph::Route {
         start: start_pos(roads[0], graph),
         end: end_pos(*roads.last().unwrap(), graph),
@@ -323,7 +323,6 @@ pub fn glue_route(graph: &Graph, roads: &[(RoadID, Dir)]) -> LineString {
             })
             .collect(),
     }
-    .linestring(graph)
 }
 
 // TODO Upstream to graph

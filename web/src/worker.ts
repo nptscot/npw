@@ -123,6 +123,13 @@ export class Backend {
     );
   }
 
+  autosplitRouteByGradient(
+    full_path: RouteNode[],
+  ): FeatureCollection<LineString, { gradient_group: string }> {
+    this.checkReady();
+    return JSON.parse(this.inner!.autosplitRouteByGradient(full_path));
+  }
+
   evaluateRoute(req: {
     // TODO LngLatLike doesn't work?
     start: { lng: number; lat: number };

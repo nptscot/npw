@@ -1,10 +1,10 @@
 use anyhow::Result;
 use geo::{Coord, Euclidean, Length};
-use geojson::FeatureCollection;
-use graph::PathStep;
+use geojson::{FeatureCollection, GeoJson};
+use graph::{PathStep, RoadID};
 use serde::Serialize;
 
-use crate::{InfraType, LevelOfService, MapModel};
+use crate::{Dir, InfraType, LevelOfService, MapModel};
 
 pub enum Breakdown {
     None,
@@ -117,6 +117,20 @@ impl MapModel {
                 .clone(),
             ),
         })?)
+    }
+
+    // TODO A weird hybrid between autosplit_route and evaluate_route...
+    pub fn autosplit_route_by_gradient(&self, roads: Vec<(RoadID, Dir)>) -> Result<String> {
+        let route = crate::routes::glue_route(&self.graph, &roads);
+        let mut features = Vec::new();
+        for (linestring, gradient) in
+            route.split_linestrings(&self.graph, |r| gradient_group(self.gradients[r.0]))
+        {
+            let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
+            f.set_property("gradient_group", gradient);
+            features.push(f);
+        }
+        Ok(serde_json::to_string(&GeoJson::from(features))?)
     }
 }
 

@@ -136,7 +136,7 @@
     {#if breakdown == "los"}
       <QualitativeLegend horiz colors={levelOfServiceColors} />
     {:else if breakdown == "gradient"}
-      <QualitativeLegend colors={gradientColors} />
+      <QualitativeLegend horiz colors={gradientColors} />
     {/if}
 
     {#if gj}
