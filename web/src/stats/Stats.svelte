@@ -64,6 +64,13 @@
               $stats.total_main_road_length,
             )}
           />
+
+          Coherence (density of primary/secondary network in settlements):
+          {#if $stats.density_network_in_settlements}
+            <b>{Math.round($stats.density_network_in_settlements)}m</b>
+          {:else}
+            <b>no routes yet</b>
+          {/if}
         </div>
 
         <div style:padding="4px" style:border="2px solid {tierColors.Primary}">

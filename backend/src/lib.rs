@@ -6,7 +6,7 @@ extern crate log;
 use std::collections::HashMap;
 
 use enum_map::Enum;
-use geo::MultiPolygon;
+use geo::{Area, MultiPolygon};
 use geojson::{Feature, GeoJson};
 use graph::{Graph, RoadID, Timer};
 use serde::{Deserialize, Serialize};
@@ -54,6 +54,7 @@ pub struct MapModel {
     settlements: Vec<places::Settlement>,
     data_zones: Vec<places::DataZone>,
     greenspaces: Vec<places::Greenspace>,
+    total_settlement_area_m2: f64,
 
     // Per RoadID, static data
     highways: Vec<Highway>,
@@ -161,6 +162,7 @@ impl MapModel {
             // We could make one set, but this isn't that slow
             .map(|r| settlements.iter().any(|s| s.roads.contains(&r.id)))
             .collect();
+        let total_settlement_area_m2 = settlements.iter().map(|s| s.polygon.unsigned_area()).sum();
         let speeds = graph
             .roads
             .iter()
@@ -185,6 +187,7 @@ impl MapModel {
             town_centres,
             settlements,
             data_zones,
+            total_settlement_area_m2,
             greenspaces,
             highways,
             within_settlement,

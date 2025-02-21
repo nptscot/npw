@@ -78,6 +78,8 @@ export interface Stats {
 
   total_main_road_length: number;
   covered_main_road_length: number;
+
+  density_network_in_settlements: number | null;
 }
 
 export type Schools = FeatureCollection<

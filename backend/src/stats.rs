@@ -2,7 +2,7 @@ use anyhow::Result;
 use graph::Timer;
 use serde::{Deserialize, Serialize};
 
-use crate::{utils::Quintiles, MapModel};
+use crate::{utils::Quintiles, MapModel, Tier};
 
 /// A summary of metrics. All percents are 0 to 1.
 #[derive(Default, Serialize, Deserialize)]
@@ -23,6 +23,8 @@ pub struct Stats {
 
     total_network_length: f64,
     total_low_gradient_length: f64,
+
+    density_network_in_settlements: Option<f64>,
 }
 
 impl MapModel {
@@ -106,6 +108,7 @@ impl MapModel {
         let mut total_low_gradient_length = 0.0;
         let mut total_main_road_length = 0.0;
         let mut covered_main_road_length = 0.0;
+        let mut length_in_settlements = 0.0;
         for (idx, road) in self.graph.roads.iter().enumerate() {
             total_network_length += road.length_meters;
             if self.gradients[idx].abs() <= 3.0 {
@@ -118,7 +121,19 @@ impl MapModel {
                     covered_main_road_length += road.length_meters;
                 }
             }
+
+            if matches!(self.tiers[idx], Some(Tier::Primary | Tier::Secondary))
+                && self.within_settlement[idx]
+            {
+                length_in_settlements += road.length_meters;
+            }
         }
+
+        let density_network_in_settlements = if length_in_settlements > 0.0 {
+            Some(self.total_settlement_area_m2 / length_in_settlements)
+        } else {
+            None
+        };
 
         Stats {
             percent_reachable_schools,
@@ -137,6 +152,8 @@ impl MapModel {
 
             total_main_road_length,
             covered_main_road_length,
+
+            density_network_in_settlements,
         }
     }
 
