@@ -161,51 +161,49 @@
   Manage files: {$currentFilename}
 </button>
 
-{#if open}
-  <Modal on:close={() => (open = false)}>
-    <h2>Manage files</h2>
+<Modal bind:show={open}>
+  <h2>Manage files</h2>
 
-    <p>
-      You're currently editing: <u>{$currentFilename}</u>
-    </p>
-    <div role="group">
-      <button class="secondary" on:click={rename}>Rename</button>
-      <button class="secondary" on:click={makeCopy}>Make copy</button>
-      <button class="secondary" on:click={exportFile}>Export</button>
-      <button class="secondary" on:click={clearFile}>Clear all routes</button>
-      <button
-        class="secondary"
-        on:click={deleteFile}
-        disabled={fileList.length < 2}
-      >
-        Delete
-      </button>
-    </div>
+  <p>
+    You're currently editing: <u>{$currentFilename}</u>
+  </p>
+  <div role="group">
+    <button class="secondary" on:click={rename}>Rename</button>
+    <button class="secondary" on:click={makeCopy}>Make copy</button>
+    <button class="secondary" on:click={exportFile}>Export</button>
+    <button class="secondary" on:click={clearFile}>Clear all routes</button>
+    <button
+      class="secondary"
+      on:click={deleteFile}
+      disabled={fileList.length < 2}
+    >
+      Delete
+    </button>
+  </div>
 
-    <hr />
+  <hr />
 
-    <button on:click={newFile}>New file</button>
+  <button on:click={newFile}>New file</button>
 
-    <p>Load a different file in {$boundaryName}:</p>
-    <ul>
-      {#each fileList as [filename, description]}
-        {#if filename == $currentFilename}
-          <li>{filename} (currently open)</li>
-        {:else}
-          <li>
-            <Link on:click={() => openFile(filename)}>
-              {filename} ({description})
-            </Link>
-          </li>
-        {/if}
-      {/each}
-    </ul>
+  <p>Load a different file in {$boundaryName}:</p>
+  <ul>
+    {#each fileList as [filename, description]}
+      {#if filename == $currentFilename}
+        <li>{filename} (currently open)</li>
+      {:else}
+        <li>
+          <Link on:click={() => openFile(filename)}>
+            {filename} ({description})
+          </Link>
+        </li>
+      {/if}
+    {/each}
+  </ul>
 
-    <label>
-      Load from an exported file
-      <input bind:this={fileInput} on:change={importFile} type="file" />
-    </label>
+  <label>
+    Load from an exported file
+    <input bind:this={fileInput} on:change={importFile} type="file" />
+  </label>
 
-    <button on:click={() => (open = false)}>OK</button>
-  </Modal>
-{/if}
+  <button on:click={() => (open = false)}>OK</button>
+</Modal>

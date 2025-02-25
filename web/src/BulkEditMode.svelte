@@ -235,48 +235,44 @@
   </div>
 </SplitComponent>
 
-{#if showTierModal}
-  <span class="pico">
-    <Modal on:close={() => (showTierModal = false)}>
-      <p>
-        The routes you've selected have tiers: {describeCounts(selectedTiers)}
-      </p>
+<span class="pico">
+  <Modal bind:show={showTierModal}>
+    <p>
+      The routes you've selected have tiers: {describeCounts(selectedTiers)}
+    </p>
 
-      <label>
-        Change their tier to:
-        <select bind:value={overrideTier}>
-          <option value="Primary">Primary routes</option>
-          <option value="Secondary">Secondary routes</option>
-          <option value="LocalAccess">Local access routes</option>
-          <option value="LongDistance">Long distance routes</option>
-        </select>
-      </label>
+    <label>
+      Change their tier to:
+      <select bind:value={overrideTier}>
+        <option value="Primary">Primary routes</option>
+        <option value="Secondary">Secondary routes</option>
+        <option value="LocalAccess">Local access routes</option>
+        <option value="LongDistance">Long distance routes</option>
+      </select>
+    </label>
 
-      <button on:click={changeTier}>Change tier</button>
-      <button on:click={() => (showTierModal = false)}>Cancel</button>
-    </Modal>
-  </span>
-{/if}
+    <button on:click={changeTier}>Change tier</button>
+    <button on:click={() => (showTierModal = false)}>Cancel</button>
+  </Modal>
+</span>
 
-{#if showInfraTypeModal}
-  <span class="pico">
-    <Modal on:close={() => (showInfraTypeModal = false)}>
-      <p>
-        The routes you've selected have infrastructure types: {describeCounts(
-          selectedInfraTypes,
-        )}
-      </p>
-      <p>
-        You can override the infrastructure type for these routes, instead of
-        automatically picking the most appropriate type. If you do this, you're
-        making the promise that this type is appropriate to achieve high Level
-        of Service.
-      </p>
+<span class="pico">
+  <Modal bind:show={showInfraTypeModal}>
+    <p>
+      The routes you've selected have infrastructure types: {describeCounts(
+        selectedInfraTypes,
+      )}
+    </p>
+    <p>
+      You can override the infrastructure type for these routes, instead of
+      automatically picking the most appropriate type. If you do this, you're
+      making the promise that this type is appropriate to achieve high Level of
+      Service.
+    </p>
 
-      <PickInfraType bind:current={overrideInfraType} />
+    <PickInfraType bind:current={overrideInfraType} />
 
-      <button on:click={changeInfraType}>Change infrastructure type</button>
-      <button on:click={() => (showInfraTypeModal = false)}>Cancel</button>
-    </Modal>
-  </span>
-{/if}
+    <button on:click={changeInfraType}>Change infrastructure type</button>
+    <button on:click={() => (showInfraTypeModal = false)}>Cancel</button>
+  </Modal>
+</span>

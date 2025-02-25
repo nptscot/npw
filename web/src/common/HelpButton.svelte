@@ -11,12 +11,10 @@
   <img src={icon} title="Help" alt="Help" />
 </button>
 
-{#if show}
-  <Modal on:close={() => (show = false)}>
-    <h2>Help</h2>
-    <slot />
-  </Modal>
-{/if}
+<Modal bind:show>
+  <h2>Help</h2>
+  <slot />
+</Modal>
 
 <style>
   button {
