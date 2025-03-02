@@ -124,10 +124,7 @@ impl MapModel {
             };
 
             if only_some_infra_types {
-                if !matches!(
-                    infra_type,
-                    InfraType::SegregatedWide | InfraType::OffRoad | InfraType::SegregatedNarrow,
-                ) {
+                if !matches!(infra_type, InfraType::Segregated | InfraType::OffRoad) {
                     continue;
                 }
             } else {

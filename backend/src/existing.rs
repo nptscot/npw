@@ -149,11 +149,7 @@ pub fn classify(tags: &Tags) -> Option<InfraType> {
                 ],
                 "track",
             ) {
-                if is_wide_track(tags) {
-                    return Some(InfraType::SegregatedWide);
-                } else {
-                    return Some(InfraType::SegregatedNarrow);
-                }
+                return Some(InfraType::Segregated);
             }
 
             // TODO combo is_any method for keys and values?
@@ -185,13 +181,9 @@ pub fn classify(tags: &Tags) -> Option<InfraType> {
         }
         Highway::Cycleway => {
             if is_off_road(tags) {
-                return Some(InfraType::OffRoad);
-            }
-
-            if is_wide_track(tags) {
-                Some(InfraType::SegregatedWide)
+                Some(InfraType::OffRoad)
             } else {
-                Some(InfraType::SegregatedNarrow)
+                Some(InfraType::Segregated)
             }
         }
         Highway::Pedestrian => {
@@ -211,19 +203,6 @@ fn is_off_road(tags: &Tags) -> bool {
         return ["Path", "Towpath", "Railway", "Trail"]
             .iter()
             .any(|x| name.contains(x));
-    }
-    false
-}
-
-// Over 2m?
-fn is_wide_track(tags: &Tags) -> bool {
-    for key in ["width", "est_width"] {
-        if let Some(value) = tags.get(key) {
-            // TODO better parsing, sometimes can be a range
-            if let Ok(width) = value.parse::<f64>() {
-                return width > 2.0;
-            }
-        }
     }
     false
 }
@@ -282,7 +261,7 @@ mod tests {
                     "lit=yes",
                     "lcn=yes",
                 ],
-                Some(InfraType::SegregatedWide),
+                Some(InfraType::Segregated),
             ),
             (
                 vec![
@@ -309,7 +288,7 @@ mod tests {
                     "lit=yes",
                     "lcn=yes",
                 ],
-                Some(InfraType::SegregatedNarrow),
+                Some(InfraType::Segregated),
             ),
             (
                 vec![

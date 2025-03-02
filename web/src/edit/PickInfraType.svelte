@@ -2,8 +2,7 @@
   import icon5 from "../../assets/CycleLane.jpg";
   import icon6 from "../../assets/MixedTraffic.jpg";
   import icon2 from "../../assets/OffRoad.jpg";
-  import icon3 from "../../assets/SegregatedNarrow.jpg";
-  import icon1 from "../../assets/SegregatedWide.jpg";
+  import icon1 from "../../assets/Segregated.jpg";
   import icon4 from "../../assets/SharedFootway.jpg";
   import { infraTypeMapping } from "../types";
 
@@ -12,13 +11,8 @@
   // TODO URL isn't used right now
 
   let cases = [
-    ["SegregatedWide", icon1, "https://www.cyclestreets.net/location/81274/"],
+    ["Segregated", icon1, "https://www.cyclestreets.net/location/81274/"],
     ["OffRoad", icon2, "https://www.cyclestreets.net/location/86744/"],
-    [
-      "SegregatedNarrow",
-      icon3,
-      "https://www.cyclestreets.net/location/196620/",
-    ],
     ["SharedFootway", icon4, "https://www.cyclestreets.net/location/92805/"],
     ["CycleLane", icon5, "https://www.cyclestreets.net/location/81341/"],
     ["MixedTraffic", icon6, ""],

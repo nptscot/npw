@@ -109,9 +109,8 @@ pub enum Dir {
     Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Enum, Serialize, Deserialize,
 )]
 pub enum InfraType {
-    SegregatedWide,
+    Segregated,
     OffRoad,
-    SegregatedNarrow,
     SharedFootway,
     CycleLane,
     MixedTraffic,

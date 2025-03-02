@@ -26,24 +26,22 @@ impl MapModel {
         )
     }
 
-    /// Picks the "cheapest" InfraType that makes a road be classified as high LoS
+    /// Picks the "cheapest" InfraType that makes a road be classified as high LoS (or as high as
+    /// possible)
     pub fn best_infra_type(&self, r: RoadID) -> InfraType {
         let speed = self.speeds[r.0];
         let traffic = self.traffic_volumes[r.0];
 
         // TODO Is this order correct, and do we want to use all of these?
-        for infra_type in [
-            InfraType::MixedTraffic,
-            InfraType::CycleLane,
-            InfraType::SegregatedNarrow,
-        ] {
+        for infra_type in [InfraType::MixedTraffic, InfraType::CycleLane] {
             if get_level_of_service(infra_type, speed, traffic) == LevelOfService::High {
                 return infra_type;
             }
         }
 
-        // Speed+volume mean there's only one solution
-        InfraType::SegregatedWide
+        // This is the best option available without realigning or changing the road speed.
+        // Depending on speed+volume, it may be high or not.
+        InfraType::Segregated
     }
 }
 
@@ -87,15 +85,25 @@ pub fn get_level_of_service(infra_type: InfraType, speed: usize, traffic: usize)
             }
         }
 
-        // TODO Not sure how this maps to the CbD category. Since this is the best option on
-        // big roads, treat it as "Detached or Remote Cycle Track"
-        InfraType::SegregatedWide => LevelOfService::High,
+        // "Cycle Track at Carriageway Level". Note this means high LoS is impossible to achieve on
+        // some roads.
+        InfraType::Segregated => {
+            if speed <= 30 {
+                LevelOfService::High
+            } else if speed <= 40 {
+                LevelOfService::Medium
+            } else if speed <= 50 && traffic < 1000 {
+                LevelOfService::Medium
+            } else {
+                LevelOfService::Low
+            }
+        }
 
         // "Detached or Remote Cycle Track"
         InfraType::OffRoad => LevelOfService::High,
 
-        // TODO confirm both cases: "Stepped or Footway Level Cycle Track"?
-        InfraType::SegregatedNarrow | InfraType::SharedFootway => {
+        // TODO Not in CbD. Depends on urban/rural.
+        InfraType::SharedFootway => {
             if speed <= 20 {
                 LevelOfService::High
             } else if speed <= 30 {

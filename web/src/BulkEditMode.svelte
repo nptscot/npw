@@ -52,7 +52,7 @@
 
   let showTierModal = false;
   let overrideTier = "Primary";
-  let overrideInfraType = "SegregatedWide";
+  let overrideInfraType = "Segregated";
   let showInfraTypeModal = false;
 
   let selectedIds: Set<number> = new Set();

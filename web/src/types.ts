@@ -10,9 +10,8 @@ import type {
 export type Tier = "Primary" | "Secondary" | "LocalAccess" | "LongDistance";
 
 export let infraTypes: [string, string, string][] = [
-  ["SegregatedWide", "Segregated Track (wide)", "#054d05"],
-  ["OffRoad", "Off Road Cycleway", "#3a9120"],
-  ["SegregatedNarrow", "Segregated Track (narrow)", "#87d668"],
+  ["Segregated", "Segregated Track", "#054d05"],
+  ["OffRoad", "Off Road Cycleway", "#87d668"],
   ["SharedFootway", "Shared Footway", "#ffbf00"],
   ["CycleLane", "Painted Cycle Lane", "#7faedd"],
   ["MixedTraffic", "Mixed traffic", "#FF00FF"],
