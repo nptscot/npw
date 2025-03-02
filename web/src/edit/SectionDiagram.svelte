@@ -48,9 +48,3 @@
     {/if}
   {/each}
 </div>
-
-<style>
-  span {
-    border: 1px solid black;
-  }
-</style>
