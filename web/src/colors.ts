@@ -12,6 +12,7 @@ export let tierColors: { [name: string]: string } = {
   LocalAccess: "#ffc000",
   LongDistance: "#4ea72e",
 };
+export let networkAssessmentColor = "#1b1464";
 
 // Only Primary and Secondary
 export let cnTierColors: { [name: string]: string } = {

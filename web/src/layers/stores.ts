@@ -25,12 +25,13 @@ export let gridMeshDensity = writable(false);
 export let severances = writable(false);
 export let debugOriginalData = writable(false);
 
-export let layersPerTier = {
+export let layersPerStage = {
   // TODO We want to auto-hide this one, but not auto-show it...
   Primary: [cyclingFlow1, mainRoadCoverage],
   Secondary: [cyclingFlow2, townCentres],
   LocalAccess: [localPOIs],
   LongDistance: [settlements],
+  assessment: [gridMeshDensity],
 };
 
 // Remember the last reference style enabled. "off" means none.

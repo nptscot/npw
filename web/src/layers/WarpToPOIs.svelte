@@ -2,7 +2,7 @@
   import centroid from "@turf/centroid";
   import type { Position } from "geojson";
   import PrevNext from "../common/PrevNext.svelte";
-  import { backend, map, mutationCounter, tier } from "../stores";
+  import { backend, currentStage, map, mutationCounter } from "../stores";
 
   let lastUpdate = 0;
   let unreachablePOIs: Position[] = [];
@@ -35,7 +35,7 @@
     }
   }
 
-  $: if ($tier == "LocalAccess" && $mutationCounter > 0) {
+  $: if ($currentStage == "LocalAccess" && $mutationCounter > 0) {
     recalc();
   }
 

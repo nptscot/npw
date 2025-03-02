@@ -14,7 +14,7 @@
   import {
     autosave,
     backend,
-    tier as currentTier,
+    currentStage,
     mode,
     routeA,
     routeB,
@@ -33,7 +33,7 @@
   // This is not meaningful when overrideInfraType is false
   let infraType = "MixedTraffic";
   let overrideInfraType = false;
-  let tier = $currentTier;
+  let tier = $currentStage == "assessment" ? "Primary" : $currentStage;
 
   let showOverrideModal = false;
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { tierColors } from "../colors";
-  import { tier } from "../stores";
+  import { networkAssessmentColor, tierColors } from "../colors";
+  import { currentStage } from "../stores";
   import PickEditsStyle from "./roads/PickEditsStyle.svelte";
   import { allControls } from "./stores";
 
@@ -9,6 +9,7 @@
   let secondary: HTMLDivElement | null = null;
   let localAccess: HTMLDivElement | null = null;
   let longDistance: HTMLDivElement | null = null;
+  let networkAssessment: HTMLDivElement | null = null;
 
   $: update(basic, $allControls, ["SIMD", "Population"]);
 
@@ -16,9 +17,11 @@
 
   $: update(secondary, $allControls, ["Medium cycling flow", "Town centres"]);
 
-  $: update(localAccess, $allControls, ["POIs", "Mesh density"]);
+  $: update(localAccess, $allControls, ["POIs"]);
 
   $: update(longDistance, $allControls, ["Urban areas", "Settlements"]);
+
+  $: update(networkAssessment, $allControls, ["Mesh density"]);
 
   function update(
     container: HTMLDivElement | null,
@@ -39,31 +42,38 @@
 
 <PickEditsStyle />
 
-{#if $tier == "Primary"}
+{#if $currentStage == "Primary"}
   <details open style:border="2px solid {tierColors.Primary}">
     <summary>Primary Route Reference Layers</summary>
     <div bind:this={primary} />
   </details>
 {/if}
 
-{#if $tier == "Secondary"}
+{#if $currentStage == "Secondary"}
   <details open style:border="2px solid {tierColors.Secondary}">
     <summary>Secondary Route Reference Layers</summary>
     <div bind:this={secondary} />
   </details>
 {/if}
 
-{#if $tier == "LocalAccess"}
+{#if $currentStage == "LocalAccess"}
   <details open style:border="2px solid {tierColors.LocalAccess}">
     <summary>Local Access Route Reference Layers</summary>
     <div bind:this={localAccess} />
   </details>
 {/if}
 
-{#if $tier == "LongDistance"}
+{#if $currentStage == "LongDistance"}
   <details open style:border="2px solid {tierColors.LongDistance}">
     <summary>Long Disance Route Reference Layers</summary>
     <div bind:this={longDistance} />
+  </details>
+{/if}
+
+{#if $currentStage == "assessment"}
+  <details open style:border="2px solid {networkAssessmentColor}">
+    <summary>Network assessment Reference Layers</summary>
+    <div bind:this={networkAssessment} />
   </details>
 {/if}
 
