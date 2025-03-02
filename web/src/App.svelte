@@ -2,10 +2,7 @@
   import * as Comlink from "comlink";
   import Stats from "./stats/Stats.svelte";
   import "@picocss/pico/css/pico.conditional.jade.min.css";
-  import type { Map } from "maplibre-gl";
-  import maplibregl from "maplibre-gl";
-  // TODO Indirect dependencies
-  import * as pmtiles from "pmtiles";
+  import type { Map, StyleSpecification } from "maplibre-gl";
   import { onMount } from "svelte";
   import {
     FillLayer,
@@ -47,13 +44,6 @@
   import TopBar from "./TopBar.svelte";
   import type { Backend } from "./worker";
   import workerWrapper from "./worker?worker";
-
-  // TODO Remove later
-  let offlineMode = false;
-  if (offlineMode) {
-    let protocol = new pmtiles.Protocol();
-    maplibregl.addProtocol("pmtiles", protocol.tile);
-  }
 
   let loading = "";
   let progress = 0;
@@ -154,6 +144,17 @@
     mapDiv.innerHTML = "";
     mapDiv.appendChild($mapContents);
   }
+
+  async function getStyle(): Promise<StyleSpecification | string> {
+    // streets-v2 uses a fill-extrusion layer for 3D buildings that's very distracting. Remove it, and make the regular buildings layer display at high zoom instead.
+    let resp = await fetch(
+      `https://api.maptiler.com/maps/streets-v2/style.json?key=${maptilerApiKey}`,
+    );
+    let json = await resp.json();
+    json.layers = json.layers.filter((l: any) => l.id != "Building 3D");
+    delete json.layers.find((l: any) => l.id == "Building")!.maxzoom;
+    return json;
+  }
 </script>
 
 <svelte:head>
@@ -177,61 +178,59 @@
   </div>
 
   <div slot="main" style="position:relative; width: 100%; height: 100%;">
-    <MapLibre
-      style={offlineMode
-        ? "http://localhost:5173/offline/light_style.json"
-        : `https://api.maptiler.com/maps/streets-v2/style.json?key=${maptilerApiKey}`}
-      bind:map
-      on:error={(e) => {
-        // @ts-expect-error ErrorEvent isn't exported
-        console.log(e.detail.error);
-      }}
-      images={[
-        { id: "school_reachable", url: school1Icon },
-        { id: "school_unreachable", url: school2Icon },
-        { id: "hospital_reachable", url: hospital1Icon },
-        { id: "hospital_unreachable", url: hospital2Icon },
-      ]}
-      hash
-    >
-      <NavigationControl />
-      <ScaleControl />
-      {#if !offlineMode}
+    {#await getStyle() then style}
+      <MapLibre
+        {style}
+        bind:map
+        on:error={(e) => {
+          // @ts-expect-error ErrorEvent isn't exported
+          console.log(e.detail.error);
+        }}
+        images={[
+          { id: "school_reachable", url: school1Icon },
+          { id: "school_unreachable", url: school2Icon },
+          { id: "hospital_reachable", url: hospital1Icon },
+          { id: "hospital_unreachable", url: hospital2Icon },
+        ]}
+        hash
+      >
+        <NavigationControl />
+        <ScaleControl />
         <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
-      {/if}
-      <DisableInteractiveLayers />
-      <StreetView />
+        <DisableInteractiveLayers />
+        <StreetView />
 
-      <div bind:this={mapDiv} />
+        <div bind:this={mapDiv} />
 
-      {#if $backend}
-        <Stats />
+        {#if $backend}
+          <Stats />
 
-        {#await $backend.getInvertedBoundary() then data}
-          <GeoJSON {data}>
-            <FillLayer
-              {...layerId("fade-study-area")}
-              paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
+          {#await $backend.getInvertedBoundary() then data}
+            <GeoJSON {data}>
+              <FillLayer
+                {...layerId("fade-study-area")}
+                paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
+              />
+            </GeoJSON>
+          {/await}
+
+          <ReferenceLayers />
+          <PickReferenceStyle />
+
+          {#if $mode.kind == "main"}
+            <MainMode />
+          {:else if $mode.kind == "edit-route" && map}
+            <EditRouteMode id={$mode.id} {map} />
+          {:else if $mode.kind == "evaluate-journey"}
+            <EvaluateJourneyMode
+              prevMode={$mode.prevMode}
+              browse={$mode.browse}
             />
-          </GeoJSON>
-        {/await}
-
-        <ReferenceLayers />
-        <PickReferenceStyle />
-
-        {#if $mode.kind == "main"}
-          <MainMode />
-        {:else if $mode.kind == "edit-route" && map}
-          <EditRouteMode id={$mode.id} {map} />
-        {:else if $mode.kind == "evaluate-journey"}
-          <EvaluateJourneyMode
-            prevMode={$mode.prevMode}
-            browse={$mode.browse}
-          />
-        {:else if $mode.kind == "bulk-edit"}
-          <BulkEditMode />
+          {:else if $mode.kind == "bulk-edit"}
+            <BulkEditMode />
+          {/if}
         {/if}
-      {/if}
-    </MapLibre>
+      </MapLibre>
+    {/await}
   </div>
 </Layout>
