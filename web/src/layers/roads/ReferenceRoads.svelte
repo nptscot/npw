@@ -67,6 +67,13 @@
         0.0,
         show,
       ];
+    } else if (style == "deliverability") {
+      return [
+        "case",
+        ["to-boolean", ["feature-state", "current_infra"]],
+        show,
+        0.0,
+      ];
     }
 
     return show;
@@ -113,6 +120,12 @@
       disconnections: invisibile,
       precalculated_rnet: invisibile,
       calculated_rnet: invisibile,
+      deliverability: [
+        "case",
+        ["feature-state", "current_infra_fits"],
+        "green",
+        "red",
+      ] as DataDrivenPropertyValueSpecification<string>,
     }[style];
   }
 
@@ -150,6 +163,7 @@
       disconnections: false,
       precalculated_rnet: false,
       calculated_rnet: false,
+      deliverability: true,
     }[style];
   }
 </script>
@@ -214,6 +228,12 @@
           notNull(dynamicData[props.id].current_infra)
         ][0]}
         ({dynamicData[props.id].current_tier} tier)
+      </p>
+
+      <p>
+        This infrastructure type {dynamicData[props.id].current_infra_fits
+          ? "does"
+          : "does not"} fit the available streetspace
       </p>
     {/if}
 

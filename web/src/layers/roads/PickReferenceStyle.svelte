@@ -142,6 +142,10 @@
     <CalculatedRouteNetwork />
     <NetworkDisconnections />
 
+    {#if $referenceRoadStyle == "deliverability"}
+      <p>TODO of infrastructure doesn't fit in the available streetspace</p>
+    {/if}
+
     <div style:display="flex">
       <Toggle name="Core network" style="cn" />
       <Toggle name="Existing infrastructure type" style="existing_infra" />
@@ -155,6 +159,7 @@
       <Toggle name="Reachability" style="reachability" />
       <Toggle name="Route network (calculated)" style="calculated_rnet" />
       <Toggle name="Network disconnections" style="disconnections" />
+      <Toggle name="Streetspace deliverability" style="deliverability" />
     </div>
   </div>
 </Control>

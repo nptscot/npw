@@ -335,6 +335,10 @@ impl MapModel {
                 current_route_name,
                 current_infra: self.infra_types[idx],
                 current_tier: self.tiers[idx],
+                current_infra_fits: match self.infra_types[idx] {
+                    Some(it) => self.does_infra_type_fit(id, it),
+                    None => true,
+                },
             });
         }
         roads
@@ -369,4 +373,5 @@ pub struct DynamicRoad {
     current_route_name: Option<String>,
     current_infra: Option<InfraType>,
     current_tier: Option<Tier>,
+    current_infra_fits: bool,
 }

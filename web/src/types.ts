@@ -213,6 +213,7 @@ export interface DynamicRoad {
   current_route_name: string | null;
   current_infra: string | null;
   current_tier: Tier | null;
+  current_infra_fits: boolean;
 }
 
 // Route snapper

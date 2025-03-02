@@ -46,7 +46,8 @@ export type ReferenceRoadStyle =
   | "reachability"
   | "disconnections"
   | "precalculated_rnet"
-  | "calculated_rnet";
+  | "calculated_rnet"
+  | "deliverability";
 
 export let editsRoadStyle: Writable<EditsRoadStyle> = writable("edits_tier");
 export let referenceRoadStyle: Writable<ReferenceRoadStyle> = writable("off");
