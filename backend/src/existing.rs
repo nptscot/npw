@@ -169,14 +169,9 @@ pub fn classify(tags: &Tags) -> Option<InfraType> {
 
         Highway::Footway | Highway::Path => {
             if is_off_road(tags) {
-                return Some(InfraType::OffRoad);
-            }
-
-            if tags.is("segregated", "yes") {
-                // TODO Not sure
-                return Some(InfraType::OffRoad);
+                Some(InfraType::OffRoad)
             } else {
-                return Some(InfraType::SharedFootway);
+                Some(InfraType::SharedFootway)
             }
         }
         Highway::Cycleway => {

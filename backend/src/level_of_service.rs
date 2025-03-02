@@ -23,6 +23,7 @@ impl MapModel {
             self.get_infra_type(r),
             self.speeds[r.0],
             self.traffic_volumes[r.0],
+            self.within_settlement[r.0],
         )
     }
 
@@ -31,10 +32,17 @@ impl MapModel {
     pub fn best_infra_type(&self, r: RoadID) -> InfraType {
         let speed = self.speeds[r.0];
         let traffic = self.traffic_volumes[r.0];
+        let within_settlement = self.within_settlement[r.0];
 
         // TODO Is this order correct, and do we want to use all of these?
-        for infra_type in [InfraType::MixedTraffic, InfraType::CycleLane] {
-            if get_level_of_service(infra_type, speed, traffic) == LevelOfService::High {
+        for infra_type in [
+            InfraType::MixedTraffic,
+            InfraType::CycleLane,
+            InfraType::SharedFootway,
+        ] {
+            if get_level_of_service(infra_type, speed, traffic, within_settlement)
+                == LevelOfService::High
+            {
                 return infra_type;
             }
         }
@@ -46,8 +54,14 @@ impl MapModel {
 }
 
 /// This follows table 3.2 from https://www.transport.gov.scot/media/50323/cycling-by-design-update-2019-final-document-15-september-2021-1.pdf as closely as possible
-pub fn get_level_of_service(infra_type: InfraType, speed: usize, traffic: usize) -> LevelOfService {
+pub fn get_level_of_service(
+    infra_type: InfraType,
+    speed: usize,
+    traffic: usize,
+    within_settlement: bool,
+) -> LevelOfService {
     match infra_type {
+        // "Mixed Traffic Street"
         InfraType::MixedTraffic => {
             if speed <= 20 {
                 if traffic < 2000 {
@@ -102,29 +116,17 @@ pub fn get_level_of_service(infra_type: InfraType, speed: usize, traffic: usize)
         // "Detached or Remote Cycle Track"
         InfraType::OffRoad => LevelOfService::High,
 
-        // TODO Not in CbD. Depends on urban/rural.
+        // Not in CbD. Just depends on urban/rural.
+        // TODO Settlements are not quite the same as urban areas.
         InfraType::SharedFootway => {
-            if speed <= 20 {
-                LevelOfService::High
-            } else if speed <= 30 {
-                if traffic < 4000 {
-                    LevelOfService::High
-                } else {
-                    LevelOfService::Medium
-                }
-            } else if speed <= 40 {
-                LevelOfService::Medium
-            } else if speed <= 50 {
-                if traffic < 1000 {
-                    LevelOfService::Medium
-                } else {
-                    LevelOfService::Low
-                }
-            } else {
+            if within_settlement {
                 LevelOfService::Low
+            } else {
+                LevelOfService::High
             }
         }
 
+        // "Cycle Lane"
         InfraType::CycleLane => {
             if speed <= 20 {
                 if traffic < 4000 {

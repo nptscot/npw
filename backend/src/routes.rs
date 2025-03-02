@@ -131,8 +131,12 @@ impl MapModel {
                 // We could check if the current LoS is already high, but if it is, it may be
                 // because it's an existing separately tagged cycleway that has no modelled traffic
                 // volume.
-                if get_level_of_service(infra_type, self.speeds[idx], self.traffic_volumes[idx])
-                    != LevelOfService::High
+                if get_level_of_service(
+                    infra_type,
+                    self.speeds[idx],
+                    self.traffic_volumes[idx],
+                    self.within_settlement[idx],
+                ) != LevelOfService::High
                 {
                     continue;
                 }
