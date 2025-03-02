@@ -73,6 +73,7 @@ export interface Stats {
   total_flow_quintile_sums: number[];
 
   total_network_length: number;
+  total_high_los_length: number;
   total_low_gradient_length: number;
 
   total_main_road_length: number;

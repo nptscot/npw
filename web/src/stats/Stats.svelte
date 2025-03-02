@@ -50,6 +50,14 @@
 
         <div style:padding="4px" style:border="2px solid black">
           <Metric
+            label="Safety (high LoS)"
+            pct={percent(
+              $stats.total_high_los_length,
+              $stats.total_network_length,
+            )}
+          />
+
+          <Metric
             label="Comfort (low gradient)"
             pct={percent(
               $stats.total_low_gradient_length,
