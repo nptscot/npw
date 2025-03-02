@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { Map } from "maplibre-gl";
+  import type { ExpressionSpecification, Map } from "maplibre-gl";
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { Modal, QualitativeLegend } from "svelte-utils";
+  import { Modal } from "svelte-utils";
   import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
   import { gradientColors, infraTypeColors } from "../colors";
   import { layerId, percent } from "../common";
@@ -15,15 +15,10 @@
     routeA,
     routeB,
   } from "../stores";
-  import type {
-    AutosplitRoute,
-    AutosplitRouteByGradient,
-    Waypoint,
-  } from "../types";
-  import GradientSectionDiagram from "./GradientSectionDiagram.svelte";
-  import InfraTypeSectionDiagram from "./InfraTypeSectionDiagram.svelte";
+  import type { AutosplitRoute, Waypoint } from "../types";
   import PickInfraType from "./PickInfraType.svelte";
   import RouteControls from "./RouteControls.svelte";
+  import SectionDiagram from "./SectionDiagram.svelte";
   import { waypoints } from "./stores";
 
   export let map: Map;
@@ -40,10 +35,8 @@
 
   let breakdown: "infra_type" | "gradient" = "infra_type";
 
-  let infraSectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
-  let gradientSectionsGj: AutosplitRouteByGradient =
-    emptyGeojson() as AutosplitRouteByGradient;
-  $: recalculateSections($waypoints, overrideInfraType, infraType, breakdown);
+  let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
+  $: recalculateSections($waypoints, overrideInfraType, infraType);
 
   onMount(async () => {
     $waypoints = [];
@@ -145,33 +138,24 @@
     waypts: Waypoint[],
     overrideInfraType: boolean,
     infraType: string,
-    breakdown: "infra_type" | "gradient",
   ) {
-    infraSectionsGj = emptyGeojson() as AutosplitRoute;
-    gradientSectionsGj = emptyGeojson() as AutosplitRouteByGradient;
+    sectionsGj = emptyGeojson() as AutosplitRoute;
 
     try {
       // TODO Wasteful; should RouteControls export a read-only view of this?
       let feature = await $backend!.snapRoute(waypts);
-
-      if (breakdown == "infra_type") {
-        infraSectionsGj = await $backend!.autosplitRoute(
-          id,
-          feature.properties.full_path,
-          overrideInfraType ? infraType : null,
-        );
-      } else if (breakdown == "gradient") {
-        gradientSectionsGj = await $backend!.autosplitRouteByGradient(
-          feature.properties.full_path,
-        );
-      }
+      sectionsGj = await $backend!.autosplitRoute(
+        id,
+        feature.properties.full_path,
+        overrideInfraType ? infraType : null,
+      );
     } catch (err) {}
   }
 
-  function percentFits(infraSectionsGj: AutosplitRoute): string {
+  function percentFits(sectionsGj: AutosplitRoute): string {
     let total = 0;
     let fits = 0;
-    for (let f of infraSectionsGj.features) {
+    for (let f of sectionsGj.features) {
       total += f.properties.length;
       if (f.properties.fits) {
         fits += f.properties.length;
@@ -179,6 +163,11 @@
     }
     return percent(fits, total);
   }
+
+  let filterSections = {
+    infra_type: ["==", ["get", "kind"], "new"] as ExpressionSpecification,
+    gradient: undefined,
+  };
 </script>
 
 <RouteControls
@@ -229,18 +218,11 @@
 
       <br />
 
-      {#if breakdown == "infra_type"}
-        <p>
-          {percentFits(infraSectionsGj)} of the route by length fits in the available
-          streetspace
-        </p>
+      <p>
+        {percentFits(sectionsGj)} of the route by length fits in the available streetspace
+      </p>
 
-        <QualitativeLegend colors={infraTypeColors} />
-        <InfraTypeSectionDiagram sectionsGj={infraSectionsGj} />
-      {:else}
-        <QualitativeLegend colors={gradientColors} horiz />
-        <GradientSectionDiagram sectionsGj={gradientSectionsGj} />
-      {/if}
+      <SectionDiagram {breakdown} {sectionsGj} />
     {/if}
 
     <label>
@@ -270,31 +252,24 @@
   </div>
 
   <span slot="extra-map">
-    <GeoJSON data={infraSectionsGj}>
+    <GeoJSON data={sectionsGj}>
       <LineLayer
-        {...layerId("edit-route-infra-sections")}
-        filter={["==", ["get", "kind"], "new"]}
+        {...layerId("edit-route-sections")}
+        filter={filterSections[breakdown]}
         paint={{
           "line-width": 10,
-          "line-color": constructMatchExpression(
-            ["get", "infra_type"],
-            infraTypeColors,
-            "black",
-          ),
-        }}
-      />
-    </GeoJSON>
-
-    <GeoJSON data={gradientSectionsGj}>
-      <LineLayer
-        {...layerId("edit-route-gradient-sections")}
-        paint={{
-          "line-width": 10,
-          "line-color": constructMatchExpression(
-            ["get", "gradient_group"],
-            gradientColors,
-            "black",
-          ),
+          "line-color": {
+            infra_type: constructMatchExpression(
+              ["get", "infra_type"],
+              infraTypeColors,
+              "black",
+            ),
+            gradient: constructMatchExpression(
+              ["get", "gradient_group"],
+              gradientColors,
+              "black",
+            ),
+          }[breakdown],
         }}
       />
     </GeoJSON>

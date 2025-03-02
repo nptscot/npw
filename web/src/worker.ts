@@ -9,7 +9,6 @@ import type {
 } from "geojson";
 import type {
   AutosplitRoute,
-  AutosplitRouteByGradient,
   ConnectedComponents,
   DataZones,
   DynamicRoad,
@@ -121,11 +120,6 @@ export class Backend {
         overrideInfraType,
       ),
     );
-  }
-
-  autosplitRouteByGradient(full_path: RouteNode[]): AutosplitRouteByGradient {
-    this.checkReady();
-    return JSON.parse(this.inner!.autosplitRouteByGradient(full_path));
   }
 
   evaluateRoute(req: {

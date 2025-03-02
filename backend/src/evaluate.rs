@@ -1,10 +1,10 @@
 use anyhow::Result;
 use geo::{Coord, Euclidean, Length};
-use geojson::{FeatureCollection, GeoJson};
-use graph::{PathStep, RoadID};
+use geojson::FeatureCollection;
+use graph::PathStep;
 use serde::Serialize;
 
-use crate::{Dir, InfraType, LevelOfService, MapModel};
+use crate::{routes::gradient_group, InfraType, LevelOfService, MapModel};
 
 pub enum Breakdown {
     None,
@@ -118,21 +118,6 @@ impl MapModel {
             ),
         })?)
     }
-
-    // TODO A weird hybrid between autosplit_route and evaluate_route...
-    pub fn autosplit_route_by_gradient(&self, roads: Vec<(RoadID, Dir)>) -> Result<String> {
-        let route = crate::routes::glue_route(&self.graph, &roads);
-        let mut features = Vec::new();
-        for (linestring, gradient) in
-            route.split_linestrings(&self.graph, |r| gradient_group(self.gradients[r.0]))
-        {
-            let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
-            f.set_property("gradient_group", gradient);
-            f.set_property("length", linestring.length::<Euclidean>());
-            features.push(f);
-        }
-        Ok(serde_json::to_string(&GeoJson::from(features))?)
-    }
 }
 
 #[derive(Serialize)]
@@ -142,19 +127,4 @@ struct Step {
     way: String,
     infra_type: InfraType,
     los: LevelOfService,
-}
-
-fn gradient_group(gradient: f64) -> &'static str {
-    let g = gradient.abs();
-    if g <= 3.0 {
-        "<= 3%"
-    } else if g <= 5.0 {
-        "3 - 5%"
-    } else if g <= 7.0 {
-        "5 - 7%"
-    } else if g <= 10.0 {
-        "7 - 10%"
-    } else {
-        "> 10%"
-    }
 }

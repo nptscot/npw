@@ -23,23 +23,28 @@ impl MapModel {
 
         let used_roads = self.used_roads();
 
-        // TODO Refactor with autosplit_route
+        // This is deliberately separate from autosplit_route, which splits by more categories
+        //
         // Split when:
         // - the auto-recommended infrastructure type changes (unless manually overriden)
         // - the route crosses something existing
+        // - the infrastructure type does or does not fit in the available streetspace
         #[derive(PartialEq)]
         enum Case {
             AlreadyExists,
-            New(InfraType),
+            // bool is fits or not
+            New(InfraType, bool),
         }
         let case = |(r, _)| {
             if used_roads.contains(&r) {
                 Case::AlreadyExists
             } else {
                 if orig_route.override_infra_type {
-                    Case::New(orig_route.infra_type)
+                    let it = orig_route.infra_type;
+                    Case::New(it, self.does_infra_type_fit(r, it))
                 } else {
-                    Case::New(self.best_infra_type(r))
+                    let it = self.best_infra_type(r);
+                    Case::New(it, self.does_infra_type_fit(r, it))
                 }
             }
         };
@@ -52,7 +57,7 @@ impl MapModel {
                     // if the tier or something else differs?
                     continue;
                 }
-                Case::New(infra_type) => infra_type,
+                Case::New(infra_type, _) => infra_type,
             };
 
             let linestring = glue_route(&self.graph, roads).linestring(&self.graph);
@@ -194,20 +199,22 @@ impl MapModel {
         // - the auto-recommended or manual infrastructure type changes
         // - the route crosses something existing (except the existing route)
         // - the infrastructure type does or does not fit in the available streetspace
+        // - the gradient group changes
         #[derive(PartialEq)]
         enum Case {
-            AlreadyExists,
-            // bool is fits or not
-            New(InfraType, bool),
+            // bool is fits or not, the str is gradient_group
+            AlreadyExists(&'static str),
+            New(InfraType, bool, &'static str),
         }
-        let case = |(r, _)| {
+        let case = |(r, _): (RoadID, _)| {
+            let gradient = gradient_group(self.gradients[r.0]);
             if used_roads.contains(&r) {
-                Case::AlreadyExists
+                Case::AlreadyExists(gradient)
             } else if let Some(it) = override_infra_type {
-                Case::New(it, self.does_infra_type_fit(r, it))
+                Case::New(it, self.does_infra_type_fit(r, it), gradient)
             } else {
                 let it = self.best_infra_type(r);
-                Case::New(it, self.does_infra_type_fit(r, it))
+                Case::New(it, self.does_infra_type_fit(r, it), gradient)
             }
         };
 
@@ -217,15 +224,17 @@ impl MapModel {
             let linestring = glue_route(&self.graph, roads).linestring(&self.graph);
             let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
             match c {
-                Case::AlreadyExists => {
+                Case::AlreadyExists(gradient) => {
                     f.set_property("kind", "overlap");
                     // Don't worry about other routes
                     f.set_property("fits", true);
+                    f.set_property("gradient_group", gradient);
                 }
-                Case::New(infra_type, fits) => {
+                Case::New(infra_type, fits, gradient) => {
                     f.set_property("kind", "new");
                     f.set_property("infra_type", serde_json::to_value(&infra_type).unwrap());
                     f.set_property("fits", fits);
+                    f.set_property("gradient_group", gradient);
                 }
             }
             f.set_property("length", linestring.length::<Euclidean>());
@@ -371,5 +380,20 @@ impl Route {
         f.set_property("override_infra_type", self.override_infra_type);
         f.set_property("tier", serde_json::to_value(&self.tier).unwrap());
         f
+    }
+}
+
+pub fn gradient_group(gradient: f64) -> &'static str {
+    let g = gradient.abs();
+    if g <= 3.0 {
+        "<= 3%"
+    } else if g <= 5.0 {
+        "3 - 5%"
+    } else if g <= 7.0 {
+        "5 - 7%"
+    } else if g <= 10.0 {
+        "7 - 10%"
+    } else {
+        "> 10%"
     }
 }
