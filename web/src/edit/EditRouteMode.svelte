@@ -1,5 +1,9 @@
 <script lang="ts">
-  import type { ExpressionSpecification, Map } from "maplibre-gl";
+  import type {
+    DataDrivenPropertyValueSpecification,
+    ExpressionSpecification,
+    Map,
+  } from "maplibre-gl";
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { Modal } from "svelte-utils";
@@ -33,7 +37,7 @@
 
   let showOverrideModal = false;
 
-  let breakdown: "infra_type" | "gradient" = "infra_type";
+  let breakdown: "infra_type" | "gradient" | "deliverability" = "infra_type";
 
   let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
   $: recalculateSections($waypoints, overrideInfraType, infraType);
@@ -167,6 +171,26 @@
   let filterSections = {
     infra_type: ["==", ["get", "kind"], "new"] as ExpressionSpecification,
     gradient: undefined,
+    deliverability: undefined,
+  };
+
+  let colorSections = {
+    infra_type: constructMatchExpression(
+      ["get", "infra_type"],
+      infraTypeColors,
+      "black",
+    ),
+    gradient: constructMatchExpression(
+      ["get", "gradient_group"],
+      gradientColors,
+      "black",
+    ),
+    deliverability: [
+      "case",
+      ["get", "fits"],
+      "green",
+      "red",
+    ] as DataDrivenPropertyValueSpecification<string>,
   };
 </script>
 
@@ -184,14 +208,6 @@
     </label>
 
     {#if $waypoints.length >= 2}
-      <label>
-        Show details along route
-        <select bind:value={breakdown}>
-          <option value="infra_type">Infrastructure type</option>
-          <option value="gradient">Gradient</option>
-        </select>
-      </label>
-
       {#if overrideInfraType}
         <p>
           You've forced this route to always use {infraType}, assuming high
@@ -216,11 +232,18 @@
         </button>
       {/if}
 
-      <br />
-
       <p>
         {percentFits(sectionsGj)} of the route by length fits in the available streetspace
       </p>
+
+      <label>
+        Show details along route
+        <select bind:value={breakdown}>
+          <option value="infra_type">Infrastructure type</option>
+          <option value="gradient">Gradient</option>
+          <option value="deliverability">Streetspace deliverability</option>
+        </select>
+      </label>
 
       <SectionDiagram {breakdown} {sectionsGj} />
     {/if}
@@ -258,18 +281,7 @@
         filter={filterSections[breakdown]}
         paint={{
           "line-width": 10,
-          "line-color": {
-            infra_type: constructMatchExpression(
-              ["get", "infra_type"],
-              infraTypeColors,
-              "black",
-            ),
-            gradient: constructMatchExpression(
-              ["get", "gradient_group"],
-              gradientColors,
-              "black",
-            ),
-          }[breakdown],
+          "line-color": colorSections[breakdown],
         }}
       />
     </GeoJSON>

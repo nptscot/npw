@@ -4,7 +4,7 @@
   import { sum } from "../common";
   import type { AutosplitRoute } from "../types";
 
-  export let breakdown: "infra_type" | "gradient";
+  export let breakdown: "infra_type" | "gradient" | "deliverability";
   export let sectionsGj: AutosplitRoute;
 
   $: total = sum(sectionsGj.features.map((f) => f.properties.length));
@@ -33,7 +33,14 @@
       {/if}
     {:else if breakdown == "gradient"}
       <span
-        style:background={gradientColors[notNull(f.properties.gradient_group)]}
+        style:background={gradientColors[f.properties.gradient_group]}
+        style:width={(f.properties.length / total) * 100 + "%"}
+      >
+        &nbsp;
+      </span>
+    {:else if breakdown == "deliverability"}
+      <span
+        style:background={f.properties.fits ? "green" : "red"}
         style:width={(f.properties.length / total) * 100 + "%"}
       >
         &nbsp;
