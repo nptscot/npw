@@ -126,7 +126,14 @@
     }
     if (
       debugOriginalData &&
-      ["traffic", "los", "existing_infra", "speed", "cn"].includes(style)
+      [
+        "traffic",
+        "los",
+        "existing_infra",
+        "speed",
+        "cn",
+        "street_space",
+      ].includes(style)
     ) {
       return false;
     }
@@ -181,7 +188,7 @@
     </p>
     {#if props.street_space}
       <p>
-        Does a two-way cycletrack fit within the carriageway? {props.street_space}
+        What fits within the carriageway, verges, and footways? {props.street_space}
       </p>
     {/if}
     <a href={props.way} target="_blank">Open OSM</a>

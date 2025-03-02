@@ -63,7 +63,7 @@ pub struct MapModel {
     core_network: Vec<Option<Tier>>,
     // Go Dutch totals for all purposes
     precalculated_flows: Vec<usize>,
-    street_space: Vec<Option<AvailableWidth>>,
+    street_space: Vec<Option<Streetspace>>,
     // mph
     speeds: Vec<usize>,
     // A percent. Positive if uphill in the forwards direction, negative if downhill
@@ -124,11 +124,11 @@ pub enum Tier {
     LongDistance,
 }
 
+/// This is a simplification of the NPT layer
 #[derive(Clone, Copy, Debug, Enum, Serialize, Deserialize)]
-pub enum AvailableWidth {
-    NotEnoughSpace,
-    AbsoluteMinimum,
-    DesirableMinimum,
+pub struct Streetspace {
+    pub segregated_fits: bool,
+    pub cycle_lane_fits: bool,
 }
 
 impl MapModel {
@@ -147,7 +147,7 @@ impl MapModel {
         traffic_volumes: Vec<usize>,
         core_network: Vec<Option<Tier>>,
         precalculated_flows: Vec<usize>,
-        street_space: Vec<Option<AvailableWidth>>,
+        street_space: Vec<Option<Streetspace>>,
         gradients: Vec<f64>,
     ) -> Self {
         let highways: Vec<_> = graph
@@ -276,7 +276,16 @@ impl MapModel {
             );
             f.set_property(
                 "street_space",
-                serde_json::to_value(self.street_space[idx]).unwrap(),
+                serde_json::to_value(self.street_space[idx].map(|ss| {
+                    if ss.segregated_fits {
+                        "Segregated"
+                    } else if ss.cycle_lane_fits {
+                        "CycleLane"
+                    } else {
+                        "nothing"
+                    }
+                }))
+                .unwrap(),
             );
 
             features.push(f);

@@ -13,7 +13,7 @@ use log::{info, warn};
 use serde::Deserialize;
 
 use self::disconnected::remove_disconnected_components;
-use backend::{AvailableWidth, Highway, MapModel, Tier};
+use backend::{Highway, MapModel, Streetspace, Tier};
 
 mod disconnected;
 
@@ -301,7 +301,7 @@ fn read_street_space(
     path: &str,
     graph: &Graph,
     timer: &mut Timer,
-) -> Result<Vec<Option<AvailableWidth>>> {
+) -> Result<Vec<Option<Streetspace>>> {
     timer.step("read streetspace");
     let dataset = Dataset::open(path)?;
     let mut layer = dataset.layer(0)?;
@@ -313,19 +313,24 @@ fn read_street_space(
     for input in layer.features() {
         let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
         graph.mercator.to_mercator_in_place(&mut geom);
-        let Some(space) = input.field_as_string_by_name("carriageway_2way")? else {
+        // TODO Check assumptions of how we're reinterpreting this data
+        let Some(segregated_space) = input.field_as_string_by_name("combined_2way")? else {
             // Some are just missing
             continue;
         };
-        let space = match space.as_str() {
-            "Not enough space" => AvailableWidth::NotEnoughSpace,
-            "Absolute minimum" => AvailableWidth::AbsoluteMinimum,
-            "Desirable minimum" => AvailableWidth::DesirableMinimum,
-            x => bail!("Unknown carriageway_2way {x}"),
+        let Some(cycle_lane_space) = input.field_as_string_by_name("combined_1way")? else {
+            continue;
         };
+        let segregated_fits =
+            segregated_space == "Absolute minimum" || segregated_space == "Desirable minimum";
+        let cycle_lane_fits =
+            cycle_lane_space == "Absolute minimum" || cycle_lane_space == "Desirable minimum";
 
         source_geometry.push(geom);
-        source_data.push(space);
+        source_data.push(Streetspace {
+            segregated_fits,
+            cycle_lane_fits,
+        });
     }
 
     timer.step("match roads to streetspace");

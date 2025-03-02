@@ -70,7 +70,13 @@ export let reachabilityColors = {
 };
 
 export let streetSpaceColors = {
-  NotEnoughSpace: "red",
-  AbsoluteMinimum: "yellow",
-  DesirableMinimum: "green",
+  nothing: "red",
+  CycleLane: "yellow",
+  Segregated: "green",
+};
+
+export let nptStreetSpaceColors = {
+  "Not enough space": "red",
+  "Absolute minimum": "yellow",
+  "Desirable minimum": "green",
 };

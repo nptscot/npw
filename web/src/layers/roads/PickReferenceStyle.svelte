@@ -4,6 +4,7 @@
   import {
     gradient,
     levelOfServiceColors,
+    nptStreetSpaceColors,
     reachabilityColors,
     speed,
     streetSpaceColors,
@@ -66,9 +67,13 @@
     {/if}
 
     {#if $referenceRoadStyle == "street_space"}
-      <QualitativeLegend colors={streetSpaceColors} horiz />
+      {#if $debugOriginalData}
+        <QualitativeLegend colors={nptStreetSpaceColors} horiz />
+      {:else}
+        <QualitativeLegend colors={streetSpaceColors} horiz />
+      {/if}
 
-      For a bidirectional cycle-track within carriageway width
+      What fits within the carriageway, verges, and footways?
 
       <HelpButton>
         <p>
