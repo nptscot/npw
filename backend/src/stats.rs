@@ -1,5 +1,5 @@
 use anyhow::Result;
-use graph::Timer;
+use graph::{RoadID, Timer};
 use serde::{Deserialize, Serialize};
 
 use crate::{utils::Quintiles, LevelOfService, MapModel, Tier};
@@ -24,6 +24,7 @@ pub struct Stats {
     total_network_length: f64,
     total_high_los_length: f64,
     total_low_gradient_length: f64,
+    total_undeliverable_length: f64,
 
     density_network_in_settlements: Option<f64>,
 }
@@ -108,6 +109,7 @@ impl MapModel {
         let mut total_network_length = 0.0;
         let mut total_high_los_length = 0.0;
         let mut total_low_gradient_length = 0.0;
+        let mut total_undeliverable_length = 0.0;
         let mut total_main_road_length = 0.0;
         let mut covered_main_road_length = 0.0;
         let mut length_in_settlements = 0.0;
@@ -129,6 +131,10 @@ impl MapModel {
                     && self.within_settlement[idx]
                 {
                     length_in_settlements += road.length_meters;
+                }
+
+                if !self.does_infra_type_fit(RoadID(idx), self.infra_types[idx].unwrap()) {
+                    total_undeliverable_length += road.length_meters;
                 }
             }
 
@@ -161,6 +167,7 @@ impl MapModel {
             total_network_length,
             total_high_los_length,
             total_low_gradient_length,
+            total_undeliverable_length,
 
             total_main_road_length,
             covered_main_road_length,

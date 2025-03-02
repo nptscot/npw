@@ -10,8 +10,8 @@
     streetSpaceColors,
     traffic,
   } from "../../colors";
-  import { HelpButton } from "../../common";
-  import { devMode, referenceRoadStyle } from "../../stores";
+  import { HelpButton, percent, prettyPrintDistance } from "../../common";
+  import { devMode, referenceRoadStyle, stats } from "../../stores";
   import { debugOriginalData, lastReferenceStyle } from "../stores";
   import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
   import CoreNetwork from "./CoreNetwork.svelte";
@@ -142,8 +142,15 @@
     <CalculatedRouteNetwork />
     <NetworkDisconnections />
 
-    {#if $referenceRoadStyle == "deliverability"}
-      <p>TODO of infrastructure doesn't fit in the available streetspace</p>
+    {#if $referenceRoadStyle == "deliverability" && $stats}
+      <p>
+        {percent(
+          $stats.total_undeliverable_length,
+          $stats.total_network_length,
+        )} of infrastructure ({prettyPrintDistance(
+          $stats.total_undeliverable_length,
+        )}) doesn't fit in the available streetspace.
+      </p>
     {/if}
 
     <div style:display="flex">
