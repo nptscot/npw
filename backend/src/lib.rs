@@ -339,6 +339,22 @@ impl MapModel {
         }
         roads
     }
+
+    pub fn does_infra_type_fit(&self, r: RoadID, infra_type: InfraType) -> bool {
+        let Some(streetspace) = self.street_space[r.0] else {
+            // Only have this info on main roads. Assume anything can fit on smaller roads. In
+            // practice, we won't ask about things like Segregated there anyway.
+            return true;
+        };
+        if infra_type == InfraType::Segregated {
+            streetspace.segregated_fits
+        } else if infra_type == InfraType::CycleLane {
+            streetspace.cycle_lane_fits
+        } else {
+            // The other cases fit by definition
+            true
+        }
+    }
 }
 
 #[derive(Serialize)]

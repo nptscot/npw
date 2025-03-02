@@ -5,7 +5,7 @@
   import { Modal, QualitativeLegend } from "svelte-utils";
   import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
   import { gradientColors, infraTypeColors } from "../colors";
-  import { layerId } from "../common";
+  import { layerId, percent } from "../common";
   import AllControls from "../layers/AllControls.svelte";
   import {
     autosave,
@@ -167,6 +167,18 @@
       }
     } catch (err) {}
   }
+
+  function percentFits(infraSectionsGj: AutosplitRoute): string {
+    let total = 0;
+    let fits = 0;
+    for (let f of infraSectionsGj.features) {
+      total += f.properties.length;
+      if (f.properties.fits) {
+        fits += f.properties.length;
+      }
+    }
+    return percent(fits, total);
+  }
 </script>
 
 <RouteControls
@@ -202,7 +214,8 @@
       {:else}
         <p>
           The route you've drawn has been split into sections, automatically
-          picking an infrastructure type to achieve high Level of Service.
+          picking an infrastructure type to achieve the best possible Level of
+          Service.
         </p>
         <button
           on:click={() => {
@@ -217,6 +230,11 @@
       <br />
 
       {#if breakdown == "infra_type"}
+        <p>
+          {percentFits(infraSectionsGj)} of the route by length fits in the available
+          streetspace
+        </p>
+
         <QualitativeLegend colors={infraTypeColors} />
         <InfraTypeSectionDiagram sectionsGj={infraSectionsGj} />
       {:else}

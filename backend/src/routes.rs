@@ -193,18 +193,21 @@ impl MapModel {
         // Split when:
         // - the auto-recommended or manual infrastructure type changes
         // - the route crosses something existing (except the existing route)
+        // - the infrastructure type does or does not fit in the available streetspace
         #[derive(PartialEq)]
         enum Case {
             AlreadyExists,
-            New(InfraType),
+            // bool is fits or not
+            New(InfraType, bool),
         }
         let case = |(r, _)| {
             if used_roads.contains(&r) {
                 Case::AlreadyExists
             } else if let Some(it) = override_infra_type {
-                Case::New(it)
+                Case::New(it, self.does_infra_type_fit(r, it))
             } else {
-                Case::New(self.best_infra_type(r))
+                let it = self.best_infra_type(r);
+                Case::New(it, self.does_infra_type_fit(r, it))
             }
         };
 
@@ -216,10 +219,13 @@ impl MapModel {
             match c {
                 Case::AlreadyExists => {
                     f.set_property("kind", "overlap");
+                    // Don't worry about other routes
+                    f.set_property("fits", true);
                 }
-                Case::New(infra_type) => {
+                Case::New(infra_type, fits) => {
                     f.set_property("kind", "new");
                     f.set_property("infra_type", serde_json::to_value(&infra_type).unwrap());
+                    f.set_property("fits", fits);
                 }
             }
             f.set_property("length", linestring.length::<Euclidean>());

@@ -179,7 +179,12 @@ export type ConnectedComponents = FeatureCollection<
 
 export type AutosplitRoute = FeatureCollection<
   LineString,
-  { kind: string; length: number; infra_type?: string }
+  {
+    kind: "new" | "overlap";
+    length: number;
+    infra_type?: string;
+    fits: boolean;
+  }
 >;
 
 export type AutosplitRouteByGradient = FeatureCollection<
