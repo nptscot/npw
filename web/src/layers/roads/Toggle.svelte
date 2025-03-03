@@ -18,6 +18,7 @@
 
 <button
   style:background={$referenceRoadStyle == style ? "green" : "grey"}
+  style:font-size="20px"
   on:click={toggle}
 >
   {#if $referenceRoadStyle == "off" && $lastReferenceStyle == style}
