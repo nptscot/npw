@@ -15,17 +15,34 @@
   import UrbanAreas from "./UrbanAreas.svelte";
 </script>
 
+<!-- Common -->
+
 <Roads />
 <DebugNptPmtiles />
-<CyclingFlowCoverage quintile={1} label="High" bind:show={$cyclingFlow1} />
-<CyclingFlowCoverage quintile={2} label="Medium" bind:show={$cyclingFlow2} />
-<MainRoadCoverage />
-<Schools />
-<TownCentres />
-<Settlements />
-<Greenspaces />
-<GpHospitals />
-<UrbanAreas />
-<DeprivedPopulation />
 <AllPopulation />
+<DeprivedPopulation />
+
+<!-- Primary -->
+
+<CyclingFlowCoverage quintile={1} label="High" bind:show={$cyclingFlow1} />
+<MainRoadCoverage />
+
+<!-- Secondary -->
+
+<CyclingFlowCoverage quintile={2} label="Medium" bind:show={$cyclingFlow2} />
+<TownCentres />
+
+<!-- Local acces -->
+
+<Schools />
+<GpHospitals />
+<Greenspaces />
+
+<!-- Long distance -->
+
+<Settlements />
+<UrbanAreas />
+
+<!-- Network assessment -->
+
 <GridMeshDensity />
