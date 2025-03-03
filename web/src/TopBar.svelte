@@ -3,6 +3,7 @@
   import { HelpButton } from "./common";
   import ManageFiles from "./common/ManageFiles.svelte";
   import { layersPerStage } from "./layers/stores";
+  import TopBarStats from "./stats/TopBarStats.svelte";
   import { currentStage, devMode, referenceRoadStyle } from "./stores";
   import type { Tier } from "./types";
 
@@ -136,6 +137,7 @@
     </label>
   </HelpButton>
 </div>
+<TopBarStats />
 
 <style>
   div {

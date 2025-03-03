@@ -1,6 +1,5 @@
 <script lang="ts">
   import * as Comlink from "comlink";
-  import Stats from "./stats/Stats.svelte";
   import "@picocss/pico/css/pico.conditional.jade.min.css";
   import type { Map, StyleSpecification } from "maplibre-gl";
   import { onMount } from "svelte";
@@ -212,8 +211,6 @@
         <div bind:this={mapDiv} />
 
         {#if $backend}
-          <Stats />
-
           {#await $backend.getInvertedBoundary() then data}
             <GeoJSON {data}>
               <FillLayer
