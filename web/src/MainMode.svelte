@@ -1,6 +1,5 @@
 <script lang="ts">
   import { SplitComponent } from "./common/layout";
-  import ManageFiles from "./common/ManageFiles.svelte";
   import AllControls from "./layers/AllControls.svelte";
   import LeftSidebarStats from "./stats/LeftSidebarStats.svelte";
   import { mode } from "./stores";
@@ -20,9 +19,6 @@
 
 <SplitComponent>
   <div slot="left">
-    <a href="index.html">Change area</a>
-    <ManageFiles />
-
     <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
       Draw new <kbd>r</kbd>
       oute line

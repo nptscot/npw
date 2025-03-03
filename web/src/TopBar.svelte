@@ -1,6 +1,7 @@
 <script lang="ts">
   import { networkAssessmentColor, tierColors } from "./colors";
   import { HelpButton } from "./common";
+  import ManageFiles from "./common/ManageFiles.svelte";
   import { layersPerStage } from "./layers/stores";
   import { currentStage, devMode, referenceRoadStyle } from "./stores";
   import type { Tier } from "./types";
@@ -31,6 +32,15 @@
 </script>
 
 <div>
+  <button
+    style:background="grey"
+    on:click={() => (window.location.href = "index.html")}
+  >
+    Select area
+  </button>
+
+  <ManageFiles />
+
   <button
     style:background={$currentStage == "Primary" ? tierColors.Primary : "grey"}
     on:click={() => changeStage("Primary")}
