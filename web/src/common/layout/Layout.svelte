@@ -6,8 +6,8 @@
     <div class="left">
       <slot name="left" />
     </div>
-    <div class="main">
-      <slot name="main" />
+    <div class="map">
+      <slot name="map" />
     </div>
   </div>
 </div>
@@ -38,7 +38,7 @@
     padding: 4px;
   }
 
-  .main {
+  .map {
     width: 75%;
   }
 </style>

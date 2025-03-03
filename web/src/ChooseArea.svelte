@@ -115,7 +115,7 @@
   </style>
 </div>
 
-<div class="main">
+<div class="map">
   <div style="position: relative; width: 100%; height: 100%;">
     <MapLibre
       style={`https://api.maptiler.com/maps/streets-v2/style.json?key=${maptilerApiKey}`}
@@ -170,7 +170,7 @@
     padding: 8px;
   }
 
-  .main {
+  .map {
     width: 65%;
     height: 100vh;
   }

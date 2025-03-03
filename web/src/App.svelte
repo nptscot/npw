@@ -177,7 +177,7 @@
     </label>
   </div>
 
-  <div slot="main" style="position:relative; width: 100%; height: 100%;">
+  <div slot="map" style="position:relative; width: 100%; height: 100%;">
     {#await getStyle() then style}
       <MapLibre
         {style}
