@@ -2,6 +2,7 @@
   import { SplitComponent } from "./common/layout";
   import ManageFiles from "./common/ManageFiles.svelte";
   import AllControls from "./layers/AllControls.svelte";
+  import LeftSidebarStats from "./stats/LeftSidebarStats.svelte";
   import { mode } from "./stores";
 
   function onKeyDown(e: KeyboardEvent) {
@@ -42,5 +43,7 @@
     </button>
 
     <AllControls />
+
+    <LeftSidebarStats />
   </div>
 </SplitComponent>

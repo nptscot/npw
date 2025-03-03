@@ -11,6 +11,7 @@
   import { gradientColors, infraTypeColors } from "../colors";
   import { layerId, percent } from "../common";
   import AllControls from "../layers/AllControls.svelte";
+  import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
     autosave,
     backend,
@@ -272,6 +273,8 @@
     </button>
 
     <AllControls />
+
+    <LeftSidebarStats />
   </div>
 
   <span slot="extra-map">

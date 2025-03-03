@@ -33,13 +33,14 @@
     backend,
     boundaryName,
     currentFilename,
-    devMode,
     map as mapStore,
     maptilerApiKey,
     mode,
+    mutationCounter,
     remoteStorage,
     routeA,
     routeB,
+    stats,
   } from "./stores";
   import TopBar from "./TopBar.svelte";
   import type { Backend } from "./worker";
@@ -155,6 +156,20 @@
     delete json.layers.find((l: any) => l.id == "Building")!.maxzoom;
     return json;
   }
+
+  // Start less than $mutationCounter
+  let lastUpdateFastStats = 0;
+  async function recalcFastStats() {
+    if ($backend && lastUpdateFastStats != $mutationCounter) {
+      console.time("Recalculate fast stats");
+      $stats = await $backend.recalculateStats();
+      console.timeEnd("Recalculate fast stats");
+      lastUpdateFastStats = $mutationCounter;
+    }
+  }
+  $: if ($backend && $mutationCounter > 0) {
+    recalcFastStats();
+  }
 </script>
 
 <svelte:head>
@@ -169,12 +184,6 @@
   </div>
   <div slot="left" class="pico">
     <div bind:this={leftSidebarDiv} />
-    <hr />
-
-    <label>
-      <input type="checkbox" bind:checked={$devMode} />
-      Dev mode
-    </label>
   </div>
 
   <div slot="map" style="position:relative; width: 100%; height: 100%;">

@@ -2,7 +2,7 @@
   import { networkAssessmentColor, tierColors } from "./colors";
   import { HelpButton } from "./common";
   import { layersPerStage } from "./layers/stores";
-  import { currentStage, referenceRoadStyle } from "./stores";
+  import { currentStage, devMode, referenceRoadStyle } from "./stores";
   import type { Tier } from "./types";
 
   function changeStage(newStage: Tier | "assessment") {
@@ -119,6 +119,11 @@
         any problems.
       </p>
     {/if}
+
+    <label>
+      <input type="checkbox" bind:checked={$devMode} />
+      Dev mode
+    </label>
   </HelpButton>
 </div>
 
