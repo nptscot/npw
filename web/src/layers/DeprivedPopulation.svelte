@@ -7,7 +7,7 @@
   } from "svelte-maplibre";
   import { SequentialLegend } from "svelte-utils";
   import { makeRamp, Popup } from "svelte-utils/map";
-  import { layerId, percent, sum } from "../common";
+  import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { DataZones } from "../types";
   import LayerControls from "./LayerControls.svelte";
@@ -35,14 +35,6 @@
     recalc();
   }
 
-  $: totalPopulation = sum(data.features.map((f) => f.properties.population));
-  $: numReachable = data.features.filter((f) => f.properties.reachable).length;
-  $: reachablePopulation = sum(
-    data.features
-      .filter((f) => f.properties.reachable)
-      .map((f) => f.properties.population),
-  );
-
   // Color ramp from https://www.ons.gov.uk/census/maps/choropleth. Lowest value is the worst (darkest).
   let colorScale = ["#080C54", "#186290", "#1F9EB7", "#80C6A3", "#CDE594"];
 
@@ -51,16 +43,10 @@
 </script>
 
 <LayerControls name="SIMD" bind:show={$show}>
-  <p>Only the top 20%ile most deprived zones are shown</p>
-  <p>
-    {numReachable.toLocaleString()} / {data.features.length.toLocaleString()} zones
-    reachable. That's {reachablePopulation.toLocaleString()} / {totalPopulation.toLocaleString()}
-    ({percent(reachablePopulation, totalPopulation)}) of the population.
-  </p>
   <SequentialLegend {colorScale} {limits} />
   <p>
     Darker colours are more deprived. Zones with a red outline are not reachable
-    by the current network.
+    by the current network. Only the top 20%ile most deprived zones are shown.
   </p>
 </LayerControls>
 

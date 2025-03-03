@@ -24,12 +24,12 @@
 
 <!-- Primary -->
 
-<CyclingFlowCoverage quintile={1} label="High" bind:show={$cyclingFlow1} />
+<CyclingFlowCoverage label="High" bind:show={$cyclingFlow1} />
 <MainRoadCoverage />
 
 <!-- Secondary -->
 
-<CyclingFlowCoverage quintile={2} label="Medium" bind:show={$cyclingFlow2} />
+<CyclingFlowCoverage label="Medium" bind:show={$cyclingFlow2} />
 <TownCentres />
 
 <!-- Local acces -->

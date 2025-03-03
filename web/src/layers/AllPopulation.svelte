@@ -7,7 +7,7 @@
   } from "svelte-maplibre";
   import { SequentialLegend } from "svelte-utils";
   import { makeRamp, Popup } from "svelte-utils/map";
-  import { layerId, percent, sum } from "../common";
+  import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { DataZones } from "../types";
   import LayerControls from "./LayerControls.svelte";
@@ -30,14 +30,6 @@
     recalc();
   }
 
-  $: totalPopulation = sum(data.features.map((f) => f.properties.population));
-  $: numReachable = data.features.filter((f) => f.properties.reachable).length;
-  $: reachablePopulation = sum(
-    data.features
-      .filter((f) => f.properties.reachable)
-      .map((f) => f.properties.population),
-  );
-
   // Color ramp from https://www.ons.gov.uk/census/maps/choropleth. TODO redo for density
   let colorScale = ["#080C54", "#186290", "#1F9EB7", "#80C6A3", "#CDE594"];
 
@@ -52,11 +44,6 @@
 </script>
 
 <LayerControls name="Population" bind:show={$show}>
-  <p>
-    {numReachable.toLocaleString()} / {data.features.length.toLocaleString()} zones
-    reachable. That's {reachablePopulation.toLocaleString()} / {totalPopulation.toLocaleString()}
-    ({percent(reachablePopulation, totalPopulation)}) of the population.
-  </p>
   <SequentialLegend {colorScale} {limits} />
   <p>
     Darker colours are denser. Zones with a red outline are not reachable by the

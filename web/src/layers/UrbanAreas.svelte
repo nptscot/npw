@@ -11,7 +11,7 @@
   let show = false;
 </script>
 
-<LayerControls name="Urban areas" bind:show />
+<LayerControls name="Urban areas" bind:show empty />
 
 <VectorTileSource url={`pmtiles://${assetUrl("urban_areas.pmtiles")}`}>
   <FillLayer
