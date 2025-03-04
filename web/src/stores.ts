@@ -74,6 +74,13 @@ export async function autosave() {
   let filename = get(currentFilename);
   let state = await backendValue.toSavefile();
   setLocalStorage(getKey(boundary, filename), state);
+
+  // TODO Temporary debugging
+  let total = 0;
+  for (let route of Object.values(JSON.parse(state).routes)) {
+    total += route.feature.properties.waypoints.length;
+  }
+  console.log(`Autosaving. ${total} waypoints in all routes`);
 }
 
 export function assetUrl(path: string): string {

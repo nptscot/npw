@@ -262,23 +262,28 @@ fn find_minimal_waypoints(
 ) -> Vec<IntersectionID> {
     use crate::routes::{end_pos, start_pos};
 
+    // TODO Really rethink the route snapper backend now, because the translation back and
+    // forth is getting silly
+    let path_steps: Vec<PathStep> = steps
+        .iter()
+        .cloned()
+        .map(|(road, dir)| PathStep::Road {
+            road,
+            forwards: matches!(dir, Dir::Forwards),
+        })
+        .collect();
+
+    let profile = graph.profile_names["bicycle_direct"];
+
     // Try the optimistic, simple approach first -- just the first and last point
     let i1 = intersections[0];
     let i2 = *intersections.last().unwrap();
-    let profile = graph.profile_names["bicycle_direct"];
     let start = start_pos(steps[0], graph);
     let end = end_pos(*steps.last().unwrap(), graph);
+    assert_eq!(i1, start.intersection);
+    assert_eq!(i2, end.intersection);
+
     if let Ok(route) = graph.routers[profile.0].route(graph, start, end) {
-        // TODO Really rethink the route snapper backend now, because the translation back and
-        // forth is getting silly
-        let path_steps: Vec<PathStep> = steps
-            .iter()
-            .cloned()
-            .map(|(road, dir)| PathStep::Road {
-                road,
-                forwards: matches!(dir, Dir::Forwards),
-            })
-            .collect();
         if path_steps == route.steps {
             return vec![i1, i2];
         }
