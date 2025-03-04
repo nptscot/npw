@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as Comlink from "comlink";
+  import PickEditsStyle from "./layers/roads/PickEditsStyle.svelte";
   import "@picocss/pico/css/pico.conditional.jade.min.css";
   import type { Map, StyleSpecification } from "maplibre-gl";
   import { onMount } from "svelte";
@@ -222,6 +223,7 @@
 
           <ReferenceLayers />
           <PickReferenceStyle />
+          <PickEditsStyle />
 
           {#if $mode.kind == "main"}
             <MainMode />

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { currentStage } from "../stores";
-  import PickEditsStyle from "./roads/PickEditsStyle.svelte";
   import { allControls } from "./stores";
 
   let primary: HTMLDivElement | null = null;
@@ -35,8 +34,6 @@
     }
   }
 </script>
-
-<PickEditsStyle />
 
 {#if $currentStage == "Primary"}
   <h4>Relevant layers</h4>

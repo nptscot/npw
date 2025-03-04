@@ -4,8 +4,8 @@
   import { editsRoadStyle } from "../../stores";
 </script>
 
-<div style="border: 2px solid black; padding: 4px">
-  <b>Show your new network as:</b>
+<div class="bottom-center">
+  <b>Show your new network as</b>
   <div style:display="flex">
     <button
       style:font-size="12px"
@@ -30,12 +30,27 @@
     </button>
   </div>
 
-  <details>
-    <summary>Legend</summary>
-    {#if $editsRoadStyle == "edits_infra"}
-      <QualitativeLegend colors={infraTypeColors} />
-    {:else if $editsRoadStyle == "edits_tier"}
-      <QualitativeLegend colors={tierColors} horiz />
-    {/if}
-  </details>
+  {#if $editsRoadStyle == "edits_infra"}
+    <QualitativeLegend colors={infraTypeColors} horiz />
+  {:else if $editsRoadStyle == "edits_tier"}
+    <QualitativeLegend colors={tierColors} horiz />
+  {:else if $editsRoadStyle == "off"}
+    <!-- Just maintain the vertical space -->
+    <span style:visibility="hidden">
+      <QualitativeLegend colors={{ hidden: "black" }} horiz />
+    </span>
+  {/if}
 </div>
+
+<style>
+  .bottom-center {
+    position: absolute;
+    bottom: 10px;
+    width: 30vw;
+    left: 50%;
+    transform: translateX(-50%);
+
+    background: white;
+    padding: 4px;
+  }
+</style>
