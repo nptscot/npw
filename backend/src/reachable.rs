@@ -303,6 +303,10 @@ fn all_crossed_roads(clockwise: &Vec<RoadID>, r1: RoadID, r2: RoadID) -> Vec<Roa
 
 // TODO Have I written this somewhere else already, or can we track direction as we go?
 fn roads_to_steps(graph: &Graph, roads: Vec<RoadID>) -> Result<Vec<(RoadID, Dir)>> {
+    if roads.is_empty() {
+        bail!("roads_to_steps got an empty path");
+    }
+
     // Edge case
     if roads.len() == 1 {
         return Ok(vec![(roads[0], Dir::Forwards)]);
