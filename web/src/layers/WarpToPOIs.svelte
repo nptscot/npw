@@ -5,7 +5,7 @@
   import { backend, currentStage, map, mutationCounter } from "../stores";
 
   let lastUpdate = 0;
-  let unreachablePOIs: Position[] = [];
+  let unreachablePOIs: [string, Position][] = [];
   let idx = 0;
 
   // TODO It'd be nice to sort these roughly by distance to the viewport?
@@ -15,18 +15,27 @@
       unreachablePOIs = [];
       for (let f of (await $backend.getSchools()).features) {
         if (!f.properties.reachable) {
-          unreachablePOIs.push(f.geometry.coordinates);
+          unreachablePOIs.push([
+            f.properties.name || "This school",
+            f.geometry.coordinates,
+          ]);
         }
       }
       for (let f of (await $backend.getGpHospitals()).features) {
         if (!f.properties.reachable) {
-          unreachablePOIs.push(f.geometry.coordinates);
+          unreachablePOIs.push([
+            f.properties.name || "This GP or hospital",
+            f.geometry.coordinates,
+          ]);
         }
       }
       for (let f of (await $backend.getGreenspaces()).features) {
         if (f.properties.kind != "access point" && !f.properties.reachable) {
           // TODO Slow to calculate this constantly
-          unreachablePOIs.push(centroid(f).geometry.coordinates);
+          unreachablePOIs.push([
+            f.properties.name || "This greenspace",
+            centroid(f).geometry.coordinates,
+          ]);
         }
       }
 
@@ -46,11 +55,15 @@
     if (idx == 0 || !$map) {
       return;
     }
-    $map.flyTo({ center: unreachablePOIs[idx] as [number, number], zoom: 14 });
+    $map.flyTo({
+      center: unreachablePOIs[idx][1] as [number, number],
+      zoom: 14,
+    });
   }
 </script>
 
 {#if unreachablePOIs.length > 0}
-  <p>Find next unreachable POI</p>
+  <b>Fix next unreachable POI</b>
+  <p>{unreachablePOIs[idx][0]}</p>
   <PrevNext list={unreachablePOIs} bind:idx />
 {/if}
