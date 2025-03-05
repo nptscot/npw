@@ -2,132 +2,145 @@
   import centroid from "@turf/centroid";
   import type { Position } from "geojson";
   import PrevNext from "../common/PrevNext.svelte";
-  import { backend, currentStage, map, mutationCounter } from "../stores";
+  import {
+    autosave,
+    backend,
+    currentStage,
+    map,
+    mutationCounter,
+  } from "../stores";
   import type { PoiKind } from "../types";
   import { currentPOI } from "./stores";
 
   type Reachability = "reachable" | "unreachable" | "all";
+  interface POI {
+    poi_kind: PoiKind;
+    idx: number;
+    name: string;
+    reachable: boolean;
+    position: Position;
+  }
 
   let filterReachability: Reachability = "unreachable";
   let filterKind: PoiKind | "all" = "all";
 
   let lastUpdate = 0;
-  let lastFilter: [PoiKind | "all", Reachability] = [
-    filterKind,
-    filterReachability,
-  ];
-  // [kind, idx, name, reachable, position]
-  let pois: {
-    kind: PoiKind;
-    idx: number;
-    name: string;
-    reachable: boolean;
-    position: Position;
-  }[] = [];
-  // idx into this list, not of the POI itself
-  let idx = 0;
 
-  // TODO It'd be nice to sort these roughly by distance to the viewport?
-  async function recalc(
-    filterKind: PoiKind | "all",
-    filterReachability: Reachability,
-  ) {
-    if (
-      !$backend ||
-      (lastUpdate == $mutationCounter &&
-        lastFilter[0] == filterKind &&
-        lastFilter[1] == filterReachability)
-    ) {
+  let allPOIs: POI[] = [];
+
+  $: filteredPOIs = filterPOIs(allPOIs, filterKind, filterReachability);
+  let filterIdx = 0;
+
+  async function recalc() {
+    if (!$backend || lastUpdate == $mutationCounter) {
       return;
     }
 
-    idx = 0;
-    pois = [];
+    allPOIs = [];
 
-    if (filterKind == "all" || filterKind == "schools") {
-      for (let f of (await $backend.getSchools()).features) {
-        if (
-          filterReachability == "all" ||
-          f.properties.reachable == (filterReachability == "reachable")
-        ) {
-          pois.push({
-            kind: f.properties.poi_kind,
-            idx: f.properties.idx,
-            name: f.properties.name || "This school",
-            reachable: f.properties.reachable,
-            position: f.geometry.coordinates,
-          });
-        }
-      }
+    for (let f of (await $backend.getSchools()).features) {
+      allPOIs.push({
+        poi_kind: f.properties.poi_kind,
+        idx: f.properties.idx,
+        name: f.properties.name || "This school",
+        reachable: f.properties.reachable,
+        position: f.geometry.coordinates,
+      });
     }
 
-    if (filterKind == "all" || filterKind == "gp_hospitals") {
-      for (let f of (await $backend.getGpHospitals()).features) {
-        if (
-          filterReachability == "all" ||
-          f.properties.reachable == (filterReachability == "reachable")
-        ) {
-          pois.push({
-            kind: f.properties.poi_kind,
-            idx: f.properties.idx,
-            name: f.properties.name || "This GP or hospital",
-            reachable: f.properties.reachable,
-            position: f.geometry.coordinates,
-          });
-        }
-      }
+    for (let f of (await $backend.getGpHospitals()).features) {
+      allPOIs.push({
+        poi_kind: f.properties.poi_kind,
+        idx: f.properties.idx,
+        name: f.properties.name || "This GP or hospital",
+        reachable: f.properties.reachable,
+        position: f.geometry.coordinates,
+      });
     }
 
-    if (filterKind == "all" || filterKind == "greenspaces") {
-      for (let f of (await $backend.getGreenspaces()).features) {
-        if (f.properties.kind == "access point") {
-          continue;
-        }
-        if (
-          filterReachability == "all" ||
-          f.properties.reachable == (filterReachability == "reachable")
-        ) {
-          // TODO Slow to calculate this constantly
-          pois.push({
-            kind: f.properties.poi_kind,
-            idx: f.properties.idx!,
-            name: f.properties.name || "This greenspace",
-            reachable: f.properties.reachable!,
-            position: centroid(f).geometry.coordinates,
-          });
-        }
+    for (let f of (await $backend.getGreenspaces()).features) {
+      if (f.properties.kind == "access point") {
+        continue;
       }
+      // TODO Slow to calculate this constantly
+      allPOIs.push({
+        poi_kind: f.properties.poi_kind,
+        idx: f.properties.idx!,
+        name: f.properties.name || "This greenspace",
+        reachable: f.properties.reachable!,
+        position: centroid(f).geometry.coordinates,
+      });
     }
 
-    pois = pois;
+    allPOIs = allPOIs;
     lastUpdate = $mutationCounter;
-    lastFilter = [filterKind, filterReachability];
   }
-
   $: if ($currentStage == "LocalAccess" && $mutationCounter > 0) {
-    recalc(filterKind, filterReachability);
+    recalc();
   }
 
-  // TODO Never warp for 0, even if we go back to it
-  $: warp(idx);
+  // TODO It'd be nice to sort these roughly by distance to the viewport?
+  function filterPOIs(
+    allPOIs: POI[],
+    filterKind: PoiKind | "all",
+    filterReachability: Reachability,
+  ): POI[] {
+    filterIdx = 0;
 
-  $: if (pois.length > 0) {
+    return allPOIs.filter((poi) => {
+      if (filterKind != "all" && poi.poi_kind != filterKind) {
+        return false;
+      }
+      if (
+        filterReachability != "all" &&
+        poi.reachable != (filterReachability == "reachable")
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  $: warp($currentPOI);
+
+  $: if (filteredPOIs.length > 0) {
     $currentPOI = {
-      idx: pois[idx].idx,
-      kind: pois[idx].kind,
+      idx: filteredPOIs[filterIdx].idx,
+      kind: filteredPOIs[filterIdx].poi_kind,
     };
   } else {
     $currentPOI = null;
   }
 
-  function warp(idx: number) {
-    if (idx == 0 || !$map) {
+  // When currentPOI changes elsewhere from clicking on the map, make the filtered list work
+  /*function resetFilters(currentPOI: { kind: PoiKind; idx: number } | null) {
+  }
+  $: resetFilters($currentPOI);*/
+
+  function warp(currentPOI: { kind: PoiKind; idx: number } | null) {
+    if (!$map || !currentPOI) {
       return;
     }
-    $map.flyTo({
-      center: pois[idx].position as [number, number],
-      zoom: 14,
-    });
+    let poi = allPOIs.find(
+      (poi) => poi.poi_kind == currentPOI.kind && poi.idx == currentPOI.idx,
+    );
+    if (poi) {
+      $map.flyTo({
+        center: poi.position as [number, number],
+        zoom: 14,
+      });
+    }
+  }
+
+  async function fixUnreachable() {
+    if ($currentPOI) {
+      let input = await $backend!.fixUnreachablePOI(
+        $currentPOI.kind,
+        $currentPOI.idx,
+      );
+      await $backend!.setRoute(null, input);
+      await autosave();
+    }
   }
 </script>
 
@@ -150,19 +163,22 @@
   </select>
 </label>
 
-{#if pois.length > 0}
-  {#if pois[idx].reachable}
+{#if filteredPOIs.length > 0}
+  {#if filteredPOIs[filterIdx].reachable}
     <p>
-      {pois[idx].name} is connected to the network. The blue path shows the route
-      through quiet streets to the network.
+      {filteredPOIs[filterIdx].name} is connected to the network. The blue path shows
+      the route through quiet streets to the network.
     </p>
   {:else}
     <p>
-      {pois[idx].name} is not connected to the network, because there are red severances
-      surronding it. Creating a local access route along the black path would fix
-      this.
+      {filteredPOIs[filterIdx].name} is not connected to the network, because there
+      are red severances surronding it.
     </p>
+
+    <button on:click={fixUnreachable}>
+      Add the black local access route to fix
+    </button>
   {/if}
 
-  <PrevNext list={pois} bind:idx />
+  <PrevNext list={filteredPOIs} bind:idx={filterIdx} />
 {/if}

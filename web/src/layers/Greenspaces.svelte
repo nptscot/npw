@@ -11,7 +11,7 @@
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
-  import { autosave, backend, mutationCounter } from "../stores";
+  import { backend, mutationCounter } from "../stores";
   import type { Greenspaces, PoiKind } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
   import { currentPOI, localPOIs as show } from "./stores";
@@ -37,16 +37,6 @@
     recalc();
   }
 
-  async function fixUnreachable(e: CustomEvent<LayerClickInfo>) {
-    let input = await $backend!.fixUnreachablePOI(
-      "greenspaces",
-      e.detail.features[0].properties!.idx,
-    );
-    await $backend!.setRoute(null, input);
-    await autosave();
-    hovered = null;
-  }
-
   function fillOpacity(
     currentPOI: { kind: PoiKind; idx: number } | null,
   ): ExpressionSpecification {
@@ -60,6 +50,13 @@
     } else {
       return hoverStateFilter(0.0, 0.5);
     }
+  }
+
+  function setCurrentPOI(e: CustomEvent<LayerClickInfo>) {
+    $currentPOI = {
+      kind: e.detail.features[0].properties!.poi_kind,
+      idx: e.detail.features[0].properties!.idx,
+    };
   }
 </script>
 
@@ -76,7 +73,7 @@
     }}
     bind:hovered
     hoverCursor="pointer"
-    on:click={fixUnreachable}
+    on:click={setCurrentPOI}
   >
     <Popup openOn="hover" let:props>
       <div style="max-width: 30vw; max-height: 60vh; overflow: auto;">
