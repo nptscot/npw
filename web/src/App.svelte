@@ -197,10 +197,10 @@
           console.log(e.detail.error);
         }}
         images={[
-          { id: "school_reachable", url: school1Icon },
-          { id: "school_unreachable", url: school2Icon },
-          { id: "hospital_reachable", url: hospital1Icon },
-          { id: "hospital_unreachable", url: hospital2Icon },
+          { id: "schools_reachable", url: school1Icon },
+          { id: "schools_unreachable", url: school2Icon },
+          { id: "gp_hospitals_reachable", url: hospital1Icon },
+          { id: "gp_hospitals_unreachable", url: hospital2Icon },
           { id: "current_poi", url: currentPoiIcon },
         ]}
         hash

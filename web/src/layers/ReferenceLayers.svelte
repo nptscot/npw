@@ -2,13 +2,12 @@
   import AllPopulation from "./AllPopulation.svelte";
   import CyclingDemandCoverage from "./CyclingDemandCoverage.svelte";
   import DeprivedPopulation from "./DeprivedPopulation.svelte";
-  import GpHospitals from "./GpHospitals.svelte";
   import Greenspaces from "./Greenspaces.svelte";
   import GridMeshDensity from "./GridMeshDensity.svelte";
   import MainRoadCoverage from "./MainRoadCoverage.svelte";
+  import POIs from "./POIs.svelte";
   import DebugNptPmtiles from "./roads/DebugNptPmtiles.svelte";
   import Roads from "./roads/Roads.svelte";
-  import Schools from "./Schools.svelte";
   import Settlements from "./Settlements.svelte";
   import { cyclingDemand1, cyclingDemand2 } from "./stores";
   import TownCentres from "./TownCentres.svelte";
@@ -33,8 +32,7 @@
 
 <!-- Local acces -->
 
-<Schools />
-<GpHospitals />
+<POIs />
 <Greenspaces />
 
 <!-- Long distance -->

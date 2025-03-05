@@ -4,13 +4,13 @@
   import { emptyGeojson } from "svelte-utils/map";
   import { layerId } from "../common";
   import { backend } from "../stores";
-  import type { SetRouteInput } from "../types";
+  import type { PoiKind, SetRouteInput } from "../types";
   import { severances } from "./stores";
 
-  export let kind: string;
+  export let layerName: string;
   export let hovered: Feature<
     Point | MultiPolygon,
-    { reachable: boolean; idx: number }
+    { poi_kind: PoiKind; reachable: boolean; idx: number }
   > | null;
 
   let debug = emptyGeojson();
@@ -20,18 +20,21 @@
   async function updateDebug(
     hovered: Feature<
       Point | MultiPolygon,
-      { reachable: boolean; idx: number }
+      { poi_kind: PoiKind; reachable: boolean; idx: number }
     > | null,
   ) {
     $severances = false;
     if ($backend && hovered) {
       if (hovered.properties.reachable) {
-        debug = await $backend.debugReachablePath(kind, hovered.properties.idx);
+        debug = await $backend.debugReachablePath(
+          hovered.properties.poi_kind,
+          hovered.properties.idx,
+        );
         fixUnreachable = null;
       } else {
         debug = emptyGeojson();
         fixUnreachable = await $backend.fixUnreachablePOI(
-          kind,
+          hovered.properties.poi_kind,
           hovered.properties.idx,
         );
         $severances = true;
@@ -45,7 +48,7 @@
 
 <GeoJSON data={debug}>
   <LineLayer
-    {...layerId("debug-reachability-" + kind)}
+    {...layerId("debug-reachability-" + layerName)}
     interactive={false}
     paint={{
       "line-width": 3,
@@ -56,7 +59,7 @@
 
 <GeoJSON data={fixUnreachable?.feature || emptyGeojson()}>
   <LineLayer
-    {...layerId("fix-reachability-" + kind)}
+    {...layerId("fix-reachability-" + layerName)}
     interactive={false}
     paint={{
       "line-width": 5,

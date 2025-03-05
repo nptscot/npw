@@ -108,14 +108,12 @@ const layerZorder = [
   "debug-reachability-settlements",
   "debug-reachability-town_centres",
   "debug-reachability-greenspaces",
-  "debug-reachability-schools",
-  "debug-reachability-gp_hospitals",
+  "debug-reachability-pois",
 
   "fix-reachability-settlements",
   "fix-reachability-town_centres",
   "fix-reachability-greenspaces",
-  "fix-reachability-schools",
-  "fix-reachability-gp_hospitals",
+  "fix-reachability-pois",
 
   "block-reference-layers",
 

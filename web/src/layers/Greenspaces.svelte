@@ -11,7 +11,7 @@
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
   import { autosave, backend, mutationCounter } from "../stores";
-  import type { Greenspaces } from "../types";
+  import type { Greenspaces, PoiKind } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
   import { localPOIs as show } from "./stores";
 
@@ -22,7 +22,7 @@
   };
   let hovered: Feature<
     MultiPolygon,
-    { reachable: boolean; idx: number }
+    { poi_kind: PoiKind; reachable: boolean; idx: number }
   > | null;
 
   async function recalc() {
@@ -112,4 +112,4 @@
   />
 </GeoJSON>
 
-<DebugReachability kind="greenspaces" {hovered} />
+<DebugReachability layerName="greenspaces" {hovered} />

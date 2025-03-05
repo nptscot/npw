@@ -9,7 +9,7 @@
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
-  import type { Settlements } from "../types";
+  import type { PoiKind, Settlements } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
   import { settlements as show } from "./stores";
@@ -21,7 +21,7 @@
   };
   let hovered: Feature<
     MultiPolygon,
-    { reachable: boolean; idx: number }
+    { poi_kind: PoiKind; reachable: boolean; idx: number }
   > | null;
 
   async function recalc() {
@@ -85,4 +85,4 @@
   />
 </GeoJSON>
 
-<DebugReachability kind="settlements" {hovered} />
+<DebugReachability layerName="settlements" {hovered} />

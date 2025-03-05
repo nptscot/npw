@@ -5,22 +5,30 @@
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
   import { autosave, backend, mutationCounter } from "../stores";
-  import type { PoiKind, Schools } from "../types";
+  import type { GPHospitals, PoiKind, Schools } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
   import { currentPOI, localPOIs as show } from "./stores";
   import WarpToPOIs from "./WarpToPOIs.svelte";
 
   let lastUpdate = 0;
-  let data: Schools = {
+  let schools: Schools = {
     type: "FeatureCollection",
     features: [],
   };
-  let hovered: Feature<Point, { reachable: boolean; idx: number }> | null;
+  let gpHospitals: GPHospitals = {
+    type: "FeatureCollection",
+    features: [],
+  };
+  let hovered: Feature<
+    Point,
+    { poi_kind: PoiKind; reachable: boolean; idx: number }
+  > | null;
 
   async function recalc() {
     if ($backend && lastUpdate != $mutationCounter) {
-      data = await $backend.getSchools();
+      schools = await $backend.getSchools();
+      gpHospitals = await $backend.getGpHospitals();
       lastUpdate = $mutationCounter;
     }
   }
@@ -31,7 +39,7 @@
 
   async function fixUnreachable(e: CustomEvent<LayerClickInfo>) {
     let input = await $backend!.fixUnreachablePOI(
-      "schools",
+      e.detail.features[0].properties!.poi_kind,
       e.detail.features[0].properties!.idx,
     );
     await $backend!.setRoute(null, input);
@@ -40,15 +48,16 @@
   }
 
   function iconImage(
+    poiKind: PoiKind,
     currentPOI: { kind: PoiKind; idx: number } | null,
   ): ExpressionSpecification {
     let reachable = [
       "case",
       ["get", "reachable"],
-      "school_reachable",
-      "school_unreachable",
+      `${poiKind}_reachable`,
+      `${poiKind}_unreachable`,
     ] as ExpressionSpecification;
-    if ($currentPOI?.kind == "schools") {
+    if ($currentPOI?.kind == poiKind) {
       return [
         "case",
         ["==", ["get", "idx"], $currentPOI.idx],
@@ -65,7 +74,7 @@
   <WarpToPOIs />
 </LayerControls>
 
-<GeoJSON {data} generateId>
+<GeoJSON data={schools} generateId>
   <SymbolLayer
     {...layerId("schools")}
     manageHoverState
@@ -73,7 +82,7 @@
       visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
-      "icon-image": iconImage($currentPOI),
+      "icon-image": iconImage("schools", $currentPOI),
     }}
     bind:hovered
     hoverCursor="pointer"
@@ -90,4 +99,28 @@
   </SymbolLayer>
 </GeoJSON>
 
-<DebugReachability kind="schools" {hovered} />
+<GeoJSON data={gpHospitals} generateId>
+  <SymbolLayer
+    {...layerId("gp-hospitals")}
+    manageHoverState
+    layout={{
+      visibility: $show ? "visible" : "none",
+      "icon-allow-overlap": true,
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
+      "icon-image": iconImage("gp_hospitals", $currentPOI),
+    }}
+    bind:hovered
+    hoverCursor="pointer"
+    on:click={fixUnreachable}
+  >
+    <Popup openOn="hover" let:props>
+      <div style="max-width: 30vw; max-height: 60vh; overflow: auto;">
+        {props.name} is a {props.kind}. It {props.reachable ? "is" : "is not"} reachable.
+        {#if !props.reachable}Click to add the black route to connect it to the
+          network.{/if}
+      </div>
+    </Popup>
+  </SymbolLayer>
+</GeoJSON>
+
+<DebugReachability layerName="pois" {hovered} />
