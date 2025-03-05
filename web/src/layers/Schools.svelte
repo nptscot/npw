@@ -1,13 +1,14 @@
 <script lang="ts">
   import type { Feature, Point } from "geojson";
+  import type { ExpressionSpecification } from "maplibre-gl";
   import { GeoJSON, SymbolLayer, type LayerClickInfo } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
   import { autosave, backend, mutationCounter } from "../stores";
-  import type { Schools } from "../types";
+  import type { PoiKind, Schools } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
-  import { localPOIs as show } from "./stores";
+  import { currentPOI, localPOIs as show } from "./stores";
   import WarpToPOIs from "./WarpToPOIs.svelte";
 
   let lastUpdate = 0;
@@ -37,6 +38,27 @@
     await autosave();
     hovered = null;
   }
+
+  function iconImage(
+    currentPOI: { kind: PoiKind; idx: number } | null,
+  ): ExpressionSpecification {
+    let reachable = [
+      "case",
+      ["get", "reachable"],
+      "school_reachable",
+      "school_unreachable",
+    ] as ExpressionSpecification;
+    if ($currentPOI?.kind == "schools") {
+      return [
+        "case",
+        ["==", ["get", "idx"], $currentPOI.idx],
+        "current_poi",
+        reachable,
+      ];
+    } else {
+      return reachable;
+    }
+  }
 </script>
 
 <LayerControls name="POIs" bind:show={$show}>
@@ -51,12 +73,7 @@
       visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
-      "icon-image": [
-        "case",
-        ["get", "reachable"],
-        "school_reachable",
-        "school_unreachable",
-      ],
+      "icon-image": iconImage($currentPOI),
     }}
     bind:hovered
     hoverCursor="pointer"

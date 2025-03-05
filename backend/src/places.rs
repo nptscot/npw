@@ -26,6 +26,7 @@ pub struct School {
 impl School {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.point);
+        f.set_property("poi_kind", "schools");
         f.set_property("kind", self.kind.clone());
         f.set_property("name", self.name.clone());
         f.set_property("pupils", self.pupils);
@@ -78,6 +79,7 @@ pub struct GPHospital {
 impl GPHospital {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.point);
+        f.set_property("poi_kind", "gp_hospitals");
         f.set_property("kind", self.kind.clone());
         f.set_property("name", self.name.clone());
         f.set_property("reachable", reachable);
@@ -132,6 +134,7 @@ pub struct TownCentre {
 impl TownCentre {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.polygon);
+        f.set_property("poi_kind", "town_centres");
         f.set_property("name", self.name.clone());
         f.set_property("reachable", reachable);
         f.set_property("idx", idx);
@@ -185,6 +188,7 @@ pub struct Settlement {
 impl Settlement {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.polygon);
+        f.set_property("poi_kind", "settlements");
         f.set_property("name", self.name.clone());
         f.set_property("population", self.population);
         f.set_property("reachable", reachable);
@@ -334,6 +338,7 @@ impl Greenspace {
         let mut features = Vec::new();
         {
             let mut f = mercator.to_wgs84_gj(&self.polygon);
+            f.set_property("poi_kind", "greenspaces");
             f.set_property("kind", "greenspace");
             f.set_property("name", self.name.clone());
             f.set_property("reachable", reachable);

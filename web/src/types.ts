@@ -91,6 +91,7 @@ export interface Stats {
 export type Schools = FeatureCollection<
   Point,
   {
+    poi_kind: PoiKind;
     kind: string;
     name: string;
     pupils: number;
@@ -101,22 +102,35 @@ export type Schools = FeatureCollection<
 
 export type GPHospitals = FeatureCollection<
   Point,
-  { kind: string; name: string; reachable: boolean; idx: number }
+  {
+    poi_kind: PoiKind;
+    kind: string;
+    name: string;
+    reachable: boolean;
+    idx: number;
+  }
 >;
 
 export type TownCentres = FeatureCollection<
   MultiPolygon,
-  { name?: string; reachable: boolean; idx: number }
+  { poi_kind: PoiKind; name?: string; reachable: boolean; idx: number }
 >;
 
 export type Settlements = FeatureCollection<
   MultiPolygon,
-  { name?: string; population: number; reachable: boolean; idx: number }
+  {
+    poi_kind: PoiKind;
+    name?: string;
+    population: number;
+    reachable: boolean;
+    idx: number;
+  }
 >;
 
 export type Greenspaces = FeatureCollection<
   Point | MultiPolygon,
   {
+    poi_kind: PoiKind;
     kind: "greenspace" | "access point";
     name?: string;
     reachable?: boolean;
@@ -194,6 +208,13 @@ export type AutosplitRoute = FeatureCollection<
     los: string;
   }
 >;
+
+export type PoiKind =
+  | "schools"
+  | "gp_hospitals"
+  | "greenspaces"
+  | "town_centres"
+  | "settlements";
 
 export interface StaticRoad {
   id: number;

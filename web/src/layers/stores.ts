@@ -1,5 +1,6 @@
 import { writable, type Writable } from "svelte/store";
 import type { ReferenceRoadStyle } from "../stores";
+import type { PoiKind } from "../types";
 
 export let allControls: Writable<Map<string, HTMLDivElement>> = writable(
   new Map(),
@@ -36,3 +37,9 @@ export let layersPerStage = {
 
 // Remember the last reference style enabled. "off" means none.
 export let lastReferenceStyle: Writable<ReferenceRoadStyle> = writable("off");
+
+// TODO Move to a component after merging some of the POI components
+export let currentPOI: Writable<{
+  kind: PoiKind;
+  idx: number;
+} | null> = writable(null);

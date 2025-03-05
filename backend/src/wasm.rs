@@ -465,9 +465,9 @@ impl MapModel {
         match kind {
             "schools" => Ok([self.schools[idx].road].into()),
             "gp_hospitals" => Ok([self.gp_hospitals[idx].road].into()),
+            "greenspaces" => Ok(self.greenspaces[idx].roads.clone()),
             "town_centres" => Ok(self.town_centres[idx].roads.clone()),
             "settlements" => Ok(self.settlements[idx].roads.clone()),
-            "greenspaces" => Ok(self.greenspaces[idx].roads.clone()),
             _ => Err(err_to_js(format!(
                 "debug_reachable_path_wasm got bad kind {kind}"
             ))),
