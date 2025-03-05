@@ -231,6 +231,7 @@ export class Backend {
     return JSON.parse(this.inner!.debugReachablePath(kind, idx));
   }
 
+  // TODO Unused
   debugUnreachablePath(kind: string, idx: number): FeatureCollection {
     this.checkReady();
     return JSON.parse(this.inner!.debugUnreachablePath(kind, idx));

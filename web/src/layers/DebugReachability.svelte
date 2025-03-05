@@ -29,10 +29,7 @@
         debug = await $backend.debugReachablePath(kind, hovered.properties.idx);
         fixUnreachable = null;
       } else {
-        debug = await $backend.debugUnreachablePath(
-          kind,
-          hovered.properties.idx,
-        );
+        debug = emptyGeojson();
         fixUnreachable = await $backend.fixUnreachablePOI(
           kind,
           hovered.properties.idx,

@@ -173,6 +173,7 @@ impl MapModel {
         self.debug_reachable_path(roads).map_err(err_to_js)
     }
 
+    // TODO Unused
     #[wasm_bindgen(js_name = debugUnreachablePath)]
     pub fn debug_unreachable_path_wasm(&self, kind: &str, idx: usize) -> Result<String, JsValue> {
         let roads = self.get_poi_roads(kind, idx)?;
