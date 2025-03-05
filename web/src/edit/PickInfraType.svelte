@@ -17,7 +17,11 @@
       segregatedIcon,
       "https://www.cyclestreets.net/location/81274/",
     ],
-    ["SegregatedWithSpeedVolume", segregatedWithSpeedVolumeIcon, ""],
+    [
+      "SegregatedWithSpeedVolume",
+      segregatedWithSpeedVolumeIcon,
+      "https://www.cyclestreets.net/location/92772/",
+    ],
     ["OffRoad", offRoadIcon, "https://www.cyclestreets.net/location/86744/"],
     [
       "SharedFootway",
