@@ -198,21 +198,34 @@ impl MapModel {
         // - the route crosses something existing (except the existing route)
         // - the infrastructure type does or does not fit in the available streetspace
         // - the gradient group changes
+        // - the level of service changes
         #[derive(PartialEq)]
         enum Case {
             // bool is fits or not, the str is gradient_group
-            AlreadyExists(&'static str),
-            New(InfraType, bool, &'static str),
+            AlreadyExists(&'static str, LevelOfService),
+            New(InfraType, bool, &'static str, LevelOfService),
         }
         let case = |(r, _): (RoadID, _)| {
             let gradient = gradient_group(self.gradients[r.0]);
             if used_roads.contains(&r) {
-                Case::AlreadyExists(gradient)
+                Case::AlreadyExists(gradient, self.los[r.0])
             } else if let Some(it) = override_infra_type {
-                Case::New(it, self.does_infra_type_fit(r, it), gradient)
+                let los = get_level_of_service(
+                    it,
+                    self.speeds[r.0],
+                    self.traffic_volumes[r.0],
+                    self.within_settlement[r.0],
+                );
+                Case::New(it, self.does_infra_type_fit(r, it), gradient, los)
             } else {
                 let it = self.best_infra_type(r);
-                Case::New(it, self.does_infra_type_fit(r, it), gradient)
+                let los = get_level_of_service(
+                    it,
+                    self.speeds[r.0],
+                    self.traffic_volumes[r.0],
+                    self.within_settlement[r.0],
+                );
+                Case::New(it, self.does_infra_type_fit(r, it), gradient, los)
             }
         };
 
@@ -222,17 +235,19 @@ impl MapModel {
             let linestring = glue_route(&self.graph, roads).linestring(&self.graph);
             let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
             match c {
-                Case::AlreadyExists(gradient) => {
+                Case::AlreadyExists(gradient, los) => {
                     f.set_property("kind", "overlap");
                     // Don't worry about other routes
                     f.set_property("fits", true);
                     f.set_property("gradient_group", gradient);
+                    f.set_property("los", serde_json::to_value(&los).unwrap());
                 }
-                Case::New(infra_type, fits, gradient) => {
+                Case::New(infra_type, fits, gradient, los) => {
                     f.set_property("kind", "new");
                     f.set_property("infra_type", serde_json::to_value(&infra_type).unwrap());
                     f.set_property("fits", fits);
                     f.set_property("gradient_group", gradient);
+                    f.set_property("los", serde_json::to_value(&los).unwrap());
                 }
             }
             f.set_property("length", linestring.length::<Euclidean>());

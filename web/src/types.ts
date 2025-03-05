@@ -191,6 +191,7 @@ export type AutosplitRoute = FeatureCollection<
     infra_type?: string;
     fits: boolean;
     gradient_group: "<= 3%" | "3 - 5%" | "5 - 7%" | "7 - 10%" | "> 10%";
+    los: string;
   }
 >;
 

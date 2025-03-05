@@ -8,7 +8,11 @@
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { Modal } from "svelte-utils";
   import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
-  import { gradientColors, infraTypeColors } from "../colors";
+  import {
+    gradientColors,
+    infraTypeColors,
+    levelOfServiceColors,
+  } from "../colors";
   import { layerId, percent } from "../common";
   import AllControls from "../layers/AllControls.svelte";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
@@ -38,7 +42,8 @@
 
   let showOverrideModal = false;
 
-  let breakdown: "infra_type" | "gradient" | "deliverability" = "infra_type";
+  let breakdown: "infra_type" | "gradient" | "deliverability" | "los" =
+    "infra_type";
 
   let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
   $: recalculateSections($waypoints, overrideInfraType, infraType);
@@ -169,10 +174,23 @@
     return percent(fits, total);
   }
 
+  function percentHighLoS(sectionsGj: AutosplitRoute): string {
+    let total = 0;
+    let high = 0;
+    for (let f of sectionsGj.features) {
+      total += f.properties.length;
+      if (f.properties.los == "High") {
+        high += f.properties.length;
+      }
+    }
+    return percent(high, total);
+  }
+
   let filterSections = {
     infra_type: ["==", ["get", "kind"], "new"] as ExpressionSpecification,
     gradient: undefined,
     deliverability: undefined,
+    los: undefined,
   };
 
   let colorSections = {
@@ -192,6 +210,11 @@
       "green",
       "red",
     ] as DataDrivenPropertyValueSpecification<string>,
+    los: constructMatchExpression(
+      ["get", "los"],
+      levelOfServiceColors,
+      "black",
+    ),
   };
 </script>
 
@@ -233,9 +256,22 @@
         </button>
       {/if}
 
-      <p>
-        {percentFits(sectionsGj)} of the route by length fits in the available streetspace
-      </p>
+      {@const pctFits = percentFits(sectionsGj)}
+      {#if pctFits != "100%"}
+        <p>
+          Only {pctFits} of the route fits in the available streetspace. You may
+          need to override the infrastructure type for some sections.
+        </p>
+      {/if}
+
+      {@const pctHighLoS = percentHighLoS(sectionsGj)}
+      {#if pctHighLoS != "100%"}
+        <p>
+          Only {pctHighLoS} of the route has a high level of service. You may need
+          to override the infrastructure type for some sections and reduce traffic
+          speeds and volumes.
+        </p>
+      {/if}
 
       <label>
         Show details along route
@@ -243,6 +279,7 @@
           <option value="infra_type">Infrastructure type</option>
           <option value="gradient">Gradient</option>
           <option value="deliverability">Streetspace deliverability</option>
+          <option value="los">Level of Service</option>
         </select>
       </label>
 
