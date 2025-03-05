@@ -4,7 +4,7 @@ use geo::{Coord, Euclidean, Length, LineString};
 use graph::RoadID;
 use petgraph::graphmap::UnGraphMap;
 
-use crate::{Dir, InfraType};
+use crate::{Dir, InfraType, Tier};
 
 // TODO For simplicty right now, hardcodes an ID and key type. Make generic later.
 // TODO Upstream in geo or utils
@@ -13,18 +13,18 @@ use crate::{Dir, InfraType};
 pub struct KeyedLineString {
     pub linestring: LineString,
     pub ids: Vec<(RoadID, Dir)>,
-    pub key: InfraType,
+    pub key: (InfraType, Tier),
 }
 
 // Also contains the key. Linestrings with different keys are effectively disconnected.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-struct HashedPoint(isize, isize, InfraType);
+struct HashedPoint(isize, isize, (InfraType, Tier));
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 struct EdgeIdx(usize);
 
 impl HashedPoint {
-    fn new(pt: Coord, key: InfraType) -> Self {
+    fn new(pt: Coord, key: (InfraType, Tier)) -> Self {
         // cm precision
         Self((pt.x * 100.0) as isize, (pt.y * 100.0) as isize, key)
     }

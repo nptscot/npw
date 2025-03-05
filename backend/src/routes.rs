@@ -1,7 +1,6 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
-use enum_map::EnumMap;
 use geo::{Euclidean, Length};
 use geojson::{Feature, GeoJson};
 use graph::{Graph, PathStep, Position, RoadID};
@@ -150,19 +149,22 @@ impl MapModel {
                     continue;
                 }
             }
+            let tier = if infra_type == InfraType::Segregated {
+                Tier::Primary
+            } else {
+                Tier::Secondary
+            };
 
-            imports.push((road_id, infra_type));
+            imports.push((road_id, infra_type, tier));
         }
 
-        // TODO Can we detect the tier, or should this entire "import" feature go away and be
-        // user-driven?
-        self.import_roads(imports, Tier::LocalAccess)
+        self.import_roads(imports)
     }
 
     /// Returns the number of edits
     pub fn import_core_network(&mut self) -> usize {
         let used_roads = self.used_roads();
-        let mut imports: EnumMap<Tier, Vec<(RoadID, InfraType)>> = EnumMap::default();
+        let mut imports = Vec::new();
 
         for idx in 0..self.graph.roads.len() {
             let road_id = RoadID(idx);
@@ -170,15 +172,11 @@ impl MapModel {
                 continue;
             }
             if let Some(tier) = self.core_network[idx] {
-                imports[tier].push((road_id, self.best_infra_type(road_id)));
+                imports.push((road_id, self.best_infra_type(road_id), tier));
             }
         }
 
-        let mut edits = 0;
-        for (tier, roads) in imports {
-            edits += self.import_roads(roads, tier)
-        }
-        edits
+        self.import_roads(imports)
     }
 
     /// Split a route into sections, returning a FeatureCollection
@@ -274,14 +272,14 @@ impl MapModel {
         Ok(())
     }
 
-    fn import_roads(&mut self, imports: Vec<(RoadID, InfraType)>, tier: Tier) -> usize {
+    fn import_roads(&mut self, imports: Vec<(RoadID, InfraType, Tier)>) -> usize {
         // Create individual segments to import
         let mut pieces = Vec::new();
-        for (id, infra_type) in imports {
+        for (id, infra_type, tier) in imports {
             pieces.push(KeyedLineString {
                 linestring: self.graph.roads[id.0].linestring.clone(),
                 ids: vec![(id, Dir::Forwards)],
-                key: infra_type,
+                key: (infra_type, tier),
             });
         }
 
@@ -292,6 +290,7 @@ impl MapModel {
         let changes = pieces.len();
 
         for line in pieces {
+            let (infra_type, tier) = line.key;
             let route = Route {
                 feature: make_route_snapper_feature(&self.graph, &line.ids, &line.linestring),
                 // Pick the first name
@@ -304,7 +303,7 @@ impl MapModel {
                     .unwrap_or_else(String::new),
                 notes: "imported from existing network".to_string(),
                 roads: line.ids,
-                infra_type: line.key,
+                infra_type,
                 override_infra_type: false,
                 tier,
             };
