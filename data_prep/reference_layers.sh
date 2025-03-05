@@ -76,16 +76,6 @@ function gp_and_hospitals {
   # TODO Consider combining
 }
 
-function urban_rural {
-  # From https://www.data.gov.uk/dataset/f00387c5-7858-4d75-977b-bfdb35300e7f/urban-rural-classification-scotland
-  wget https://maps.gov.scot/ATOM/shapefiles/SG_UrbanRural_2020.zip
-  unzip SG_UrbanRural_2020.zip
-  # Only keep urban areas, and assume anything else is rural -- it's mostly rural
-  ogr2ogr urban_areas.geojson -t_srs EPSG:4326 SG_UrbanRural_2020/SG_UrbanRural_2020.shp -sql 'SELECT UR2Class FROM SG_UrbanRural_2020 WHERE UR2Class = 1' -explodecollections
-  tippecanoe --drop-densest-as-needed --generate-ids -zg urban_areas.geojson -o ../web/public/urban_areas.pmtiles
-  rm -rf SG_UrbanRural_2020 SG_UrbanRural_2020.zip urban_areas.geojson
-}
-
 function od_and_zones {
   # Manually download https://github.com/nptscot/inputdata/releases/download/v1/desire_lines_scotland.csv from internal GH repo
   xsv select geo_code1,geo_code2,all $1 > tmp/od.csv
@@ -160,7 +150,6 @@ function greenspace {
 #schools
 #town_centres ~/Downloads/Town_Centres_-_Scotland.json
 #gp_and_hospitals ~/Downloads/GP_Practices_-_Scotland.json ~/Downloads/NHS_Hospitals_-_Scotland.json
-#urban_rural
 #od_and_zones ~/Downloads/desire_lines_scotland.csv
 #traffic ~/Downloads/final_estimates_Scotland.gpkg
 #population

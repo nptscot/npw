@@ -12,7 +12,6 @@
   import Settlements from "./Settlements.svelte";
   import { cyclingDemand1, cyclingDemand2 } from "./stores";
   import TownCentres from "./TownCentres.svelte";
-  import UrbanAreas from "./UrbanAreas.svelte";
 </script>
 
 <!-- Common -->
@@ -41,7 +40,6 @@
 <!-- Long distance -->
 
 <Settlements />
-<UrbanAreas />
 
 <!-- Network assessment -->
 

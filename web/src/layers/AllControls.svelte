@@ -17,7 +17,7 @@
 
   $: update(localAccess, $allControls, ["POIs", "Population", "SIMD"]);
 
-  $: update(longDistance, $allControls, ["Urban areas", "Settlements"]);
+  $: update(longDistance, $allControls, ["Settlements"]);
 
   $: update(networkAssessment, $allControls, ["Mesh density"]);
 
