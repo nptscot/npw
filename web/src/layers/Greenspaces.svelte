@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Feature, MultiPolygon } from "geojson";
+  import type { ExpressionSpecification } from "maplibre-gl";
   import {
     CircleLayer,
     FillLayer,
@@ -13,7 +14,7 @@
   import { autosave, backend, mutationCounter } from "../stores";
   import type { Greenspaces, PoiKind } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
-  import { localPOIs as show } from "./stores";
+  import { currentPOI, localPOIs as show } from "./stores";
 
   let lastUpdate = 0;
   let data: Greenspaces = {
@@ -45,6 +46,21 @@
     await autosave();
     hovered = null;
   }
+
+  function fillOpacity(
+    currentPOI: { kind: PoiKind; idx: number } | null,
+  ): ExpressionSpecification {
+    if (currentPOI?.kind == "greenspaces") {
+      return [
+        "case",
+        ["==", ["get", "idx"], currentPOI.idx],
+        0.8,
+        hoverStateFilter(0.0, 0.5),
+      ];
+    } else {
+      return hoverStateFilter(0.0, 0.5);
+    }
+  }
 </script>
 
 <GeoJSON {data} generateId>
@@ -53,7 +69,7 @@
     manageHoverState
     paint={{
       "fill-color": ["case", ["get", "reachable"], "green", "red"],
-      "fill-opacity": hoverStateFilter(0.0, 0.5),
+      "fill-opacity": fillOpacity($currentPOI),
     }}
     layout={{
       visibility: $show ? "visible" : "none",

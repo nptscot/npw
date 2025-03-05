@@ -57,10 +57,10 @@
       `${poiKind}_reachable`,
       `${poiKind}_unreachable`,
     ] as ExpressionSpecification;
-    if ($currentPOI?.kind == poiKind) {
+    if (currentPOI?.kind == poiKind) {
       return [
         "case",
-        ["==", ["get", "idx"], $currentPOI.idx],
+        ["==", ["get", "idx"], currentPOI.idx],
         "current_poi",
         reachable,
       ];
