@@ -197,8 +197,9 @@
       <p>{infraTypeMapping[props.existing_infra][0]}</p>
     {/if}
     <p>
-      Precalculated cycling flow: {props.precalculated_flow.toLocaleString()} (quintile
-      {props.precalculated_flow_quintile})
+      Precalculated cycling demand: {props.precalculated_demand.toLocaleString()}
+      (quintile
+      {props.precalculated_demand_quintile})
     </p>
     {#if props.street_space}
       <p>

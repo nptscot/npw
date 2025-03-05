@@ -26,32 +26,32 @@
           </thead>
           <tbody>
             <tr>
-              <th>High cycling flow coverage</th>
+              <th>High cycling demand coverage</th>
               <td>
                 {percent2(
-                  baseline.covered_flow_quintile_sums[0],
-                  baseline.total_flow_quintile_sums[0],
+                  baseline.covered_demand_quintile_sums[0],
+                  baseline.total_demand_quintile_sums[0],
                 )}
               </td>
               <td>
                 {percent2(
-                  $stats.covered_flow_quintile_sums[0],
-                  $stats.total_flow_quintile_sums[0],
+                  $stats.covered_demand_quintile_sums[0],
+                  $stats.total_demand_quintile_sums[0],
                 )}
               </td>
             </tr>
             <tr>
-              <th>Medium cycling flow coverage</th>
+              <th>Medium cycling demand coverage</th>
               <td>
                 {percent2(
-                  baseline.covered_flow_quintile_sums[1],
-                  baseline.total_flow_quintile_sums[1],
+                  baseline.covered_demand_quintile_sums[1],
+                  baseline.total_demand_quintile_sums[1],
                 )}
               </td>
               <td>
                 {percent2(
-                  $stats.covered_flow_quintile_sums[1],
-                  $stats.total_flow_quintile_sums[1],
+                  $stats.covered_demand_quintile_sums[1],
+                  $stats.total_demand_quintile_sums[1],
                 )}
               </td>
             </tr>

@@ -15,8 +15,8 @@ pub struct Stats {
     percent_reachable_imd_population: f64,
     percent_reachable_population: f64,
 
-    covered_flow_quintile_sums: Vec<usize>,
-    total_flow_quintile_sums: Vec<usize>,
+    covered_demand_quintile_sums: Vec<usize>,
+    total_demand_quintile_sums: Vec<usize>,
 
     total_main_road_length: f64,
     covered_main_road_length: f64,
@@ -94,15 +94,15 @@ impl MapModel {
         let percent_reachable_population = percent(population_sum, population_total).into();
 
         // TODO Cache this?
-        timer.step("covered flows");
-        let flow_stats = Quintiles::new(&self.precalculated_flows);
+        timer.step("covered demands");
+        let demand_stats = Quintiles::new(&self.precalculated_demands);
         let mut covered_quintile_sums = [0; 5];
-        for (idx, flow) in self.precalculated_flows.iter().enumerate() {
+        for (idx, demand) in self.precalculated_demands.iter().enumerate() {
             // Only count coverage where something has been explicitly drawn, no matter what that
             // is
             if self.infra_types[idx].is_some() {
-                let quintile = flow_stats.quintile(*flow);
-                covered_quintile_sums[quintile - 1] += *flow;
+                let quintile = demand_stats.quintile(*demand);
+                covered_quintile_sums[quintile - 1] += *demand;
             }
         }
 
@@ -161,8 +161,8 @@ impl MapModel {
             percent_reachable_imd_population,
             percent_reachable_population,
 
-            covered_flow_quintile_sums: covered_quintile_sums.to_vec(),
-            total_flow_quintile_sums: flow_stats.total_quintile_sums.to_vec(),
+            covered_demand_quintile_sums: covered_quintile_sums.to_vec(),
+            total_demand_quintile_sums: demand_stats.total_quintile_sums.to_vec(),
 
             total_network_length,
             total_high_los_length,

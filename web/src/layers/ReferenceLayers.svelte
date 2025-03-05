@@ -1,6 +1,6 @@
 <script lang="ts">
   import AllPopulation from "./AllPopulation.svelte";
-  import CyclingFlowCoverage from "./CyclingFlowCoverage.svelte";
+  import CyclingDemandCoverage from "./CyclingDemandCoverage.svelte";
   import DeprivedPopulation from "./DeprivedPopulation.svelte";
   import GpHospitals from "./GpHospitals.svelte";
   import Greenspaces from "./Greenspaces.svelte";
@@ -10,7 +10,7 @@
   import Roads from "./roads/Roads.svelte";
   import Schools from "./Schools.svelte";
   import Settlements from "./Settlements.svelte";
-  import { cyclingFlow1, cyclingFlow2 } from "./stores";
+  import { cyclingDemand1, cyclingDemand2 } from "./stores";
   import TownCentres from "./TownCentres.svelte";
   import UrbanAreas from "./UrbanAreas.svelte";
 </script>
@@ -24,12 +24,12 @@
 
 <!-- Primary -->
 
-<CyclingFlowCoverage label="High" bind:show={$cyclingFlow1} />
+<CyclingDemandCoverage label="High" bind:show={$cyclingDemand1} />
 <MainRoadCoverage />
 
 <!-- Secondary -->
 
-<CyclingFlowCoverage label="Medium" bind:show={$cyclingFlow2} />
+<CyclingDemandCoverage label="Medium" bind:show={$cyclingDemand2} />
 <TownCentres />
 
 <!-- Local acces -->

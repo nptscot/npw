@@ -8,9 +8,12 @@
   let longDistance: HTMLDivElement | null = null;
   let networkAssessment: HTMLDivElement | null = null;
 
-  $: update(primary, $allControls, ["High cycling flow", "Main road coverage"]);
+  $: update(primary, $allControls, [
+    "High cycling demand",
+    "Main road coverage",
+  ]);
 
-  $: update(secondary, $allControls, ["Medium cycling flow", "Town centres"]);
+  $: update(secondary, $allControls, ["Medium cycling demand", "Town centres"]);
 
   $: update(localAccess, $allControls, ["POIs", "Population", "SIMD"]);
 

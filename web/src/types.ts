@@ -69,8 +69,8 @@ export interface Stats {
   percent_reachable_imd_population: number;
   percent_reachable_population: number;
 
-  covered_flow_quintile_sums: number[];
-  total_flow_quintile_sums: number[];
+  covered_demand_quintile_sums: number[];
+  total_demand_quintile_sums: number[];
 
   total_network_length: number;
   total_high_los_length: number;
@@ -137,9 +137,9 @@ export type GridMeshDensity = FeatureCollection<
   { routes: number; total: number }
 >;
 
-export type PrecalculatedFlows = FeatureCollection<
+export type PrecalculatedDemand = FeatureCollection<
   LineString,
-  { flow: number; covered: boolean; quintile: number }
+  { demand: number; covered: boolean; quintile: number }
 > & {
   covered_quintile_sums: number[];
   total_quintile_sums: number[];
@@ -199,8 +199,8 @@ export interface StaticRoad {
   speed: number;
   gradient: number;
   existing_infra: string | null;
-  precalculated_flow: number;
-  precalculated_flow_quintile: number;
+  precalculated_demand: number;
+  precalculated_demand_quintile: number;
   street_space: "Segregated" | "CycleLane" | "nothing" | null;
 }
 

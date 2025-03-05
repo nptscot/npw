@@ -14,8 +14,8 @@
 
   $: show = $referenceRoadStyle == "calculated_rnet";
   let fastSample = true;
-  let colorBy: "flow" | "infra_type" | "los" = "los";
-  let minFlow = 0;
+  let colorBy: "demand" | "infra_type" | "los" = "los";
+  let minDemand = 0;
 
   // Until we have loading screens, don't automatically update this layer
   let lastUpdate = 0;
@@ -55,15 +55,15 @@
   <label>
     Color:
     <select bind:value={colorBy}>
-      <option value="flow">Flow</option>
+      <option value="demand">Demand</option>
       <option value="los">Level of service</option>
       <option value="infra_type">Infrastructure type</option>
     </select>
   </label>
 
   <label>
-    Show flows above:
-    <input type="number" bind:value={minFlow} />
+    Show demand above:
+    <input type="number" bind:value={minDemand} />
   </label>
 
   {#if gj}
@@ -81,11 +81,11 @@
   <GeoJSON data={gj} generateId>
     <LineLayer
       {...layerId("calculated-rnet")}
-      filter={[">=", ["get", "count"], minFlow]}
+      filter={[">=", ["get", "count"], minDemand]}
       paint={{
         "line-width": lineWidthForDemand(["get", "count"]),
         "line-color": {
-          flow: lineColorForDemand(["get", "count"]),
+          demand: lineColorForDemand(["get", "count"]),
           infra_type: constructMatchExpression(
             ["get", "infra_type"],
             infraTypeColors,

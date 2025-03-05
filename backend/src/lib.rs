@@ -62,7 +62,7 @@ pub struct MapModel {
     traffic_volumes: Vec<usize>,
     core_network: Vec<Option<Tier>>,
     // Go Dutch totals for all purposes
-    precalculated_flows: Vec<usize>,
+    precalculated_demands: Vec<usize>,
     street_space: Vec<Option<Streetspace>>,
     // mph
     speeds: Vec<usize>,
@@ -116,7 +116,9 @@ pub enum InfraType {
     MixedTraffic,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Enum, Serialize, Deserialize)]
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Enum, Serialize, Deserialize,
+)]
 pub enum Tier {
     Primary,
     Secondary,
@@ -146,7 +148,7 @@ impl MapModel {
         greenspaces: Vec<places::Greenspace>,
         traffic_volumes: Vec<usize>,
         core_network: Vec<Option<Tier>>,
-        precalculated_flows: Vec<usize>,
+        precalculated_demands: Vec<usize>,
         street_space: Vec<Option<Streetspace>>,
         gradients: Vec<f64>,
     ) -> Self {
@@ -192,7 +194,7 @@ impl MapModel {
             within_settlement,
             traffic_volumes,
             core_network,
-            precalculated_flows,
+            precalculated_demands,
             street_space,
             speeds,
             gradients,
@@ -250,8 +252,8 @@ impl MapModel {
     }
 
     pub fn render_static_roads(&self) -> GeoJson {
-        let stats = utils::Quintiles::new(&self.precalculated_flows);
-        info!("precalculated_flows quintiles: {stats:?}");
+        let stats = utils::Quintiles::new(&self.precalculated_demands);
+        info!("precalculated_demands quintiles: {stats:?}");
 
         let mut features = Vec::new();
         for (idx, road) in self.graph.roads.iter().enumerate() {
@@ -269,10 +271,10 @@ impl MapModel {
                 "existing_infra",
                 serde_json::to_value(existing::classify(&road.osm_tags)).unwrap(),
             );
-            f.set_property("precalculated_flow", self.precalculated_flows[idx]);
+            f.set_property("precalculated_demand", self.precalculated_demands[idx]);
             f.set_property(
-                "precalculated_flow_quintile",
-                stats.quintile(self.precalculated_flows[idx]),
+                "precalculated_demand_quintile",
+                stats.quintile(self.precalculated_demands[idx]),
             );
             f.set_property(
                 "street_space",

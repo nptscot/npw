@@ -14,8 +14,8 @@
   let purpose = "all";
   let scenario = "bicycle_go_dutch";
   let networkType = "fastest";
-  let colorBy = "flow";
-  let minFlow = 0;
+  let colorBy = "demand";
+  let minDemand = 0;
 
   $: key = `${purpose}_${networkType}_${scenario}`;
 
@@ -37,14 +37,14 @@
   ];
   let colorByOptions = [
     ["none", "None"],
-    ["flow", "People cycling per day"],
+    ["demand", "People cycling per day"],
     ["quietness", "Cycle friendliness"],
     ["gradient", "Gradient"],
   ];
 
   $: lineColor = {
     none: "#304ce7",
-    flow: lineColorForDemand(["get", key]),
+    demand: lineColorForDemand(["get", key]),
     quietness: [
       "step",
       ["get", "quietness"],
@@ -104,8 +104,8 @@
   </label>
 
   <label>
-    Show flows above:
-    <input type="number" bind:value={minFlow} />
+    Show demand above:
+    <input type="number" bind:value={minDemand} />
   </label>
 {/if}
 
@@ -113,7 +113,7 @@
   <LineLayer
     {...layerId("precalculated-rnet")}
     sourceLayer="rnet"
-    filter={key ? [">=", ["get", key], minFlow] : undefined}
+    filter={key ? [">=", ["get", key], minDemand] : undefined}
     paint={{
       "line-color": lineColor,
       "line-width": lineWidthForDemand(["get", key]),

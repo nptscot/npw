@@ -77,7 +77,7 @@ const layerZorder = [
 
   // Reference layers (lines)
   "precalculated-rnet",
-  "uncovered-cycling-flows",
+  "uncovered-cycling-demands",
   "uncovered-main-roads",
   "edits-roads",
   "reference-roads",

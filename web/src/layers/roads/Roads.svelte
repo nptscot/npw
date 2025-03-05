@@ -20,7 +20,7 @@
     type Mode,
   } from "../../stores";
   import { type DynamicRoad } from "../../types";
-  import CyclingFlowCoverage from "./CyclingFlowCoverage.svelte";
+  import CyclingDemandCoverage from "./CyclingDemandCoverage.svelte";
   import MainRoadCoverage from "./MainRoadCoverage.svelte";
   import ReferenceRoads from "./ReferenceRoads.svelte";
 
@@ -142,7 +142,7 @@
       </LineLayer>
       <ReferenceRoads {dynamicData} />
 
-      <CyclingFlowCoverage />
+      <CyclingDemandCoverage />
       <MainRoadCoverage />
     </GeoJSON>
   {/await}

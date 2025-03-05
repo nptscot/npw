@@ -90,13 +90,13 @@
       <p>
         The primary route should be direct, coherent, meet high demand, and
         potentially connect settlements. Key primary routes will form Active
-        Freeways. To draw the primary route, connect the high cycling flow
+        Freeways. To draw the primary route, connect the high cycling demand
         routes on the base map.
       </p>
     {:else if $currentStage == "Secondary"}
       <p>
         To draw the secondary route, please connect town centres and cover
-        medium cycling flow routes on the base map.
+        medium cycling demand routes on the base map.
       </p>
     {:else if $currentStage == "LocalAccess"}
       <p>
