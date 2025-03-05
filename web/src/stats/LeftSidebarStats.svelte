@@ -46,6 +46,14 @@
         $stats.total_demand_quintile_sums[0],
       )}
     />
+
+    <Metric
+      label="Main road coverage"
+      pct={percent(
+        $stats.covered_main_road_length,
+        $stats.total_main_road_length,
+      )}
+    />
   {:else if $currentStage == "Secondary"}
     <Metric
       label="Medium cycling demand coverage"
