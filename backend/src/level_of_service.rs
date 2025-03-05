@@ -34,7 +34,6 @@ impl MapModel {
         let traffic = self.traffic_volumes[r.0];
         let within_settlement = self.within_settlement[r.0];
 
-        // TODO Is this order correct, and do we want to use all of these?
         for infra_type in [
             InfraType::MixedTraffic,
             InfraType::CycleLane,
@@ -48,7 +47,8 @@ impl MapModel {
         }
 
         // This is the best option available without realigning or changing the road speed.
-        // Depending on speed+volume, it may be high or not.
+        // Depending on speed+volume, it may be high or not. The user can manually upgrade to
+        // SegregatedWithSpeedVolume.
         InfraType::Segregated
     }
 }
@@ -112,6 +112,9 @@ pub fn get_level_of_service(
                 LevelOfService::Low
             }
         }
+
+        // By definition, high
+        InfraType::SegregatedWithSpeedVolume => LevelOfService::High,
 
         // "Detached or Remote Cycle Track"
         InfraType::OffRoad => LevelOfService::High,

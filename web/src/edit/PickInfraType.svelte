@@ -1,9 +1,10 @@
 <script lang="ts">
-  import icon5 from "../../assets/CycleLane.jpg";
-  import icon6 from "../../assets/MixedTraffic.jpg";
-  import icon2 from "../../assets/OffRoad.jpg";
-  import icon1 from "../../assets/Segregated.jpg";
-  import icon4 from "../../assets/SharedFootway.jpg";
+  import cycleLaneIcon from "../../assets/CycleLane.jpg";
+  import mixedTrafficIcon from "../../assets/MixedTraffic.jpg";
+  import offRoadIcon from "../../assets/OffRoad.jpg";
+  import segregatedIcon from "../../assets/Segregated.jpg";
+  import segregatedWithSpeedVolumeIcon from "../../assets/SegregatedWithSpeedVolume.jpg";
+  import sharedFootwayIcon from "../../assets/SharedFootway.jpg";
   import { infraTypeMapping } from "../types";
 
   export let current: string;
@@ -11,11 +12,24 @@
   // TODO URL isn't used right now
 
   let cases = [
-    ["Segregated", icon1, "https://www.cyclestreets.net/location/81274/"],
-    ["OffRoad", icon2, "https://www.cyclestreets.net/location/86744/"],
-    ["SharedFootway", icon4, "https://www.cyclestreets.net/location/92805/"],
-    ["CycleLane", icon5, "https://www.cyclestreets.net/location/81341/"],
-    ["MixedTraffic", icon6, ""],
+    [
+      "Segregated",
+      segregatedIcon,
+      "https://www.cyclestreets.net/location/81274/",
+    ],
+    ["SegregatedWithSpeedVolume", segregatedWithSpeedVolumeIcon, ""],
+    ["OffRoad", offRoadIcon, "https://www.cyclestreets.net/location/86744/"],
+    [
+      "SharedFootway",
+      sharedFootwayIcon,
+      "https://www.cyclestreets.net/location/92805/",
+    ],
+    [
+      "CycleLane",
+      cycleLaneIcon,
+      "https://www.cyclestreets.net/location/81341/",
+    ],
+    ["MixedTraffic", mixedTrafficIcon, ""],
   ];
 </script>
 

@@ -110,6 +110,7 @@ pub enum Dir {
 )]
 pub enum InfraType {
     Segregated,
+    SegregatedWithSpeedVolume,
     OffRoad,
     SharedFootway,
     CycleLane,
