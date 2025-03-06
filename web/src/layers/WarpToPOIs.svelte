@@ -113,9 +113,34 @@
   }
 
   // When currentPOI changes elsewhere from clicking on the map, make the filtered list work
-  /*function resetFilters(currentPOI: { kind: PoiKind; idx: number } | null) {
+  function resetFilters(currentPOI: { kind: PoiKind; idx: number } | null) {
+    if (!currentPOI) {
+      return;
+    }
+
+    for (let [i, poi] of filteredPOIs.entries()) {
+      if (poi.poi_kind == currentPOI.kind && poi.idx == currentPOI.idx) {
+        filterIdx = i;
+        return;
+      }
+    }
+
+    // Relax the filters
+    filterReachability = "all";
+    filterKind = "all";
+    // Do this immediately
+    filteredPOIs = filterPOIs(allPOIs, filterKind, filterReachability);
+
+    // Then repeat the above
+    for (let [i, poi] of Object.entries(filteredPOIs)) {
+      if (poi.poi_kind == currentPOI.kind && poi.idx == currentPOI.idx) {
+        filterIdx = i;
+        return;
+      }
+    }
+    console.error(`Clicked on ${currentPOI} but can't find it!`);
   }
-  $: resetFilters($currentPOI);*/
+  $: resetFilters($currentPOI);
 
   function warp(currentPOI: { kind: PoiKind; idx: number } | null) {
     if (!$map || !currentPOI) {
