@@ -2,7 +2,6 @@
   import type { Feature, Point } from "geojson";
   import type { ExpressionSpecification } from "maplibre-gl";
   import { GeoJSON, SymbolLayer, type LayerClickInfo } from "svelte-maplibre";
-  import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { GPHospitals, PoiKind, Schools } from "../types";
@@ -84,16 +83,7 @@
     bind:hovered
     hoverCursor="pointer"
     on:click={setCurrentPOI}
-  >
-    <Popup openOn="hover" let:props>
-      <div style="max-width: 30vw; max-height: 60vh; overflow: auto;">
-        {props.name} is a {props.kind} school with {props.pupils} pupils. It {props.reachable
-          ? "is"
-          : "is not"} reachable. {#if !props.reachable}Click to add the black
-          route to connect it to the network.{/if}
-      </div>
-    </Popup>
-  </SymbolLayer>
+  />
 </GeoJSON>
 
 <GeoJSON data={gpHospitals} generateId>
@@ -109,15 +99,7 @@
     bind:hovered
     hoverCursor="pointer"
     on:click={setCurrentPOI}
-  >
-    <Popup openOn="hover" let:props>
-      <div style="max-width: 30vw; max-height: 60vh; overflow: auto;">
-        {props.name} is a {props.kind}. It {props.reachable ? "is" : "is not"} reachable.
-        {#if !props.reachable}Click to add the black route to connect it to the
-          network.{/if}
-      </div>
-    </Popup>
-  </SymbolLayer>
+  />
 </GeoJSON>
 
 <DebugReachability layerName="pois" {hovered} />

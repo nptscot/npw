@@ -9,7 +9,6 @@
     LineLayer,
     type LayerClickInfo,
   } from "svelte-maplibre";
-  import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { Greenspaces, PoiKind } from "../types";
@@ -74,16 +73,7 @@
     bind:hovered
     hoverCursor="pointer"
     on:click={setCurrentPOI}
-  >
-    <Popup openOn="hover" let:props>
-      <div style="max-width: 30vw; max-height: 60vh; overflow: auto;">
-        Greenspace {props.name || ""}
-        {props.reachable ? "is" : "is not"} reachable.
-        {#if !props.reachable}Click to add the black route to connect it to the
-          network.{/if}
-      </div>
-    </Popup>
-  </FillLayer>
+  />
 
   <LineLayer
     {...layerId("greenspaces-outline-reachable")}
