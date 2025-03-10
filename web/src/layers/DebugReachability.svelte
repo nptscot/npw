@@ -8,6 +8,7 @@
 
   export let layerName: string;
   export let current: CurrentPOI | null;
+  export let show: boolean;
 
   let debug = emptyGeojson();
   let fixUnreachable: SetRouteInput | null = null;
@@ -38,6 +39,9 @@
   <LineLayer
     {...layerId("debug-reachability-" + layerName)}
     interactive={false}
+    layout={{
+      visibility: show ? "visible" : "none",
+    }}
     paint={{
       "line-width": 3,
       "line-color": "blue",
@@ -49,6 +53,9 @@
   <LineLayer
     {...layerId("fix-reachability-" + layerName)}
     interactive={false}
+    layout={{
+      visibility: show ? "visible" : "none",
+    }}
     paint={{
       "line-width": 5,
       "line-color": "black",

@@ -93,4 +93,4 @@
   />
 </GeoJSON>
 
-<DebugReachability layerName="town_centres" current={hoveredPOI} />
+<DebugReachability layerName="town_centres" current={hoveredPOI} show={$show} />
