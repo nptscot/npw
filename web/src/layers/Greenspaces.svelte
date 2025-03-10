@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Feature, MultiPolygon } from "geojson";
   import type { ExpressionSpecification } from "maplibre-gl";
   import {
     CircleLayer,
@@ -11,19 +10,14 @@
   } from "svelte-maplibre";
   import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
-  import type { Greenspaces, PoiKind } from "../types";
-  import DebugReachability from "./DebugReachability.svelte";
-  import { currentPOI, localPOIs as show } from "./stores";
+  import type { Greenspaces } from "../types";
+  import { currentPOI, localPOIs as show, type CurrentPOI } from "./stores";
 
   let lastUpdate = 0;
   let data: Greenspaces = {
     type: "FeatureCollection",
     features: [],
   };
-  let hovered: Feature<
-    MultiPolygon,
-    { poi_kind: PoiKind; reachable: boolean; idx: number }
-  > | null;
 
   async function recalc() {
     if ($backend && lastUpdate != $mutationCounter) {
@@ -36,9 +30,7 @@
     recalc();
   }
 
-  function fillOpacity(
-    currentPOI: { kind: PoiKind; idx: number } | null,
-  ): ExpressionSpecification {
+  function fillOpacity(currentPOI: CurrentPOI | null): ExpressionSpecification {
     if (currentPOI?.kind == "greenspaces") {
       return [
         "case",
@@ -55,6 +47,7 @@
     $currentPOI = {
       kind: e.detail.features[0].properties!.poi_kind,
       idx: e.detail.features[0].properties!.idx,
+      reachable: e.detail.features[0].properties!.reachable,
     };
   }
 </script>
@@ -70,7 +63,6 @@
     layout={{
       visibility: $show ? "visible" : "none",
     }}
-    bind:hovered
     hoverCursor="pointer"
     on:click={setCurrentPOI}
   />
@@ -114,5 +106,3 @@
     }}
   />
 </GeoJSON>
-
-<DebugReachability layerName="greenspaces" {hovered} />

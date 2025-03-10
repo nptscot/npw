@@ -38,8 +38,11 @@ export let layersPerStage = {
 // Remember the last reference style enabled. "off" means none.
 export let lastReferenceStyle: Writable<ReferenceRoadStyle> = writable("off");
 
-// TODO Move to a component after merging some of the POI components
-export let currentPOI: Writable<{
+// TODO Move to a component after merging some of the POI components?
+export interface CurrentPOI {
   kind: PoiKind;
   idx: number;
-} | null> = writable(null);
+  reachable: boolean;
+}
+
+export let currentPOI: Writable<CurrentPOI | null> = writable(null);

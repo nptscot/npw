@@ -24,6 +24,14 @@
     { poi_kind: PoiKind; reachable: boolean; idx: number }
   > | null;
 
+  $: hoveredPOI = hovered
+    ? {
+        kind: hovered.properties.poi_kind,
+        idx: hovered.properties.idx,
+        reachable: hovered.properties.reachable,
+      }
+    : null;
+
   async function recalc() {
     if ($backend && lastUpdate != $mutationCounter) {
       data = await $backend.getTownCentres();
@@ -85,4 +93,4 @@
   />
 </GeoJSON>
 
-<DebugReachability layerName="town_centres" {hovered} />
+<DebugReachability layerName="town_centres" current={hoveredPOI} />

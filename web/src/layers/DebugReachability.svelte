@@ -1,41 +1,29 @@
 <script lang="ts">
-  import type { Feature, MultiPolygon, Point } from "geojson";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
   import { layerId } from "../common";
   import { backend } from "../stores";
-  import type { PoiKind, SetRouteInput } from "../types";
-  import { severances } from "./stores";
+  import type { SetRouteInput } from "../types";
+  import { severances, type CurrentPOI } from "./stores";
 
   export let layerName: string;
-  export let hovered: Feature<
-    Point | MultiPolygon,
-    { poi_kind: PoiKind; reachable: boolean; idx: number }
-  > | null;
+  export let current: CurrentPOI | null;
 
   let debug = emptyGeojson();
   let fixUnreachable: SetRouteInput | null = null;
-  $: updateDebug(hovered);
+  $: updateDebug(current);
 
-  async function updateDebug(
-    hovered: Feature<
-      Point | MultiPolygon,
-      { poi_kind: PoiKind; reachable: boolean; idx: number }
-    > | null,
-  ) {
+  async function updateDebug(current: CurrentPOI | null) {
     $severances = false;
-    if ($backend && hovered) {
-      if (hovered.properties.reachable) {
-        debug = await $backend.debugReachablePath(
-          hovered.properties.poi_kind,
-          hovered.properties.idx,
-        );
+    if ($backend && current) {
+      if (current.reachable) {
+        debug = await $backend.debugReachablePath(current.kind, current.idx);
         fixUnreachable = null;
       } else {
         debug = emptyGeojson();
         fixUnreachable = await $backend.fixUnreachablePOI(
-          hovered.properties.poi_kind,
-          hovered.properties.idx,
+          current.kind,
+          current.idx,
         );
         $severances = true;
       }

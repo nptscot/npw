@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Feature, Point } from "geojson";
   import type { ExpressionSpecification } from "maplibre-gl";
   import { GeoJSON, SymbolLayer, type LayerClickInfo } from "svelte-maplibre";
   import { layerId } from "../common";
@@ -7,7 +6,7 @@
   import type { GPHospitals, PoiKind, Schools } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
-  import { currentPOI, localPOIs as show } from "./stores";
+  import { currentPOI, localPOIs as show, type CurrentPOI } from "./stores";
   import WarpToPOIs from "./WarpToPOIs.svelte";
 
   let lastUpdate = 0;
@@ -19,10 +18,6 @@
     type: "FeatureCollection",
     features: [],
   };
-  let hovered: Feature<
-    Point,
-    { poi_kind: PoiKind; reachable: boolean; idx: number }
-  > | null;
 
   async function recalc() {
     if ($backend && lastUpdate != $mutationCounter) {
@@ -38,7 +33,7 @@
 
   function iconImage(
     poiKind: PoiKind,
-    currentPOI: { kind: PoiKind; idx: number } | null,
+    currentPOI: CurrentPOI | null,
   ): ExpressionSpecification {
     let reachable = [
       "case",
@@ -62,6 +57,7 @@
     $currentPOI = {
       kind: e.detail.features[0].properties!.poi_kind,
       idx: e.detail.features[0].properties!.idx,
+      reachable: e.detail.features[0].properties!.reachable,
     };
   }
 </script>
@@ -80,7 +76,6 @@
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
       "icon-image": iconImage("schools", $currentPOI),
     }}
-    bind:hovered
     hoverCursor="pointer"
     on:click={setCurrentPOI}
   />
@@ -96,10 +91,9 @@
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
       "icon-image": iconImage("gp_hospitals", $currentPOI),
     }}
-    bind:hovered
     hoverCursor="pointer"
     on:click={setCurrentPOI}
   />
 </GeoJSON>
 
-<DebugReachability layerName="pois" {hovered} />
+<DebugReachability layerName="pois" current={$currentPOI} />

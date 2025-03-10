@@ -10,7 +10,7 @@
     mutationCounter,
   } from "../stores";
   import type { PoiKind } from "../types";
-  import { currentPOI } from "./stores";
+  import { currentPOI, type CurrentPOI } from "./stores";
 
   type Reachability = "reachable" | "unreachable" | "all";
   interface POI {
@@ -108,13 +108,14 @@
     $currentPOI = {
       idx: filteredPOIs[filterIdx].idx,
       kind: filteredPOIs[filterIdx].poi_kind,
+      reachable: filteredPOIs[filterIdx].reachable,
     };
   } else {
     $currentPOI = null;
   }
 
   // When currentPOI changes elsewhere from clicking on the map, make the filtered list work
-  function resetFilters(currentPOI: { kind: PoiKind; idx: number } | null) {
+  function resetFilters(currentPOI: CurrentPOI | null) {
     if (!currentPOI) {
       return;
     }
@@ -143,7 +144,7 @@
   }
   $: resetFilters($currentPOI);
 
-  function warp(currentPOI: { kind: PoiKind; idx: number } | null) {
+  function warp(currentPOI: CurrentPOI | null) {
     if (!$map || !currentPOI) {
       return;
     }

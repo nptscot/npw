@@ -107,12 +107,10 @@ const layerZorder = [
   // the middle of a polygon
   "debug-reachability-settlements",
   "debug-reachability-town_centres",
-  "debug-reachability-greenspaces",
   "debug-reachability-pois",
 
   "fix-reachability-settlements",
   "fix-reachability-town_centres",
-  "fix-reachability-greenspaces",
   "fix-reachability-pois",
 
   "block-reference-layers",
