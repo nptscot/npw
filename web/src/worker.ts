@@ -13,14 +13,13 @@ import type {
   DataZones,
   DynamicRoad,
   EvaluateODOut,
-  GPHospitals,
   Greenspaces,
   GridMeshDensity,
   ODStats,
+  POIs,
   RouteGJ,
   RouteNode,
   RouteProps,
-  Schools,
   SetRouteInput,
   Settlements,
   StaticRoad,
@@ -196,14 +195,9 @@ export class Backend {
     this.inner!.loadSavefile(contents);
   }
 
-  getSchools(): Schools {
+  getPOIs(): POIs {
     this.checkReady();
-    return JSON.parse(this.inner!.getSchools());
-  }
-
-  getGpHospitals(): GPHospitals {
-    this.checkReady();
-    return JSON.parse(this.inner!.getGPHospitals());
+    return JSON.parse(this.inner!.getPOIs());
   }
 
   getTownCentres(): TownCentres {

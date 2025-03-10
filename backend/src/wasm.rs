@@ -266,26 +266,30 @@ impl MapModel {
         self.import_core_network()
     }
 
-    #[wasm_bindgen(js_name = getSchools)]
-    pub fn get_schools(&self) -> Result<String, JsValue> {
+    // TODO Except greenspaces
+    #[wasm_bindgen(js_name = getPOIs)]
+    pub fn get_pois(&self) -> Result<String, JsValue> {
         // TODO Some kind of caching would make this nicer
         let roads = self.get_reachable_network();
+
+        let mut features = Vec::new();
+        for (idx, poi) in self.schools.iter().enumerate() {
+            features.push(poi.to_gj(&self.graph.mercator, roads.covers(poi.road), idx));
+        }
+        for (idx, poi) in self.gp_hospitals.iter().enumerate() {
+            features.push(poi.to_gj(&self.graph.mercator, roads.covers(poi.road), idx));
+        }
 
         serde_json::to_string(&FeatureCollection {
             bbox: None,
             foreign_members: None,
-            features: self
-                .schools
-                .iter()
-                .enumerate()
-                .map(|(idx, s)| s.to_gj(&self.graph.mercator, roads.covers(s.road), idx))
-                .collect(),
+            features,
         })
         .map_err(err_to_js)
     }
 
-    #[wasm_bindgen(js_name = getGPHospitals)]
-    pub fn get_gp_hospitals(&self) -> Result<String, JsValue> {
+    #[wasm_bindgen(js_name = getGreenspaces)]
+    pub fn get_greenspaces(&self) -> Result<String, JsValue> {
         // TODO Some kind of caching would make this nicer
         let roads = self.get_reachable_network();
 
@@ -293,10 +297,10 @@ impl MapModel {
             bbox: None,
             foreign_members: None,
             features: self
-                .gp_hospitals
+                .greenspaces
                 .iter()
                 .enumerate()
-                .map(|(idx, x)| x.to_gj(&self.graph.mercator, roads.covers(x.road), idx))
+                .flat_map(|(idx, x)| x.to_gj(&self.graph.mercator, roads.covers_any(&x.roads), idx))
                 .collect(),
         })
         .map_err(err_to_js)
@@ -333,24 +337,6 @@ impl MapModel {
                 .iter()
                 .enumerate()
                 .map(|(idx, x)| x.to_gj(&self.graph.mercator, roads.covers_any(&x.roads), idx))
-                .collect(),
-        })
-        .map_err(err_to_js)
-    }
-
-    #[wasm_bindgen(js_name = getGreenspaces)]
-    pub fn get_greenspaces(&self) -> Result<String, JsValue> {
-        // TODO Some kind of caching would make this nicer
-        let roads = self.get_reachable_network();
-
-        serde_json::to_string(&FeatureCollection {
-            bbox: None,
-            foreign_members: None,
-            features: self
-                .greenspaces
-                .iter()
-                .enumerate()
-                .flat_map(|(idx, x)| x.to_gj(&self.graph.mercator, roads.covers_any(&x.roads), idx))
                 .collect(),
         })
         .map_err(err_to_js)

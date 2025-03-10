@@ -88,26 +88,17 @@ export interface Stats {
   density_network_in_settlements: number | null;
 }
 
-export type Schools = FeatureCollection<
+export type POIs = FeatureCollection<
   Point,
   {
     poi_kind: PoiKind;
-    kind: string;
     name: string;
-    pupils: number;
     reachable: boolean;
     idx: number;
-  }
->;
 
-export type GPHospitals = FeatureCollection<
-  Point,
-  {
-    poi_kind: PoiKind;
+    // Just for the description
     kind: string;
-    name: string;
-    reachable: boolean;
-    idx: number;
+    pupils?: number;
   }
 >;
 

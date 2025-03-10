@@ -38,22 +38,18 @@
 
     allPOIs = [];
 
-    for (let f of (await $backend.getSchools()).features) {
-      let name = `${f.properties.name || "This school"} (a ${f.properties.kind} school with ${f.properties.pupils} pupils)`;
+    for (let f of (await $backend.getPOIs()).features) {
+      let name;
+      if (f.properties.poi_kind == "schools") {
+        name = `${f.properties.name || "This school"} (a ${f.properties.kind} school with ${f.properties.pupils} pupils)`;
+      } else {
+        name = f.properties.name || `This ${f.properties.kind}`;
+      }
+
       allPOIs.push({
         poi_kind: f.properties.poi_kind,
         idx: f.properties.idx,
         name,
-        reachable: f.properties.reachable,
-        position: f.geometry.coordinates,
-      });
-    }
-
-    for (let f of (await $backend.getGpHospitals()).features) {
-      allPOIs.push({
-        poi_kind: f.properties.poi_kind,
-        idx: f.properties.idx,
-        name: f.properties.name || `This ${f.properties.kind}`,
         reachable: f.properties.reachable,
         position: f.geometry.coordinates,
       });

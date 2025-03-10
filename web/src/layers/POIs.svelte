@@ -3,26 +3,34 @@
   import { GeoJSON, SymbolLayer, type LayerClickInfo } from "svelte-maplibre";
   import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
-  import type { GPHospitals, PoiKind, Schools } from "../types";
+  import type { PoiKind, POIs } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
   import { currentPOI, localPOIs as show, type CurrentPOI } from "./stores";
   import WarpToPOIs from "./WarpToPOIs.svelte";
 
   let lastUpdate = 0;
-  let schools: Schools = {
+  let schools: POIs = {
     type: "FeatureCollection",
     features: [],
   };
-  let gpHospitals: GPHospitals = {
+  let gpHospitals: POIs = {
     type: "FeatureCollection",
     features: [],
   };
 
   async function recalc() {
     if ($backend && lastUpdate != $mutationCounter) {
-      schools = await $backend.getSchools();
-      gpHospitals = await $backend.getGpHospitals();
+      let gj = await $backend.getPOIs();
+      // It's easiest to filter upfront here, to simplify iconImage
+      schools.features = gj.features.filter(
+        (f) => f.properties.poi_kind == "schools",
+      );
+      schools = schools;
+      gpHospitals.features = gj.features.filter(
+        (f) => f.properties.poi_kind == "gp_hospitals",
+      );
+      gpHospitals = gpHospitals;
       lastUpdate = $mutationCounter;
     }
   }
