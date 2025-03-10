@@ -48,6 +48,7 @@
       kind: e.detail.features[0].properties!.poi_kind,
       idx: e.detail.features[0].properties!.idx,
       reachable: e.detail.features[0].properties!.reachable,
+      pt: e.detail.event.lngLat.toArray(),
     };
   }
 </script>

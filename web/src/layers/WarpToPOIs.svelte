@@ -1,6 +1,5 @@
 <script lang="ts">
   import centroid from "@turf/centroid";
-  import type { Position } from "geojson";
   import PrevNext from "../common/PrevNext.svelte";
   import {
     autosave,
@@ -18,7 +17,7 @@
     idx: number;
     name: string;
     reachable: boolean;
-    position: Position;
+    position: [number, number];
   }
 
   let filterReachability: Reachability = "unreachable";
@@ -51,7 +50,7 @@
         idx: f.properties.idx,
         name,
         reachable: f.properties.reachable,
-        position: f.geometry.coordinates,
+        position: f.geometry.coordinates as [number, number],
       });
     }
 
@@ -65,7 +64,7 @@
         idx: f.properties.idx!,
         name: f.properties.name || "This greenspace",
         reachable: f.properties.reachable!,
-        position: centroid(f).geometry.coordinates,
+        position: centroid(f).geometry.coordinates as [number, number],
       });
     }
 
@@ -105,6 +104,7 @@
       idx: filteredPOIs[filterIdx].idx,
       kind: filteredPOIs[filterIdx].poi_kind,
       reachable: filteredPOIs[filterIdx].reachable,
+      pt: filteredPOIs[filterIdx].position,
     };
   } else {
     $currentPOI = null;
@@ -149,7 +149,7 @@
     );
     if (poi) {
       $map.flyTo({
-        center: poi.position as [number, number],
+        center: poi.position,
         zoom: 14,
       });
     }

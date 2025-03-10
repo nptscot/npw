@@ -7,6 +7,7 @@
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
   import { currentPOI, localPOIs as show, type CurrentPOI } from "./stores";
+  import StreetViewPOI from "./StreetViewPOI.svelte";
   import WarpToPOIs from "./WarpToPOIs.svelte";
 
   let lastUpdate = 0;
@@ -66,6 +67,7 @@
       kind: e.detail.features[0].properties!.poi_kind,
       idx: e.detail.features[0].properties!.idx,
       reachable: e.detail.features[0].properties!.reachable,
+      pt: e.detail.event.lngLat.toArray(),
     };
   }
 </script>
@@ -105,3 +107,7 @@
 </GeoJSON>
 
 <DebugReachability layerName="pois" current={$currentPOI} show={$show} />
+
+{#if $show}
+  <StreetViewPOI />
+{/if}

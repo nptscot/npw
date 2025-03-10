@@ -7,14 +7,14 @@
   import { severances, type CurrentPOI } from "./stores";
 
   export let layerName: string;
-  export let current: CurrentPOI | null;
+  export let current: Omit<CurrentPOI, "pt"> | null;
   export let show: boolean;
 
   let debug = emptyGeojson();
   let fixUnreachable: SetRouteInput | null = null;
   $: updateDebug(current);
 
-  async function updateDebug(current: CurrentPOI | null) {
+  async function updateDebug(current: Omit<CurrentPOI, "pt"> | null) {
     $severances = false;
     if ($backend && current) {
       if (current.reachable) {

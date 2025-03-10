@@ -43,6 +43,7 @@ export interface CurrentPOI {
   kind: PoiKind;
   idx: number;
   reachable: boolean;
+  pt: [number, number];
 }
 
 export let currentPOI: Writable<CurrentPOI | null> = writable(null);
