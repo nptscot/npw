@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use geo::{Coord, Euclidean, Length, Line, LineInterpolatePoint, LineString};
+use geo::{Coord, Line, LineInterpolatePoint, LineString};
 use geojson::Feature;
 use graph::{Graph, IntersectionID, PathStep, RoadID};
 use serde::{Deserialize, Serialize};
@@ -8,52 +8,23 @@ use serde::{Deserialize, Serialize};
 use crate::{Dir, MapModel};
 
 impl MapModel {
-    pub fn snap_route(&self, input_waypoints: Vec<Waypoint>) -> Result<String> {
-        let (path_entries, linestring) = self.get_path_entries(&input_waypoints);
-        let length = linestring.length::<Euclidean>();
+    pub fn snap_route(&self, waypoints: Vec<Waypoint>) -> Result<String> {
+        let (roads, linestring) = self.waypoints_to_path(&waypoints);
+
+        // TODO Should we change the input_waypoints to their snapped position?
 
         let mut feature = self.graph.mercator.to_wgs84_gj(&linestring);
-        feature.set_property("length_meters", length);
 
-        let mut full_path = Vec::new();
-        for entry in &path_entries {
-            match entry {
-                PathEntry::SnappedPoint(i) => {
-                    full_path.push(
-                        serde_json::to_value(&JsonNode {
-                            snapped: Some(i.0),
-                            free: None,
-                        })
-                        .unwrap(),
-                    );
-                }
-                PathEntry::FreePoint(pt) => {
-                    full_path.push(
-                        serde_json::to_value(&JsonNode {
-                            snapped: None,
-                            free: Some([trim_lon_lat(pt.x), trim_lon_lat(pt.y)]),
-                        })
-                        .unwrap(),
-                    );
-                }
-                PathEntry::Edge(_, _) => {}
-            }
-        }
-        full_path.dedup();
-        feature.set_property("full_path", serde_json::Value::Array(full_path));
+        let props = SerializeRouteProps { roads, waypoints };
+        feature.properties = Some(
+            serde_json::to_value(&props)
+                .unwrap()
+                .as_object()
+                .unwrap()
+                .clone(),
+        );
 
-        // TODO These used to be corrected to the snapped position. Is that important?
-        let mut waypoints = Vec::new();
-        for waypt in input_waypoints {
-            waypoints.push(
-                serde_json::to_value(&Waypoint {
-                    point: [trim_lon_lat(waypt.point[0]), trim_lon_lat(waypt.point[1])],
-                    snapped: waypt.snapped,
-                })
-                .unwrap(),
-            );
-        }
-        feature.set_property("waypoints", serde_json::Value::Array(waypoints));
+        // TODO Don't we need to set all the RouteProps?
 
         Ok(serde_json::to_string(&feature)?)
     }
@@ -90,36 +61,34 @@ impl MapModel {
             }
         }
 
-        let (path_entries, _) = self.get_path_entries(&vec![waypt1, waypt2]);
+        let (roads, _) = self.waypoints_to_path(&vec![waypt1, waypt2]);
+        let intersections = roads_to_intersections(&self.graph, &roads);
 
         let mut extra_nodes: Vec<(f64, f64, bool)> = Vec::new();
-        for (idx, entry) in path_entries.iter().enumerate() {
+        for (idx, i) in intersections.iter().enumerate() {
             // Skip the first and last, so only intermediate nodes are returned
-            if idx == 0 || idx == path_entries.len() - 1 {
+            if idx == 0 || idx == intersections.len() - 1 {
                 continue;
             }
 
-            if let PathEntry::SnappedPoint(i) = entry {
-                let pt = self
-                    .graph
-                    .mercator
-                    .pt_to_wgs84(self.graph.intersections[i.0].point.into());
-                extra_nodes.push((pt.x, pt.y, true));
-            }
+            let pt = self
+                .graph
+                .mercator
+                .pt_to_wgs84(self.graph.intersections[i.0].point.into());
+            extra_nodes.push((pt.x, pt.y, true));
         }
 
         Ok(serde_json::to_string(&extra_nodes)?)
     }
 
     /// Turns waypoints into a full path description and a LineString
-    fn get_path_entries(&self, waypts: &Vec<Waypoint>) -> (Vec<PathEntry>, LineString) {
+    fn waypoints_to_path(&self, waypts: &Vec<Waypoint>) -> (Vec<(RoadID, Dir)>, LineString) {
         let profile = self.graph.profile_names["bicycle_direct"];
-        let mut path_entries = Vec::new();
+        let mut roads = Vec::new();
         let mut pts: Vec<Coord> = Vec::new();
 
         for pair in waypts.windows(2) {
             // Always add every waypoint
-            path_entries.push(self.waypt_to_path_entry(&pair[0]));
             pts.push(pair[0].point.into());
 
             if pair[0].snapped && pair[1].snapped {
@@ -127,16 +96,12 @@ impl MapModel {
                 let end = self.graph.snap_to_road(pair[1].point.into(), profile);
 
                 if let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) {
-                    // Don't repeat that snapped point
-                    assert_eq!(
-                        path_entries.pop(),
-                        Some(PathEntry::SnappedPoint(start.intersection))
-                    );
                     pts.extend(route.linestring(&self.graph).into_inner());
+
                     for step in route.steps {
                         match step {
                             PathStep::Road { road, forwards } => {
-                                path_entries.push(PathEntry::Edge(
+                                roads.push((
                                     road,
                                     if forwards {
                                         Dir::Forwards
@@ -144,12 +109,6 @@ impl MapModel {
                                         Dir::Backwards
                                     },
                                 ));
-                                let road = &self.graph.roads[road.0];
-                                path_entries.push(PathEntry::SnappedPoint(if forwards {
-                                    road.dst_i
-                                } else {
-                                    road.src_i
-                                }));
                             }
                             _ => unreachable!(),
                         }
@@ -163,50 +122,20 @@ impl MapModel {
         }
         // Always add the last if it's different
         if let Some(last) = waypts.last() {
-            let add = self.waypt_to_path_entry(last);
-            if path_entries.last() != Some(&add) {
-                path_entries.push(add);
-            }
             if !last.snapped {
                 pts.push(last.point.into());
             }
         }
 
         pts.dedup();
-        (path_entries, LineString::new(pts))
-    }
-
-    fn waypt_to_path_entry(&self, waypt: &Waypoint) -> PathEntry {
-        if waypt.snapped {
-            let profile = self.graph.profile_names["bicycle_direct"];
-            PathEntry::SnappedPoint(
-                self.graph
-                    .snap_to_road(waypt.point.into(), profile)
-                    .intersection,
-            )
-        } else {
-            PathEntry::FreePoint(waypt.point.into())
-        }
+        (roads, LineString::new(pts))
     }
 }
 
-#[derive(PartialEq, Debug)]
-enum PathEntry {
-    SnappedPoint(IntersectionID),
-    FreePoint(Coord),
-    Edge(RoadID, Dir),
-    // Note we don't need to represent a straight line between snapped or free points here. As we
-    // build up the line-string, they'll happen anyway.
-}
-
-// Mimic the same output as snap_route, generating it from a different description.
-pub fn make_route_snapper_feature(
-    graph: &Graph,
-    ids: &[(RoadID, Dir)],
-    linestring: &LineString,
-) -> Feature {
+fn roads_to_intersections(graph: &Graph, roads: &[(RoadID, Dir)]) -> Vec<IntersectionID> {
+    // TODO If we retain the graph::Route, we get this for free
     let mut intersections = Vec::new();
-    for (r, dir) in ids {
+    for (r, dir) in roads {
         let road = &graph.roads[r.0];
         if matches!(dir, Dir::Forwards) {
             intersections.push(road.src_i);
@@ -217,32 +146,40 @@ pub fn make_route_snapper_feature(
         }
     }
     intersections.dedup();
+    intersections
+}
 
-    let mut f = graph.mercator.to_wgs84_gj(linestring);
-    let waypoints = find_minimal_waypoints(graph, ids, &intersections)
+// Mimic the same output as snap_route, generating it from a different description.
+pub fn make_route_snapper_feature(
+    graph: &Graph,
+    roads: &[(RoadID, Dir)],
+    linestring: &LineString,
+) -> Feature {
+    let intersections = roads_to_intersections(graph, roads);
+
+    let waypoints = find_minimal_waypoints(graph, roads, &intersections)
         .into_iter()
         .map(|i| {
             let pt = graph.mercator.to_wgs84(&graph.intersections[i.0].point);
-            serde_json::to_value(&Waypoint {
+            Waypoint {
                 point: [trim_lon_lat(pt.x()), trim_lon_lat(pt.y())],
                 snapped: true,
-            })
-            .unwrap()
+            }
         })
         .collect();
-    f.set_property("waypoints", serde_json::Value::Array(waypoints));
 
-    let full_path = intersections
-        .iter()
-        .map(|i| {
-            serde_json::to_value(&JsonNode {
-                snapped: Some(i.0),
-                free: None,
-            })
+    let mut f = graph.mercator.to_wgs84_gj(linestring);
+    let props = SerializeRouteProps {
+        roads: roads.to_vec(),
+        waypoints,
+    };
+    f.properties = Some(
+        serde_json::to_value(&props)
             .unwrap()
-        })
-        .collect();
-    f.set_property("full_path", serde_json::Value::Array(full_path));
+            .as_object()
+            .unwrap()
+            .clone(),
+    );
 
     f
 }
@@ -295,16 +232,15 @@ pub struct Waypoint {
     snapped: bool,
 }
 
-#[derive(Serialize)]
-struct JsonNode {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    snapped: Option<usize>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    free: Option<[f64; 2]>,
-}
-
 // Per https://datatracker.ietf.org/doc/html/rfc7946#section-11.2, 6 decimal places (10cm) is
 // plenty of precision
 fn trim_lon_lat(x: f64) -> f64 {
     (x * 10e6).round() / 10e6
+}
+
+// TODO Maybe temporary
+#[derive(Serialize)]
+struct SerializeRouteProps {
+    roads: Vec<(RoadID, Dir)>,
+    waypoints: Vec<Waypoint>,
 }

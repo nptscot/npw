@@ -92,10 +92,11 @@ pub struct MapModel {
 pub struct Route {
     /// The unedited GeoJSON feature returned from route-snapper
     feature: Feature,
+    // The direction is only plumbed along for rendering/splitting purposes
+    roads: Vec<(RoadID, Dir)>,
+
     name: String,
     notes: String,
-    // Derived from full_path. The direction is only plumbed along for rendering/splitting purposes
-    roads: Vec<(RoadID, Dir)>,
     infra_type: InfraType,
     override_infra_type: bool,
     tier: Tier,

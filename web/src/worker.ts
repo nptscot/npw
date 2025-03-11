@@ -18,7 +18,6 @@ import type {
   ODStats,
   POIs,
   RouteGJ,
-  RouteNode,
   RouteProps,
   SetRouteInput,
   Settlements,
@@ -108,14 +107,14 @@ export class Backend {
 
   autosplitRoute(
     editingRouteId: number | null,
-    full_path: RouteNode[],
+    roads: [number, "Forwards" | "Backwards"][],
     overrideInfraType: string | null,
   ): AutosplitRoute {
     this.checkReady();
     return JSON.parse(
       this.inner!.autosplitRoute(
         editingRouteId == null ? undefined : editingRouteId,
-        full_path,
+        roads,
         overrideInfraType,
       ),
     );
@@ -235,7 +234,7 @@ export class Backend {
     this.checkReady();
     let route = JSON.parse(this.inner!.fixUnreachablePOI(kind, idx));
     // TODO Hack around this necessary duplication
-    route.full_path = route.feature.properties.full_path;
+    route.roads = route.feature.properties.roads;
     return route;
   }
 
