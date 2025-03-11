@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::{Dir, MapModel};
 
 impl MapModel {
-    pub fn snap_route(&self, input_waypoints: Vec<InputRouteWaypoint>) -> Result<String> {
+    pub fn snap_route(&self, input_waypoints: Vec<Waypoint>) -> Result<String> {
         let (path_entries, linestring) = self.get_path_entries(&input_waypoints);
         let length = linestring.length::<Euclidean>();
 
@@ -46,9 +46,8 @@ impl MapModel {
         let mut waypoints = Vec::new();
         for waypt in input_waypoints {
             waypoints.push(
-                serde_json::to_value(&OutputRouteWaypoint {
-                    lon: trim_lon_lat(waypt.point[0]),
-                    lat: trim_lon_lat(waypt.point[1]),
+                serde_json::to_value(&Waypoint {
+                    point: [trim_lon_lat(waypt.point[0]), trim_lon_lat(waypt.point[1])],
                     snapped: waypt.snapped,
                 })
                 .unwrap(),
@@ -59,11 +58,7 @@ impl MapModel {
         Ok(serde_json::to_string(&feature)?)
     }
 
-    pub fn get_extra_nodes(
-        &self,
-        waypt1: InputRouteWaypoint,
-        waypt2: InputRouteWaypoint,
-    ) -> Result<String> {
+    pub fn get_extra_nodes(&self, waypt1: Waypoint, waypt2: Waypoint) -> Result<String> {
         // If both waypoints aren't snapped, just return one extra node in the middle
         if !waypt1.snapped || !waypt2.snapped {
             // If one waypoint is snapped, use its snapped position for finding the middle
@@ -117,7 +112,7 @@ impl MapModel {
     }
 
     /// Turns waypoints into a full path description and a LineString
-    fn get_path_entries(&self, waypts: &Vec<InputRouteWaypoint>) -> (Vec<PathEntry>, LineString) {
+    fn get_path_entries(&self, waypts: &Vec<Waypoint>) -> (Vec<PathEntry>, LineString) {
         let profile = self.graph.profile_names["bicycle_direct"];
         let mut path_entries = Vec::new();
         let mut pts: Vec<Coord> = Vec::new();
@@ -181,7 +176,7 @@ impl MapModel {
         (path_entries, LineString::new(pts))
     }
 
-    fn waypt_to_path_entry(&self, waypt: &InputRouteWaypoint) -> PathEntry {
+    fn waypt_to_path_entry(&self, waypt: &Waypoint) -> PathEntry {
         if waypt.snapped {
             let profile = self.graph.profile_names["bicycle_direct"];
             PathEntry::SnappedPoint(
@@ -228,9 +223,8 @@ pub fn make_route_snapper_feature(
         .into_iter()
         .map(|i| {
             let pt = graph.mercator.to_wgs84(&graph.intersections[i.0].point);
-            serde_json::to_value(&OutputRouteWaypoint {
-                lon: trim_lon_lat(pt.x()),
-                lat: trim_lon_lat(pt.y()),
+            serde_json::to_value(&Waypoint {
+                point: [trim_lon_lat(pt.x()), trim_lon_lat(pt.y())],
                 snapped: true,
             })
             .unwrap()
@@ -295,17 +289,9 @@ fn find_minimal_waypoints(
     intersections.iter().cloned().collect()
 }
 
-#[derive(Debug, Deserialize)]
-pub struct InputRouteWaypoint {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Waypoint {
     pub point: [f64; 2],
-    snapped: bool,
-}
-
-// TODO Why're there two of these?
-#[derive(Serialize)]
-struct OutputRouteWaypoint {
-    lon: f64,
-    lat: f64,
     snapped: bool,
 }
 
