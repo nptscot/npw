@@ -92,10 +92,22 @@ impl MapModel {
             pts.push(pair[0].point.into());
 
             if pair[0].snapped && pair[1].snapped {
-                let start = self.graph.snap_to_road(pair[0].point.into(), profile);
-                let end = self.graph.snap_to_road(pair[1].point.into(), profile);
+                let start = self
+                    .closest_intersection
+                    .nearest_neighbor(&pair[0].point.into())
+                    .unwrap()
+                    .data;
+                let end = self
+                    .closest_intersection
+                    .nearest_neighbor(&pair[1].point.into())
+                    .unwrap()
+                    .data;
 
-                if let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) {
+                if let Ok(route) = self.graph.routers[profile.0].route_between_intersections(
+                    &self.graph,
+                    start,
+                    end,
+                ) {
                     pts.extend(route.linestring(&self.graph).into_inner());
 
                     for step in route.steps {
