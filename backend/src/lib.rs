@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 use enum_map::Enum;
 use geo::{Area, MultiPolygon, Point};
-use geojson::{Feature, GeoJson};
+use geojson::GeoJson;
 use graph::{Graph, IntersectionID, RoadID, Timer};
 use rstar::{primitives::GeomWithData, RTree};
 use serde::{Deserialize, Serialize};
@@ -40,7 +40,7 @@ pub struct MapModel {
     closest_intersection: RTree<GeomWithData<Point, IntersectionID>>,
 
     #[serde(skip_serializing, skip_deserializing, default)]
-    routes: HashMap<usize, Route>,
+    routes: HashMap<usize, InMemoryRoute>,
     #[serde(skip_serializing, skip_deserializing, default)]
     id_counter: usize,
 
@@ -88,19 +88,26 @@ pub struct MapModel {
     quiet_router_ok: bool,
 }
 
+/// The minimal data needed to save a route. Note this could be pre-split or not.
 #[derive(Clone, Serialize, Deserialize)]
-pub struct Route {
-    /// The unedited GeoJSON feature returned from route-snapper
-    feature: Feature,
+pub struct SavedRoute {
+    waypoints: Vec<route_snapper::InputRouteWaypoint>,
     name: String,
     notes: String,
-    // Derived from full_path. The direction is only plumbed along for rendering/splitting purposes
-    roads: Vec<(RoadID, Dir)>,
     infra_type: InfraType,
     override_infra_type: bool,
     tier: Tier,
 }
 
+/// The in-memory representation of a route
+pub struct InMemoryRoute {
+    saved: SavedRoute,
+
+    // TODO linestring, intersections? the graph::Route?
+    roads: Vec<RoadID>,
+}
+
+// TODO Delete?
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub enum Dir {
     Forwards,
@@ -244,10 +251,10 @@ impl MapModel {
             .collect();
 
         for route in self.routes.values() {
-            for (road, _) in &route.roads {
-                self.infra_types[road.0] = Some(route.infra_type);
-                self.override_infra_type[road.0] = route.override_infra_type;
-                self.tiers[road.0] = Some(route.tier);
+            for road in &route.roads {
+                self.infra_types[road.0] = Some(route.saved.infra_type);
+                self.override_infra_type[road.0] = route.saved.override_infra_type;
+                self.tiers[road.0] = Some(route.saved.tier);
             }
         }
 
@@ -311,7 +318,7 @@ impl MapModel {
 
         let mut road_to_route = HashMap::new();
         for (route_id, route) in &self.routes {
-            for (road, _) in &route.roads {
+            for road in &route.roads {
                 road_to_route.insert(*road, *route_id);
             }
         }
@@ -321,7 +328,7 @@ impl MapModel {
             let id = RoadID(idx);
             let current_route_name = match road_to_route.get(&id) {
                 Some(route_id) => {
-                    let name = self.routes[route_id].name.clone();
+                    let name = self.routes[route_id].saved.name.clone();
                     Some(if name.is_empty() {
                         format!("Untitled route {route_id}")
                     } else {

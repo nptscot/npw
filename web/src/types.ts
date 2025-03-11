@@ -1,5 +1,4 @@
 import type {
-  Feature,
   FeatureCollection,
   LineString,
   MultiPolygon,
@@ -155,26 +154,15 @@ export type PrecalculatedDemand = FeatureCollection<
   total_quintile_sums: number[];
 };
 
-export type RouteNode = { snapped: number } | { free: [number, number] };
-
-// TODO Reconcile these two
-
-export interface SetRouteInput {
-  feature: Feature<LineString, RouteProps>;
-  name: string;
-  notes: string;
-  full_path: RouteNode[];
-  infra_type: string;
-  override_infra_type: boolean;
-  tier: Tier;
+export interface Waypoint {
+  point: [number, number];
+  snapped: boolean;
 }
 
-export interface RouteProps {
-  id: number;
+export interface SavedRoute {
+  waypoints: Waypoint[];
   name: string;
   notes: string;
-  full_path: RouteNode[];
-  waypoints: any[];
   infra_type: string;
   override_infra_type: boolean;
   tier: Tier;
@@ -233,11 +221,4 @@ export interface DynamicRoad {
   current_infra: string | null;
   current_tier: Tier | null;
   current_infra_fits: boolean;
-}
-
-// Route snapper
-
-export interface Waypoint {
-  point: [number, number];
-  snapped: boolean;
 }

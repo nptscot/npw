@@ -18,9 +18,7 @@ import type {
   ODStats,
   POIs,
   RouteGJ,
-  RouteNode,
-  RouteProps,
-  SetRouteInput,
+  SavedRoute,
   Settlements,
   StaticRoad,
   Stats,
@@ -68,18 +66,18 @@ export class Backend {
     return JSON.parse(this.inner!.renderDynamicRoads());
   }
 
-  getAllRoutes(): FeatureCollection<LineString, RouteProps> {
+  getAllRoutes(): FeatureCollection<LineString, SavedRoute> {
     this.checkReady();
     return JSON.parse(this.inner!.getAllRoutes());
   }
 
-  getRoute(id: number): Feature<LineString, RouteProps> {
+  getRoute(id: number): SavedRoute {
     this.checkReady();
     return JSON.parse(this.inner!.getRoute(id));
   }
 
   // TODO Be consistent about undefined vs null
-  setRoute(id: number | null, input: SetRouteInput) {
+  setRoute(id: number | null, input: SavedRoute) {
     this.checkReady();
     this.inner!.setRoute(id == null ? undefined : id, input);
   }
@@ -108,14 +106,14 @@ export class Backend {
 
   autosplitRoute(
     editingRouteId: number | null,
-    full_path: RouteNode[],
+    waypoints: Waypoint[],
     overrideInfraType: string | null,
   ): AutosplitRoute {
     this.checkReady();
     return JSON.parse(
       this.inner!.autosplitRoute(
         editingRouteId == null ? undefined : editingRouteId,
-        full_path,
+        waypoints,
         overrideInfraType,
       ),
     );
@@ -231,12 +229,9 @@ export class Backend {
     return JSON.parse(this.inner!.debugUnreachablePath(kind, idx));
   }
 
-  fixUnreachablePOI(kind: string, idx: number): SetRouteInput {
+  fixUnreachablePOI(kind: string, idx: number): SavedRoute {
     this.checkReady();
-    let route = JSON.parse(this.inner!.fixUnreachablePOI(kind, idx));
-    // TODO Hack around this necessary duplication
-    route.full_path = route.feature.properties.full_path;
-    return route;
+    return JSON.parse(this.inner!.fixUnreachablePOI(kind, idx));
   }
 
   getConnectedComponents(): ConnectedComponents {
@@ -244,7 +239,8 @@ export class Backend {
     return JSON.parse(this.inner!.getConnectedComponents());
   }
 
-  snapRoute(waypoints: Waypoint[]): Feature<LineString, RouteProps> {
+  // TODO combo with autosplit?
+  snapRoute(waypoints: Waypoint[]): Feature<LineString, SavedRoute> {
     this.checkReady();
     return JSON.parse(this.inner!.snapRoute(waypoints));
   }

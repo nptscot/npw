@@ -586,7 +586,7 @@ dependencies = [
 [[package]]
 name = "graph"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/15m#37e3216e4e3871e77eff2cd1bface54bee59f93c"
+source = "git+https://github.com/a-b-street/15m#e21e06ff30ae764e845308a17ff2307049e36867"
 dependencies = [
  "anyhow",
  "chrono",

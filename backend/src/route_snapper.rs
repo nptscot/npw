@@ -295,7 +295,7 @@ fn find_minimal_waypoints(
     intersections.iter().cloned().collect()
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct InputRouteWaypoint {
     pub point: [f64; 2],
     snapped: bool,

@@ -49,46 +49,18 @@
   $: recalculateSections($waypoints, overrideInfraType, infraType);
 
   onMount(async () => {
-    $waypoints = [];
-    if (id != null) {
-      let feature = await $backend!.getRoute(id);
-      name = feature.properties.name;
-      notes = feature.properties.notes;
-      infraType = feature.properties.infra_type;
-      overrideInfraType = feature.properties.override_infra_type;
-      tier = feature.properties.tier;
+    if (id == null) {
+      $waypoints = [];
+    } else {
+      let existing = await $backend!.getRoute(id);
+      name = existing.name;
+      notes = existing.notes;
+      infraType = existing.infra_type;
+      overrideInfraType = existing.override_infra_type;
+      tier = existing.tier;
 
       // Transform into the correct format
-      $waypoints = feature.properties.waypoints.map((waypt) => {
-        return {
-          point: [waypt.lon, waypt.lat],
-          snapped: waypt.snapped,
-        };
-      });
-
-      // TODO Debugging cases where auto-imported routes act oddly
-      if (false) {
-        let waypts1 = JSON.parse(JSON.stringify(feature.properties.waypoints));
-        let full_path1 = JSON.parse(
-          JSON.stringify(feature.properties.full_path),
-        );
-        let output = await $backend!.snapRoute($waypoints);
-        let waypts2 = JSON.parse(JSON.stringify(output.properties.waypoints));
-        let full_path2 = JSON.parse(
-          JSON.stringify(output.properties.full_path),
-        );
-
-        if (JSON.stringify(waypts1) != JSON.stringify(waypts2)) {
-          console.log(`waypts changed`);
-          console.log(waypts1);
-          console.log(waypts2);
-        }
-        if (JSON.stringify(full_path1) != JSON.stringify(full_path2)) {
-          console.log(`full_path changed`);
-          console.log(full_path1);
-          console.log(full_path2);
-        }
-      }
+      $waypoints = existing.waypoints;
     }
   });
 
@@ -102,18 +74,10 @@
 
   async function finish() {
     try {
-      let feature = await $backend!.snapRoute($waypoints);
-      // TODO Is this possible still?
-      if (!feature) {
-        window.alert("No route drawn");
-        return;
-      }
-
       await $backend!.setRoute(id, {
-        feature,
+        waypoints: $waypoints,
         name,
         notes,
-        full_path: feature.properties.full_path,
         infra_type: infraType,
         override_infra_type: overrideInfraType,
         tier,
@@ -152,11 +116,9 @@
     sectionsGj = emptyGeojson() as AutosplitRoute;
 
     try {
-      // TODO Wasteful; should RouteControls export a read-only view of this?
-      let feature = await $backend!.snapRoute(waypts);
       sectionsGj = await $backend!.autosplitRoute(
         id,
-        feature.properties.full_path,
+        $waypoints,
         overrideInfraType ? infraType : null,
       );
     } catch (err) {}

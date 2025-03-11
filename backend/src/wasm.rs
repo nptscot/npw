@@ -3,12 +3,12 @@ use std::sync::Once;
 
 use geo::{Coord, LineString, Polygon};
 use geojson::{Feature, FeatureCollection, Geometry};
-use graph::{IntersectionID, RoadID, Timer};
+use graph::{RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
 use crate::route_snapper::InputRouteWaypoint;
-use crate::{evaluate::Breakdown, Dir, InfraType, MapModel, Route, Tier};
+use crate::{evaluate::Breakdown, InfraType, MapModel, SavedRoute, Tier};
 
 static START: Once = Once::new();
 
@@ -73,7 +73,7 @@ impl MapModel {
     /// Create or edit a route. Returns the ID
     #[wasm_bindgen(js_name = setRoute)]
     pub fn set_route_wasm(&mut self, id: Option<usize>, input: JsValue) -> Result<(), JsValue> {
-        let route = self.parse_route(input).map_err(err_to_js)?;
+        let route: SavedRoute = serde_wasm_bindgen::from_value(input)?;
         self.set_route(id, route).map_err(err_to_js)
     }
 
@@ -106,6 +106,7 @@ impl MapModel {
         self.clear_all_routes()
     }
 
+    // TODO I think this goes away entirely
     /// Splits a route into sections, returning a FeatureCollection
     #[wasm_bindgen(js_name = autosplitRoute)]
     pub fn autosplit_route_wasm(
@@ -114,13 +115,15 @@ impl MapModel {
         input: JsValue,
         override_infra_type: JsValue,
     ) -> Result<String, JsValue> {
+        /*
         // TODO Or take a full Route as input and reuse parse_route?
         let full_path: Vec<RouteNode> = serde_wasm_bindgen::from_value(input)?;
         let roads = self.full_path_to_roads(full_path).map_err(err_to_js)?;
         let override_infra_type: Option<InfraType> =
             serde_wasm_bindgen::from_value(override_infra_type)?;
         self.autosplit_route(editing_route_id, roads, override_infra_type)
-            .map_err(err_to_js)
+            .map_err(err_to_js)*/
+        todo!()
     }
 
     /// Returns GJ Features of every route
@@ -129,11 +132,10 @@ impl MapModel {
         serde_json::to_string(&self.get_all_routes()).map_err(err_to_js)
     }
 
-    /// Returns one GJ Feature of the route
+    /// Returns one SavedRoute
     #[wasm_bindgen(js_name = getRoute)]
     pub fn get_route_wasm(&self, id: usize) -> Result<String, JsValue> {
-        let route = self.get_route(id).map_err(err_to_js)?;
-        serde_json::to_string(&route).map_err(err_to_js)
+        serde_json::to_string(&self.routes[&id].saved).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = evaluateRoute)]
@@ -215,7 +217,11 @@ impl MapModel {
     #[wasm_bindgen(js_name = toSavefile)]
     pub fn to_savefile(&self) -> Result<String, JsValue> {
         serde_json::to_string(&Savefile {
-            routes: self.routes.clone(),
+            routes: self
+                .routes
+                .iter()
+                .map(|(id, route)| (*id, route.saved.clone()))
+                .collect(),
             id_counter: self.id_counter,
         })
         .map_err(err_to_js)
@@ -225,20 +231,14 @@ impl MapModel {
     pub fn load_savefile(&mut self, input: String) -> Result<(), JsValue> {
         let savefile: Savefile = serde_json::from_str(&input).map_err(err_to_js)?;
 
-        // Detect if the savefile is incompatible with the current model
+        // TODO Detect if the savefile is incompatible with the current model
         // bail cleanly
-        let n = self.graph.roads.len();
-        for route in savefile.routes.values() {
-            for (r, _) in &route.roads {
-                if r.0 >= n {
-                    return Err(JsValue::from_str(
-                        "This savefile was created with an old version of NPW and can't be used",
-                    ));
-                }
-            }
-        }
 
-        self.routes = savefile.routes;
+        self.routes.clear();
+        for (id, route) in savefile.routes {
+            self.routes
+                .insert(id, route.to_in_memory(self).map_err(err_to_js)?);
+        }
         self.id_counter = savefile.id_counter;
         self.recalculate_after_edits();
         Ok(())
@@ -364,23 +364,6 @@ impl MapModel {
         serde_json::to_string(&self.get_connected_components()).map_err(err_to_js)
     }
 
-    fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
-        // TODO map_err?
-        let route: InputRoute = match serde_wasm_bindgen::from_value(input) {
-            Ok(r) => r,
-            Err(err) => bail!("{err}"),
-        };
-        Ok(Route {
-            feature: route.feature,
-            name: route.name,
-            notes: route.notes,
-            roads: self.full_path_to_roads(route.full_path)?,
-            infra_type: route.infra_type,
-            override_infra_type: route.override_infra_type,
-            tier: route.tier,
-        })
-    }
-
     /// For the route snapper, return a Feature with the full geometry and properties.
     #[wasm_bindgen(js_name = snapRoute)]
     pub fn snap_route_wasm(&self, raw_waypoints: JsValue) -> Result<String, JsValue> {
@@ -412,41 +395,6 @@ impl MapModel {
         *pt = [out.x, out.y];
     }
 
-    // Returns (Road, forwards) pairs
-    fn full_path_to_roads(&self, full_path: Vec<RouteNode>) -> anyhow::Result<Vec<(RoadID, Dir)>> {
-        let mut intersections = Vec::new();
-        for node in full_path {
-            if let Some(id) = node.snapped {
-                intersections.push(IntersectionID(id as usize));
-            } else if node.free.is_some() {
-                bail!("can't handle freehand points yet");
-            } else {
-                bail!("input has a blank node");
-            }
-        }
-
-        let mut roads = Vec::new();
-        for pair in intersections.windows(2) {
-            match self.graph.find_edge(pair[0], pair[1]) {
-                Some(road) => {
-                    roads.push((
-                        road.id,
-                        if road.src_i == pair[0] {
-                            Dir::Forwards
-                        } else {
-                            Dir::Backwards
-                        },
-                    ));
-                }
-                None => {
-                    // TODO Change route snapper behavior here? Or treat as a freehand line?
-                    bail!("no path between some waypoints");
-                }
-            }
-        }
-        Ok(roads)
-    }
-
     fn get_poi_roads(&self, kind: &str, idx: usize) -> Result<HashSet<RoadID>, JsValue> {
         match kind {
             "schools" => Ok([self.schools[idx].road].into()),
@@ -462,23 +410,6 @@ impl MapModel {
 }
 
 #[derive(Deserialize)]
-struct InputRoute {
-    feature: Feature,
-    name: String,
-    notes: String,
-    full_path: Vec<RouteNode>,
-    infra_type: InfraType,
-    override_infra_type: bool,
-    tier: Tier,
-}
-
-#[derive(Deserialize)]
-struct RouteNode {
-    snapped: Option<u32>,
-    free: Option<[f64; 2]>,
-}
-
-#[derive(Deserialize)]
 struct EvaluateRouteRequest {
     x1: f64,
     y1: f64,
@@ -487,10 +418,11 @@ struct EvaluateRouteRequest {
     breakdown: String,
 }
 
-// TODO This is an odd, repetitive format. Redesign later.
+// TODO Should the WGS84 linestring be plumbed along too, to help check backwards compatibility
+// even more?
 #[derive(Serialize, Deserialize)]
 struct Savefile {
-    routes: HashMap<usize, Route>,
+    routes: HashMap<usize, SavedRoute>,
     id_counter: usize,
 }
 

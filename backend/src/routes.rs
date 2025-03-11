@@ -8,11 +8,11 @@ use graph::{Graph, PathStep, Position, RoadID};
 use crate::join_lines::KeyedLineString;
 use crate::route_snapper::make_route_snapper_feature;
 use crate::{
-    level_of_service::get_level_of_service, Dir, InfraType, LevelOfService, MapModel, Route, Tier,
+    level_of_service::get_level_of_service, Dir, InfraType, LevelOfService, MapModel, InMemoryRoute, SavedRoute, Tier,
 };
 
 impl MapModel {
-    pub fn set_route(&mut self, edit_id: Option<usize>, orig_route: Route) -> Result<()> {
+    pub fn set_route(&mut self, edit_id: Option<usize>, orig_route: SavedRoute) -> Result<()> {
         // If we're editing an existing route, first delete it
         if let Some(id) = edit_id {
             if self.routes.remove(&id).is_none() {

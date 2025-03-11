@@ -31,9 +31,9 @@
     mode,
     referenceRoadStyle,
   } from "./stores";
-  import { infraTypeMapping, type RouteProps } from "./types";
+  import { infraTypeMapping, type SavedRoute } from "./types";
 
-  let allRoutes = emptyGeojson() as FeatureCollection<LineString, RouteProps>;
+  let allRoutes = emptyGeojson() as FeatureCollection<LineString, SavedRoute>;
   onMount(async () => {
     allRoutes = await $backend!.getAllRoutes();
   });
