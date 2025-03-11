@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use geo::{Coord, Line, LineInterpolatePoint, LineString};
+use geo::{Coord, LineString};
 use geojson::Feature;
 use graph::{Graph, IntersectionID, PathStep, RoadID};
 use serde::{Deserialize, Serialize};
@@ -30,36 +30,9 @@ impl MapModel {
     }
 
     pub fn get_extra_nodes(&self, waypt1: Waypoint, waypt2: Waypoint) -> Result<String> {
-        // If both waypoints aren't snapped, just return one extra node in the middle
-        if !waypt1.snapped || !waypt2.snapped {
-            // If one waypoint is snapped, use its snapped position for finding the middle
-            let profile = self.graph.profile_names["bicycle_direct"];
-            let pt1 = if waypt1.snapped {
-                let i = self
-                    .graph
-                    .snap_to_road(waypt1.point.into(), profile)
-                    .intersection;
-                self.graph.intersections[i.0].point
-            } else {
-                waypt1.point.into()
-            };
-            let pt2 = if waypt2.snapped {
-                let i = self
-                    .graph
-                    .snap_to_road(waypt2.point.into(), profile)
-                    .intersection;
-                self.graph.intersections[i.0].point
-            } else {
-                waypt2.point.into()
-            };
-
-            // TODO Need to be more careful with CRS here. But the frontend disabled freehand for
-            // now
-            let line = Line::new(pt1, pt2);
-            if let Some(midpt) = line.line_interpolate_point(0.5) {
-                return Ok(serde_json::to_string(&vec![(midpt.x(), midpt.y(), false)])?);
-            }
-        }
+        // TODO If both waypoints aren't snapped, just return one extra node in the middle
+        assert!(waypt1.snapped);
+        assert!(waypt2.snapped);
 
         let (roads, _) = self.waypoints_to_path(&vec![waypt1, waypt2]);
         let intersections = roads_to_intersections(&self.graph, &roads);
