@@ -3,7 +3,7 @@ use std::sync::Once;
 
 use geo::{Coord, LineString, Polygon};
 use geojson::{Feature, FeatureCollection, Geometry};
-use graph::{IntersectionID, RoadID, Timer};
+use graph::{RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
@@ -73,7 +73,7 @@ impl MapModel {
     /// Create or edit a route. Returns the ID
     #[wasm_bindgen(js_name = setRoute)]
     pub fn set_route_wasm(&mut self, id: Option<usize>, input: JsValue) -> Result<(), JsValue> {
-        let route = self.parse_route(input).map_err(err_to_js)?;
+        let route: Route = serde_wasm_bindgen::from_value(input)?;
         self.set_route(id, route).map_err(err_to_js)
     }
 
@@ -114,9 +114,7 @@ impl MapModel {
         input: JsValue,
         override_infra_type: JsValue,
     ) -> Result<String, JsValue> {
-        // TODO Or take a full Route as input and reuse parse_route?
-        let full_path: Vec<RouteNode> = serde_wasm_bindgen::from_value(input)?;
-        let roads = self.full_path_to_roads(full_path).map_err(err_to_js)?;
+        let roads: Vec<(RoadID, Dir)> = serde_wasm_bindgen::from_value(input)?;
         let override_infra_type: Option<InfraType> =
             serde_wasm_bindgen::from_value(override_infra_type)?;
         self.autosplit_route(editing_route_id, roads, override_infra_type)
@@ -364,23 +362,6 @@ impl MapModel {
         serde_json::to_string(&self.get_connected_components()).map_err(err_to_js)
     }
 
-    fn parse_route(&self, input: JsValue) -> anyhow::Result<Route> {
-        // TODO map_err?
-        let route: InputRoute = match serde_wasm_bindgen::from_value(input) {
-            Ok(r) => r,
-            Err(err) => bail!("{err}"),
-        };
-        Ok(Route {
-            feature: route.feature,
-            name: route.name,
-            notes: route.notes,
-            roads: self.full_path_to_roads(route.full_path)?,
-            infra_type: route.infra_type,
-            override_infra_type: route.override_infra_type,
-            tier: route.tier,
-        })
-    }
-
     /// For the route snapper, return a Feature with the full geometry and properties.
     #[wasm_bindgen(js_name = snapRoute)]
     pub fn snap_route_wasm(&self, raw_waypoints: JsValue) -> Result<String, JsValue> {
@@ -412,41 +393,6 @@ impl MapModel {
         *pt = [out.x, out.y];
     }
 
-    // Returns (Road, forwards) pairs
-    fn full_path_to_roads(&self, full_path: Vec<RouteNode>) -> anyhow::Result<Vec<(RoadID, Dir)>> {
-        let mut intersections = Vec::new();
-        for node in full_path {
-            if let Some(id) = node.snapped {
-                intersections.push(IntersectionID(id as usize));
-            } else if node.free.is_some() {
-                bail!("can't handle freehand points yet");
-            } else {
-                bail!("input has a blank node");
-            }
-        }
-
-        let mut roads = Vec::new();
-        for pair in intersections.windows(2) {
-            match self.graph.find_edge(pair[0], pair[1]) {
-                Some(road) => {
-                    roads.push((
-                        road.id,
-                        if road.src_i == pair[0] {
-                            Dir::Forwards
-                        } else {
-                            Dir::Backwards
-                        },
-                    ));
-                }
-                None => {
-                    // TODO Change route snapper behavior here? Or treat as a freehand line?
-                    bail!("no path between some waypoints");
-                }
-            }
-        }
-        Ok(roads)
-    }
-
     fn get_poi_roads(&self, kind: &str, idx: usize) -> Result<HashSet<RoadID>, JsValue> {
         match kind {
             "schools" => Ok([self.schools[idx].road].into()),
@@ -459,23 +405,6 @@ impl MapModel {
             ))),
         }
     }
-}
-
-#[derive(Deserialize)]
-struct InputRoute {
-    feature: Feature,
-    name: String,
-    notes: String,
-    full_path: Vec<RouteNode>,
-    infra_type: InfraType,
-    override_infra_type: bool,
-    tier: Tier,
-}
-
-#[derive(Deserialize)]
-struct RouteNode {
-    snapped: Option<u32>,
-    free: Option<[f64; 2]>,
 }
 
 #[derive(Deserialize)]

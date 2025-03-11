@@ -155,31 +155,31 @@ export type PrecalculatedDemand = FeatureCollection<
   total_quintile_sums: number[];
 };
 
-export type RouteNode = { snapped: number } | { free: [number, number] };
-
-// TODO Reconcile these two
-
 export interface Waypoint {
   point: [number, number];
   snapped: boolean;
 }
 
+// TODO Reconcile these two
+
 export interface SetRouteInput {
   feature: Feature<LineString, RouteProps>;
+  roads: [number, "Forwards" | "Backwards"][];
+
   name: string;
   notes: string;
-  full_path: RouteNode[];
   infra_type: string;
   override_infra_type: boolean;
   tier: Tier;
 }
 
 export interface RouteProps {
+  waypoints: Waypoint[];
   id: number;
+  roads: [number, "Forwards" | "Backwards"][];
+
   name: string;
   notes: string;
-  full_path: RouteNode[];
-  waypoints: Waypoint[];
   infra_type: string;
   override_infra_type: boolean;
   tier: Tier;
