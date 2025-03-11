@@ -58,13 +58,7 @@
       overrideInfraType = feature.properties.override_infra_type;
       tier = feature.properties.tier;
 
-      // Transform into the correct format
-      $waypoints = feature.properties.waypoints.map((waypt) => {
-        return {
-          point: [waypt.lon, waypt.lat],
-          snapped: waypt.snapped,
-        };
-      });
+      $waypoints = feature.properties.waypoints;
 
       // TODO Debugging cases where auto-imported routes act oddly
       if (false) {

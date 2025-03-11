@@ -7,7 +7,7 @@ use graph::{IntersectionID, RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-use crate::route_snapper::InputRouteWaypoint;
+use crate::route_snapper::Waypoint;
 use crate::{evaluate::Breakdown, Dir, InfraType, MapModel, Route, Tier};
 
 static START: Once = Once::new();
@@ -384,7 +384,7 @@ impl MapModel {
     /// For the route snapper, return a Feature with the full geometry and properties.
     #[wasm_bindgen(js_name = snapRoute)]
     pub fn snap_route_wasm(&self, raw_waypoints: JsValue) -> Result<String, JsValue> {
-        let mut waypoints: Vec<InputRouteWaypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
+        let mut waypoints: Vec<Waypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
         for w in &mut waypoints {
             self.to_mercator(&mut w.point);
         }
@@ -399,8 +399,8 @@ impl MapModel {
         raw_waypt1: JsValue,
         raw_waypt2: JsValue,
     ) -> Result<String, JsValue> {
-        let mut waypt1: InputRouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt1)?;
-        let mut waypt2: InputRouteWaypoint = serde_wasm_bindgen::from_value(raw_waypt2)?;
+        let mut waypt1: Waypoint = serde_wasm_bindgen::from_value(raw_waypt1)?;
+        let mut waypt2: Waypoint = serde_wasm_bindgen::from_value(raw_waypt2)?;
         self.to_mercator(&mut waypt1.point);
         self.to_mercator(&mut waypt2.point);
         self.get_extra_nodes(waypt1, waypt2).map_err(err_to_js)
