@@ -2,18 +2,20 @@ name: Deploy web
 
 on:
   push:
-    branches: [main]
+    branches: [main, demo]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
           cache-dependency-path: web/package-lock.json
 
@@ -27,17 +29,10 @@ jobs:
           key: cargo-${{ hashFiles('backend/Cargo.lock') }}
 
       - name: Build web app
-        run: |
-          cd web
-          npm ci
-          npm run wasm-release
-          npm run build --if-present
-          # TODO Vite suddenly broke and I have no idea why. Hack around it.
-          # new URL('backend_bg.wasm', import.meta.url) doesn't exist at build time, it will remain unchanged to be resolved at runtime
-          ln -s assets/backend_bg.wasm dist/
+        run: ./release/gh_build.sh
 
       - name: Publish
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./web/dist/
+          publish_dir: ./web/deployme/
