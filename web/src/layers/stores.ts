@@ -9,7 +9,7 @@ export let allControls: Writable<Map<string, HTMLDivElement>> = writable(
 // Only layers that need to be controlled remotely need to be here
 export let debugAllCyclingDemand = writable(false);
 export let debugCyclingDemandMin = writable(0);
-export let cyclingDemand1 = writable(true);
+export let cyclingDemand1 = writable(false);
 export let mainRoadCoverage = writable(false);
 
 export let cyclingDemand2 = writable(false);
@@ -26,12 +26,19 @@ export let gridMeshDensity = writable(false);
 export let severances = writable(false);
 export let debugOriginalData = writable(false);
 
-export let layersPerStage = {
-  // TODO We want to auto-hide this one, but not auto-show it...
-  Primary: [cyclingDemand1, mainRoadCoverage],
-  Secondary: [cyclingDemand2, townCentres],
+export let enableLayersPerStage = {
+  Primary: [],
+  Secondary: [townCentres],
   LocalAccess: [localPOIs],
   LongDistance: [settlements],
+  assessment: [gridMeshDensity],
+};
+
+export let disableLayersPerStage = {
+  Primary: [cyclingDemand1, mainRoadCoverage],
+  Secondary: [cyclingDemand2, townCentres, severances],
+  LocalAccess: [localPOIs, allPopulation, deprivedPopulation, severances],
+  LongDistance: [settlements, severances],
   assessment: [gridMeshDensity],
 };
 

@@ -2,14 +2,14 @@
   import { networkAssessmentColor, tierColors } from "./colors";
   import { HelpButton } from "./common";
   import ManageFiles from "./common/ManageFiles.svelte";
-  import { layersPerStage } from "./layers/stores";
+  import { disableLayersPerStage, enableLayersPerStage } from "./layers/stores";
   import TopBarStats from "./stats/TopBarStats.svelte";
   import { currentStage, devMode, referenceRoadStyle } from "./stores";
   import type { Tier } from "./types";
 
   function changeStage(newStage: Tier | "assessment") {
     // Disable old layers
-    for (let show of layersPerStage[$currentStage]) {
+    for (let show of disableLayersPerStage[$currentStage]) {
       show.set(false);
     }
     if (
@@ -22,7 +22,7 @@
     $currentStage = newStage;
 
     // Show new layers
-    for (let show of layersPerStage[newStage]) {
+    for (let show of enableLayersPerStage[newStage]) {
       show.set(true);
     }
 
