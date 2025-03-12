@@ -36,10 +36,10 @@
         "case",
         ["==", ["get", "idx"], currentPOI.idx],
         0.8,
-        hoverStateFilter(0.0, 0.5),
+        hoverStateFilter(0.1, 0.5),
       ];
     } else {
-      return hoverStateFilter(0.0, 0.5);
+      return hoverStateFilter(0.1, 0.5);
     }
   }
 
@@ -74,7 +74,7 @@
     filter={["get", "reachable"]}
     paint={{
       "line-color": "green",
-      "line-width": 2,
+      "line-width": 1,
     }}
     layout={{
       visibility: $show ? "visible" : "none",
@@ -86,8 +86,7 @@
     filter={["!", ["get", "reachable"]]}
     paint={{
       "line-color": "red",
-      "line-width": 2,
-      "line-dasharray": [3, 2],
+      "line-width": 1,
     }}
     layout={{
       visibility: $show ? "visible" : "none",
@@ -100,7 +99,7 @@
     filter={["==", ["get", "kind"], "access point"]}
     paint={{
       "circle-color": "green",
-      "circle-radius": ["step", ["zoom"], 0, 13, 5],
+      "circle-radius": ["step", ["zoom"], 0, 14, 5],
     }}
     layout={{
       visibility: $show ? "visible" : "none",

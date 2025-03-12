@@ -52,7 +52,7 @@
     manageHoverState
     paint={{
       "fill-color": ["case", ["get", "reachable"], "green", "red"],
-      "fill-opacity": hoverStateFilter(0.0, 0.5),
+      "fill-opacity": hoverStateFilter(0.3, 0.5),
     }}
     layout={{
       visibility: $show ? "visible" : "none",
@@ -72,7 +72,7 @@
     filter={["get", "reachable"]}
     paint={{
       "line-color": "green",
-      "line-width": 2,
+      "line-width": 1,
     }}
     layout={{
       visibility: $show ? "visible" : "none",
@@ -84,8 +84,7 @@
     filter={["!", ["get", "reachable"]]}
     paint={{
       "line-color": "red",
-      "line-width": 2,
-      "line-dasharray": [3, 2],
+      "line-width": 1,
     }}
     layout={{
       visibility: $show ? "visible" : "none",
