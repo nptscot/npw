@@ -84,7 +84,6 @@ export async function autosave() {
 }
 
 export function assetUrl(path: string): string {
-  return get(remoteStorage)
-    ? `https://assets.od2net.org/tmp_npt_editor/${path}`
-    : path;
+  let dir = import.meta.env.VITE_OD2NET_DIR || "tmp_npt_editor";
+  return get(remoteStorage) ? `https://assets.od2net.org/${dir}/${path}` : path;
 }

@@ -6,15 +6,16 @@ mkdir deployme
 for branch in main demo; do
   echo "Building $branch"
   git checkout $branch
-  if [ "$branch" == "main" ]; then
-    base=/npw/
-  else
-    base=/npw/$branch
-  fi
 
   npm ci
   npm run wasm-release
-  npm run build -- --base=$base
+
+  if [ "$branch" == "main" ]; then
+    npm run build -- --base=/npw/
+  else
+    VITE_OD2NET_DIR="demo_npw" npm run build -- --base=/npw/$branch
+  fi
+
   # TODO Vite suddenly broke and I have no idea why. Hack around it.
   # new URL('backend_bg.wasm', import.meta.url) doesn't exist at build time, it will remain unchanged to be resolved at runtime
   ln -s assets/backend_bg.wasm dist/
