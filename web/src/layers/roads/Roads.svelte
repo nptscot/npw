@@ -1,6 +1,9 @@
 <script lang="ts">
   import type { Feature } from "geojson";
-  import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
+  import type {
+    DataDrivenPropertyValueSpecification,
+    ExpressionSpecification,
+  } from "maplibre-gl";
   import {
     GeoJSON,
     JoinedData,
@@ -20,6 +23,7 @@
     type Mode,
   } from "../../stores";
   import { type DynamicRoad } from "../../types";
+  import { showNetworkInfraTypes, showNetworkTiers } from "../stores";
   import CyclingDemandCoverage from "./CyclingDemandCoverage.svelte";
   import MainRoadCoverage from "./MainRoadCoverage.svelte";
   import ReferenceRoads from "./ReferenceRoads.svelte";
@@ -64,8 +68,35 @@
   function lineOpacity(
     mode: Mode,
     style: EditsRoadStyle,
+    showTiers: { [name: string]: boolean },
+    showInfraTypes: { [name: string]: boolean },
   ): DataDrivenPropertyValueSpecification<number> {
-    let show = $mode.kind == "main" ? 1.0 : 0.5;
+    // Moot point, invisibile anyway
+    if (style == "off") {
+      return 0.0;
+    }
+
+    let opacity = $mode.kind == "main" ? 1.0 : 0.5;
+
+    // @ts-expect-error Guaranteed to be set below
+    let showLayer: ExpressionSpecification = null;
+    if (style == "edits_infra") {
+      let include = Object.keys(showInfraTypes).filter(
+        (k) => showInfraTypes[k],
+      );
+      showLayer = [
+        "in",
+        ["feature-state", "current_infra"],
+        ["literal", include],
+      ];
+    } else if (style == "edits_tier") {
+      let include = Object.keys(showTiers).filter((k) => showTiers[k]);
+      showLayer = [
+        "in",
+        ["feature-state", "current_tier"],
+        ["literal", include],
+      ];
+    }
 
     // While editing an existing route, hide it
     if ($mode.kind == "edit-route" && $mode.id != null) {
@@ -75,18 +106,14 @@
           "all",
           ["to-boolean", ["feature-state", "current_infra"]],
           ["!=", $mode.id, ["feature-state", "current_route_id"]],
+          showLayer,
         ],
-        show,
+        opacity,
         0.0,
       ];
     }
 
-    return [
-      "case",
-      ["to-boolean", ["feature-state", "current_infra"]],
-      show,
-      0.0,
-    ];
+    return ["case", showLayer, opacity, 0.0];
   }
 
   function lineColor(
@@ -123,7 +150,12 @@
         {...layerId("edits-roads")}
         paint={{
           "line-color": lineColor($editsRoadStyle),
-          "line-opacity": lineOpacity($mode, $editsRoadStyle),
+          "line-opacity": lineOpacity(
+            $mode,
+            $editsRoadStyle,
+            $showNetworkTiers,
+            $showNetworkInfraTypes,
+          ),
           "line-width": roadLineWidth(0),
         }}
         layout={{

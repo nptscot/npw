@@ -42,6 +42,22 @@ export let disableLayersPerStage = {
   assessment: [gridMeshDensity],
 };
 
+export let showNetworkTiers = writable({
+  Primary: true,
+  Secondary: true,
+  LocalAccess: true,
+  LongDistance: true,
+});
+
+export let showNetworkInfraTypes = writable({
+  Segregated: true,
+  SegregatedWithSpeedVolume: true,
+  OffRoad: true,
+  SharedFootway: true,
+  CycleLane: true,
+  MixedTraffic: true,
+});
+
 // Remember the last reference style enabled. "off" means none.
 export let lastReferenceStyle: Writable<ReferenceRoadStyle> = writable("off");
 

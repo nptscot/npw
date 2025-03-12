@@ -4,6 +4,7 @@ import type {
 } from "maplibre-gl";
 
 export { default as HelpButton } from "./HelpButton.svelte";
+export { default as LegendWithToggles } from "./LegendWithToggles.svelte";
 export { default as Link } from "./Link.svelte";
 export { layerId } from "./zorder";
 
