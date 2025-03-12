@@ -72,7 +72,6 @@ export let reachabilityColors = {
 
 export let streetSpaceColors = {
   nothing: "red",
-  CycleLane: "yellow",
   Segregated: "green",
 };
 

@@ -134,7 +134,6 @@ pub enum Tier {
 #[derive(Clone, Copy, Debug, Enum, Serialize, Deserialize)]
 pub struct Streetspace {
     pub segregated_fits: bool,
-    pub cycle_lane_fits: bool,
 }
 
 impl MapModel {
@@ -293,8 +292,6 @@ impl MapModel {
                 serde_json::to_value(self.street_space[idx].map(|ss| {
                     if ss.segregated_fits {
                         "Segregated"
-                    } else if ss.cycle_lane_fits {
-                        "CycleLane"
                     } else {
                         "nothing"
                     }
@@ -364,10 +361,11 @@ impl MapModel {
             // practice, we won't ask about things like Segregated there anyway.
             return true;
         };
-        if infra_type == InfraType::Segregated {
+        if matches!(
+            infra_type,
+            InfraType::Segregated | InfraType::SegregatedWithSpeedVolume
+        ) {
             streetspace.segregated_fits
-        } else if infra_type == InfraType::CycleLane {
-            streetspace.cycle_lane_fits
         } else {
             // The other cases fit by definition
             true

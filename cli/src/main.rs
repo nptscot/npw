@@ -313,24 +313,16 @@ fn read_street_space(
     for input in layer.features() {
         let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
         graph.mercator.to_mercator_in_place(&mut geom);
-        // TODO Check assumptions of how we're reinterpreting this data
-        let Some(segregated_space) = input.field_as_string_by_name("combined_2way")? else {
+        let Some(available_width) = input.field_as_double_by_name("avail_edge_to_edge_width")?
+        else {
             // Some are just missing
             continue;
         };
-        let Some(cycle_lane_space) = input.field_as_string_by_name("combined_1way")? else {
-            continue;
-        };
-        let segregated_fits =
-            segregated_space == "Absolute minimum" || segregated_space == "Desirable minimum";
-        let cycle_lane_fits =
-            cycle_lane_space == "Absolute minimum" || cycle_lane_space == "Desirable minimum";
+        // The absolute minimum width for a bidirectional cycletrack, from CbD guidance table 3.2.
+        let segregated_fits = available_width >= 2.0;
 
         source_geometry.push(geom);
-        source_data.push(Streetspace {
-            segregated_fits,
-            cycle_lane_fits,
-        });
+        source_data.push(Streetspace { segregated_fits });
     }
 
     timer.step("match roads to streetspace");

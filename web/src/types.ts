@@ -224,7 +224,7 @@ export interface StaticRoad {
   existing_infra: string | null;
   precalculated_demand: number;
   precalculated_demand_quintile: number;
-  street_space: "Segregated" | "CycleLane" | "nothing" | null;
+  street_space: "Segregated" | "nothing" | null;
 }
 
 export interface DynamicRoad {
