@@ -13,6 +13,8 @@ for branch in main demo; do
   if [ "$branch" == "main" ]; then
     npm run build -- --base=/npw/
   else
+    # TODO Why isn't the env variable getting plumbed correctly?
+    export VITE_OD2NET_DIR="demo_npw"
     VITE_OD2NET_DIR="demo_npw" npm run build -- --base=/npw/$branch
   fi
 
