@@ -1,6 +1,11 @@
 <script lang="ts">
   import { QualitativeLegend } from "svelte-utils";
-  import { infraTypeColors, tierColors } from "../../colors";
+  import {
+    infraTypeColors,
+    infraTypeLabels,
+    tierColors,
+    tierLabels,
+  } from "../../colors";
   import { LegendWithToggles } from "../../common";
   import { editsRoadStyle } from "../../stores";
   import { showNetworkInfraTypes, showNetworkTiers } from "../stores";
@@ -33,9 +38,17 @@
   </div>
 
   {#if $editsRoadStyle == "edits_infra"}
-    <LegendWithToggles colors={infraTypeColors} show={showNetworkInfraTypes} />
+    <LegendWithToggles
+      labels={infraTypeLabels}
+      colors={infraTypeColors}
+      show={showNetworkInfraTypes}
+    />
   {:else if $editsRoadStyle == "edits_tier"}
-    <LegendWithToggles colors={tierColors} show={showNetworkTiers} />
+    <LegendWithToggles
+      labels={tierLabels}
+      colors={tierColors}
+      show={showNetworkTiers}
+    />
   {:else if $editsRoadStyle == "off"}
     <!-- Just maintain the vertical space -->
     <span style:visibility="hidden">

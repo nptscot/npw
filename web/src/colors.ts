@@ -4,6 +4,10 @@ export let infraTypeColors = Object.fromEntries(
   infraTypes.map((x) => [x[0], x[2]]),
 );
 
+export let infraTypeLabels = Object.fromEntries(
+  infraTypes.map((x) => [x[0], x[1]]),
+);
+
 // TODO Making types less precise here for convenience elsewhere.
 // Alternatively, improve ODStats types.
 export let tierColors: { [name: string]: string } = {
@@ -13,6 +17,13 @@ export let tierColors: { [name: string]: string } = {
   LongDistance: "#4ea72e",
 };
 export let networkAssessmentColor = "#1b1464";
+
+export let tierLabels: { [name: string]: string } = {
+  Primary: "Primary",
+  Secondary: "Secondary",
+  LocalAccess: "Local access",
+  LongDistance: "Long distance",
+};
 
 // Only Primary and Secondary
 export let cnTierColors: { [name: string]: string } = {
