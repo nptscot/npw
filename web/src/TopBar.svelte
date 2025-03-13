@@ -1,13 +1,16 @@
 <script lang="ts">
-  import { networkAssessmentColor, tierColors } from "./colors";
-  import { HelpButton } from "./common";
+  import { tierLabels } from "./colors";
+  import { HelpButton, Link } from "./common";
   import ManageFiles from "./common/ManageFiles.svelte";
   import { disableLayersPerStage, enableLayersPerStage } from "./layers/stores";
   import TopBarStats from "./stats/TopBarStats.svelte";
   import { currentStage, devMode, referenceRoadStyle } from "./stores";
   import type { Tier } from "./types";
 
-  function changeStage(newStage: Tier | "assessment") {
+  function changeStage(rawNewStage: string) {
+    // Workaround TS
+    let newStage = rawNewStage as Tier | "assessment";
+
     // Disable old layers
     for (let show of disableLayersPerStage[$currentStage]) {
       show.set(false);
@@ -30,60 +33,29 @@
       $referenceRoadStyle = "disconnections";
     }
   }
+
+  let stages = { ...tierLabels, assessment: "Network assessment" };
 </script>
 
-<div>
-  <button
-    style:background="grey"
-    on:click={() => (window.location.href = "index.html")}
-  >
-    Select area
-  </button>
+<div style="display: flex; justify-content: space-between;">
+  <nav aria-label="breadcrumb">
+    <ul>
+      <li>NPW</li>
+      <li><a href="index.html">Select area</a></li>
 
-  <ManageFiles />
+      <li><ManageFiles /></li>
 
-  <button
-    style:background={$currentStage == "Primary" ? tierColors.Primary : "grey"}
-    on:click={() => changeStage("Primary")}
-  >
-    Primary routes
-  </button>
-
-  <button
-    style:background={$currentStage == "Secondary"
-      ? tierColors.Secondary
-      : "grey"}
-    on:click={() => changeStage("Secondary")}
-  >
-    Secondary routes
-  </button>
-
-  <button
-    style:background={$currentStage == "LocalAccess"
-      ? tierColors.LocalAccess
-      : "grey"}
-    on:click={() => changeStage("LocalAccess")}
-  >
-    Local access routes
-  </button>
-
-  <button
-    style:background={$currentStage == "LongDistance"
-      ? tierColors.LongDistance
-      : "grey"}
-    on:click={() => changeStage("LongDistance")}
-  >
-    Long distance routes
-  </button>
-
-  <button
-    style:background={$currentStage == "assessment"
-      ? networkAssessmentColor
-      : "grey"}
-    on:click={() => changeStage("assessment")}
-  >
-    Network assessment
-  </button>
+      {#each Object.entries(stages) as [stage, label]}
+        <li>
+          {#if $currentStage == stage}
+            <b>{label}</b>
+          {:else}
+            <Link on:click={() => changeStage(stage)}>{label}</Link>
+          {/if}
+        </li>
+      {/each}
+    </ul>
+  </nav>
 
   <HelpButton>
     {#if $currentStage == "Primary"}
@@ -137,14 +109,5 @@
     </label>
   </HelpButton>
 </div>
+
 <TopBarStats />
-
-<style>
-  div {
-    display: flex;
-  }
-
-  button {
-    flex: 1;
-  }
-</style>

@@ -7,7 +7,7 @@
   let show = false;
 </script>
 
-<button on:click={() => (show = true)}>
+<button class="outline" on:click={() => (show = true)}>
   <img src={icon} title="Help" alt="Help" />
 </button>
 
@@ -15,14 +15,3 @@
   <h2>Help</h2>
   <slot />
 </Modal>
-
-<style>
-  button {
-    background: none;
-    border: 1px solid rgba(0, 0, 0, 0);
-  }
-
-  button:hover {
-    border: 1px solid black;
-  }
-</style>

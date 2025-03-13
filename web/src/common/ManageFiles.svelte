@@ -157,9 +157,9 @@
   }
 </script>
 
-<button style:background="grey" on:click={() => (open = true)}>
+<Link on:click={() => (open = true)}>
   Select project: {$currentFilename}
-</button>
+</Link>
 
 <Modal bind:show={open}>
   <h2>Manage files</h2>
