@@ -42,6 +42,7 @@
 <Control position="top-right">
   <div class="panel">
     <div style:display="flex" style:flex-direction="column">
+      <h3>Background layers</h3>
       <Toggle name="Core network" style="cn" />
       <Toggle name="Existing infrastructure type" style="existing_infra" />
       <Toggle name="Estimated traffic volume" style="traffic" />
@@ -49,7 +50,8 @@
       <Toggle name="Street space" style="street_space" />
       <Toggle name="Estimated speed limit" style="speed" />
       <Toggle name="NPT full network" style="precalculated_rnet" />
-      <span style:min-width="30px">&nbsp;</span>
+
+      <h3>Evaluation</h3>
       <Toggle name="Level of Service" style="los" />
       <Toggle name="Reachability" style="reachability" />
       <Toggle name="Route network (calculated)" style="calculated_rnet" />
@@ -174,7 +176,6 @@
 <style>
   .panel {
     background: white;
-    width: 80%;
     display: flex;
   }
 </style>
