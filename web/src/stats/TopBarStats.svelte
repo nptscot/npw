@@ -12,10 +12,11 @@
 </script>
 
 {#if $stats}
-  <div>
+  <div style:display="flex" style:gap="3em">
     <Metric
-      label="Safety (high LoS)"
+      label="Safety"
       pct={percent($stats.total_high_los_length, $stats.total_network_length)}
+      tooltip="What percent of your network has high Level of Service?"
     />
 
     <Metric
@@ -24,6 +25,7 @@
         $stats.total_low_gradient_length,
         $stats.total_network_length,
       )}
+      tooltip="What percent of your network is on low gradient (&le; 3%)?"
     />
 
     <Metric
@@ -34,24 +36,13 @@
       )}
     />
 
-    <div style="display: flex; flex-direction: column">
-      <span>
-        Coherence (density of primary/secondary network in settlements):
-      </span>
-      <span>
-        {#if $stats.density_network_in_settlements}
-          <b>{Math.round($stats.density_network_in_settlements)}m</b>
-        {:else}
-          <b>no routes yet</b>
-        {/if}
-      </span>
+    <div data-tooltip="Density of primary/secondary network within settlements">
+      Coherence (density):
+      {#if $stats.density_network_in_settlements}
+        <b>{Math.round($stats.density_network_in_settlements)}m</b>
+      {:else}
+        <b>no routes yet</b>
+      {/if}
     </div>
   </div>
 {/if}
-
-<style>
-  div {
-    display: flex;
-    justify-content: space-between;
-  }
-</style>
