@@ -36,7 +36,7 @@
       )}
     />
 
-    <div data-tooltip="Density of primary/secondary network within settlements">
+    <div title="Density of primary/secondary network within settlements">
       Coherence (density):
       {#if $stats.density_network_in_settlements}
         <b>{Math.round($stats.density_network_in_settlements)}m</b>

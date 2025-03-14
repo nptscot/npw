@@ -18,15 +18,7 @@
 <div
   style="display: flex; justify-content: space-between; align-items: center;"
 >
-  <button disabled={idx == 0} on:click={prev} data-tooltip="Left">
-    Previous
-  </button>
+  <button disabled={idx == 0} on:click={prev}>Previous</button>
   {idx + 1} / {list.length}
-  <button
-    disabled={idx == list.length - 1}
-    on:click={next}
-    data-tooltip="Right"
-  >
-    Next
-  </button>
+  <button disabled={idx == list.length - 1} on:click={next}>Next</button>
 </div>
