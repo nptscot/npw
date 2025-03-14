@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { downloadGeneratedFile, Modal } from "svelte-utils";
+  import { downloadGeneratedFile } from "svelte-utils";
   import {
     autosave,
     backend,
@@ -8,7 +8,7 @@
     mutationCounter,
   } from "../stores";
   import { getKey, listFilesInBoundary, setLocalStorage } from "./files";
-  import { Link } from "./index";
+  import { Link, Modal } from "./index";
 
   let open = false;
   let fileList = listFilesInBoundary($boundaryName);

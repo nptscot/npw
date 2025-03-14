@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { Loading, Modal, QualitativeLegend } from "svelte-utils";
+  import { Loading, QualitativeLegend } from "svelte-utils";
   import { infraTypeColors } from "../../colors";
+  import { Modal } from "../../common";
   import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
   import { debugOriginalData } from "../stores";
 

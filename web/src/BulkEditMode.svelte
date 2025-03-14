@@ -17,10 +17,10 @@
     LineLayer,
     type LayerClickInfo,
   } from "svelte-maplibre";
-  import { Modal, QualitativeLegend } from "svelte-utils";
+  import { QualitativeLegend } from "svelte-utils";
   import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
   import { infraTypeColors, tierColors } from "./colors";
-  import DrawRectangle from "./common/DrawRectangle.svelte";
+  import { DrawRectangle, Modal } from "./common";
   import { SplitComponent } from "./common/layout";
   import PickInfraType from "./edit/PickInfraType.svelte";
   import {

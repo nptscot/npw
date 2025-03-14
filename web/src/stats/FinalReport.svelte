@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Modal, notNull } from "svelte-utils";
-  import { percent as percent2 } from "../common";
+  import { notNull } from "svelte-utils";
+  import { Modal, percent as percent2 } from "../common";
   import { backend, stats } from "../stores";
 
   let show = false;
@@ -10,7 +10,7 @@
   }
 </script>
 
-<button on:click={() => (show = true)}>Final report</button>
+<div><button on:click={() => (show = true)}>Final report</button></div>
 
 <Modal bind:show>
   {#if $stats}
