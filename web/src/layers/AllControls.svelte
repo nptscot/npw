@@ -15,7 +15,11 @@
 
   $: update(secondary, $allControls, ["Medium cycling demand", "Town centres"]);
 
-  $: update(localAccess, $allControls, ["POIs", "Population", "Deprived population"]);
+  $: update(localAccess, $allControls, [
+    "POIs",
+    "Population",
+    "Deprived population",
+  ]);
 
   $: update(longDistance, $allControls, ["Settlements"]);
 

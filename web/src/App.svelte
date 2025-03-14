@@ -27,6 +27,7 @@
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import EvaluateJourneyMode from "./EvaluateJourneyMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
+  import LegendPanel from "./layers/roads/LegendPanel.svelte";
   import RightLayers from "./layers/roads/RightLayers.svelte";
   import MainMode from "./MainMode.svelte";
   import {
@@ -223,6 +224,7 @@
 
           <ReferenceLayers />
           <RightLayers />
+          <LegendPanel />
           <BottomPanel />
 
           {#if $mode.kind == "main"}
