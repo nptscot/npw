@@ -18,7 +18,7 @@
   $: update(localAccess, $allControls, [
     "POIs",
     "Population",
-    "Deprived population",
+    "Deprived population (SIMD)",
   ]);
 
   $: update(longDistance, $allControls, ["Settlements"]);

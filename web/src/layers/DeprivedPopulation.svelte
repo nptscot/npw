@@ -42,7 +42,7 @@
   let limits = [0, 4, 8, 12, 16, 20];
 </script>
 
-<LayerControls name="Deprived population" bind:show={$show}>
+<LayerControls name="Deprived population (SIMD)" bind:show={$show}>
   <SequentialLegend {colorScale} {limits} />
   <p>
     Darker colours are more deprived. Zones with a red outline are not reachable
