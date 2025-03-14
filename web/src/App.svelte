@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "./style.css";
   import * as Comlink from "comlink";
   import type { Map, StyleSpecification } from "maplibre-gl";
   import { onMount } from "svelte";

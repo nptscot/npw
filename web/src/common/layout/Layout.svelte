@@ -35,7 +35,7 @@
   .left {
     width: 25%;
     overflow-y: auto;
-    padding: 4px;
+    padding: 10px;
   }
 
   .map {
