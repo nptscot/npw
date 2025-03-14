@@ -243,3 +243,9 @@
     {/await}
   </div>
 </Layout>
+
+<style>
+  :global(body) {
+    margin: 0;
+  }
+</style>
