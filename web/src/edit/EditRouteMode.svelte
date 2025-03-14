@@ -6,14 +6,13 @@
   } from "maplibre-gl";
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { Modal } from "svelte-utils";
   import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
   import {
     gradientColors,
     infraTypeColors,
     levelOfServiceColors,
   } from "../colors";
-  import { layerId, percent } from "../common";
+  import { layerId, Modal, percent } from "../common";
   import AllControls from "../layers/AllControls.svelte";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
