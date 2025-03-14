@@ -89,16 +89,11 @@
       </p>
 
       <div>
-        <button
-          class="secondary"
-          on:click={() => currentBrowse--}
-          disabled={currentBrowse == 0}
-        >
+        <button on:click={() => currentBrowse--} disabled={currentBrowse == 0}>
           Previous
         </button>
         {currentBrowse + 1} / {browse.length}
         <button
-          class="secondary"
           on:click={() => currentBrowse++}
           disabled={currentBrowse == browse.length - 1}
         >

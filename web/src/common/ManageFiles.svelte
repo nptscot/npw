@@ -159,17 +159,11 @@
     You're currently editing: <u>{$currentFilename}</u>
   </p>
   <div role="group">
-    <button class="secondary" on:click={rename}>Rename</button>
-    <button class="secondary" on:click={makeCopy}>Make copy</button>
-    <button class="secondary" on:click={exportFile}>Export</button>
-    <button class="secondary" on:click={clearFile}>Clear all routes</button>
-    <button
-      class="secondary"
-      on:click={deleteFile}
-      disabled={fileList.length < 2}
-    >
-      Delete
-    </button>
+    <button on:click={rename}>Rename</button>
+    <button on:click={makeCopy}>Make copy</button>
+    <button on:click={exportFile}>Export</button>
+    <button on:click={clearFile}>Clear all routes</button>
+    <button on:click={deleteFile} disabled={fileList.length < 2}>Delete</button>
   </div>
 
   <hr />

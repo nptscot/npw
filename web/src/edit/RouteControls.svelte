@@ -269,15 +269,15 @@
         Finish and back to overview
       </button>
     </div>
-    <button class="secondary" disabled={undoStates.length == 0} on:click={undo}>
+    <button disabled={undoStates.length == 0} on:click={undo}>
       {#if undoStates.length == 0}
         Undo
       {:else}
         Undo ({undoStates.length})
       {/if}
     </button>
-    <button class="secondary" on:click={deleteRoute}>Delete</button>
-    <button class="secondary" on:click={cancel}>Cancel</button>
+    <button on:click={deleteRoute}>Delete</button>
+    <button on:click={cancel}>Cancel</button>
     <HelpButton>
       <ul>
         <li>

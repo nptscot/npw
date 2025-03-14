@@ -7,7 +7,7 @@
   let show = false;
 </script>
 
-<button class="outline" on:click={() => (show = true)}>
+<button on:click={() => (show = true)}>
   <img src={icon} title="Help" alt="Help" />
 </button>
 

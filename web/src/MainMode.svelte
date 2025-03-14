@@ -36,13 +36,12 @@
       </button>
     </div>
     <div>
-      <button class="outline" on:click={() => ($mode = { kind: "bulk-edit" })}>
+      <button on:click={() => ($mode = { kind: "bulk-edit" })}>
         Bulk edit
       </button>
     </div>
     <div>
       <button
-        class="secondary"
         on:click={() =>
           ($mode = {
             kind: "evaluate-journey",
