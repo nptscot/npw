@@ -197,10 +197,12 @@
   editingExisting={id != null}
 >
   <div slot="extra-left">
-    <label>
-      Name:
-      <input type="text" bind:value={name} />
-    </label>
+    <div>
+      <label>
+        Name:
+        <input type="text" bind:value={name} />
+      </label>
+    </div>
 
     {#if $waypoints.length >= 2}
       {#if overrideInfraType}
@@ -244,33 +246,39 @@
         </p>
       {/if}
 
-      <label>
-        Show details along route
-        <select bind:value={breakdown}>
-          <option value="infra_type">Infrastructure type</option>
-          <option value="gradient">Gradient</option>
-          <option value="deliverability">Streetspace deliverability</option>
-          <option value="los">Level of Service</option>
-        </select>
-      </label>
+      <div>
+        <label>
+          Show details along route
+          <select bind:value={breakdown}>
+            <option value="infra_type">Infrastructure type</option>
+            <option value="gradient">Gradient</option>
+            <option value="deliverability">Streetspace deliverability</option>
+            <option value="los">Level of Service</option>
+          </select>
+        </label>
+      </div>
 
       <SectionDiagram {breakdown} {sectionsGj} />
     {/if}
 
-    <label>
-      Notes:
-      <textarea rows="5" bind:value={notes} />
-    </label>
+    <div>
+      <label>
+        Notes:
+        <textarea rows="5" bind:value={notes} />
+      </label>
+    </div>
 
-    <label>
-      Tier:
-      <select bind:value={tier}>
-        <option value="Primary">Primary routes</option>
-        <option value="Secondary">Secondary routes</option>
-        <option value="LocalAccess">Local access routes</option>
-        <option value="LongDistance">Long distance routes</option>
-      </select>
-    </label>
+    <div>
+      <label>
+        Tier:
+        <select bind:value={tier}>
+          <option value="Primary">Primary routes</option>
+          <option value="Secondary">Secondary routes</option>
+          <option value="LocalAccess">Local access routes</option>
+          <option value="LongDistance">Long distance routes</option>
+        </select>
+      </label>
+    </div>
 
     <button on:click={evalRoute} disabled={$waypoints.length < 2}>
       Evaluate this route

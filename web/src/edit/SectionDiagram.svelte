@@ -22,7 +22,7 @@
   <QualitativeLegend colors={levelOfServiceColors} horiz />
 {/if}
 
-<div style="display: flex">
+<div style:display="flex" style:border="1px solid black">
   {#each sectionsGj.features as f}
     {#if breakdown == "infra_type"}
       {#if f.properties.kind == "new"}
