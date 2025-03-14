@@ -17,10 +17,6 @@ export function getKey(boundary: string, filename: string): string {
   return `npw/${boundary}/${filename}`;
 }
 
-export function getLastOpenedFileKey(boundary: string): string {
-  return `npw/${boundary}/last-opened-file`;
-}
-
 // Returns [filename, summary]
 export function listFilesInBoundary(boundary: string): [string, string][] {
   let prefix = `npw/${boundary}/`;
@@ -30,6 +26,7 @@ export function listFilesInBoundary(boundary: string): [string, string][] {
     let key = window.localStorage.key(i)!;
     if (key.startsWith(prefix)) {
       let filename = key.slice(prefix.length);
+      // TODO Legacy, remove for v1
       if (filename == "last-opened-file") {
         continue;
       }
@@ -48,6 +45,7 @@ export function listAllFiles(): Map<string, [string, string][]> {
   let map = new Map();
   for (let i = 0; i < window.localStorage.length; i++) {
     let key = window.localStorage.key(i)!;
+    // TODO Legacy, remove for v1
     if (key.startsWith("npw/") && !key.endsWith("/last-opened-file")) {
       try {
         let state = JSON.parse(window.localStorage.getItem(key) || "");

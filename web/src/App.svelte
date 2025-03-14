@@ -21,7 +21,7 @@
   import BulkEditMode from "./BulkEditMode.svelte";
   import { layerId } from "./common";
   import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";
-  import { getKey, getLastOpenedFileKey } from "./common/files";
+  import { getKey } from "./common/files";
   import { Layout, leftSidebarContents, mapContents } from "./common/layout";
   import StreetView from "./common/StreetView.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
@@ -94,15 +94,13 @@
     }
 
     // Load saved state?
-    let lastFile =
-      params.get("file") ||
-      window.localStorage.getItem(getLastOpenedFileKey($boundaryName));
-    if (lastFile) {
-      let item = window.localStorage.getItem(getKey($boundaryName, lastFile));
+    let openFile = params.get("file");
+    if (openFile) {
+      let item = window.localStorage.getItem(getKey($boundaryName, openFile));
       if (item) {
         try {
           await backendWorker.loadSavefile(item);
-          $currentFilename = lastFile;
+          $currentFilename = openFile;
         } catch (err) {
           window.alert(`Couldn't restore saved state: ${err}`);
           window.location.href = "index.html";

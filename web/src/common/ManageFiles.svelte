@@ -7,12 +7,7 @@
     currentFilename,
     mutationCounter,
   } from "../stores";
-  import {
-    getKey,
-    getLastOpenedFileKey,
-    listFilesInBoundary,
-    setLocalStorage,
-  } from "./files";
+  import { getKey, listFilesInBoundary, setLocalStorage } from "./files";
   import { Link } from "./index";
 
   let open = false;
@@ -26,8 +21,7 @@
       let value = await $backend!.toSavefile();
       setLocalStorage(getKey($boundaryName, newName), value);
       window.localStorage.removeItem(getKey($boundaryName, oldName));
-      $currentFilename = newName;
-      saveLastOpenedFile();
+      setCurrentFile(newName);
       fileList = listFilesInBoundary($boundaryName);
     }
   }
@@ -54,8 +48,7 @@
     if (newName) {
       let value = await $backend!.toSavefile();
       setLocalStorage(getKey($boundaryName, newName), value);
-      $currentFilename = newName;
-      saveLastOpenedFile();
+      setCurrentFile(newName);
       fileList = listFilesInBoundary($boundaryName);
     }
   }
@@ -70,8 +63,7 @@
     if (value) {
       try {
         await $backend!.loadSavefile(value);
-        $currentFilename = filename;
-        saveLastOpenedFile();
+        setCurrentFile(filename);
         open = false;
         $mutationCounter += 1;
       } catch (err) {
@@ -126,8 +118,7 @@
       if (newName) {
         setLocalStorage(getKey($boundaryName, newName), value);
         fileList = listFilesInBoundary($boundaryName);
-        $currentFilename = newName;
-        saveLastOpenedFile();
+        setCurrentFile(newName);
         open = false;
         $mutationCounter += 1;
         return;
@@ -147,12 +138,12 @@
     return filename;
   }
 
-  function saveLastOpenedFile() {
-    setLocalStorage(getLastOpenedFileKey($boundaryName), $currentFilename);
+  // Updates the URL
+  function setCurrentFile(name: string) {
+    $currentFilename = name;
 
-    // Also update the URL
     let url = new URL(window.location.href);
-    url.searchParams.set("file", $currentFilename);
+    url.searchParams.set("file", name);
     window.history.replaceState(null, "", url.toString());
   }
 </script>
