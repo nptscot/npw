@@ -330,12 +330,14 @@
         <kbd>1</kbd>
         )
       </label>
+      <br />
       <label>
         <input type="radio" value="append-end" bind:group={drawMode} />
         Extend from end (
         <kbd>2</kbd>
         )
       </label>
+      <br />
       <label>
         <input type="radio" value="adjust" bind:group={drawMode} />
         Adjust middle points (
