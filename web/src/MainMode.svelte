@@ -15,10 +15,10 @@
   }
 
   let titles = {
-    Primary: "Designing primary network",
-    Secondary: "Designing secondary network",
-    LocalAccess: "Designing local access network",
-    LongDistance: "Designing long distance network",
+    Primary: "Design primary network",
+    Secondary: "Design secondary network",
+    LocalAccess: "Design local access network",
+    LongDistance: "Design long distance network",
     assessment: "Assess the new network",
   };
 </script>
