@@ -11,6 +11,7 @@ export let debugAllCyclingDemand = writable(false);
 export let debugCyclingDemandMin = writable(0);
 export let cyclingDemand1 = writable(false);
 export let mainRoadCoverage = writable(false);
+export let showUncovered = writable(false);
 
 export let cyclingDemand2 = writable(false);
 export let townCentres = writable(false);

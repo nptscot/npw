@@ -1,7 +1,18 @@
 <script lang="ts">
+  import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
   import { LineLayer } from "svelte-maplibre";
   import { layerId, roadLineWidth } from "../../common";
-  import { mainRoadCoverage } from "../stores";
+  import { mainRoadCoverage, showUncovered } from "../stores";
+
+  // Filter to only show uncovered roads?
+  $: opacity = $showUncovered
+    ? 1.0
+    : ([
+        "case",
+        ["to-boolean", ["feature-state", "current_infra"]],
+        0.0,
+        1.0,
+      ] as DataDrivenPropertyValueSpecification<number>);
 </script>
 
 <LineLayer
@@ -12,12 +23,7 @@
   }}
   paint={{
     "line-color": "grey",
-    "line-opacity": [
-      "case",
-      ["to-boolean", ["feature-state", "current_infra"]],
-      0.0,
-      1.0,
-    ],
+    "line-opacity": opacity,
     "line-width": roadLineWidth(4),
   }}
 />
