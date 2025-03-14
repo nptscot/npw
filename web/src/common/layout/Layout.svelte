@@ -13,7 +13,7 @@
 </div>
 
 <style>
-  /* Note calling this "container" will clash with a pico built-in */
+  /* Legacy note: calling this "container" will clash with a pico built-in */
   .flex-container {
     display: flex;
     flex-direction: column;

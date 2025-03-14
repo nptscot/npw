@@ -88,11 +88,7 @@
   {:else if $currentStage == "assessment"}
     <FinalReport />
 
-    <button
-      class="outline"
-      on:click={recalcOD}
-      disabled={$mutationCounter == lastUpdateOD}
-    >
+    <button on:click={recalcOD} disabled={$mutationCounter == lastUpdateOD}>
       Recalculate
     </button>
 

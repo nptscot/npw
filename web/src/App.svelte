@@ -1,7 +1,5 @@
 <script lang="ts">
   import * as Comlink from "comlink";
-  import BottomPanel from "./layers/roads/BottomPanel.svelte";
-  import "@picocss/pico/css/pico.conditional.jade.min.css";
   import type { Map, StyleSpecification } from "maplibre-gl";
   import { onMount } from "svelte";
   import {
@@ -27,6 +25,7 @@
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import EvaluateJourneyMode from "./EvaluateJourneyMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
+  import BottomPanel from "./layers/roads/BottomPanel.svelte";
   import LegendPanel from "./layers/roads/LegendPanel.svelte";
   import RightLayers from "./layers/roads/RightLayers.svelte";
   import MainMode from "./MainMode.svelte";
@@ -179,10 +178,10 @@
 <Loading {loading} {progress} />
 
 <Layout>
-  <div slot="top" class="pico">
+  <div slot="top">
     <TopBar />
   </div>
-  <div slot="left" class="pico">
+  <div slot="left">
     <div bind:this={leftSidebarDiv} />
   </div>
 
