@@ -30,7 +30,10 @@
     <h2>{titles[$currentStage]}</h2>
 
     <div>
-      <button on:click={() => ($mode = { kind: "edit-route", id: null })}>
+      <button
+        class="primary"
+        on:click={() => ($mode = { kind: "edit-route", id: null })}
+      >
         Draw new <kbd>r</kbd>
         oute line
       </button>
