@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Comlink from "comlink";
-  import PickEditsStyle from "./layers/roads/PickEditsStyle.svelte";
+  import BottomPanel from "./layers/roads/BottomPanel.svelte";
   import "@picocss/pico/css/pico.conditional.jade.min.css";
   import type { Map, StyleSpecification } from "maplibre-gl";
   import { onMount } from "svelte";
@@ -27,7 +27,7 @@
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import EvaluateJourneyMode from "./EvaluateJourneyMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
-  import PickReferenceStyle from "./layers/roads/PickReferenceStyle.svelte";
+  import RightLayers from "./layers/roads/RightLayers.svelte";
   import MainMode from "./MainMode.svelte";
   import {
     assetUrl,
@@ -222,8 +222,8 @@
           {/await}
 
           <ReferenceLayers />
-          <PickReferenceStyle />
-          <PickEditsStyle />
+          <RightLayers />
+          <BottomPanel />
 
           {#if $mode.kind == "main"}
             <MainMode />
