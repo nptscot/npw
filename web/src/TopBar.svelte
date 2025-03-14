@@ -37,7 +37,7 @@
   let stages = { ...tierLabels, assessment: "Network assessment" };
 </script>
 
-<div style="display: flex; justify-content: space-between;">
+<div>
   <nav aria-label="breadcrumb">
     <ul>
       <li>NPW</li>
@@ -111,3 +111,30 @@
 </div>
 
 <TopBarStats />
+
+<style>
+  div {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px;
+  }
+
+  nav {
+    padding: 0 0.5rem;
+  }
+
+  nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: end;
+  }
+
+  nav li:not(:last-child)::after {
+    display: inline-block;
+    margin: 0 0.25rem;
+    content: ">";
+  }
+</style>
