@@ -5,13 +5,12 @@
     hoverStateFilter,
     LineLayer,
   } from "svelte-maplibre";
-  import { SequentialLegend } from "svelte-utils";
   import { makeRamp, Popup } from "svelte-utils/map";
+  import { deprived } from "../colors";
   import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { DataZones } from "../types";
-  import LayerControls from "./LayerControls.svelte";
-  import { deprivedPopulation as show } from "./stores";
+  import { populationStyle } from "./stores";
 
   let lastUpdate = 0;
   let data: DataZones = {
@@ -31,35 +30,25 @@
     }
   }
 
-  $: if ($show && $mutationCounter > 0) {
+  $: if ($populationStyle == "deprived" && $mutationCounter > 0) {
     recalc();
   }
-
-  // Color ramp from https://www.ons.gov.uk/census/maps/choropleth. Lowest value is the worst (darkest).
-  let colorScale = ["#080C54", "#186290", "#1F9EB7", "#80C6A3", "#CDE594"];
-
-  // The percentiles are [1, 20]. The 5 colors cover 4 each.
-  let limits = [0, 4, 8, 12, 16, 20];
 </script>
-
-<LayerControls name="Deprived population (SIMD)" bind:show={$show}>
-  <SequentialLegend {colorScale} {limits} />
-  <p>
-    Darker colours are more deprived. Zones with a red outline are not reachable
-    by the current network. Only the top 20%ile most deprived zones are shown.
-  </p>
-</LayerControls>
 
 <GeoJSON {data} generateId>
   <FillLayer
     {...layerId("simd")}
     manageHoverState
     paint={{
-      "fill-color": makeRamp(["get", "imd_percentile"], limits, colorScale),
+      "fill-color": makeRamp(
+        ["get", "imd_percentile"],
+        deprived.limits,
+        deprived.colorScale,
+      ),
       "fill-opacity": hoverStateFilter(0.7, 0.9),
     }}
     layout={{
-      visibility: $show ? "visible" : "none",
+      visibility: $populationStyle == "deprived" ? "visible" : "none",
     }}
   >
     <Popup openOn="hover" let:props>
@@ -80,7 +69,7 @@
       "line-width": 3,
     }}
     layout={{
-      visibility: $show ? "visible" : "none",
+      visibility: $populationStyle == "deprived" ? "visible" : "none",
     }}
   />
 </GeoJSON>

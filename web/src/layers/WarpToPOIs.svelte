@@ -167,24 +167,28 @@
   }
 </script>
 
-<label>
-  Show reachable POIs:
-  <select bind:value={filterReachability}>
-    <option value="all">All</option>
-    <option value="reachable">Only reachable POIs</option>
-    <option value="unreachable">Only unreachable POIs</option>
-  </select>
-</label>
+<div>
+  <label>
+    Show reachable POIs:
+    <select bind:value={filterReachability}>
+      <option value="all">All</option>
+      <option value="reachable">Only reachable POIs</option>
+      <option value="unreachable">Only unreachable POIs</option>
+    </select>
+  </label>
+</div>
 
-<label>
-  Filter POIs:
-  <select bind:value={filterKind}>
-    <option value="all">All</option>
-    <option value="schools">Schools</option>
-    <option value="gp_hospitals">GPs/hospitals</option>
-    <option value="greenspaces">Greenspaces</option>
-  </select>
-</label>
+<div>
+  <label>
+    Filter POIs:
+    <select bind:value={filterKind}>
+      <option value="all">All</option>
+      <option value="schools">Schools</option>
+      <option value="gp_hospitals">GPs/hospitals</option>
+      <option value="greenspaces">Greenspaces</option>
+    </select>
+  </label>
+</div>
 
 {#if filteredPOIs.length > 0}
   {#if filteredPOIs[filterIdx].reachable}

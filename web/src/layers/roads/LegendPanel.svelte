@@ -1,9 +1,11 @@
 <script lang="ts">
   import { QualitativeLegend, SequentialLegend } from "svelte-utils";
   import {
+    deprived,
     gradient,
     levelOfServiceColors,
     nptStreetSpaceColors,
+    population,
     reachabilityColors,
     speed,
     streetSpaceColors,
@@ -11,7 +13,7 @@
   } from "../../colors";
   import { HelpButton, percent, prettyPrintDistance } from "../../common";
   import { devMode, referenceRoadStyle, stats } from "../../stores";
-  import { debugOriginalData } from "../stores";
+  import { debugOriginalData, populationStyle } from "../stores";
   import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
   import CoreNetwork from "./CoreNetwork.svelte";
   import ExistingNetwork from "./ExistingNetwork.svelte";
@@ -123,6 +125,31 @@
       {percent($stats.total_undeliverable_length, $stats.total_network_length)} of
       infrastructure ({prettyPrintDistance($stats.total_undeliverable_length)})
       doesn't fit in the available streetspace.
+    </p>
+  {/if}
+
+  <!-- TODO: There could be a legend for both roads and population at the same time -->
+
+  {#if $populationStyle == "deprived"}
+    <SequentialLegend
+      colorScale={deprived.colorScale}
+      limits={deprived.limits}
+    />
+    <p>
+      Darker colours are more deprived. Zones with a red outline are not
+      reachable by the current network. Only the top 20%ile most deprived zones
+      are shown.
+    </p>
+  {/if}
+
+  {#if $populationStyle == "population"}
+    <SequentialLegend
+      colorScale={population.colorScale}
+      limits={population.limits}
+    />
+    <p>
+      Darker colours are denser. Zones with a red outline are not reachable by
+      the current network. Only the top 3 densest quintiles are shown.
     </p>
   {/if}
 </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { referenceRoadStyle } from "../../stores";
   import { lastReferenceStyle } from "../stores";
+  import PopulationToggle from "./PopulationToggle.svelte";
   import Toggle from "./Toggle.svelte";
 
   function onKeyDown(e: KeyboardEvent) {
@@ -38,6 +39,10 @@
   <Toggle name="Route network (calculated)" style="calculated_rnet" />
   <Toggle name="Network disconnections" style="disconnections" />
   <Toggle name="Streetspace deliverability" style="deliverability" />
+
+  <hr />
+  <PopulationToggle name="Population" style="population" />
+  <PopulationToggle name="Deprived population (SIMD)" style="deprived" />
 </div>
 
 <style>

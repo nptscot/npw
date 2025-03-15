@@ -20,8 +20,6 @@ export let localPOIs = writable(false);
 
 export let settlements = writable(false);
 
-export let deprivedPopulation = writable(false);
-export let allPopulation = writable(false);
 export let gridMeshDensity = writable(false);
 
 export let severances = writable(false);
@@ -38,7 +36,7 @@ export let enableLayersPerStage = {
 export let disableLayersPerStage = {
   Primary: [cyclingDemand1, mainRoadCoverage],
   Secondary: [cyclingDemand2, townCentres, severances],
-  LocalAccess: [localPOIs, allPopulation, deprivedPopulation, severances],
+  LocalAccess: [localPOIs, severances],
   LongDistance: [settlements, severances],
   assessment: [gridMeshDensity],
 };
@@ -61,6 +59,9 @@ export let showNetworkInfraTypes = writable({
 
 // Remember the last reference style enabled. "off" means none.
 export let lastReferenceStyle: Writable<ReferenceRoadStyle> = writable("off");
+
+export let populationStyle: Writable<"off" | "population" | "deprived"> =
+  writable("off");
 
 // TODO Move to a component after merging some of the POI components?
 export interface CurrentPOI {
