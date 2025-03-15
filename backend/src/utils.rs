@@ -20,21 +20,25 @@ impl Quintiles {
         sorted.retain(|x| *x > 0);
         sorted.sort();
         sorted.reverse();
+        // Rounding up may be a little wrong, but it's OK, because we don't calculate quintile5
+        // explicitly
         let n = ((sorted.len() as f64) / 5.0).ceil() as usize;
 
-        let mut total_quintile_sums = [0; 5];
-        for (idx, x) in sorted.iter().enumerate() {
-            total_quintile_sums[idx / n] += *x;
-        }
-
-        Self {
+        let mut quintiles = Self {
             quintile1: sorted[n],
             quintile2: sorted[n * 2],
             quintile3: sorted[n * 3],
             quintile4: sorted[n * 4],
-            total_quintile_sums,
+            total_quintile_sums: [0; 5],
             max: sorted[0],
+        };
+
+        for value in sorted {
+            let quintile = quintiles.quintile(value);
+            quintiles.total_quintile_sums[quintile - 1] += value;
         }
+
+        quintiles
     }
 
     // Returns [1, 5]

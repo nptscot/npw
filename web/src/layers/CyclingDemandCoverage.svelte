@@ -18,10 +18,12 @@
   </label>
 
   {#if $devMode}
-    <label>
-      <input type="checkbox" bind:checked={$debugAllCyclingDemand} />
-      Debug all demand
-    </label>
+    <div>
+      <label>
+        <input type="checkbox" bind:checked={$debugAllCyclingDemand} />
+        Debug all demand
+      </label>
+    </div>
 
     {#if $debugAllCyclingDemand}
       <label>
