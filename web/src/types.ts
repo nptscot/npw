@@ -95,6 +95,7 @@ export type POIs = FeatureCollection<
     name: string;
     reachable: boolean;
     idx: number;
+    sort: number;
 
     // Just for the description
     kind: string;
@@ -126,6 +127,7 @@ export type Greenspaces = FeatureCollection<
     name?: string;
     reachable?: boolean;
     idx?: number;
+    sort?: number;
   }
 >;
 

@@ -35,7 +35,7 @@
       return;
     }
 
-    allPOIs = [];
+    let list: [POI, number][] = [];
 
     for (let f of (await $backend.getPOIs()).features) {
       let name;
@@ -45,13 +45,16 @@
         name = f.properties.name || `This ${f.properties.kind}`;
       }
 
-      allPOIs.push({
-        poi_kind: f.properties.poi_kind,
-        idx: f.properties.idx,
-        name,
-        reachable: f.properties.reachable,
-        position: f.geometry.coordinates as [number, number],
-      });
+      list.push([
+        {
+          poi_kind: f.properties.poi_kind,
+          idx: f.properties.idx,
+          name,
+          reachable: f.properties.reachable,
+          position: f.geometry.coordinates as [number, number],
+        },
+        f.properties.sort,
+      ]);
     }
 
     for (let f of (await $backend.getGreenspaces()).features) {
@@ -59,16 +62,22 @@
         continue;
       }
       // TODO Slow to calculate this constantly
-      allPOIs.push({
-        poi_kind: f.properties.poi_kind,
-        idx: f.properties.idx!,
-        name: f.properties.name || "This greenspace",
-        reachable: f.properties.reachable!,
-        position: centroid(f).geometry.coordinates as [number, number],
-      });
+      list.push([
+        {
+          poi_kind: f.properties.poi_kind,
+          idx: f.properties.idx!,
+          name: f.properties.name || "This greenspace",
+          reachable: f.properties.reachable!,
+          position: centroid(f).geometry.coordinates as [number, number],
+        },
+        f.properties.sort!,
+      ]);
     }
 
-    allPOIs = allPOIs;
+    // The sort key uses a Hilbert curve to group nearby POIs together.
+    list.sort((a, b) => a[1] - b[1]);
+
+    allPOIs = list.map(([poi, _]) => poi);
     lastUpdate = $mutationCounter;
   }
   $: if ($currentStage == "LocalAccess" && $mutationCounter > 0) {

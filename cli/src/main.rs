@@ -7,7 +7,7 @@ use anyhow::{bail, Result};
 use clap::Parser;
 use elevation::GeoTiffElevation;
 use gdal::{vector::LayerAccess, Dataset};
-use geo::{Geometry, Intersects, LineString, MultiPolygon, Point};
+use geo::{Centroid, Geometry, Intersects, LineString, MultiPolygon, Point};
 use graph::{Graph, RoadID, Timer};
 use log::{info, warn};
 use serde::Deserialize;
@@ -91,29 +91,19 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
     let desire_lines = read_desire_lines_csv("../data_prep/tmp/od.csv", &od_zones)?;
 
     timer.step("loading schools");
-    let mut schools = backend::places::School::from_gj(
+    let schools = backend::places::School::from_gj(
         &std::fs::read_to_string("../data_prep/tmp/schools.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
-    schools.sort_by_key(|s| {
-        let x = s.point.x() / graph.mercator.width;
-        let y = s.point.y() / graph.mercator.height;
-        (hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0) as usize
-    });
 
     timer.step("loading GPs/hospitals");
-    let mut gp_hospitals = backend::places::GPHospital::from_gj(
+    let gp_hospitals = backend::places::GPHospital::from_gj(
         &std::fs::read_to_string("../data_prep/tmp/gp_practices.geojson")?,
         &std::fs::read_to_string("../data_prep/tmp/hospitals.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
-    gp_hospitals.sort_by_key(|s| {
-        let x = s.point.x() / graph.mercator.width;
-        let y = s.point.y() / graph.mercator.height;
-        (hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0) as usize
-    });
 
     timer.step("loading town centres");
     let town_centres = backend::places::TownCentre::from_gj(
@@ -490,11 +480,17 @@ fn read_greenspaces(
             warn!("Greenspace {name:?} has no access points; it won't be reachable");
         }
 
+        let centroid = geom.centroid().unwrap();
+        let x = centroid.x() / graph.mercator.width;
+        let y = centroid.y() / graph.mercator.height;
+        let sort = hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert);
+
         greenspaces.push(backend::places::Greenspace {
             polygon: geom,
             name,
             access_points,
             roads,
+            sort,
         });
     }
     Ok(greenspaces)

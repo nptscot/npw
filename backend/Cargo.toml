@@ -15,6 +15,7 @@ enum-map = "2.7.3"
 geo = "0.29.1"
 geojson = { git = "https://github.com/georust/geojson", features = ["geo-types"] }
 graph = { git = "https://github.com/a-b-street/15m" }
+hilbert_2d = "1.1.0"
 js-sys = "0.3.69"
 log = "0.4.20"
 nanorand = { version = "0.7.0", default-features = false, features = ["wyrand"] }

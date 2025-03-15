@@ -21,6 +21,7 @@ pub struct School {
     // TODO Fix upstream
     pupils: usize,
     pub road: RoadID,
+    sort: f64,
 }
 
 impl School {
@@ -32,23 +33,30 @@ impl School {
         f.set_property("pupils", self.pupils);
         f.set_property("reachable", reachable);
         f.set_property("idx", idx);
+        f.set_property("sort", self.sort);
         f
     }
 
     pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
         let mut schools = Vec::new();
-        for x in geojson::de::deserialize_feature_collection_str_to_vec::<SchoolGJ>(gj)? {
-            if boundary_wgs84.contains(&x.geometry) {
-                let point = graph.mercator.to_mercator(&x.geometry);
+        for obj in geojson::de::deserialize_feature_collection_str_to_vec::<SchoolGJ>(gj)? {
+            if boundary_wgs84.contains(&obj.geometry) {
+                let point = graph.mercator.to_mercator(&obj.geometry);
                 let road = graph
                     .snap_to_road(point.into(), graph.profile_names["bicycle_direct"])
                     .road;
+                let x = point.x() / graph.mercator.width;
+                let y = point.y() / graph.mercator.height;
+                let sort =
+                    hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0;
+
                 schools.push(School {
                     point,
-                    kind: x.r#type,
-                    name: x.name,
-                    pupils: x.pupils as usize,
+                    kind: obj.r#type,
+                    name: obj.name,
+                    pupils: obj.pupils as usize,
                     road,
+                    sort,
                 });
             }
         }
@@ -74,6 +82,7 @@ pub struct GPHospital {
     kind: String,
     name: String,
     pub road: RoadID,
+    sort: f64,
 }
 
 impl GPHospital {
@@ -84,6 +93,7 @@ impl GPHospital {
         f.set_property("name", self.name.clone());
         f.set_property("reachable", reachable);
         f.set_property("idx", idx);
+        f.set_property("sort", self.sort);
         f
     }
 
@@ -95,17 +105,23 @@ impl GPHospital {
     ) -> Result<Vec<Self>> {
         let mut gp_hospitals = Vec::new();
         for (gj, kind) in [(gp_gj, "GP"), (hospitals_gj, "hospital")] {
-            for x in geojson::de::deserialize_feature_collection_str_to_vec::<GPHospitalGJ>(gj)? {
-                if boundary_wgs84.contains(&x.geometry) {
-                    let point = graph.mercator.to_mercator(&x.geometry);
+            for obj in geojson::de::deserialize_feature_collection_str_to_vec::<GPHospitalGJ>(gj)? {
+                if boundary_wgs84.contains(&obj.geometry) {
+                    let point = graph.mercator.to_mercator(&obj.geometry);
                     let road = graph
                         .snap_to_road(point.into(), graph.profile_names["bicycle_direct"])
                         .road;
+                    let x = point.x() / graph.mercator.width;
+                    let y = point.y() / graph.mercator.height;
+                    let sort = hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert)
+                        * 1_000.0;
+
                     gp_hospitals.push(GPHospital {
                         point,
                         kind: kind.to_string(),
-                        name: x.name,
+                        name: obj.name,
                         road,
+                        sort,
                     });
                 }
             }
@@ -331,6 +347,7 @@ pub struct Greenspace {
     pub name: Option<String>,
     pub access_points: Vec<Point>,
     pub roads: HashSet<RoadID>,
+    pub sort: f64,
 }
 
 impl Greenspace {
@@ -343,6 +360,7 @@ impl Greenspace {
             f.set_property("name", self.name.clone());
             f.set_property("reachable", reachable);
             f.set_property("idx", idx);
+            f.set_property("sort", self.sort);
             features.push(f);
         }
         for pt in &self.access_points {

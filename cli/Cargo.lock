@@ -137,6 +137,7 @@ dependencies = [
  "geo",
  "geojson",
  "graph",
+ "hilbert_2d",
  "js-sys",
  "log",
  "nanorand",
