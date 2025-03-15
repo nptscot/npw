@@ -15,7 +15,7 @@ use crate::utils::Quintiles;
 
 #[derive(Serialize, Deserialize)]
 pub struct School {
-    point: Point,
+    pub point: Point,
     kind: String,
     name: String,
     // TODO Fix upstream
@@ -70,7 +70,7 @@ struct SchoolGJ {
 
 #[derive(Serialize, Deserialize)]
 pub struct GPHospital {
-    point: Point,
+    pub point: Point,
     kind: String,
     name: String,
     pub road: RoadID,

@@ -91,19 +91,29 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
     let desire_lines = read_desire_lines_csv("../data_prep/tmp/od.csv", &od_zones)?;
 
     timer.step("loading schools");
-    let schools = backend::places::School::from_gj(
+    let mut schools = backend::places::School::from_gj(
         &std::fs::read_to_string("../data_prep/tmp/schools.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
+    schools.sort_by_key(|s| {
+        let x = s.point.x() / graph.mercator.width;
+        let y = s.point.y() / graph.mercator.height;
+        (hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0) as usize
+    });
 
     timer.step("loading GPs/hospitals");
-    let gp_hospitals = backend::places::GPHospital::from_gj(
+    let mut gp_hospitals = backend::places::GPHospital::from_gj(
         &std::fs::read_to_string("../data_prep/tmp/gp_practices.geojson")?,
         &std::fs::read_to_string("../data_prep/tmp/hospitals.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
+    gp_hospitals.sort_by_key(|s| {
+        let x = s.point.x() / graph.mercator.width;
+        let y = s.point.y() / graph.mercator.height;
+        (hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0) as usize
+    });
 
     timer.step("loading town centres");
     let town_centres = backend::places::TownCentre::from_gj(
