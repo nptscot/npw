@@ -1,5 +1,4 @@
 <script lang="ts">
-  import centroid from "@turf/centroid";
   import PrevNext from "../common/PrevNext.svelte";
   import {
     autosave,
@@ -61,14 +60,13 @@
       if (f.properties.kind == "access point") {
         continue;
       }
-      // TODO Slow to calculate this constantly
       list.push([
         {
           poi_kind: f.properties.poi_kind,
           idx: f.properties.idx!,
           name: f.properties.name || "This greenspace",
           reachable: f.properties.reachable!,
-          position: centroid(f).geometry.coordinates as [number, number],
+          position: f.properties.centroid!,
         },
         f.properties.sort!,
       ]);

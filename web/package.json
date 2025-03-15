@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "@turf/boolean-intersects": "^7.2.0",
-    "@turf/centroid": "^7.2.0",
     "comlink": "^4.4.2",
     "svelte-maplibre": "github:dabreegster/svelte-maplibre#svelte4_popups",
     "svelte-utils": "github:a-b-street/svelte-utils"

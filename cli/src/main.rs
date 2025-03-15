@@ -485,8 +485,11 @@ fn read_greenspaces(
         let y = centroid.y() / graph.mercator.height;
         let sort = hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert);
 
+        let centroid_wgs84 = graph.mercator.pt_to_wgs84(centroid.into());
+
         greenspaces.push(backend::places::Greenspace {
             polygon: geom,
+            centroid_wgs84,
             name,
             access_points,
             roads,

@@ -128,6 +128,7 @@ export type Greenspaces = FeatureCollection<
     reachable?: boolean;
     idx?: number;
     sort?: number;
+    centroid?: [number, number];
   }
 >;
 

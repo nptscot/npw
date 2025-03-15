@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
-use geo::{BoundingRect, Contains, Intersects, MultiPolygon, Point, Rect};
+use geo::{BoundingRect, Contains, Coord, Intersects, MultiPolygon, Point, Rect};
 use geojson::Feature;
 use graph::{Graph, RoadID};
 use rstar::AABB;
@@ -344,6 +344,7 @@ struct DataZoneGJ {
 #[derive(Serialize, Deserialize)]
 pub struct Greenspace {
     pub polygon: MultiPolygon,
+    pub centroid_wgs84: Coord,
     pub name: Option<String>,
     pub access_points: Vec<Point>,
     pub roads: HashSet<RoadID>,
@@ -361,6 +362,10 @@ impl Greenspace {
             f.set_property("reachable", reachable);
             f.set_property("idx", idx);
             f.set_property("sort", self.sort);
+            f.set_property(
+                "centroid",
+                vec![self.centroid_wgs84.x, self.centroid_wgs84.y],
+            );
             features.push(f);
         }
         for pt in &self.access_points {
