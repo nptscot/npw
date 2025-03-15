@@ -38,7 +38,7 @@
 </script>
 
 <div class="container">
-  <div class="left">
+  <div class="controls">
     <h2>Network Planning Workspace</h2>
     <p>
       This is an
@@ -141,7 +141,7 @@
     height: 100vh;
   }
 
-  .left {
+  .controls {
     width: 35%;
     overflow-y: auto;
     padding: 4px;

@@ -152,7 +152,7 @@
 </script>
 
 <SplitComponent>
-  <div slot="left">
+  <div slot="controls">
     <h2>Bulk edit</h2>
 
     <button on:click={() => ($mode = { kind: "main" })}>Back</button>

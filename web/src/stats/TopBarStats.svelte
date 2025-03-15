@@ -12,7 +12,7 @@
 </script>
 
 {#if $stats}
-  <div style:display="flex" style:gap="3em">
+  <div class="progress" style:display="flex" style:gap="3em">
     <Metric
       label="Safety"
       pct={percent($stats.total_high_los_length, $stats.total_network_length)}

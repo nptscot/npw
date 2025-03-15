@@ -3,8 +3,8 @@
     <slot name="top" />
   </div>
   <div class="content">
-    <div class="left">
-      <slot name="left" />
+    <div class="controls">
+      <slot name="controls" />
     </div>
     <div class="map">
       <slot name="map" />
@@ -32,7 +32,7 @@
     overflow: hidden;
   }
 
-  .left {
+  .controls {
     width: 25%;
     overflow-y: auto;
     padding: 10px;

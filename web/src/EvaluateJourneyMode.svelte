@@ -78,7 +78,7 @@
 <svelte:window on:keydown={keyDown} />
 
 <SplitComponent>
-  <div slot="left">
+  <div slot="controls">
     <h2>Evaluate a journey</h2>
 
     <button on:click={() => ($mode = prevMode)}>Back</button>

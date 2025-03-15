@@ -26,7 +26,7 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <SplitComponent>
-  <div slot="left">
+  <div slot="controls">
     <h2>{titles[$currentStage]}</h2>
 
     <div>

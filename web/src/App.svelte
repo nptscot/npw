@@ -21,7 +21,7 @@
   import { layerId } from "./common";
   import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";
   import { getKey } from "./common/files";
-  import { Layout, leftSidebarContents, mapContents } from "./common/layout";
+  import { controlsContents, Layout, mapContents } from "./common/layout";
   import StreetView from "./common/StreetView.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import EvaluateJourneyMode from "./EvaluateJourneyMode.svelte";
@@ -135,11 +135,11 @@
     }
   }
 
-  let leftSidebarDiv: HTMLDivElement;
+  let controlsDiv: HTMLDivElement;
   let mapDiv: HTMLDivElement;
-  $: if (leftSidebarDiv && $leftSidebarContents) {
-    leftSidebarDiv.innerHTML = "";
-    leftSidebarDiv.appendChild($leftSidebarContents);
+  $: if (controlsDiv && $controlsContents) {
+    controlsDiv.innerHTML = "";
+    controlsDiv.appendChild($controlsContents);
   }
   $: if (mapDiv && $mapContents) {
     mapDiv.innerHTML = "";
@@ -179,14 +179,14 @@
 <Loading {loading} {progress} />
 
 <Layout>
-  <div slot="top">
+  <header slot="top">
     <TopBar />
-  </div>
-  <div slot="left">
-    <div bind:this={leftSidebarDiv} />
-  </div>
+  </header>
+  <main slot="controls">
+    <div bind:this={controlsDiv} />
+  </main>
 
-  <div slot="map" style="position:relative; width: 100%; height: 100%;">
+  <main slot="map" class="map-container">
     {#await getStyle() then style}
       <MapLibre
         {style}
@@ -242,11 +242,17 @@
         {/if}
       </MapLibre>
     {/await}
-  </div>
+  </main>
 </Layout>
 
 <style>
   :global(body) {
     margin: 0;
+  }
+
+  .map-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
   }
 </style>

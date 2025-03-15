@@ -257,7 +257,7 @@
 <svelte:window on:keydown={keyDown} />
 
 <SplitComponent>
-  <div slot="left">
+  <div slot="controls">
     {#if editingExisting}
       <h2>Editing a route</h2>
     {:else}
@@ -348,7 +348,7 @@
 
     <hr />
 
-    <slot name="extra-left" />
+    <slot name="extra-controls" />
   </div>
 
   <div slot="map">

@@ -195,7 +195,7 @@
   {deleteRoute}
   editingExisting={id != null}
 >
-  <div slot="extra-left">
+  <div slot="extra-controls">
     <div>
       <label>
         Name:
