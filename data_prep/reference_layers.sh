@@ -132,11 +132,10 @@ function greenspace {
   unzip $1 -j Data/opgrsp_gb.gpkg
   mv Data/opgrsp_gb.gpkg .
   rmdir Data
-  # TODO All functions, for now
   ogr2ogr tmp/greenspace.gpkg \
           -t_srs EPSG:4326 \
           opgrsp_gb.gpkg \
-          -sql 'SELECT id, distinctive_name_1 as name, geometry FROM greenspace_site'
+          -sql 'SELECT id, distinctive_name_1 as name, geometry FROM greenspace_site WHERE function IN ("Playing Field", "Public Park Or Garden")'
   ogr2ogr tmp/greenspace_access_points.gpkg \
           -t_srs EPSG:4326 \
           opgrsp_gb.gpkg \
