@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { MapMouseEvent } from "maplibre-gl";
   import { onDestroy } from "svelte";
-  import { Control, MapEvents } from "svelte-maplibre";
+  import { MapEvents } from "svelte-maplibre";
   import icon from "../../assets/streetview.svg?url";
   import { interactiveMapLayersEnabled, map } from "../stores";
 
@@ -45,7 +45,7 @@
 
 <svelte:window on:keydown={onKeyDown} />
 
-<Control position="bottom-left">
+<div>
   {#if $interactiveMapLayersEnabled}
     <button on:click={start}>
       <img src={icon} title="StreetView" alt="StreetView" />
@@ -57,4 +57,12 @@
       Stop
     </button>
   {/if}
-</Control>
+</div>
+
+<style>
+  div {
+    position: absolute;
+    bottom: 40px;
+    left: 10px;
+  }
+</style>

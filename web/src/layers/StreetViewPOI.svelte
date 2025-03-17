@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Control } from "svelte-maplibre";
   import { currentPOI } from "./stores";
 
   // Per https://developers.google.com/maps/documentation/embed/quickstart,
@@ -9,9 +8,9 @@
 </script>
 
 {#if $currentPOI}
-  <Control position="bottom-left">
+  <div>
     <iframe
-      width="400"
+      width="600"
       height="200"
       style:border="0"
       loading="lazy"
@@ -19,5 +18,13 @@
       title="Google Streetview"
       src={`https://www.google.com/maps/embed/v1/streetview?key=${apiKey}&location=${$currentPOI.pt[1]},${$currentPOI.pt[0]}`}
     />
-  </Control>
+  </div>
 {/if}
+
+<style>
+  div {
+    position: absolute;
+    bottom: 100px;
+    left: 10px;
+  }
+</style>
