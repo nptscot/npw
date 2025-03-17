@@ -19,6 +19,7 @@ export let currentFilename = writable("untitled");
 export let mode: Writable<Mode> = writable({ kind: "main" });
 export let currentStage: Writable<Tier | "assessment"> = writable("Primary");
 export let map: Writable<Map | null> = writable(null);
+export let zoom: Writable<number | undefined> = writable(undefined);
 
 // When the state is modified, trigger to refresh various things
 export let mutationCounter = writable(1);

@@ -6,6 +6,7 @@
     currentStage,
     map,
     mutationCounter,
+    zoom,
   } from "../stores";
   import type { PoiKind } from "../types";
   import { currentPOI, type CurrentPOI } from "./stores";
@@ -198,21 +199,25 @@
 </div>
 
 {#if filteredPOIs.length > 0}
-  {#if filteredPOIs[filterIdx].reachable}
-    <p>
-      {filteredPOIs[filterIdx].name} is connected to the network. The blue path shows
-      the route through quiet streets to the network.
-    </p>
+  {#if $zoom && $zoom > 13}
+    {#if filteredPOIs[filterIdx].reachable}
+      <p>
+        {filteredPOIs[filterIdx].name} is connected to the network. The blue path
+        shows the route through quiet streets to the network.
+      </p>
+    {:else}
+      <p>
+        {filteredPOIs[filterIdx].name} is not connected to the network, because there
+        are red severances surronding it.
+      </p>
+
+      <button on:click={fixUnreachable}>
+        Add the black local access route to fix
+      </button>
+    {/if}
+
+    <PrevNext list={filteredPOIs} bind:idx={filterIdx} />
   {:else}
-    <p>
-      {filteredPOIs[filterIdx].name} is not connected to the network, because there
-      are red severances surronding it.
-    </p>
-
-    <button on:click={fixUnreachable}>
-      Add the black local access route to fix
-    </button>
+    <p>Zoom in more to connect POIs</p>
   {/if}
-
-  <PrevNext list={filteredPOIs} bind:idx={filterIdx} />
 {/if}

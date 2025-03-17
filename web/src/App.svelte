@@ -43,6 +43,7 @@
     routeA,
     routeB,
     stats,
+    zoom,
   } from "./stores";
   import TopBar from "./TopBar.svelte";
   import type { Backend } from "./worker";
@@ -195,6 +196,7 @@
         {style}
         maxZoom={19}
         bind:map
+        bind:zoom={$zoom}
         on:error={(e) => {
           // @ts-expect-error ErrorEvent isn't exported
           console.log(e.detail.error);
