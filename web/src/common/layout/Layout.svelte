@@ -22,7 +22,6 @@
   }
 
   .top {
-    width: 100%;
     padding: 4px;
   }
 
