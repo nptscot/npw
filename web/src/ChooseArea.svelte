@@ -18,6 +18,7 @@
     type: "FeatureCollection" as const,
     features: [],
   };
+  let lad = "";
   let ladNames: string[] = [];
 
   onMount(async () => {
@@ -40,33 +41,44 @@
 <div class="container">
   <div class="controls">
     <h2>Network Planning Workspace</h2>
+
     <p>
-      This is an
-      <a href="https://github.com/nptscot/npw" target="_blank">
-        open source project
-      </a>
-      project developed by
-      <a href="https://github.com/dabreegster/" target="_blank">
-        Dustin Carlino
-      </a>
-      .
+      Welcome to the Network Planning Workspace, incorporating the Network
+      Planning Tool.
     </p>
 
-    <p>Choose a boundary below or on the map to begin sketching:</p>
-    <ul style="columns: 3">
-      {#each ladNames as name}
-        <li><a href="npw.html?boundary=LAD_{name}">{name}</a></li>
+    <p>
+      The NPW is designed to enable local authorities to plan a cycle network
+      for the area, using segregated infrastructure on key routes and ensuring
+      local places are properly connected without severance.
+    </p>
+
+    <h3>Select an area</h3>
+
+    <p>Select your area from this list, or click on the map, to start.</p>
+
+    <select bind:value={lad}>
+      <option value=""></option>
+      {#each ladNames as value}
+        <option {value}>{value}</option>
       {/each}
-    </ul>
+    </select>
+
+    <button
+      on:click={() => (window.location.href = `npw.html?boundary=LAD_${lad}`)}
+      disabled={lad == ""}
+    >
+      Start
+    </button>
 
     <hr />
 
-    <p>Or continue with a previously opened file:</p>
+    <h3>Or continue with a previously opened file</h3>
 
     <div style="columns: 2">
       {#each listAllFiles() as [boundary, list]}
         <div class="group">
-          <h2>{boundary}</h2>
+          <h4>{boundary}</h4>
           {#each list as [filename, description]}
             <p>
               <a href={`npw.html?boundary=${boundary}&file=${filename}`}>
@@ -78,15 +90,6 @@
         </div>
       {/each}
     </div>
-
-    <style>
-      .group {
-        border: 1px solid black;
-        padding: 4px;
-        margin-bottom: 8px;
-        break-inside: avoid-column;
-      }
-    </style>
   </div>
 
   <div class="map">
@@ -149,5 +152,12 @@
 
   .map {
     width: 65%;
+  }
+
+  .group {
+    border: 1px solid black;
+    padding: 4px;
+    margin-bottom: 8px;
+    break-inside: avoid-column;
   }
 </style>
