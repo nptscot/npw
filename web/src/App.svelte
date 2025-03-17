@@ -193,6 +193,7 @@
     {#await getStyle() then style}
       <MapLibre
         {style}
+        maxZoom={19}
         bind:map
         on:error={(e) => {
           // @ts-expect-error ErrorEvent isn't exported
