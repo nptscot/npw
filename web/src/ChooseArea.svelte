@@ -126,7 +126,6 @@
               "line-width": 2.5,
             }}
             beforeId="Road labels"
-            manageHoverState
           />
         </GeoJSON>
       </MapLibre>

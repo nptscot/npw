@@ -135,21 +135,25 @@
     {/if}
 
     {#if gj}
-      <label>
-        <input type="checkbox" bind:checked={showCarRoute} />
-        <b>{(gj.direct_bike_length / gj.car_length).toFixed(1)}x</b>
-        longer than the driving route (in
-        <span style:color="red">red</span>
-        )
-      </label>
+      <div>
+        <label>
+          <input type="checkbox" bind:checked={showCarRoute} />
+          <b>{(gj.direct_bike_length / gj.car_length).toFixed(1)}x</b>
+          longer than the driving route (in
+          <span style:color="red">red</span>
+          )
+        </label>
+      </div>
 
-      <label>
-        <input type="checkbox" bind:checked={showQuietBikeRoute} />
-        <b>{(gj.direct_bike_length / gj.quiet_bike_length).toFixed(1)}x</b>
-        longer than the quiet cycling route (in
-        <span style:color="blue">blue</span>
-        )
-      </label>
+      <div>
+        <label>
+          <input type="checkbox" bind:checked={showQuietBikeRoute} />
+          <b>{(gj.direct_bike_length / gj.quiet_bike_length).toFixed(1)}x</b>
+          longer than the quiet cycling route (in
+          <span style:color="blue">blue</span>
+          )
+        </label>
+      </div>
 
       <hr />
 
