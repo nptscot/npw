@@ -53,6 +53,9 @@
 
   let map: Map;
   $: if (map) {
+    map.keyboard.disableRotation();
+    map.dragRotate.disable();
+    map.touchZoomRotate.disableRotation();
     mapStore.set(map);
   }
 
@@ -204,7 +207,7 @@
         ]}
         hash
       >
-        <NavigationControl />
+        <NavigationControl showCompass={false} />
         <ScaleControl />
         <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
         <DisableInteractiveLayers />
