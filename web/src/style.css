@@ -38,22 +38,6 @@ main.map-container {
 }
 
 /* Layout - new */
-.top header {
-  display: flex;
-  padding: 0 20px;
-  box-shadow: 0px 10px 10px 0px #eee;
-}
-.top header #logo {
-  height: 30px;
-  margin-right: 10px;
-  vertical-align: middle;
-}
-.top header .site-navigation {
-}
-.top header .progress-summary {
-  padding-left: 20px;
-  margin-left: auto;
-}
 .progress-summary a {
   text-decoration: none;
   color: #1a1a1a;
@@ -135,13 +119,6 @@ body .ds_page-header {
 body .ds_page-header .ds_page-header__label {
   color: var(--primary-tier-colour);
 }
-body .ds_site-navigation .ds_site-navigation__link {
-  padding-left: 8px;
-  padding-right: 8px;
-}
-body .ds_site-navigation .ds_current {
-  font-weight: bold;
-}
 body .ds_link {
   font-size: 0.93rem;
   margin-bottom: 14px;
@@ -150,30 +127,14 @@ body main[slot="assess"] p {
   margin-bottom: 12px;
   line-height: 20px;
 }
+header .progress-summary {
+  padding-left: 20px;
+  margin-left: auto;
+}
 
 :root {
   --primary-tier-colour: #970f52;
   --secondary-tier-colour: #ff978c;
   --localaccess-tier-colour: #feae01;
   --longdistance-tier-colour: #fef157;
-}
-body
-  .ds_site-navigation
-  .ds_site-navigation__link.primary-tier:not(:focus):after {
-  border-bottom-color: var(--primary-tier-colour);
-}
-body
-  .ds_site-navigation
-  .ds_site-navigation__link.secondary-tier:not(:focus):after {
-  border-bottom-color: var(--secondary-tier-colour);
-}
-body
-  .ds_site-navigation
-  .ds_site-navigation__link.localaccess-tier:not(:focus):after {
-  border-bottom-color: var(--localaccess-tier-colour);
-}
-body
-  .ds_site-navigation
-  .ds_site-navigation__link.longdistance-tier:not(:focus):after {
-  border-bottom-color: var(--primary-tier-colour);
 }
