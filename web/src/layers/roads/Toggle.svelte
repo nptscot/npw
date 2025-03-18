@@ -5,6 +5,7 @@
   export let name: string;
   // TODO Use name for this
   export let style: ReferenceRoadStyle;
+  export let icon: string;
 
   function toggle() {
     if ($referenceRoadStyle == style) {
@@ -16,14 +17,13 @@
   }
 </script>
 
-<button
-  style:background={$referenceRoadStyle == style ? "green" : "grey"}
-  style:font-size="15px"
-  on:click={toggle}
->
-  {#if $referenceRoadStyle == "off" && $lastReferenceStyle == style}
-    <b>{name}</b>
-  {:else}
-    {name}
-  {/if}
-</button>
+<li>
+  <button class:selected={$referenceRoadStyle == style} on:click={toggle}>
+    <i class="fa-solid {icon}"></i>
+    {#if $referenceRoadStyle == "off" && $lastReferenceStyle == style}
+      <b>{name}</b>
+    {:else}
+      {name}
+    {/if}
+  </button>
+</li>
