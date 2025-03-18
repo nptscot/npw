@@ -1,6 +1,6 @@
 <script lang="ts">
+  import logo from "../assets/npt_logo.png?url";
   import { tierLabels } from "./colors";
-  import { Link } from "./common";
   import ManageFiles from "./common/ManageFiles.svelte";
   import { disableLayersPerStage, enableLayersPerStage } from "./layers/stores";
   import TopBarStats from "./stats/TopBarStats.svelte";
@@ -37,52 +37,84 @@
   let stages = { ...tierLabels, assessment: "Assess" };
 </script>
 
-<div>
-  <nav aria-label="breadcrumb">
-    <ul>
-      <li>NPW</li>
-      <li><a href="index.html">Select area</a></li>
-
-      <li><ManageFiles /></li>
-
-      {#each Object.entries(stages) as [stage, label]}
-        <li>
-          {#if $currentStage == stage}
-            <b>{label}</b>
-          {:else}
-            <Link on:click={() => changeStage(stage)}>{label}</Link>
-          {/if}
+<header>
+  <div class="site-navigation">
+    <nav class="ds_site-navigation">
+      <ul class="ds_site-navigation__list">
+        <li class="ds_site-navigation__item">
+          <a
+            class="ds_site-navigation__link"
+            href="https://www.npt.scot/"
+            target="_blank"
+          >
+            <img id="logo" src={logo} alt="NPT logo" />
+            NPW &nbsp;&gt;
+          </a>
         </li>
-      {/each}
-    </ul>
-  </nav>
 
-  <TopBarStats />
-</div>
+        <li class="ds_site-navigation__item">
+          <a class="ds_site-navigation__link" href="index.html">
+            Select area &nbsp;&gt;
+          </a>
+        </li>
+
+        <li class="ds_site-navigation__item">
+          <ManageFiles />
+        </li>
+
+        {#each Object.entries(stages) as [stage, label]}
+          <li class="ds_site-navigation__item">
+            <!-- svelte-ignore a11y-invalid-attribute -->
+            <a
+              class="ds_site-navigation__link {stage}"
+              class:ds_current={$currentStage == stage}
+              href="#"
+              on:click|preventDefault={() => changeStage(stage)}
+            >
+              {label}
+              {#if stage != "assessment"}
+                &nbsp;&gt;
+              {/if}
+            </a>
+          </li>
+        {/each}
+      </ul>
+    </nav>
+
+    <!--<TopBarStats /> -->
+  </div>
+</header>
 
 <style>
-  div {
+  header {
     display: flex;
-    justify-content: space-between;
-    padding: 4px;
+    padding: 0 20px;
+    box-shadow: 0px 10px 10px 0px #eee;
+  }
+  header #logo {
+    height: 30px;
+    margin-right: 10px;
+    vertical-align: middle;
   }
 
-  nav {
-    padding: 0 0.5rem;
+  .ds_site-navigation .ds_site-navigation__link {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .ds_site-navigation .ds_current {
+    font-weight: bold;
   }
 
-  nav ul {
-    display: flex;
-    flex-wrap: wrap;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    align-items: end;
+  .ds_site-navigation .ds_site-navigation__link.Primary:not(:focus):after {
+    border-bottom-color: var(--primary-tier-colour);
   }
-
-  nav li:not(:last-child)::after {
-    display: inline-block;
-    margin: 0 0.25rem;
-    content: ">";
+  .ds_site-navigation .ds_site-navigation__link.Secondary:not(:focus):after {
+    border-bottom-color: var(--secondary-tier-colour);
+  }
+  .ds_site-navigation .ds_site-navigation__link.LocalAccess:not(:focus):after {
+    border-bottom-color: var(--localaccess-tier-colour);
+  }
+  .ds_site-navigation .ds_site-navigation__link.LongDistance:not(:focus):after {
+    border-bottom-color: var(--longdistance-tier-colour);
   }
 </style>

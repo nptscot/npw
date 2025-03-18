@@ -148,9 +148,14 @@
   }
 </script>
 
-<Link on:click={() => (open = true)}>
-  Select project: {$currentFilename}
-</Link>
+<!-- svelte-ignore a11y-invalid-attribute -->
+<a
+  class="ds_site-navigation__link"
+  href="#"
+  on:click|preventDefault={() => (open = true)}
+>
+  Select project: {$currentFilename}&nbsp;&gt;
+</a>
 
 <Modal bind:show={open}>
   <h2>Manage files</h2>
