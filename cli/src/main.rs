@@ -145,6 +145,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
 
     let gradients = read_gradients("../data_prep/tmp/UK-dem-50m-4326.tif", &graph, timer)?;
 
+    timer.step("Finalizing (calculating demand thresholds)");
     Ok(MapModel::create(
         graph,
         boundary_wgs84,

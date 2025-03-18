@@ -402,7 +402,15 @@ pub struct DynamicRoad {
 }
 
 fn find_cycling_demand_thresholds(demands: &Vec<usize>) -> (usize, usize) {
-    // TODO Switch to jenks
-    let stats = utils::Quintiles::new(demands);
-    (stats.quintile1, stats.quintile2)
+    let mut sorted: Vec<f64> = demands.iter().map(|x| *x as f64).collect();
+    sorted.sort_by_key(|x| *x as usize);
+    let breaks = classif::get_jenks_breaks(&sorted, 10);
+    assert_eq!(breaks.len(), 11);
+    // 4th highest break for high, 6th highest break for medium
+    let (high, medium) = (breaks[11 - 4] as usize, breaks[11 - 6] as usize);
+    info!(
+        "Max demand is {}, natural breaks are {breaks:?}. high_demand_threshold is {high}, medium_demand_threshold is {medium}",
+        sorted.last().unwrap()
+    );
+    (high, medium)
 }
