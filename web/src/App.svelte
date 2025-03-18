@@ -1,5 +1,7 @@
 <script lang="ts">
   import "./style.css";
+  import "@scottish-government/design-system/dist/css/design-system.css";
+  import "@scottish-government/design-system/dist/scripts/design-system.js";
   import * as Comlink from "comlink";
   import type { Map, StyleSpecification } from "maplibre-gl";
   import { onMount } from "svelte";
@@ -61,6 +63,9 @@
   }
 
   onMount(async () => {
+    // @ts-expect-error This really exists for the SG design system, but TS doesn't know about it
+    window.DS.initAll();
+
     let params = new URLSearchParams(window.location.search);
     $boundaryName = params.get("boundary") || "LAD_City of Edinburgh";
     loading = `Loading ${$boundaryName}`;
