@@ -28,29 +28,26 @@
             <th>High cycling demand coverage</th>
             <td>
               {percent2(
-                baseline.covered_demand_quintile_sums[0],
-                baseline.total_demand_quintile_sums[0],
+                baseline.covered_high_demand,
+                baseline.total_high_demand,
               )}
             </td>
             <td>
-              {percent2(
-                $stats.covered_demand_quintile_sums[0],
-                $stats.total_demand_quintile_sums[0],
-              )}
+              {percent2($stats.covered_high_demand, $stats.total_high_demand)}
             </td>
           </tr>
           <tr>
             <th>Medium cycling demand coverage</th>
             <td>
               {percent2(
-                baseline.covered_demand_quintile_sums[1],
-                baseline.total_demand_quintile_sums[1],
+                baseline.covered_medium_demand,
+                baseline.total_medium_demand,
               )}
             </td>
             <td>
               {percent2(
-                $stats.covered_demand_quintile_sums[1],
-                $stats.total_demand_quintile_sums[1],
+                $stats.covered_medium_demand,
+                $stats.total_medium_demand,
               )}
             </td>
           </tr>

@@ -74,6 +74,9 @@ pub struct MapModel {
     // Stats calculated on a network only with existing infrastructure imported
     baseline_stats: stats::Stats,
 
+    high_demand_threshold: usize,
+    medium_demand_threshold: usize,
+
     // Derived things per RoadID maintained by recalculate_after_edits
     #[serde(skip_serializing, skip_deserializing, default)]
     infra_types: Vec<Option<InfraType>>,
@@ -186,6 +189,10 @@ impl MapModel {
         let los = std::iter::repeat(LevelOfService::ShouldNotBeUsed)
             .take(graph.roads.len())
             .collect();
+
+        let (high_demand_threshold, medium_demand_threshold) =
+            find_cycling_demand_thresholds(&precalculated_demands);
+
         let mut model = Self {
             graph,
             closest_intersection,
@@ -211,6 +218,8 @@ impl MapModel {
             gradients,
             // Calculated below
             baseline_stats: stats::Stats::default(),
+            high_demand_threshold,
+            medium_demand_threshold,
             infra_types,
             override_infra_type,
             tiers,
@@ -263,9 +272,6 @@ impl MapModel {
     }
 
     pub fn render_static_roads(&self) -> GeoJson {
-        let stats = utils::Quintiles::new(&self.precalculated_demands);
-        info!("precalculated_demands quintiles: {stats:?}");
-
         let mut features = Vec::new();
         for (idx, road) in self.graph.roads.iter().enumerate() {
             let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
@@ -282,10 +288,17 @@ impl MapModel {
                 "existing_infra",
                 serde_json::to_value(existing::classify(&road.osm_tags)).unwrap(),
             );
+            // TODO Could probably just plumb one of these
             f.set_property("precalculated_demand", self.precalculated_demands[idx]);
             f.set_property(
-                "precalculated_demand_quintile",
-                stats.quintile(self.precalculated_demands[idx]),
+                "precalculated_demand_group",
+                if self.precalculated_demands[idx] >= self.high_demand_threshold {
+                    "high"
+                } else if self.precalculated_demands[idx] >= self.medium_demand_threshold {
+                    "medium"
+                } else {
+                    ""
+                },
             );
             f.set_property(
                 "street_space",
@@ -386,4 +399,10 @@ pub struct DynamicRoad {
     current_infra: Option<InfraType>,
     current_tier: Option<Tier>,
     current_infra_fits: bool,
+}
+
+fn find_cycling_demand_thresholds(demands: &Vec<usize>) -> (usize, usize) {
+    // TODO Switch to jenks
+    let stats = utils::Quintiles::new(demands);
+    (stats.quintile1, stats.quintile2)
 }

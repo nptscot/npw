@@ -1,9 +1,9 @@
 #[derive(Debug)]
 pub struct Quintiles {
     // 20% of values are >= this amount
-    quintile1: usize,
+    pub quintile1: usize,
     // 40% of values are >= this amount
-    quintile2: usize,
+    pub quintile2: usize,
     quintile3: usize,
     quintile4: usize,
     // quintile5 is the minimum value

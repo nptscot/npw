@@ -1,5 +1,8 @@
 <script lang="ts">
-  import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
+  import type {
+    DataDrivenPropertyValueSpecification,
+    ExpressionSpecification,
+  } from "maplibre-gl";
   import { LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import {
@@ -15,16 +18,25 @@
     showUncovered,
   } from "../stores";
 
-  // Depending on the current tier, show one quintile of precalculated cycling
-  // demand.
-
-  $: quintile = $debugAllCyclingDemand
-    ? null
+  $: filter = $debugAllCyclingDemand
+    ? ([
+        ">=",
+        ["get", "precalculated_demand"],
+        $debugCyclingDemandMin,
+      ] as ExpressionSpecification)
     : $cyclingDemand1
-      ? 1
+      ? ([
+          "==",
+          ["get", "precalculated_demand_group"],
+          "high",
+        ] as ExpressionSpecification)
       : $cyclingDemand2
-        ? 2
-        : null;
+        ? ([
+            "==",
+            ["get", "precalculated_demand_group"],
+            "medium",
+          ] as ExpressionSpecification)
+        : undefined;
 
   // Filter to only show uncovered roads?
   $: opacity = $showUncovered
@@ -39,9 +51,7 @@
 
 <LineLayer
   {...layerId("uncovered-cycling-demands")}
-  filter={quintile == null
-    ? [">=", ["get", "precalculated_demand"], $debugCyclingDemandMin]
-    : ["==", ["get", "precalculated_demand_quintile"], quintile]}
+  {filter}
   layout={{
     visibility: $cyclingDemand1 || $cyclingDemand2 ? "visible" : "none",
   }}
@@ -54,7 +64,7 @@
   {#if $debugAllCyclingDemand}
     <Popup openOn="hover" let:props>
       <p>
-        Demand {props.precalculated_demand.toLocaleString()}, quintile {props.precalculated_demand_quintile}
+        Demand {props.precalculated_demand.toLocaleString()}, group {props.precalculated_demand_group}
       </p>
     </Popup>
   {/if}

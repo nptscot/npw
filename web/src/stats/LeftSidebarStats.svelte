@@ -42,10 +42,7 @@
     {#if $currentStage == "Primary"}
       <Metric
         label="High cycling demand coverage"
-        pct={percent(
-          $stats.covered_demand_quintile_sums[0],
-          $stats.total_demand_quintile_sums[0],
-        )}
+        pct={percent($stats.covered_high_demand, $stats.total_high_demand)}
       />
 
       <Metric
@@ -58,10 +55,7 @@
     {:else if $currentStage == "Secondary"}
       <Metric
         label="Medium cycling demand coverage"
-        pct={percent(
-          $stats.covered_demand_quintile_sums[1],
-          $stats.total_demand_quintile_sums[1],
-        )}
+        pct={percent($stats.covered_medium_demand, $stats.total_medium_demand)}
       />
 
       <Metric

@@ -74,8 +74,10 @@ export interface Stats {
   percent_reachable_imd_population: number;
   percent_reachable_population: number;
 
-  covered_demand_quintile_sums: number[];
-  total_demand_quintile_sums: number[];
+  covered_high_demand: number;
+  total_high_demand: number;
+  covered_medium_demand: number;
+  total_medium_demand: number;
 
   total_network_length: number;
   total_high_los_length: number;
@@ -226,7 +228,7 @@ export interface StaticRoad {
   gradient: number;
   existing_infra: string | null;
   precalculated_demand: number;
-  precalculated_demand_quintile: number;
+  precalculated_demand_group: "high" | "medium" | "";
   street_space: "Segregated" | "nothing" | null;
 }
 

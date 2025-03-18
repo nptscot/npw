@@ -2,7 +2,7 @@ use anyhow::Result;
 use graph::{RoadID, Timer};
 use serde::{Deserialize, Serialize};
 
-use crate::{utils::Quintiles, LevelOfService, MapModel, Tier};
+use crate::{LevelOfService, MapModel, Tier};
 
 /// A summary of metrics. All percents are 0 to 1.
 #[derive(Default, Serialize, Deserialize)]
@@ -15,8 +15,10 @@ pub struct Stats {
     percent_reachable_imd_population: f64,
     percent_reachable_population: f64,
 
-    covered_demand_quintile_sums: Vec<usize>,
-    total_demand_quintile_sums: Vec<usize>,
+    covered_high_demand: usize,
+    total_high_demand: usize,
+    covered_medium_demand: usize,
+    total_medium_demand: usize,
 
     total_main_road_length: f64,
     covered_main_road_length: f64,
@@ -93,16 +95,28 @@ impl MapModel {
         let percent_reachable_imd_population = percent(deprived_sum, deprived_total).into();
         let percent_reachable_population = percent(population_sum, population_total).into();
 
-        // TODO Cache this?
         timer.step("covered demands");
-        let demand_stats = Quintiles::new(&self.precalculated_demands);
-        let mut covered_quintile_sums = [0; 5];
+        let mut covered_high_demand = 0;
+        let mut total_high_demand = 0;
+        let mut covered_medium_demand = 0;
+        let mut total_medium_demand = 0;
         for (idx, demand) in self.precalculated_demands.iter().enumerate() {
             // Only count coverage where something has been explicitly drawn, no matter what that
             // is
-            if self.infra_types[idx].is_some() {
-                let quintile = demand_stats.quintile(*demand);
-                covered_quintile_sums[quintile - 1] += *demand;
+            let covered = self.infra_types[idx].is_some();
+
+            if *demand >= self.high_demand_threshold {
+                total_high_demand += *demand;
+                if covered {
+                    covered_high_demand += *demand;
+                }
+            }
+
+            if *demand >= self.medium_demand_threshold {
+                total_medium_demand += *demand;
+                if covered {
+                    covered_medium_demand += *demand;
+                }
             }
         }
 
@@ -161,8 +175,10 @@ impl MapModel {
             percent_reachable_imd_population,
             percent_reachable_population,
 
-            covered_demand_quintile_sums: covered_quintile_sums.to_vec(),
-            total_demand_quintile_sums: demand_stats.total_quintile_sums.to_vec(),
+            covered_high_demand,
+            total_high_demand,
+            covered_medium_demand,
+            total_medium_demand,
 
             total_network_length,
             total_high_los_length,
