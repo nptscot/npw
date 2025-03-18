@@ -83,12 +83,6 @@ progress[value]::-moz-progress-bar {
 body main[slot="assess"] progress[value] {
   --color: var(--primary-tier-colour);
 }
-img.help {
-  float: right;
-}
-main.map-container .network-style img.help {
-  height: 16px;
-}
 
 /* Overrides to styles */
 body .ds_page-header {
@@ -104,10 +98,6 @@ body .ds_link {
 body main[slot="assess"] p {
   margin-bottom: 12px;
   line-height: 20px;
-}
-header .progress-summary {
-  padding-left: 20px;
-  margin-left: auto;
 }
 
 :root {

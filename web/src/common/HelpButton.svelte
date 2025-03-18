@@ -7,11 +7,19 @@
   let show = false;
 </script>
 
-<button on:click={() => (show = true)}>
-  <img src={icon} title="Help" alt="Help" />
-</button>
+<!-- svelte-ignore a11y-invalid-attribute -->
+<a href="#" on:click|preventDefault={() => (show = true)}>
+  <img src={icon} alt="Help" />
+</a>
 
 <Modal bind:show>
   <h2>Help</h2>
   <slot />
 </Modal>
+
+<style>
+  img {
+    float: right;
+    height: 16px;
+  }
+</style>
