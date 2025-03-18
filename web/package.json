@@ -28,6 +28,7 @@
     "vite-plugin-wasm-pack": "0.1.11"
   },
   "dependencies": {
+    "@scottish-government/design-system": "^3.0.0-beta.0",
     "@turf/boolean-intersects": "^7.2.0",
     "comlink": "^4.4.2",
     "svelte-maplibre": "github:dabreegster/svelte-maplibre#svelte4_popups",

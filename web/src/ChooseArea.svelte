@@ -1,4 +1,6 @@
 <script lang="ts">
+  import "@scottish-government/design-system/dist/css/design-system.css";
+  import "@scottish-government/design-system/dist/scripts/design-system.js";
   import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
   import { onMount } from "svelte";
   import {
@@ -22,6 +24,9 @@
   let ladNames: string[] = [];
 
   onMount(async () => {
+    // For the SG design system
+    window.DS.initAll();
+
     let resp = await fetch(boundariesUrl);
     gj = await resp.json();
 
@@ -65,6 +70,7 @@
     </select>
 
     <button
+      class="ds_button"
       on:click={() => (window.location.href = `npw.html?boundary=LAD_${lad}`)}
       disabled={lad == ""}
     >
