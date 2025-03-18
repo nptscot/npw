@@ -2,65 +2,12 @@
 body {
   margin: 0;
 }
-#app {
-}
-.flex-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  margin: 0;
-}
-.top {
-  /* padding: 4px; */
-}
-.content {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
 
 /* Layout - existing */
 header {
   width: 100%; /* padding: 4px; */
 }
-.controls {
-  width: 25%; /* padding: 10px; */
-  min-width: 350px;
-}
-.map {
-  width: 75%;
-}
-main.map-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background-color: #e7e7e7;
-}
 
-/* Layout - new */
-.controls {
-  display: flex;
-  flex-direction: column;
-  justify-content: space between;
-}
-.controls main[slot="controls"] {
-  overflow-y: auto;
-  padding: 20px;
-}
-.controls main[slot="assess"] {
-  margin-top: auto;
-  height: auto;
-  width: 100%;
-  padding: 0 20px;
-  border-top: 1px solid #ccc;
-  padding: 12px 20px 8px;
-}
-.controls main[slot="assess"] strong {
-  float: right;
-}
-.controls main[slot="assess"] progress {
-  width: 100%;
-}
 /* https://verpex.com/blog/website-tips/how-to-style-a-progress-bar-using-css */
 progress[value] {
   appearance: none;
@@ -80,9 +27,6 @@ progress[value]::-webkit-progress-value {
 progress[value]::-moz-progress-bar {
   background: var(--color);
 }
-body main[slot="assess"] progress[value] {
-  --color: var(--primary-tier-colour);
-}
 
 /* Overrides to styles */
 body .ds_page-header {
@@ -94,10 +38,6 @@ body .ds_page-header .ds_page-header__label {
 body .ds_link {
   font-size: 0.93rem;
   margin-bottom: 14px;
-}
-body main[slot="assess"] p {
-  margin-bottom: 12px;
-  line-height: 20px;
 }
 
 :root {
