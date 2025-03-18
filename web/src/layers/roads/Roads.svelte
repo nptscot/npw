@@ -156,7 +156,7 @@
             $showNetworkTiers,
             $showNetworkInfraTypes,
           ),
-          "line-width": roadLineWidth(0),
+          "line-width": roadLineWidth(1),
         }}
         layout={{
           visibility: $editsRoadStyle == "off" ? "none" : "visible",

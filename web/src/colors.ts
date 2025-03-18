@@ -10,11 +10,12 @@ export let infraTypeLabels = Object.fromEntries(
 
 // TODO Making types less precise here for convenience elsewhere.
 // Alternatively, improve ODStats types.
+
 export let tierColors: { [name: string]: string } = {
-  Primary: "#c00000",
-  Secondary: "#e97132",
-  LocalAccess: "#ffc000",
-  LongDistance: "#4ea72e",
+  Primary: "#970f52",
+  Secondary: "#ff978c",
+  LocalAccess: "#feae01",
+  LongDistance: "#fef157",
 };
 export let networkAssessmentColor = "#1b1464";
 
