@@ -38,28 +38,6 @@ main.map-container {
 }
 
 /* Layout - new */
-.progress-summary a {
-  text-decoration: none;
-  color: #1a1a1a;
-}
-.progress-summary ul {
-  height: 100%;
-  list-style: none;
-  display: flex;
-  margin: 0;
-  padding: 0;
-}
-.progress-summary ul li {
-  list-style: none;
-  font-size: 1rem;
-  margin: 0;
-  width: 100px;
-  line-height: 12px;
-  padding: 12px 6px 4px;
-}
-.progress-summary ul li progress {
-  width: 100%;
-}
 .controls {
   display: flex;
   flex-direction: column;

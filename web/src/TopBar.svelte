@@ -80,9 +80,9 @@
         {/each}
       </ul>
     </nav>
-
-    <!--<TopBarStats /> -->
   </div>
+
+  <TopBarStats />
 </header>
 
 <style>
