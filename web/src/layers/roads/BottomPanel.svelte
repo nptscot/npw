@@ -25,7 +25,7 @@
       class:selected={$editsRoadStyle == "edits_infra"}
     >
       <button on:click={() => ($editsRoadStyle = "edits_infra")}>
-        ‖‖&nbsp; Infrastructure type
+        ☰&nbsp; Infrastructure type
       </button>
     </li>
     <li class="hidden" class:selected={$editsRoadStyle == "off"}>
@@ -59,7 +59,7 @@
   .network-style {
     position: absolute;
     bottom: 10px;
-    width: 500px;
+    width: 600px;
     left: 0;
     right: 0;
     margin-inline: auto;
