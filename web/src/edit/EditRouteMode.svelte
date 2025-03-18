@@ -195,13 +195,12 @@
   {deleteRoute}
   editingExisting={id != null}
 >
-  <div slot="extra-controls">
-    <div>
-      <label>
-        Name:
-        <input type="text" bind:value={name} />
-      </label>
-    </div>
+  <div slot="extra-controls" class="main-controls">
+    <input
+      class="ds_input ds_input--fixed-20"
+      placeholder="Name"
+      bind:value={name}
+    />
 
     {#if $waypoints.length >= 2}
       {#if overrideInfraType}
@@ -209,7 +208,10 @@
           You've forced this route to always use {infraType}, assuming high
           Level of Service.
         </p>
-        <button on:click={() => (overrideInfraType = false)}>
+        <button
+          class="ds_button ds_button--secondary"
+          on:click={() => (overrideInfraType = false)}
+        >
           Remove override
         </button>
       {:else}
@@ -219,6 +221,7 @@
           Service.
         </p>
         <button
+          class="ds_button ds_button--secondary"
           on:click={() => {
             overrideInfraType = true;
             showOverrideModal = true;
@@ -260,12 +263,12 @@
       <SectionDiagram {breakdown} {sectionsGj} />
     {/if}
 
-    <div>
-      <label>
-        Notes:
-        <textarea rows="5" bind:value={notes} />
-      </label>
-    </div>
+    <textarea
+      class="ds_input"
+      rows="2"
+      placeholder="Notes"
+      bind:value={notes}
+    />
 
     <div>
       <label>
@@ -279,7 +282,11 @@
       </label>
     </div>
 
-    <button on:click={evalRoute} disabled={$waypoints.length < 2}>
+    <button
+      class="ds_button ds_button--secondary"
+      on:click={evalRoute}
+      disabled={$waypoints.length < 2}
+    >
       Evaluate this route
     </button>
 
@@ -306,3 +313,11 @@
   <PickInfraType bind:current={infraType} />
   <button on:click={() => (showOverrideModal = false)}>OK</button>
 </Modal>
+
+<style>
+  /** TODO These get nested in a strange way**/
+  .main-controls {
+    overflow-y: auto;
+    padding: 20px;
+  }
+</style>

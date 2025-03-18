@@ -34,6 +34,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space between;
+    /* TODO hack, only want some parts to scroll */
+    overflow: auto;
   }
 
   .map {
