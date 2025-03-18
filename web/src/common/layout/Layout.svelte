@@ -13,16 +13,11 @@
 </div>
 
 <style>
-  /* Legacy note: calling this "container" will clash with a pico built-in */
   .flex-container {
     display: flex;
     flex-direction: column;
     height: 100vh;
     margin: 0;
-  }
-
-  .top {
-    padding: 4px;
   }
 
   .content {
@@ -32,9 +27,13 @@
   }
 
   .controls {
-    width: 25%;
-    overflow-y: auto;
-    padding: 10px;
+    width: 25%; /* padding: 10px; */
+    min-width: 350px;
+
+    /* TODO no effect? */
+    display: flex;
+    flex-direction: column;
+    justify-content: space between;
   }
 
   .map {

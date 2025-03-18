@@ -43,26 +43,26 @@
 </script>
 
 {#if $currentStage == "Primary"}
-  <h4>Relevant layers</h4>
+  <h3>Relevant layers</h3>
   <div bind:this={primary} />
 {/if}
 
 {#if $currentStage == "Secondary"}
-  <h4>Relevant layers</h4>
+  <h3>Relevant layers</h3>
   <div bind:this={secondary} />
 {/if}
 
 {#if $currentStage == "LocalAccess"}
-  <h4>Relevant layers</h4>
+  <h3>Relevant layers</h3>
   <div bind:this={localAccess} />
 {/if}
 
 {#if $currentStage == "LongDistance"}
-  <h4>Relevant layers</h4>
+  <h3>Relevant layers</h3>
   <div bind:this={longDistance} />
 {/if}
 
 {#if $currentStage == "assessment"}
-  <h4>Relevant layers</h4>
+  <h3>Relevant layers</h3>
   <div bind:this={networkAssessment} />
 {/if}
