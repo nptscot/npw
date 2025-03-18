@@ -1,8 +1,282 @@
-button {
-  border-radius: 10%;
-  padding: 4px;
+/* Svelte framework built-ins */
+body {
+  margin: 0;
+}
+#app {
+}
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+}
+.top {
+  /* padding: 4px; */
+}
+.content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
-.primary {
-  background: green;
+/* Layout - existing */
+header {
+  width: 100%; /* padding: 4px; */
+}
+.controls {
+  width: 25%; /* padding: 10px; */
+  min-width: 350px;
+}
+.map {
+  width: 75%;
+}
+main.map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #e7e7e7;
+}
+
+/* Layout - new */
+.top header {
+  display: flex;
+  padding: 0 20px;
+  box-shadow: 0px 10px 10px 0px #eee;
+}
+.top header #logo {
+  height: 30px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+.top header .site-navigation {
+}
+.top header .progress-summary {
+  padding-left: 20px;
+  margin-left: auto;
+}
+.progress-summary a {
+  text-decoration: none;
+  color: #1a1a1a;
+}
+.progress-summary ul {
+  height: 100%;
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+.progress-summary ul li {
+  list-style: none;
+  font-size: 1rem;
+  margin: 0;
+  width: 100px;
+  line-height: 12px;
+  padding: 12px 6px 4px;
+}
+.progress-summary ul li progress {
+  width: 100%;
+}
+.controls {
+  display: flex;
+  flex-direction: column;
+  justify-content: space between;
+}
+.controls main[slot="controls"] {
+  overflow-y: auto;
+  padding: 20px;
+}
+.controls main[slot="assess"] {
+  margin-top: auto;
+  height: auto;
+  width: 100%;
+  padding: 0 20px;
+  border-top: 1px solid #ccc;
+  padding: 12px 20px 8px;
+}
+.controls main[slot="assess"] strong {
+  float: right;
+}
+.controls main[slot="assess"] progress {
+  width: 100%;
+}
+/* https://verpex.com/blog/website-tips/how-to-style-a-progress-bar-using-css */
+progress[value] {
+  appearance: none;
+  --color: #0065bd;
+  --background: lightgrey;
+  width: 100%;
+  height: 5px;
+  margin: 0;
+  background: var(--background);
+}
+progress[value]::-webkit-progress-bar {
+  background: var(--background);
+}
+progress[value]::-webkit-progress-value {
+  background: var(--color);
+}
+progress[value]::-moz-progress-bar {
+  background: var(--color);
+}
+body main[slot="assess"] progress[value] {
+  --color: var(--primary-tier-colour);
+}
+img.help {
+  float: right;
+}
+main.map-container .network-style {
+  position: absolute;
+  bottom: 10px;
+  width: 500px;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  background-color: white;
+  padding: 10px;
+  font-size: 14px;
+}
+main.map-container .network-style img.help {
+  height: 16px;
+}
+main.map-container .network-style p,
+main.map-container .network-style ul {
+  margin: 0;
+}
+main.map-container .network-style ul {
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+}
+main.map-container .network-style ul li {
+  flex-grow: 1;
+  flex-basis: 0;
+  list-style: none;
+}
+main.map-container .network-style ul li:last-child {
+  margin-bottom: auto;
+}
+main.map-container .network-style ul li button {
+  width: 100%;
+  border-radius: 0;
+  border: 1px solid gray;
+  background-color: #eee;
+  text-align: left;
+}
+main.map-container .network-style ul li.selected button {
+  font-weight: bold;
+  background-color: #ccc;
+}
+main.map-container .network-style ul li label {
+  display: block;
+  border-radius: 0;
+  padding: 2px 6px;
+  text-align: left;
+}
+main.map-container .network-style ul li:hover {
+  color: black;
+  opacity: 0.9;
+}
+main.map-container .panel {
+  position: absolute;
+  width: 165px;
+  top: 10px;
+  right: 10px;
+  background-color: white;
+  overflow-y: auto;
+  padding: 10px;
+}
+main.map-container .panel h3 {
+  font-size: 14px;
+}
+main.map-container .panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+main.map-container .panel ul li {
+  margin: 0 0 6px;
+  padding: 0;
+  line-height: 14px;
+}
+main.map-container .panel ul li button {
+  width: 100%;
+  background-color: white;
+  border: 0;
+  border-left: 5px solid #ddd;
+  background-color: #f7f7f7;
+  text-align: left;
+  padding: 4px 8px;
+}
+main.map-container .panel button {
+  background-color: #ccc;
+  font-size: 12px;
+  height: 36px;
+}
+main.map-container .panel button.selected,
+main.map-container .panel button.selected i {
+  color: #603;
+  border-color: #603;
+  background-color: #dcdcdc;
+}
+main.map-container .panel button.relevant {
+  border-left-color: #666;
+}
+main.map-container .panel button i {
+  display: block;
+  font-size: 16px;
+  width: 20px;
+  color: #aaa;
+  float: right;
+  line-height: 26px;
+  vertical-align: middle;
+}
+
+/* Overrides to styles */
+body .ds_page-header {
+  margin: 0 0 14px;
+}
+body .ds_page-header .ds_page-header__label {
+  color: var(--primary-tier-colour);
+}
+body .ds_site-navigation .ds_site-navigation__link {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+body .ds_site-navigation .ds_current {
+  font-weight: bold;
+}
+body .ds_link {
+  font-size: 0.93rem;
+  margin-bottom: 14px;
+}
+body main[slot="assess"] p {
+  margin-bottom: 12px;
+  line-height: 20px;
+}
+
+:root {
+  --primary-tier-colour: #970f52;
+  --secondary-tier-colour: #ff978c;
+  --localaccess-tier-colour: #feae01;
+  --longdistance-tier-colour: #fef157;
+}
+body
+  .ds_site-navigation
+  .ds_site-navigation__link.primary-tier:not(:focus):after {
+  border-bottom-color: var(--primary-tier-colour);
+}
+body
+  .ds_site-navigation
+  .ds_site-navigation__link.secondary-tier:not(:focus):after {
+  border-bottom-color: var(--secondary-tier-colour);
+}
+body
+  .ds_site-navigation
+  .ds_site-navigation__link.localaccess-tier:not(:focus):after {
+  border-bottom-color: var(--localaccess-tier-colour);
+}
+body
+  .ds_site-navigation
+  .ds_site-navigation__link.longdistance-tier:not(:focus):after {
+  border-bottom-color: var(--primary-tier-colour);
 }
