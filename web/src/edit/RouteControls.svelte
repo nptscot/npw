@@ -4,9 +4,10 @@
   import { onDestroy } from "svelte";
   import { GeoJSON, LineLayer, MapEvents, Marker } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
+  import { tierLabels } from "../colors";
   import { HelpButton, layerId } from "../common";
   import { SplitComponent } from "../common/layout";
-  import { backend } from "../stores";
+  import { backend, currentStage } from "../stores";
   import type { Waypoint } from "../types";
   import { waypoints } from "./stores";
 
@@ -252,103 +253,135 @@
       finish();
     }
   }
+
+  // @ts-expect-error Need to write a proper type for this
+  $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
 </script>
 
 <svelte:window on:keydown={keyDown} />
 
 <SplitComponent>
   <div slot="controls">
-    {#if editingExisting}
-      <h2>Editing a route</h2>
-    {:else}
-      <h2>Drawing a new route</h2>
-    {/if}
+    <div class="main-controls">
+      <header class="ds_page-header">
+        <span class="ds_page-header__label ds_content-label">
+          {headerLabel}
+        </span>
 
-    <div>
-      <button on:click={finish} disabled={$waypoints.length < 2}>
-        Finish and back to overview
-      </button>
+        {#if editingExisting}
+          <h2 class="ds_page-header__title">Edit a route</h2>
+        {:else}
+          <h2 class="ds_page-header__title">Draw a new route</h2>
+        {/if}
+      </header>
+
+      <div>
+        <button
+          class="ds_link"
+          on:click={finish}
+          disabled={$waypoints.length < 2}
+        >
+          &lt; Finish and back
+        </button>
+      </div>
+
+      <div class="ds_button-group">
+        <button
+          class="ds_button ds_button--secondary ds_button--small"
+          disabled={undoStates.length == 0}
+          on:click={undo}
+        >
+          {#if undoStates.length == 0}
+            Undo
+          {:else}
+            Undo ({undoStates.length})
+          {/if}
+        </button>
+        <button
+          class="ds_button ds_button--secondary ds_button--small"
+          on:click={deleteRoute}
+        >
+          Delete
+        </button>
+        <button
+          class="ds_button ds_button--cancel ds_button--small"
+          on:click={cancel}
+        >
+          Cancel
+        </button>
+        <HelpButton>
+          <ul>
+            <li>
+              <b>Click</b>
+              the map to add new points, while extending from the start or end
+            </li>
+            <li>
+              <b>Click and drag</b>
+              any point to move it
+            </li>
+            <li>
+              <b>Right click</b>
+              a waypoint to delete it
+            </li>
+          </ul>
+
+          <p>Keyboard shortcuts:</p>
+          <ul>
+            <li>
+              <b>1</b>
+              to extend from start
+            </li>
+            <li>
+              <b>2</b>
+              to extend from end
+            </li>
+            <li>
+              <b>3</b>
+              to drag middle points
+            </li>
+            <li>
+              <b>Control+Z</b>
+              to undo your last change
+            </li>
+            <li>
+              <b>Enter</b>
+              to finish
+            </li>
+            <li>
+              <b>Escape</b>
+              to cancel
+            </li>
+          </ul>
+        </HelpButton>
+      </div>
+
+      <fieldset>
+        <label>
+          <input type="radio" value="append-start" bind:group={drawMode} />
+          Extend from start (
+          <kbd>1</kbd>
+          )
+        </label>
+        <br />
+        <label>
+          <input type="radio" value="append-end" bind:group={drawMode} />
+          Extend from end (
+          <kbd>2</kbd>
+          )
+        </label>
+        <br />
+        <label>
+          <input type="radio" value="adjust" bind:group={drawMode} />
+          Adjust middle points (
+          <kbd>3</kbd>
+          )
+        </label>
+      </fieldset>
+
+      <hr />
+
+      <slot name="extra-controls" />
     </div>
-    <button disabled={undoStates.length == 0} on:click={undo}>
-      {#if undoStates.length == 0}
-        Undo
-      {:else}
-        Undo ({undoStates.length})
-      {/if}
-    </button>
-    <button on:click={deleteRoute}>Delete</button>
-    <button on:click={cancel}>Cancel</button>
-    <HelpButton>
-      <ul>
-        <li>
-          <b>Click</b>
-          the map to add new points, while extending from the start or end
-        </li>
-        <li>
-          <b>Click and drag</b>
-          any point to move it
-        </li>
-        <li>
-          <b>Right click</b>
-          a waypoint to delete it
-        </li>
-      </ul>
-
-      <p>Keyboard shortcuts:</p>
-      <ul>
-        <li>
-          <b>1</b>
-          to extend from start
-        </li>
-        <li>
-          <b>2</b>
-          to extend from end
-        </li>
-        <li>
-          <b>3</b>
-          to drag middle points
-        </li>
-        <li>
-          <b>Control+Z</b>
-          to undo your last change
-        </li>
-        <li>
-          <b>Enter</b>
-          to finish
-        </li>
-        <li>
-          <b>Escape</b>
-          to cancel
-        </li>
-      </ul>
-    </HelpButton>
-
-    <fieldset>
-      <label>
-        <input type="radio" value="append-start" bind:group={drawMode} />
-        Extend from start (
-        <kbd>1</kbd>
-        )
-      </label>
-      <br />
-      <label>
-        <input type="radio" value="append-end" bind:group={drawMode} />
-        Extend from end (
-        <kbd>2</kbd>
-        )
-      </label>
-      <br />
-      <label>
-        <input type="radio" value="adjust" bind:group={drawMode} />
-        Adjust middle points (
-        <kbd>3</kbd>
-        )
-      </label>
-    </fieldset>
-
-    <hr />
-
-    <slot name="extra-controls" />
   </div>
 
   <div slot="map">
@@ -413,6 +446,7 @@
 </SplitComponent>
 
 <style>
+  /** Styling on the map **/
   .dot {
     width: 30px;
     height: 30px;
@@ -449,5 +483,11 @@
 
   .hide {
     visibility: hidden;
+  }
+
+  /** Controls **/
+  .main-controls {
+    overflow-y: auto;
+    padding: 20px;
   }
 </style>
