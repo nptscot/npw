@@ -11,31 +11,29 @@
   import { showNetworkInfraTypes, showNetworkTiers } from "../stores";
 </script>
 
-<div class="bottom-center">
-  <b>Show your new network as</b>
-  <div style:display="flex">
-    <button
-      style:font-size="12px"
-      style:background={$editsRoadStyle == "edits_tier" ? "green" : "grey"}
-      on:click={() => ($editsRoadStyle = "edits_tier")}
+<div class="network-style">
+  <p>Show network as:</p>
+
+  <ul>
+    <li class="tier" class:selected={$editsRoadStyle == "edits_tier"}>
+      <button on:click={() => ($editsRoadStyle = "edits_tier")}>
+        ‖‖&nbsp; Tier
+      </button>
+    </li>
+    <li
+      class="infrastructure"
+      class:selected={$editsRoadStyle == "edits_infra"}
     >
-      Tier
-    </button>
-    <button
-      style:font-size="12px"
-      style:background={$editsRoadStyle == "edits_infra" ? "green" : "grey"}
-      on:click={() => ($editsRoadStyle = "edits_infra")}
-    >
-      Infrastructure type
-    </button>
-    <button
-      style:font-size="12px"
-      style:background={$editsRoadStyle == "off" ? "green" : "grey"}
-      on:click={() => ($editsRoadStyle = "off")}
-    >
-      Hidden
-    </button>
-  </div>
+      <button on:click={() => ($editsRoadStyle = "edits_infra")}>
+        ‖‖&nbsp; Infrastructure type
+      </button>
+    </li>
+    <li class="hidden" class:selected={$editsRoadStyle == "off"}>
+      <button on:click={() => ($editsRoadStyle = "off")}>
+        &#10680;&nbsp; Hidden
+      </button>
+    </li>
+  </ul>
 
   {#if $editsRoadStyle == "edits_infra"}
     <LegendWithToggles
@@ -58,14 +56,53 @@
 </div>
 
 <style>
-  .bottom-center {
+  .network-style {
     position: absolute;
     bottom: 10px;
-    width: 35vw;
-    left: 50%;
-    transform: translateX(-50%);
-
-    background: white;
-    padding: 4px;
+    width: 500px;
+    left: 0;
+    right: 0;
+    margin-inline: auto;
+    background-color: white;
+    padding: 10px;
+    font-size: 14px;
+  }
+  .network-style p,
+  .network-style :global(ul) {
+    margin: 0;
+  }
+  .network-style :global(ul) {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+  }
+  .network-style :global(ul li) {
+    flex-grow: 1;
+    flex-basis: 0;
+    list-style: none;
+  }
+  .network-style :global(ul li:last-child) {
+    margin-bottom: auto;
+  }
+  .network-style ul li button {
+    width: 100%;
+    border-radius: 0;
+    border: 1px solid gray;
+    background-color: #eee;
+    text-align: left;
+  }
+  .network-style ul li.selected button {
+    font-weight: bold;
+    background-color: #ccc;
+  }
+  .network-style :global(ul li label) {
+    display: block;
+    border-radius: 0;
+    padding: 2px 6px;
+    text-align: left;
+  }
+  .network-style :global(ul li:hover) {
+    color: black;
+    opacity: 0.9;
   }
 </style>

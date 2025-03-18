@@ -124,57 +124,8 @@ body main[slot="assess"] progress[value] {
 img.help {
   float: right;
 }
-main.map-container .network-style {
-  position: absolute;
-  bottom: 10px;
-  width: 500px;
-  left: 0;
-  right: 0;
-  margin-inline: auto;
-  background-color: white;
-  padding: 10px;
-  font-size: 14px;
-}
 main.map-container .network-style img.help {
   height: 16px;
-}
-main.map-container .network-style p,
-main.map-container .network-style ul {
-  margin: 0;
-}
-main.map-container .network-style ul {
-  display: flex;
-  flex-direction: row;
-  margin: 0;
-}
-main.map-container .network-style ul li {
-  flex-grow: 1;
-  flex-basis: 0;
-  list-style: none;
-}
-main.map-container .network-style ul li:last-child {
-  margin-bottom: auto;
-}
-main.map-container .network-style ul li button {
-  width: 100%;
-  border-radius: 0;
-  border: 1px solid gray;
-  background-color: #eee;
-  text-align: left;
-}
-main.map-container .network-style ul li.selected button {
-  font-weight: bold;
-  background-color: #ccc;
-}
-main.map-container .network-style ul li label {
-  display: block;
-  border-radius: 0;
-  padding: 2px 6px;
-  text-align: left;
-}
-main.map-container .network-style ul li:hover {
-  color: black;
-  opacity: 0.9;
 }
 
 /* Overrides to styles */
