@@ -4,7 +4,7 @@
   import { layerId } from "../common";
   import { backend } from "../stores";
   import type { SetRouteInput } from "../types";
-  import { severances, type CurrentPOI } from "./stores";
+  import { type CurrentPOI } from "./stores";
 
   export let layerName: string;
   export let current: Omit<CurrentPOI, "pt"> | null;
@@ -15,7 +15,6 @@
   $: updateDebug(current);
 
   async function updateDebug(current: Omit<CurrentPOI, "pt"> | null) {
-    $severances = false;
     if ($backend && current) {
       if (current.reachable) {
         debug = await $backend.debugReachablePath(current.kind, current.idx);
@@ -26,7 +25,6 @@
           current.kind,
           current.idx,
         );
-        $severances = true;
       }
     } else {
       debug = emptyGeojson();

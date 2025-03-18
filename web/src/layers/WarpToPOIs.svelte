@@ -207,8 +207,8 @@
       </p>
     {:else}
       <p>
-        {filteredPOIs[filterIdx].name} is not connected to the network, because there
-        are red severances surronding it.
+        {filteredPOIs[filterIdx].name} is not connected to the network. Enable the
+        Reachability layer to see the red severances surronding it.
       </p>
 
       <button on:click={fixUnreachable}>
