@@ -25,6 +25,34 @@
         />
       </li>
 
+      <li title="TODO: Placeholder score">
+        Directness
+        <br />
+        <progress value="50" max="100" />
+      </li>
+
+      <li title="Percent of main roads covered by network">
+        Coherence
+        <br />
+        <progress
+          value={percent(
+            $stats.covered_main_road_length,
+            $stats.total_main_road_length,
+          )}
+          max="100"
+        />
+      </li>
+
+      <!--<li title="Density of primary/secondary network within settlements">
+        Coherence (density)
+        <br />
+        {#if $stats.density_network_in_settlements}
+          {Math.round($stats.density_network_in_settlements)}m
+        {:else}
+          no routes yet
+        {/if}
+      </li>-->
+
       <li title="What percent of your network is on low gradient (&le; 3%)?">
         Comfort
         <br />
@@ -37,26 +65,10 @@
         />
       </li>
 
-      <li>
-        Coherence (main roads)
+      <li title="TODO: Placeholder score">
+        Attractiveness
         <br />
-        <progress
-          value={percent(
-            $stats.covered_main_road_length,
-            $stats.total_main_road_length,
-          )}
-          max="100"
-        />
-      </li>
-
-      <li title="Density of primary/secondary network within settlements">
-        Coherence (density)
-        <br />
-        {#if $stats.density_network_in_settlements}
-          {Math.round($stats.density_network_in_settlements)}m
-        {:else}
-          no routes yet
-        {/if}
+        <progress value="50" max="100" />
       </li>
     </ul>
   </div>
