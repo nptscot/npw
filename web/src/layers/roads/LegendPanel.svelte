@@ -13,12 +13,31 @@
   } from "../../colors";
   import { HelpButton, percent, prettyPrintDistance } from "../../common";
   import { devMode, referenceRoadStyle, stats } from "../../stores";
-  import { debugOriginalData, populationStyle } from "../stores";
+  import {
+    cyclingDemand1,
+    cyclingDemand2,
+    debugOriginalData,
+    populationStyle,
+  } from "../stores";
   import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
   import CoreNetwork from "./CoreNetwork.svelte";
   import ExistingNetwork from "./ExistingNetwork.svelte";
   import NetworkDisconnections from "./NetworkDisconnections.svelte";
   import NptFullNetwork from "./NptFullNetwork.svelte";
+
+  // common has functions ForDemand, duplicating values here
+  // TODO Center on the buckets instad
+  let demandLimits = [1, 50, 100, 250, 500, 1000, 2000, 3000];
+  let demandColors = [
+    "#9C9C9C",
+    "#FFFF73",
+    "#AFFF00",
+    "#00FFFF",
+    "#30B0FF",
+    "#2E5FFF",
+    "#0000FF",
+    "#FF00C5",
+  ];
 </script>
 
 <div class="panel">
@@ -128,7 +147,12 @@
     </p>
   {/if}
 
-  <!-- TODO: There could be a legend for both roads and population at the same time -->
+  <!-- TODO: There could be a legend for both reference layers, population, and
+  per-tier layers at the same time... -->
+
+  {#if $cyclingDemand1 || $cyclingDemand2}
+    <SequentialLegend colorScale={demandColors} limits={demandLimits} />
+  {/if}
 
   {#if $populationStyle == "deprived"}
     <SequentialLegend

@@ -2,7 +2,11 @@
   import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
   import { LineLayer } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import { layerId, lineWidthForDemand, roadLineWidth } from "../../common";
+  import {
+    layerId,
+    lineColorForDemand,
+    lineWidthForDemand,
+  } from "../../common";
   import {
     cyclingDemand1,
     cyclingDemand2,
@@ -42,11 +46,9 @@
     visibility: $cyclingDemand1 || $cyclingDemand2 ? "visible" : "none",
   }}
   paint={{
-    "line-color": "grey",
+    "line-color": lineColorForDemand(["get", "precalculated_demand"]),
     "line-opacity": opacity,
-    "line-width": $debugAllCyclingDemand
-      ? lineWidthForDemand(["get", "precalculated_demand"])
-      : roadLineWidth(4),
+    "line-width": lineWidthForDemand(["get", "precalculated_demand"]),
   }}
 >
   {#if $debugAllCyclingDemand}
