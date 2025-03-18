@@ -3,6 +3,7 @@
 
   export let name: string;
   export let style: "off" | "population" | "deprived";
+  export let icon: string;
 
   function toggle() {
     if ($populationStyle == style) {
@@ -13,10 +14,9 @@
   }
 </script>
 
-<button
-  style:background={$populationStyle == style ? "green" : "grey"}
-  style:font-size="15px"
-  on:click={toggle}
->
-  {name}
-</button>
+<li>
+  <button class:selected={$populationStyle == style} on:click={toggle}>
+    <i class="fa-solid {icon}"></i>
+    {name}
+  </button>
+</li>

@@ -25,35 +25,112 @@
 
 <div class="panel">
   <h3>Background layers</h3>
-  <Toggle name="Core network" style="cn" />
-  <Toggle name="Existing infrastructure type" style="existing_infra" />
-  <Toggle name="Estimated traffic volume" style="traffic" />
-  <Toggle name="Gradient" style="gradient" />
-  <Toggle name="Street space" style="street_space" />
-  <Toggle name="Estimated speed limit" style="speed" />
-  <Toggle name="NPT full network" style="precalculated_rnet" />
+  <ul>
+    <Toggle name="Core network" style="cn" icon="fa-person-biking" />
+    <Toggle
+      name="Existing infrastructure type"
+      style="existing_infra"
+      icon="fa-road"
+    />
+    <Toggle name="Estimated traffic volume" style="traffic" icon="fa-car" />
+    <Toggle name="Gradient" style="gradient" icon="fa-mound" />
+    <Toggle
+      name="Street space"
+      style="street_space"
+      icon="fa-ruler-horizontal"
+    />
+    <Toggle
+      name="Estimated speed limit"
+      style="speed"
+      icon="fa-gauge-simple-high"
+    />
+    <Toggle
+      name="NPT full network"
+      style="precalculated_rnet"
+      icon="fa-diagram-project"
+    />
+  </ul>
 
-  <h3>Evaluation</h3>
-  <Toggle name="Level of Service" style="los" />
-  <Toggle name="Reachability" style="reachability" />
-  <Toggle name="Route network (calculated)" style="calculated_rnet" />
-  <Toggle name="Network disconnections" style="disconnections" />
-  <Toggle name="Streetspace deliverability" style="deliverability" />
-
-  <hr />
-  <PopulationToggle name="Population" style="population" />
-  <PopulationToggle name="Deprived population (SIMD)" style="deprived" />
+  <h3>Evaluation layers</h3>
+  <ul>
+    <Toggle name="Level of Service" style="los" icon="fa-face-smile" />
+    <Toggle name="Reachability" style="reachability" icon="fa-link" />
+    <Toggle
+      name="Route network (calculated)"
+      style="calculated_rnet"
+      icon="fa-globe"
+    />
+    <Toggle
+      name="Network disconnections"
+      style="disconnections"
+      icon="fa-link-slash"
+    />
+    <Toggle
+      name="Streetspace deliverability"
+      style="deliverability"
+      icon="fa-person-digging"
+    />
+    <hr />
+    <PopulationToggle name="Population" style="population" icon="fa-person" />
+    <PopulationToggle
+      name="Deprived population (SIMD)"
+      style="deprived"
+      icon="fa-house-user"
+    />
+  </ul>
 </div>
 
 <style>
   .panel {
     position: absolute;
+    width: 165px;
     top: 10px;
     right: 10px;
-    width: 15%;
-
-    display: flex;
-    flex-direction: column;
-    background: white;
+    background-color: white;
+    overflow-y: auto;
+    padding: 10px;
+  }
+  .panel h3 {
+    font-size: 14px;
+  }
+  .panel :global(ul) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .panel :global(ul li) {
+    margin: 0 0 6px;
+    padding: 0;
+    line-height: 14px;
+  }
+  .panel :global(ul li button) {
+    width: 100%;
+    border: 0;
+    border-left: 5px solid #ddd;
+    background-color: #f7f7f7;
+    text-align: left;
+    padding: 4px 8px;
+  }
+  .panel :global(button) {
+    background-color: #ccc;
+    font-size: 12px;
+    height: 36px;
+  }
+  .panel :global(button.selected),
+  .panel :global(button.selected i) {
+    color: #603;
+    border-color: #603;
+    background-color: #dcdcdc;
+  }
+  .panel :global(button.relevant) {
+    border-left-color: #666;
+  }
+  .panel :global(button i) {
+    display: block;
+    font-size: 16px;
+    width: 20px;
+    color: #aaa;
+    float: right;
+    line-height: 26px;
   }
 </style>

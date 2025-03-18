@@ -2,6 +2,7 @@
   import "./style.css";
   import "@scottish-government/design-system/dist/css/design-system.css";
   import "@scottish-government/design-system/dist/scripts/design-system.js";
+  import "@fortawesome/fontawesome-free/css/all.min.css";
   import * as Comlink from "comlink";
   import type { Map, StyleSpecification } from "maplibre-gl";
   import { onMount } from "svelte";
