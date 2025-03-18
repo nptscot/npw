@@ -9,10 +9,12 @@
     hoverStateFilter,
     LineLayer,
     MapLibre,
+    NavigationControl,
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import boundariesUrl from "../assets/boundaries.geojson?url";
+  import logo from "../assets/npt_logo.png?url";
   import { listAllFiles } from "./common/files";
   import { maptilerApiKey } from "./stores";
 
@@ -24,7 +26,7 @@
   let ladNames: string[] = [];
 
   onMount(async () => {
-    // For the SG design system
+    // @ts-expect-error This really exists for the SG design system, but TS doesn't know about it
     window.DS.initAll();
 
     let resp = await fetch(boundariesUrl);
@@ -45,7 +47,9 @@
 
 <div class="container">
   <div class="controls">
-    <h2>Network Planning Workspace</h2>
+    <p><a href="https://www.npt.scot/"><img src={logo} alt="NPT logo" /></a></p>
+
+    <h1>Network Planning Workspace</h1>
 
     <p>
       Welcome to the Network Planning Workspace, incorporating the Network
@@ -58,16 +62,24 @@
       local places are properly connected without severance.
     </p>
 
-    <h3>Select an area</h3>
+    <h3><label class="ds_label" for="component">Select an area</label></h3>
 
     <p>Select your area from this list, or click on the map, to start.</p>
 
-    <select bind:value={lad}>
-      <option value=""></option>
-      {#each ladNames as value}
-        <option {value}>{value}</option>
-      {/each}
-    </select>
+    <div class="ds_select-wrapper">
+      <select
+        class="ds_select"
+        id="component"
+        name="component"
+        bind:value={lad}
+      >
+        <option value=""></option>
+        {#each ladNames as value}
+          <option {value}>{value}</option>
+        {/each}
+      </select>
+      <span class="ds_select-arrow" aria-hidden="true"></span>
+    </div>
 
     <button
       class="ds_button"
@@ -83,7 +95,7 @@
 
     <div style="columns: 2">
       {#each listAllFiles() as [boundary, list]}
-        <div class="group">
+        <div class="file-group">
           <h4>{boundary}</h4>
           {#each list as [filename, description]}
             <p>
@@ -99,67 +111,71 @@
   </div>
 
   <div class="map">
-    <div style="position: relative; width: 100%; height: 100%;">
-      <MapLibre
-        style={`https://api.maptiler.com/maps/streets-v2/style.json?key=${maptilerApiKey}`}
-        standardControls
-        bounds={[-8.943, 54.631, -0.901, 59.489]}
-        on:error={(e) => {
-          // @ts-expect-error ErrorEvent isn't exported
-          console.log(e.detail.error);
-        }}
-      >
-        <GeoJSON data={gj} generateId>
-          <FillLayer
-            paint={{
-              "fill-color": "rgb(200, 100, 240)",
-              "fill-outline-color": "rgb(200, 100, 240)",
-              "fill-opacity": hoverStateFilter(0.0, 0.5),
-            }}
-            beforeId="Road labels"
-            manageHoverState
-            hoverCursor="pointer"
-            on:click={onClick}
-          >
-            <Popup openOn="hover" let:props>
-              <p>{props.name}</p>
-            </Popup>
-          </FillLayer>
+    <MapLibre
+      style={`https://api.maptiler.com/maps/streets-v2/style.json?key=${maptilerApiKey}`}
+      bounds={[-8.943, 54.631, -0.901, 59.489]}
+      on:error={(e) => {
+        // @ts-expect-error ErrorEvent isn't exported
+        console.log(e.detail.error);
+      }}
+    >
+      <NavigationControl showCompass={false} position="top-right" />
+      <GeoJSON data={gj} generateId>
+        <FillLayer
+          paint={{
+            "fill-color": "rgb(200, 100, 240)",
+            "fill-outline-color": "rgb(200, 100, 240)",
+            "fill-opacity": hoverStateFilter(0.0, 0.5),
+          }}
+          beforeId="Road labels"
+          manageHoverState
+          hoverCursor="pointer"
+          on:click={onClick}
+        >
+          <Popup openOn="hover" let:props>
+            <p>{props.name}</p>
+          </Popup>
+        </FillLayer>
 
-          <LineLayer
-            paint={{
-              "line-color": "rgb(200, 100, 240)",
-              "line-width": 2.5,
-            }}
-            beforeId="Road labels"
-          />
-        </GeoJSON>
-      </MapLibre>
-    </div>
+        <LineLayer
+          paint={{
+            "line-color": "rgb(200, 100, 240)",
+            "line-width": 2.5,
+          }}
+          beforeId="Road labels"
+        />
+      </GeoJSON>
+    </MapLibre>
   </div>
 </div>
 
 <style>
-  :global(body) {
-    margin: 0;
-  }
-
   .container {
-    display: flex;
     height: 100vh;
+    position: relative;
   }
 
+  /* Layout - existing */
   .controls {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    bottom: 0;
     width: 35%;
     overflow-y: auto;
-    padding: 4px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    box-shadow: 10px 0px 10px 0px rgba(0, 0, 0, 0.1);
   }
-
   .map {
-    width: 65%;
+    height: 100%;
+    width: 100%;
   }
 
-  .group {
+  /* TODO: Temporarily, controls for grouping previous files */
+  .file-group {
     border: 1px solid black;
     padding: 4px;
     margin-bottom: 8px;
