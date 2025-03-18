@@ -75,6 +75,11 @@
 {/if}
 
 <style>
+  .progress-summary {
+    padding-left: 20px;
+    margin-left: auto;
+  }
+
   /* TODO Does this do anything? Why the big <a>?
   .progress-summary a {
     text-decoration: none;
