@@ -52,11 +52,6 @@
     <h1>Network Planning Workspace</h1>
 
     <p>
-      Welcome to the Network Planning Workspace, incorporating the Network
-      Planning Tool.
-    </p>
-
-    <p>
       The NPW is designed to enable local authorities to plan a cycle network
       for the area, using segregated infrastructure on key routes and ensuring
       local places are properly connected without severance.
