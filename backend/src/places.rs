@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
-use geo::{BoundingRect, Contains, Coord, Intersects, MultiPolygon, Point, Rect};
+use geo::{Area, BooleanOps, BoundingRect, Contains, Coord, Intersects, MultiPolygon, Point, Rect};
 use geojson::Feature;
 use graph::{Graph, RoadID};
 use rstar::AABB;
@@ -213,10 +213,24 @@ impl Settlement {
     }
 
     pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
+        let boundary_mercator = graph.mercator.to_mercator(boundary_wgs84);
+
         let mut settlements = Vec::new();
         for x in geojson::de::deserialize_feature_collection_str_to_vec::<SettlementGJ>(gj)? {
             if boundary_wgs84.intersects(&x.geometry) {
                 let polygon = graph.mercator.to_mercator(&x.geometry);
+                // How much of the settlement intersects the study area?
+                let overlap = boundary_mercator.intersection(&polygon);
+                let ratio_in_boundary = overlap.unsigned_area() / polygon.unsigned_area();
+
+                if ratio_in_boundary < 0.1 {
+                    info!(
+                        "Skipping settlement {:?} because only {}% of it overlaps the boundary",
+                        x.name,
+                        ratio_in_boundary * 100.0
+                    );
+                    continue;
+                }
 
                 // All intersecting roads
                 // TODO Could rtree to speed up
