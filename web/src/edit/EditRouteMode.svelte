@@ -194,12 +194,6 @@
   editingExisting={id != null}
 >
   <div slot="extra-controls" class="main-controls">
-    <input
-      class="ds_input ds_input--fixed-20"
-      placeholder="Name"
-      bind:value={name}
-    />
-
     {#if $waypoints.length >= 2}
       {#if overrideInfraType}
         <p>
@@ -261,6 +255,14 @@
       <SectionDiagram breakdown={$editModeBreakdown} {sectionsGj} />
     {/if}
 
+    <br />
+
+    <input
+      class="ds_input ds_input--fixed-20"
+      placeholder="Name"
+      bind:value={name}
+    />
+
     <textarea
       class="ds_input"
       rows="2"
@@ -309,7 +311,9 @@
 
 <Modal bind:show={showOverrideModal}>
   <PickInfraType bind:current={infraType} />
-  <button on:click={() => (showOverrideModal = false)}>OK</button>
+  <button class="ds_button" on:click={() => (showOverrideModal = false)}>
+    OK
+  </button>
 </Modal>
 
 <style>
