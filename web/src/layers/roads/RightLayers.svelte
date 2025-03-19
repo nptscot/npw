@@ -85,6 +85,7 @@
     position: absolute;
     width: 165px;
     top: 10px;
+    bottom: 40px;
     right: 10px;
     background-color: white;
     overflow-y: auto;
