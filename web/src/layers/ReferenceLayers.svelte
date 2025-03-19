@@ -9,7 +9,7 @@
   import DebugNptPmtiles from "./roads/DebugNptPmtiles.svelte";
   import Roads from "./roads/Roads.svelte";
   import Settlements from "./Settlements.svelte";
-  import { cyclingDemand1, cyclingDemand2 } from "./stores";
+  import { cyclingDemandHigh, cyclingDemandMedium } from "./stores";
   import TownCentres from "./TownCentres.svelte";
 </script>
 
@@ -22,12 +22,12 @@
 
 <!-- Primary -->
 
-<CyclingDemandCoverage label="High" bind:show={$cyclingDemand1} />
+<CyclingDemandCoverage label="High" bind:show={$cyclingDemandHigh} />
 <MainRoadCoverage />
 
 <!-- Secondary -->
 
-<CyclingDemandCoverage label="Medium" bind:show={$cyclingDemand2} />
+<CyclingDemandCoverage label="Medium" bind:show={$cyclingDemandMedium} />
 <TownCentres />
 
 <!-- Local acces -->

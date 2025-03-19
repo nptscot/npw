@@ -9,11 +9,11 @@ export let allControls: Writable<Map<string, HTMLDivElement>> = writable(
 // Only layers that need to be controlled remotely need to be here
 export let debugAllCyclingDemand = writable(false);
 export let debugCyclingDemandMin = writable(0);
-export let cyclingDemand1 = writable(false);
+export let cyclingDemandHigh = writable(false);
 export let mainRoadCoverage = writable(false);
 export let showUncovered = writable(false);
 
-export let cyclingDemand2 = writable(false);
+export let cyclingDemandMedium = writable(false);
 export let townCentres = writable(false);
 
 export let localPOIs = writable(false);
@@ -34,8 +34,8 @@ export let enableLayersPerStage = {
 };
 
 export let disableLayersPerStage = {
-  Primary: [cyclingDemand1, mainRoadCoverage],
-  Secondary: [cyclingDemand2, townCentres, severances],
+  Primary: [cyclingDemandHigh, mainRoadCoverage],
+  Secondary: [cyclingDemandMedium, townCentres, severances],
   LocalAccess: [localPOIs, severances],
   LongDistance: [settlements, severances],
   assessment: [gridMeshDensity],

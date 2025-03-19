@@ -14,8 +14,8 @@
   import { HelpButton, percent, prettyPrintDistance } from "../../common";
   import { devMode, referenceRoadStyle, stats } from "../../stores";
   import {
-    cyclingDemand1,
-    cyclingDemand2,
+    cyclingDemandHigh,
+    cyclingDemandMedium,
     debugOriginalData,
     populationStyle,
   } from "../stores";
@@ -150,7 +150,7 @@
   <!-- TODO: There could be a legend for both reference layers, population, and
   per-tier layers at the same time... -->
 
-  {#if $cyclingDemand1 || $cyclingDemand2}
+  {#if $cyclingDemandHigh || $cyclingDemandMedium}
     <SequentialLegend colorScale={demandColors} limits={demandLimits} />
   {/if}
 

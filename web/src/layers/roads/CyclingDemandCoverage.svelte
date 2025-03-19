@@ -11,8 +11,8 @@
     lineWidthForDemand,
   } from "../../common";
   import {
-    cyclingDemand1,
-    cyclingDemand2,
+    cyclingDemandHigh,
+    cyclingDemandMedium,
     debugAllCyclingDemand,
     debugCyclingDemandMin,
     showUncovered,
@@ -24,17 +24,17 @@
         ["get", "precalculated_demand"],
         $debugCyclingDemandMin,
       ] as ExpressionSpecification)
-    : $cyclingDemand1
+    : $cyclingDemandHigh
       ? ([
           "==",
           ["get", "precalculated_demand_group"],
           "high",
         ] as ExpressionSpecification)
-      : $cyclingDemand2
+      : $cyclingDemandMedium
         ? ([
-            "==",
+            "!=",
             ["get", "precalculated_demand_group"],
-            "medium",
+            "",
           ] as ExpressionSpecification)
         : undefined;
 
@@ -53,7 +53,7 @@
   {...layerId("uncovered-cycling-demands")}
   {filter}
   layout={{
-    visibility: $cyclingDemand1 || $cyclingDemand2 ? "visible" : "none",
+    visibility: $cyclingDemandHigh || $cyclingDemandMedium ? "visible" : "none",
   }}
   paint={{
     "line-color": lineColorForDemand(["get", "precalculated_demand"]),
