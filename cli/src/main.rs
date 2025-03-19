@@ -43,7 +43,8 @@ fn main() -> Result<()> {
     let mut timer = Timer::new("build model", None);
     let osm_bytes = std::fs::read(&args.input)?;
     let boundary_gj = std::fs::read_to_string(&args.boundary)?;
-    let model = create(&osm_bytes, &boundary_gj, &mut timer)?;
+    let study_area_name = args.output.split("/").last().unwrap().strip_suffix(".bin").unwrap();
+    let model = create(study_area_name, &osm_bytes, &boundary_gj, &mut timer)?;
 
     timer.step("writing");
     let writer = BufWriter::new(File::create(&args.output)?);
@@ -58,7 +59,13 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<MapModel> {
+fn create(
+    study_area_name: &str,
+    input_bytes: &[u8],
+    boundary_gj: &str,
+    timer: &mut Timer,
+) -> Result<MapModel> {
+    info!("Creating MapModel for {study_area_name}");
     let graph = Graph::new(
         input_bytes,
         &mut utils::osm2graph::NullReader,
@@ -146,6 +153,7 @@ fn create(input_bytes: &[u8], boundary_gj: &str, timer: &mut Timer) -> Result<Ma
     let gradients = read_gradients("../data_prep/tmp/UK-dem-50m-4326.tif", &graph, timer)?;
 
     Ok(MapModel::create(
+        study_area_name,
         graph,
         boundary_wgs84,
         od_zones,

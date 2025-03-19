@@ -142,6 +142,7 @@ pub struct Streetspace {
 impl MapModel {
     // TODO For main.rs to create this. Can't make fields public without wasm_bindgen on them
     pub fn create(
+        study_area_name: &str,
         graph: Graph,
         boundary_wgs84: MultiPolygon,
         od_zones: HashMap<String, od::Zone>,
@@ -190,8 +191,13 @@ impl MapModel {
             .take(graph.roads.len())
             .collect();
 
+        // TODO Temporary manual override
         let (high_demand_threshold, medium_demand_threshold) =
-            find_cycling_demand_thresholds(&precalculated_demands);
+            if study_area_name == "LAD_Aberdeen City" {
+                (1000, 250)
+            } else {
+                find_cycling_demand_thresholds(&precalculated_demands)
+            };
 
         let mut model = Self {
             graph,
