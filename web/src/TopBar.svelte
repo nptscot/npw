@@ -48,13 +48,13 @@
             target="_blank"
           >
             <img id="logo" src={logo} alt="NPT logo" />
-            NPW &nbsp;&gt;
+            &nbsp;&gt;
           </a>
         </li>
 
         <li class="ds_site-navigation__item">
           <a class="ds_site-navigation__link" href="index.html">
-            Select area &nbsp;&gt;
+            Pick area &nbsp;&gt;
           </a>
         </li>
 
