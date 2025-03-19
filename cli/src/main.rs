@@ -485,7 +485,8 @@ fn read_greenspaces(
             .collect();
 
         if roads.is_empty() {
-            warn!("Greenspace {name:?} has no access points; it won't be reachable");
+            warn!("Skipping greenspace {name:?} with no access points; it won't be reachable");
+            continue;
         }
 
         let centroid = geom.centroid().unwrap();
