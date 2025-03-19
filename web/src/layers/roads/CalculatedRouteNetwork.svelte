@@ -40,31 +40,39 @@
 <Loading {loading} />
 
 {#if $referenceRoadStyle == "calculated_rnet"}
-  <button
-    on:click={recalc}
-    disabled={$mutationCounter == lastUpdate && fastSample == lastFastSample}
-  >
-    Recalculate
-  </button>
+  <div>
+    <button
+      on:click={recalc}
+      disabled={$mutationCounter == lastUpdate && fastSample == lastFastSample}
+    >
+      Recalculate
+    </button>
+  </div>
 
-  <label>
-    <input type="checkbox" bind:checked={fastSample} />
-    Just sample desire lines (fast)
-  </label>
+  <div>
+    <label>
+      <input type="checkbox" bind:checked={fastSample} />
+      Just sample desire lines (fast)
+    </label>
+  </div>
 
-  <label>
-    Color:
-    <select bind:value={colorBy}>
-      <option value="demand">Demand</option>
-      <option value="los">Level of service</option>
-      <option value="infra_type">Infrastructure type</option>
-    </select>
-  </label>
+  <div>
+    <label>
+      Color:
+      <select bind:value={colorBy}>
+        <option value="demand">Demand</option>
+        <option value="los">Level of service</option>
+        <option value="infra_type">Infrastructure type</option>
+      </select>
+    </label>
+  </div>
 
-  <label>
-    Show demand above:
-    <input type="number" bind:value={minDemand} />
-  </label>
+  <div>
+    <label>
+      Show demand above:
+      <input type="number" bind:value={minDemand} />
+    </label>
+  </div>
 
   {#if gj}
     <p>

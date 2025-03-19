@@ -27,9 +27,11 @@
 {#if $referenceRoadStyle == "existing_infra"}
   <QualitativeLegend colors={infraTypeColors} />
 
-  <button on:click={() => (showImportModal = true)}>
-    Import existing routes
-  </button>
+  <div>
+    <button on:click={() => (showImportModal = true)}>
+      Import existing routes
+    </button>
+  </div>
 
   {#if $devMode}
     <label>

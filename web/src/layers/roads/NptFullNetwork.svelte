@@ -67,46 +67,56 @@
 </script>
 
 {#if $referenceRoadStyle == "precalculated_rnet"}
-  <label>
-    Trip purpose:
-    <select bind:value={purpose}>
-      {#each purposes as [value, label]}
-        <option {value}>{label}</option>
-      {/each}
-    </select>
-  </label>
+  <div>
+    <label>
+      Trip purpose:
+      <select bind:value={purpose}>
+        {#each purposes as [value, label]}
+          <option {value}>{label}</option>
+        {/each}
+      </select>
+    </label>
+  </div>
 
-  <label>
-    Scenario:
-    <select bind:value={scenario}>
-      {#each scenarios as [value, label]}
-        <option {value}>{label}</option>
-      {/each}
-    </select>
-  </label>
+  <div>
+    <label>
+      Scenario:
+      <select bind:value={scenario}>
+        {#each scenarios as [value, label]}
+          <option {value}>{label}</option>
+        {/each}
+      </select>
+    </label>
+  </div>
 
-  <label>
-    Network type:
-    <select bind:value={networkType}>
-      {#each networkTypes as [value, label]}
-        <option {value}>{label}</option>
-      {/each}
-    </select>
-  </label>
+  <div>
+    <label>
+      Network type:
+      <select bind:value={networkType}>
+        {#each networkTypes as [value, label]}
+          <option {value}>{label}</option>
+        {/each}
+      </select>
+    </label>
+  </div>
 
-  <label>
-    Color by:
-    <select bind:value={colorBy}>
-      {#each colorByOptions as [value, label]}
-        <option {value}>{label}</option>
-      {/each}
-    </select>
-  </label>
+  <div>
+    <label>
+      Color by:
+      <select bind:value={colorBy}>
+        {#each colorByOptions as [value, label]}
+          <option {value}>{label}</option>
+        {/each}
+      </select>
+    </label>
+  </div>
 
-  <label>
-    Show demand above:
-    <input type="number" bind:value={minDemand} />
-  </label>
+  <div>
+    <label>
+      Show demand above:
+      <input type="number" bind:value={minDemand} />
+    </label>
+  </div>
 {/if}
 
 <VectorTileSource url={`pmtiles://${assetUrl("route_network.pmtiles")}`}>

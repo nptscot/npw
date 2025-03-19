@@ -78,7 +78,7 @@
       <QualitativeLegend colors={streetSpaceColors} horiz />
     {/if}
 
-    What fits within the carriageway, verges, and footways?
+    <p>What fits within the carriageway, verges, and footways?</p>
 
     <HelpButton>
       <p>

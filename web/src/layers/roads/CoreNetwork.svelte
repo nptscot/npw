@@ -24,7 +24,7 @@
 {#if $referenceRoadStyle == "cn"}
   <QualitativeLegend colors={cnTierColors} horiz />
 
-  <button on:click={importExisting}>Import core network</button>
+  <div><button on:click={importExisting}>Import core network</button></div>
 
   {#if $devMode}
     <label>
