@@ -30,6 +30,11 @@ impl MapModel {
     /// Picks the "cheapest" InfraType that makes a road be classified as high LoS (or as high as
     /// possible)
     pub fn best_infra_type(&self, r: RoadID) -> InfraType {
+        // Easy first case -- this is always high LoS
+        if self.is_offroad[r.0] {
+            return InfraType::OffRoad;
+        }
+
         let speed = self.speeds[r.0];
         let traffic = self.traffic_volumes[r.0];
         let within_settlement = self.within_settlement[r.0];

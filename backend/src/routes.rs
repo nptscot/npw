@@ -123,7 +123,9 @@ impl MapModel {
             if used_roads.contains(&road_id) {
                 continue;
             }
-            let Some(infra_type) = crate::existing::classify(&road.osm_tags) else {
+            let Some(infra_type) =
+                crate::existing::classify_existing_osm_infra(self.is_offroad[idx], &road.osm_tags)
+            else {
                 continue;
             };
 

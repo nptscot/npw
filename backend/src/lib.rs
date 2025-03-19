@@ -61,6 +61,7 @@ pub struct MapModel {
     // Per RoadID, static data
     highways: Vec<Highway>,
     within_settlement: Vec<bool>,
+    is_offroad: Vec<bool>,
     traffic_volumes: Vec<usize>,
     core_network: Vec<Option<Tier>>,
     // Go Dutch totals for all purposes
@@ -177,6 +178,12 @@ impl MapModel {
             // We could make one set, but this isn't that slow
             .map(|r| settlements.iter().any(|s| s.roads.contains(&r.id)))
             .collect();
+        let is_offroad = graph
+            .roads
+            .iter()
+            .enumerate()
+            .map(|(idx, r)| is_offroad(highways[idx], &r.osm_tags))
+            .collect();
         let total_settlement_area_m2 = settlements.iter().map(|s| s.polygon.unsigned_area()).sum();
         let speeds = graph
             .roads
@@ -216,6 +223,7 @@ impl MapModel {
             greenspaces,
             highways,
             within_settlement,
+            is_offroad,
             traffic_volumes,
             core_network,
             precalculated_demands,
@@ -292,7 +300,11 @@ impl MapModel {
             f.set_property("gradient", self.gradients[idx]);
             f.set_property(
                 "existing_infra",
-                serde_json::to_value(existing::classify(&road.osm_tags)).unwrap(),
+                serde_json::to_value(existing::classify_existing_osm_infra(
+                    self.is_offroad[idx],
+                    &road.osm_tags,
+                ))
+                .unwrap(),
             );
             // TODO Could probably just plumb one of these
             f.set_property("precalculated_demand", self.precalculated_demands[idx]);
@@ -411,4 +423,24 @@ fn find_cycling_demand_thresholds(demands: &Vec<usize>) -> (usize, usize) {
     // TODO Switch to jenks
     let stats = utils::Quintiles::new(demands);
     (stats.quintile1, stats.quintile2)
+}
+
+fn is_offroad(highway: Highway, tags: &::utils::Tags) -> bool {
+    if !matches!(
+        highway,
+        Highway::Footway | Highway::Path | Highway::Cycleway | Highway::Pedestrian
+    ) {
+        return false;
+    }
+
+    // Brittle, but seemingly effective
+    if let Some(name) = tags.get("name") {
+        return [
+            " Path", " Towpath", " Railway", " Trail", " Walkway", " Walk",
+        ]
+        .iter()
+        .any(|x| name.ends_with(x));
+    }
+
+    false
 }

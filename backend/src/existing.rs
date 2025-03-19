@@ -128,7 +128,7 @@ pub fn car_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration
 // the stronger case.
 //
 // TODO This is only a partial implementation
-pub fn classify(tags: &Tags) -> Option<InfraType> {
+pub fn classify_existing_osm_infra(is_offroad: bool, tags: &Tags) -> Option<InfraType> {
     match Highway::classify(tags).unwrap() {
         Highway::Motorway
         | Highway::Trunk
@@ -168,38 +168,27 @@ pub fn classify(tags: &Tags) -> Option<InfraType> {
         }
 
         Highway::Footway | Highway::Path => {
-            if is_off_road(tags) {
+            if is_offroad {
                 Some(InfraType::OffRoad)
             } else {
                 Some(InfraType::SharedFootway)
             }
         }
         Highway::Cycleway => {
-            if is_off_road(tags) {
+            if is_offroad {
                 Some(InfraType::OffRoad)
             } else {
                 Some(InfraType::Segregated)
             }
         }
         Highway::Pedestrian => {
-            if is_off_road(tags) {
+            if is_offroad {
                 return Some(InfraType::OffRoad);
             }
 
             None
         }
     }
-}
-
-fn is_off_road(tags: &Tags) -> bool {
-    // TODO maybe regex
-    if let Some(name) = tags.get("name") {
-        // TODO case sensitivity?
-        return ["Path", "Towpath", "Railway", "Trail"]
-            .iter()
-            .any(|x| name.contains(x));
-    }
-    false
 }
 
 // TODO Upstream
