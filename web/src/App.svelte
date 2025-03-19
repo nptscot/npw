@@ -38,6 +38,7 @@
     backend,
     boundaryName,
     currentFilename,
+    currentStage,
     map as mapStore,
     maptilerApiKey,
     mode,
@@ -220,7 +221,9 @@
         <ScaleControl />
         <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
         <DisableInteractiveLayers />
-        <StreetView />
+        {#if $currentStage != "LocalAccess"}
+          <StreetView />
+        {/if}
 
         <div bind:this={mapDiv} />
 

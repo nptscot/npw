@@ -1,14 +1,17 @@
 <script lang="ts">
+  import icon from "../../assets/streetview.svg?url";
   import { currentPOI } from "./stores";
 
   // Per https://developers.google.com/maps/documentation/embed/quickstart,
   // make an API key and enable the Maps Embed API. This is apparently a
   // free API.
   let apiKey = "AIzaSyA5Na6sqIN4ctBGnA9nGJOiw8ImFcic2SI";
+
+  let show = false;
 </script>
 
-{#if $currentPOI}
-  <div>
+<div>
+  {#if show && $currentPOI}
     <iframe
       width="600"
       height="200"
@@ -18,8 +21,13 @@
       title="Google Streetview"
       src={`https://www.google.com/maps/embed/v1/streetview?key=${apiKey}&location=${$currentPOI.pt[1]},${$currentPOI.pt[0]}`}
     />
-  </div>
-{/if}
+    <br />
+  {/if}
+  <button on:click={() => (show = !show)}>
+    <img src={icon} title="StreetView" alt="StreetView" />
+    StreetView
+  </button>
+</div>
 
 <style>
   div {

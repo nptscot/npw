@@ -184,8 +184,8 @@
         ["literal", include],
       ]);
     } else if ($editsRoadStyle == "edits_tier") {
-      // @ts-expect-error ignore
       let include = Object.keys($showNetworkTiers).filter(
+        // @ts-expect-error ignore
         (k) => $showNetworkTiers[k],
       );
       filters.push([
