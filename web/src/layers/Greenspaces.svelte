@@ -98,7 +98,7 @@
     interactive={false}
     filter={["==", ["get", "kind"], "access point"]}
     paint={{
-      "circle-color": "green",
+      "circle-color": "grey",
       "circle-radius": ["step", ["zoom"], 0, 14, 5],
     }}
     layout={{
