@@ -17,7 +17,6 @@
     LineLayer,
     type LayerClickInfo,
   } from "svelte-maplibre";
-  import { QualitativeLegend } from "svelte-utils";
   import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
   import { infraTypeColors, tierColors } from "./colors";
   import { DrawRectangle, Modal } from "./common";
@@ -30,6 +29,7 @@
     map,
     mode,
     referenceRoadStyle,
+    type EditsRoadStyle,
   } from "./stores";
   import { infraTypeMapping, type RouteProps } from "./types";
 
@@ -38,17 +38,11 @@
     allRoutes = await $backend!.getAllRoutes();
   });
 
-  let origEditsStyle = $editsRoadStyle;
   let origReferenceStyle = $referenceRoadStyle;
-  $editsRoadStyle = "off";
   $referenceRoadStyle = "off";
   onDestroy(() => {
-    $editsRoadStyle = origEditsStyle;
     $referenceRoadStyle = origReferenceStyle;
   });
-
-  let colorBy: "infra" | "tier" =
-    origEditsStyle != "edits_tier" ? "infra" : "tier";
 
   let showTierModal = false;
   let overrideTier = "Primary";
@@ -77,6 +71,7 @@
 
   function newRectangle(rectangle: Feature<Polygon>) {
     for (let f of allRoutes.features) {
+      // TODO is it visible
       if (booleanIntersects(rectangle, f)) {
         selectedIds.add(f.properties.id);
       }
@@ -99,19 +94,25 @@
 
   function lineColor(
     selectedIds: Set<number>,
-    colorBy: "infra" | "tier",
+    colorBy: EditsRoadStyle,
   ): DataDrivenPropertyValueSpecification<string> {
     return [
       "case",
       ["in", ["get", "id"], ["literal", [...selectedIds]]],
       "blue",
       {
-        infra: constructMatchExpression(
+        // TODO invisible?
+        off: "black",
+        edits_infra: constructMatchExpression(
           ["get", "infra_type"],
           infraTypeColors,
           "black",
         ),
-        tier: constructMatchExpression(["get", "tier"], tierColors, "black"),
+        edits_tier: constructMatchExpression(
+          ["get", "tier"],
+          tierColors,
+          "black",
+        ),
       }[colorBy] as ExpressionSpecification,
     ];
   }
@@ -153,65 +154,59 @@
 
 <SplitComponent>
   <div slot="controls">
-    <h2>Bulk edit</h2>
+    <div class="main-controls">
+      <header class="ds_page-header">
+        <h2 class="ds_page-header__title">Bulk edit</h2>
+      </header>
 
-    <button on:click={() => ($mode = { kind: "main" })}>Back</button>
-
-    <div style="border: 2px solid black; padding: 4px">
-      <div><b>Your current network edits</b></div>
-
-      <label>
-        <input type="radio" value="off" bind:group={colorBy} disabled />
-        Don't show
-      </label>
-      <label>
-        <input type="radio" value="tier" bind:group={colorBy} />
-        Tier
-      </label>
-      <label>
-        <input type="radio" value="infra" bind:group={colorBy} />
-        Infrastructure type
-      </label>
-
-      <details>
-        <summary>Legend</summary>
-        {#if colorBy == "infra"}
-          <QualitativeLegend colors={infraTypeColors} />
-        {:else if colorBy == "tier"}
-          <QualitativeLegend colors={tierColors} horiz />
-        {/if}
-      </details>
-    </div>
-
-    <p>
-      <kbd>Shift + click</kbd>
-      and drag to select quickly
-    </p>
-
-    <p>
-      You've selected {selectedIds.size}
-      {selectedIds.size == 1 ? "route" : "routes"}
-    </p>
-
-    <button on:click={deleteAll} disabled={selectedIds.size == 0}>
-      Delete all
-    </button>
-
-    {#if selectedIds.size > 0}
-      <p>They have tiers: {describeCounts(selectedTiers)}</p>
-      {#if selectedTiers.length > 1}
-        <button on:click={() => (showTierModal = true)}>Change tier</button>
-      {/if}
+      <div>
+        <button class="ds_link" on:click={() => ($mode = { kind: "main" })}>
+          &lt; Back
+        </button>
+      </div>
 
       <p>
-        They have infrastructure types: {describeCounts(selectedInfraTypes)}
+        <b>Shift + click</b>
+        and drag to select quickly
       </p>
-      {#if selectedInfraTypes.length > 1}
-        <button on:click={() => (showInfraTypeModal = true)}>
-          Change infrastructure type
-        </button>
+
+      <p>
+        You've selected {selectedIds.size}
+        {selectedIds.size == 1 ? "route" : "routes"}
+      </p>
+
+      <button
+        class="ds_button ds_button--secondary"
+        on:click={deleteAll}
+        disabled={selectedIds.size == 0}
+      >
+        Delete all
+      </button>
+
+      {#if selectedIds.size > 0}
+        <p>They have tiers: {describeCounts(selectedTiers)}</p>
+        {#if selectedTiers.length > 1}
+          <button
+            class="ds_button ds_button--secondary"
+            on:click={() => (showTierModal = true)}
+          >
+            Change tier
+          </button>
+        {/if}
+
+        <p>
+          They have infrastructure types: {describeCounts(selectedInfraTypes)}
+        </p>
+        {#if selectedInfraTypes.length > 1}
+          <button
+            class="ds_button ds_button--secondary"
+            on:click={() => (showInfraTypeModal = true)}
+          >
+            Change infrastructure type
+          </button>
+        {/if}
       {/if}
-    {/if}
+    </div>
   </div>
 
   <div slot="map">
@@ -220,7 +215,7 @@
         manageHoverState
         paint={{
           "line-width": hoverStateFilter(4, 6),
-          "line-color": lineColor(selectedIds, colorBy),
+          "line-color": lineColor(selectedIds, $editsRoadStyle),
         }}
         hoverCursor="pointer"
         on:click={toggle}
@@ -270,3 +265,10 @@
   <button on:click={changeInfraType}>Change infrastructure type</button>
   <button on:click={() => (showInfraTypeModal = false)}>Cancel</button>
 </Modal>
+
+<style>
+  .main-controls {
+    overflow-y: auto;
+    padding: 20px;
+  }
+</style>

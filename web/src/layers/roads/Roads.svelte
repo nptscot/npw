@@ -159,7 +159,10 @@
           "line-width": roadLineWidth(1),
         }}
         layout={{
-          visibility: $editsRoadStyle == "off" ? "none" : "visible",
+          visibility:
+            $editsRoadStyle == "off" || $mode.kind == "bulk-edit"
+              ? "none"
+              : "visible",
         }}
         manageHoverState
         hoverCursor="pointer"
