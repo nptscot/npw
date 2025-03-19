@@ -19,6 +19,7 @@
     autosave,
     backend,
     currentStage,
+    editModeBreakdown,
     mode,
     routeA,
     routeB,
@@ -40,9 +41,6 @@
   let tier = $currentStage == "assessment" ? "Primary" : $currentStage;
 
   let showOverrideModal = false;
-
-  let breakdown: "infra_type" | "gradient" | "deliverability" | "los" =
-    "infra_type";
 
   let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
   $: recalculateSections($waypoints, overrideInfraType, infraType);
@@ -251,7 +249,7 @@
       <div>
         <label>
           Show details along route
-          <select bind:value={breakdown}>
+          <select bind:value={$editModeBreakdown}>
             <option value="infra_type">Infrastructure type</option>
             <option value="gradient">Gradient</option>
             <option value="deliverability">Streetspace deliverability</option>
@@ -260,7 +258,7 @@
         </label>
       </div>
 
-      <SectionDiagram {breakdown} {sectionsGj} />
+      <SectionDiagram breakdown={$editModeBreakdown} {sectionsGj} />
     {/if}
 
     <textarea
@@ -299,10 +297,10 @@
     <GeoJSON data={sectionsGj}>
       <LineLayer
         {...layerId("edit-route-sections")}
-        filter={filterSections[breakdown]}
+        filter={filterSections[$editModeBreakdown]}
         paint={{
           "line-width": 10,
-          "line-color": colorSections[breakdown],
+          "line-color": colorSections[$editModeBreakdown],
         }}
       />
     </GeoJSON>

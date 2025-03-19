@@ -3,6 +3,8 @@
   import {
     deprived,
     gradient,
+    gradientColors,
+    infraTypeColors,
     levelOfServiceColors,
     nptStreetSpaceColors,
     population,
@@ -12,7 +14,13 @@
     traffic,
   } from "../../colors";
   import { HelpButton, percent, prettyPrintDistance } from "../../common";
-  import { devMode, referenceRoadStyle, stats } from "../../stores";
+  import {
+    devMode,
+    editModeBreakdown,
+    mode,
+    referenceRoadStyle,
+    stats,
+  } from "../../stores";
   import {
     cyclingDemandHigh,
     cyclingDemandMedium,
@@ -147,11 +155,21 @@
     </p>
   {/if}
 
-  <!-- TODO: There could be a legend for both reference layers, population, and
-  per-tier layers at the same time... -->
+  <!-- TODO: There could be a legend for both reference layers, population,
+  per-tier layers, and edit mode all at the same time... -->
 
   {#if $cyclingDemandHigh || $cyclingDemandMedium}
     <SequentialLegend colorScale={demandColors} limits={demandLimits} />
+  {/if}
+
+  {#if $mode.kind == "edit-route"}
+    {#if $editModeBreakdown == "infra_type"}
+      <QualitativeLegend colors={infraTypeColors} />
+    {:else if $editModeBreakdown == "gradient"}
+      <QualitativeLegend colors={gradientColors} />
+    {:else if $editModeBreakdown == "los"}
+      <QualitativeLegend colors={levelOfServiceColors} />
+    {/if}
   {/if}
 
   {#if $populationStyle == "deprived"}

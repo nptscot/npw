@@ -53,6 +53,10 @@ export type ReferenceRoadStyle =
 export let editsRoadStyle: Writable<EditsRoadStyle> = writable("edits_tier");
 export let referenceRoadStyle: Writable<ReferenceRoadStyle> = writable("off");
 
+export let editModeBreakdown: Writable<
+  "infra_type" | "gradient" | "deliverability" | "los"
+> = writable("infra_type");
+
 export let interactiveMapLayersEnabled = writable(true);
 
 export let remoteStorage = writable(true);

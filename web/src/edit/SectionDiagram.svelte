@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { notNull, QualitativeLegend } from "svelte-utils";
+  import { notNull } from "svelte-utils";
   import {
     gradientColors,
     infraTypeColors,
@@ -13,14 +13,6 @@
 
   $: total = sum(sectionsGj.features.map((f) => f.properties.length));
 </script>
-
-{#if breakdown == "infra_type"}
-  <QualitativeLegend colors={infraTypeColors} />
-{:else if breakdown == "gradient"}
-  <QualitativeLegend colors={gradientColors} horiz />
-{:else if breakdown == "los"}
-  <QualitativeLegend colors={levelOfServiceColors} horiz />
-{/if}
 
 <div style:display="flex" style:border="1px solid black">
   {#each sectionsGj.features as f}
