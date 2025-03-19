@@ -17,7 +17,7 @@
   import { layerId } from "./common";
   import { SplitComponent } from "./common/layout";
   import Directions from "./Directions.svelte";
-  import AllControls from "./layers/AllControls.svelte";
+  import RelevantLayers from "./layers/RelevantLayers.svelte";
   import { backend, mode, routeA, routeB, type Mode } from "./stores";
   import type { RouteGJ, WorstRoutes } from "./types";
 
@@ -162,7 +162,7 @@
 
     <hr />
 
-    <AllControls />
+    <RelevantLayers />
   </div>
 
   <div slot="map">

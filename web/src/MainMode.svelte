@@ -1,7 +1,7 @@
 <script lang="ts">
   import { HelpButton } from "./common";
   import { SplitComponent } from "./common/layout";
-  import AllControls from "./layers/AllControls.svelte";
+  import RelevantLayers from "./layers/RelevantLayers.svelte";
   import LeftSidebarStats from "./stats/LeftSidebarStats.svelte";
   import { currentStage, devMode, mode } from "./stores";
 
@@ -88,6 +88,11 @@
         </HelpButton>
       </header>
 
+      {#if $currentStage == "LocalAccess"}
+        <RelevantLayers />
+        <br />
+      {/if}
+
       <div>
         <button
           class="ds_button"
@@ -118,7 +123,9 @@
         </button>
       </div>
 
-      <AllControls />
+      {#if $currentStage != "LocalAccess"}
+        <RelevantLayers />
+      {/if}
     </div>
 
     <LeftSidebarStats />

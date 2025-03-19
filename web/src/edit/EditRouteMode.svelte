@@ -13,7 +13,7 @@
     levelOfServiceColors,
   } from "../colors";
   import { layerId, Modal, percent } from "../common";
-  import AllControls from "../layers/AllControls.svelte";
+  import RelevantLayers from "../layers/RelevantLayers.svelte";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
     autosave,
@@ -290,7 +290,7 @@
       Evaluate this route
     </button>
 
-    <AllControls />
+    <RelevantLayers />
 
     <LeftSidebarStats />
   </div>
