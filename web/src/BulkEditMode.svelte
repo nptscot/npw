@@ -22,6 +22,7 @@
   import { DrawRectangle, Modal } from "./common";
   import { SplitComponent } from "./common/layout";
   import PickInfraType from "./edit/PickInfraType.svelte";
+  import { showNetworkInfraTypes, showNetworkTiers } from "./layers/stores";
   import {
     autosave,
     backend,
@@ -71,7 +72,20 @@
 
   function newRectangle(rectangle: Feature<Polygon>) {
     for (let f of allRoutes.features) {
-      // TODO is it visible
+      // Apply filters
+      if (
+        $editsRoadStyle == "edits_infra" &&
+        !$showNetworkInfraTypes[f.properties.infra_type]
+      ) {
+        continue;
+      }
+      if (
+        $editsRoadStyle == "edits_tier" &&
+        !$showNetworkTiers[f.properties.tier]
+      ) {
+        continue;
+      }
+
       if (booleanIntersects(rectangle, f)) {
         selectedIds.add(f.properties.id);
       }
@@ -101,7 +115,7 @@
       ["in", ["get", "id"], ["literal", [...selectedIds]]],
       "blue",
       {
-        // TODO invisible?
+        // Unselected routes are filtered out elsewhere
         off: "black",
         edits_infra: constructMatchExpression(
           ["get", "infra_type"],
@@ -150,6 +164,40 @@
     allRoutes = await $backend!.getAllRoutes();
     showInfraTypeModal = false;
   }
+
+  function makeFilter(
+    _a: any,
+    _b: any,
+    _c: any,
+    _d: any,
+  ): ExpressionSpecification {
+    let filters = ["any", ["in", ["get", "id"], ["literal", [...selectedIds]]]];
+    if ($editsRoadStyle == "edits_infra") {
+      let include = Object.keys($showNetworkInfraTypes).filter(
+        // @ts-expect-error ignore
+        (k) => $showNetworkInfraTypes[k],
+      );
+      filters.push([
+        "in",
+        ["get", "infra_type"],
+        // @ts-expect-error ignore
+        ["literal", include],
+      ]);
+    } else if ($editsRoadStyle == "edits_tier") {
+      // @ts-expect-error ignore
+      let include = Object.keys($showNetworkTiers).filter(
+        (k) => $showNetworkTiers[k],
+      );
+      filters.push([
+        "in",
+        ["get", "tier"],
+        // @ts-expect-error ignore
+        ["literal", include],
+      ]);
+    }
+    // @ts-expect-error ignore
+    return filters;
+  }
 </script>
 
 <SplitComponent>
@@ -175,13 +223,22 @@
         {selectedIds.size == 1 ? "route" : "routes"}
       </p>
 
-      <button
-        class="ds_button ds_button--secondary"
-        on:click={deleteAll}
-        disabled={selectedIds.size == 0}
-      >
-        Delete all
-      </button>
+      <div class="ds_button-group">
+        <button
+          class="ds_button ds_button--secondary"
+          on:click={() => (selectedIds = new Set())}
+          disabled={selectedIds.size == 0}
+        >
+          Clear selection
+        </button>
+        <button
+          class="ds_button ds_button--secondary"
+          on:click={deleteAll}
+          disabled={selectedIds.size == 0}
+        >
+          Delete all
+        </button>
+      </div>
 
       {#if selectedIds.size > 0}
         <p>They have tiers: {describeCounts(selectedTiers)}</p>
@@ -217,6 +274,12 @@
           "line-width": hoverStateFilter(4, 6),
           "line-color": lineColor(selectedIds, $editsRoadStyle),
         }}
+        filter={makeFilter(
+          selectedIds,
+          $editsRoadStyle,
+          $showNetworkInfraTypes,
+          $showNetworkTiers,
+        )}
         hoverCursor="pointer"
         on:click={toggle}
       />

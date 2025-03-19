@@ -9,6 +9,13 @@ import type {
 
 export type Tier = "Primary" | "Secondary" | "LocalAccess" | "LongDistance";
 
+export type InfraType =
+  | "Segregated"
+  | "SegregatedWithSpeedVolume"
+  | "OffRoad"
+  | "SharedFootway"
+  | "CycleLane"
+  | "MixedTraffic";
 export let infraTypes: [string, string, string][] = [
   ["Segregated", "Segregated track", "#054d05"],
   ["SegregatedWithSpeedVolume", "Segregated + traffic measures", "#469237"],
@@ -181,7 +188,7 @@ export interface RouteProps {
 
   name: string;
   notes: string;
-  infra_type: string;
+  infra_type: InfraType;
   override_infra_type: boolean;
   tier: Tier;
 }
