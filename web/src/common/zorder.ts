@@ -74,22 +74,7 @@ const layerZorder = [
   "mesh-density-grid",
   "mesh-density-grid-outline",
 
-  // Reference layers (lines)
-  "precalculated-rnet",
-  "uncovered-cycling-demands",
-  "uncovered-main-roads",
-  "edits-roads",
-  "reference-roads",
-  "cn-debug",
-  "existing-infra-debug",
-  "street_space-debug",
-  "traffic-debug",
-  "speed_limit-debug",
-  "los-debug",
-  "calculated-rnet",
-  "network-disconnections",
-
-  // Reference layers (points or small polygons)
+  // Reference layers (points or polygons)
   "gp-hospitals",
   "schools",
   "settlements-fill",
@@ -112,6 +97,21 @@ const layerZorder = [
   "fix-reachability-settlements",
   "fix-reachability-town_centres",
   "fix-reachability-pois",
+
+  // Roads
+  "precalculated-rnet",
+  "uncovered-cycling-demands",
+  "uncovered-main-roads",
+  "edits-roads",
+  "reference-roads",
+  "cn-debug",
+  "existing-infra-debug",
+  "street_space-debug",
+  "traffic-debug",
+  "speed_limit-debug",
+  "los-debug",
+  "calculated-rnet",
+  "network-disconnections",
 
   "block-reference-layers",
 
