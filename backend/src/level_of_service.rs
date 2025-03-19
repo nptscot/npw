@@ -36,7 +36,8 @@ impl MapModel {
 
         for infra_type in [
             InfraType::MixedTraffic,
-            InfraType::CycleLane,
+            // TODO Revisit CbD definitions. For now, never suggest.
+            //InfraType::CycleLane,
             InfraType::SharedFootway,
         ] {
             if get_level_of_service(infra_type, speed, traffic, within_settlement)
