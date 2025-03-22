@@ -2,7 +2,11 @@
   import logo from "../assets/npt_logo.png?url";
   import { tierLabels } from "./colors";
   import ManageFiles from "./common/ManageFiles.svelte";
-  import { disableLayersPerStage, enableLayersPerStage } from "./layers/stores";
+  import {
+    currentPOI,
+    disableLayersPerStage,
+    enableLayersPerStage,
+  } from "./layers/stores";
   import TopBarStats from "./stats/TopBarStats.svelte";
   import { currentStage, referenceRoadStyle } from "./stores";
   import type { Tier } from "./types";
@@ -20,6 +24,9 @@
       $referenceRoadStyle == "disconnections"
     ) {
       $referenceRoadStyle = "off";
+    }
+    if ($currentStage == "LocalAccess") {
+      $currentPOI = null;
     }
 
     $currentStage = newStage;

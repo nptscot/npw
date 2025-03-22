@@ -2,7 +2,7 @@
   import type { ExpressionSpecification } from "maplibre-gl";
   import { GeoJSON, SymbolLayer, type LayerClickInfo } from "svelte-maplibre";
   import { layerId } from "../common";
-  import { backend, mutationCounter } from "../stores";
+  import { autosave, backend, mutationCounter, zoom } from "../stores";
   import type { PoiKind, POIs } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
@@ -71,10 +71,45 @@
       pt: e.detail.event.lngLat.toArray(),
     };
   }
+
+  async function fixUnreachable() {
+    if ($currentPOI) {
+      let input = await $backend!.fixUnreachablePOI(
+        $currentPOI.kind,
+        $currentPOI.idx,
+      );
+      await $backend!.setRoute(null, input);
+      await autosave();
+
+      // TODO This assumes the fix succeeded. Can we easily check?
+      $currentPOI.reachable = true;
+    }
+  }
 </script>
 
 <LayerControls name="POIs" bind:show={$show}>
-  <WarpToPOIs />
+  {#if $zoom && $zoom > 13}
+    {#if $currentPOI}
+      {#if $currentPOI.reachable}
+        <p>
+          {$currentPOI.description} is connected to the network. The blue path shows
+          the route through quiet streets to the network.
+        </p>
+      {:else}
+        <button on:click={fixUnreachable}>
+          Add the black local access route to fix
+        </button>
+        <p>
+          {$currentPOI.description} is not connected to the network. Enable the Reachability
+          layer to see the red severances surronding it.
+        </p>
+      {/if}
+    {/if}
+
+    <WarpToPOIs />
+  {:else}
+    <p>Zoom in more to connect POIs</p>
+  {/if}
 </LayerControls>
 
 <GeoJSON data={schools} generateId>

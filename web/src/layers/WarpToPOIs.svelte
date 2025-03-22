@@ -1,27 +1,15 @@
 <script lang="ts">
-  import PrevNext from "../common/PrevNext.svelte";
-  import {
-    autosave,
-    backend,
-    currentStage,
-    map,
-    mutationCounter,
-    zoom,
-  } from "../stores";
+  import { backend, currentStage, map, mutationCounter } from "../stores";
   import type { PoiKind } from "../types";
   import { currentPOI, type POI } from "./stores";
-
-  type Reachability = "reachable" | "unreachable" | "all";
-
-  let filterReachability: Reachability = "unreachable";
-  let filterKind: PoiKind | "all" = "all";
 
   let lastUpdate = 0;
 
   let allPOIs: POI[] = [];
 
-  $: filteredPOIs = filterPOIs(allPOIs, filterKind, filterReachability);
+  let filterKind: PoiKind | "all" = "all";
   let filterIdx = 0;
+  let filteredPOIs: POI[] = [];
 
   async function recalc() {
     if (!$backend || lastUpdate == $mutationCounter) {
@@ -64,107 +52,54 @@
 
     allPOIs = list.map(([poi, _]) => poi);
     lastUpdate = $mutationCounter;
+
+    refilterPOIs();
   }
   $: if ($currentStage == "LocalAccess" && $mutationCounter > 0) {
     recalc();
   }
 
-  function filterPOIs(
-    allPOIs: POI[],
-    filterKind: PoiKind | "all",
-    filterReachability: Reachability,
-  ): POI[] {
+  function refilterPOIs() {
     filterIdx = 0;
-
-    return allPOIs.filter((poi) => {
-      if (filterKind != "all" && poi.kind != filterKind) {
-        return false;
-      }
-      if (
-        filterReachability != "all" &&
-        poi.reachable != (filterReachability == "reachable")
-      ) {
-        return false;
-      }
-      return true;
-    });
+    let unconnected = allPOIs.filter((poi) => !poi.reachable);
+    filteredPOIs =
+      filterKind == "all"
+        ? unconnected
+        : unconnected.filter((poi) => poi.kind == filterKind);
   }
 
-  $: warp($currentPOI);
-
-  $: if (filteredPOIs.length > 0) {
-    $currentPOI = filteredPOIs[filterIdx];
-  } else {
-    $currentPOI = null;
+  function warp() {
+    if ($map && $currentPOI) {
+      $map.flyTo({
+        center: $currentPOI.pt,
+        zoom: 14,
+      });
+    }
   }
 
-  // When currentPOI changes elsewhere from clicking on the map, make the filtered list work
-  function resetFilters(currentPOI: POI | null) {
-    if (!currentPOI) {
-      return;
+  function prev() {
+    if (filterIdx != 0) {
+      filterIdx--;
+      $currentPOI = filteredPOIs[filterIdx];
+      warp();
     }
-
-    for (let [i, poi] of filteredPOIs.entries()) {
-      if (poi.kind == currentPOI.kind && poi.idx == currentPOI.idx) {
-        filterIdx = i;
-        return;
-      }
-    }
-
-    // Relax the filters
-    filterReachability = "all";
-    filterKind = "all";
-    // Do this immediately
-    filteredPOIs = filterPOIs(allPOIs, filterKind, filterReachability);
-
-    // Then repeat the above
-    for (let [i, poi] of filteredPOIs.entries()) {
-      if (poi.kind == currentPOI.kind && poi.idx == currentPOI.idx) {
-        filterIdx = i;
-        return;
-      }
-    }
-    console.error(`Clicked on ${currentPOI} but can't find it!`);
-  }
-  $: resetFilters($currentPOI);
-
-  function warp(currentPOI: POI | null) {
-    if (!$map || !currentPOI) {
-      return;
-    }
-    $map.flyTo({
-      center: currentPOI.pt,
-      zoom: 14,
-    });
   }
 
-  async function fixUnreachable() {
-    if ($currentPOI) {
-      let input = await $backend!.fixUnreachablePOI(
-        $currentPOI.kind,
-        $currentPOI.idx,
-      );
-      await $backend!.setRoute(null, input);
-      await autosave();
+  function next() {
+    if (filterIdx != filteredPOIs.length - 1) {
+      filterIdx++;
+      $currentPOI = filteredPOIs[filterIdx];
+      warp();
     }
   }
 </script>
 
-<div>
-  <label>
-    Show reachable POIs:
-    <select bind:value={filterReachability}>
-      <option value="all">All</option>
-      <option value="reachable">Only reachable POIs</option>
-      <option value="unreachable">Only unreachable POIs</option>
-    </select>
-  </label>
-</div>
+<h4>Fix unconnected POIs</h4>
 
 <div>
   <label>
     Filter POIs:
-    <select bind:value={filterKind}>
+    <select bind:value={filterKind} on:change={refilterPOIs}>
       <option value="all">All</option>
       <option value="schools">Schools</option>
       <option value="gp_hospitals">GPs/hospitals</option>
@@ -173,23 +108,14 @@
   </label>
 </div>
 
-{#if $zoom && $zoom > 13 && $currentPOI}
-  {#if $currentPOI.reachable}
-    <p>
-      {$currentPOI.description} is connected to the network. The blue path shows
-      the route through quiet streets to the network.
-    </p>
-  {:else}
-    <button on:click={fixUnreachable}>
-      Add the black local access route to fix
+{#if filteredPOIs.length > 0}
+  <div
+    style="display: flex; justify-content: space-between; align-items: center;"
+  >
+    <button disabled={filterIdx == 0} on:click={prev}>Previous</button>
+    {filterIdx + 1} / {filteredPOIs.length}
+    <button disabled={filterIdx == filteredPOIs.length - 1} on:click={next}>
+      Next
     </button>
-    <p>
-      {$currentPOI.description} is not connected to the network. Enable the Reachability
-      layer to see the red severances surronding it.
-    </p>
-  {/if}
-
-  <PrevNext list={filteredPOIs} bind:idx={filterIdx} />
-{:else}
-  <p>Zoom in more to connect POIs</p>
+  </div>
 {/if}
