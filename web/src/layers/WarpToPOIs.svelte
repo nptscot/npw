@@ -9,16 +9,9 @@
     zoom,
   } from "../stores";
   import type { PoiKind } from "../types";
-  import { currentPOI, type CurrentPOI } from "./stores";
+  import { currentPOI, type POI } from "./stores";
 
   type Reachability = "reachable" | "unreachable" | "all";
-  interface POI {
-    poi_kind: PoiKind;
-    idx: number;
-    name: string;
-    reachable: boolean;
-    position: [number, number];
-  }
 
   let filterReachability: Reachability = "unreachable";
   let filterKind: PoiKind | "all" = "all";
@@ -38,20 +31,13 @@
     let list: [POI, number][] = [];
 
     for (let f of (await $backend.getPOIs()).features) {
-      let name;
-      if (f.properties.poi_kind == "schools") {
-        name = `${f.properties.name || "This school"} (a ${f.properties.kind} school with ${f.properties.pupils} pupils)`;
-      } else {
-        name = f.properties.name || `This ${f.properties.kind}`;
-      }
-
       list.push([
         {
-          poi_kind: f.properties.poi_kind,
+          kind: f.properties.poi_kind,
           idx: f.properties.idx,
-          name,
+          description: f.properties.description,
           reachable: f.properties.reachable,
-          position: f.geometry.coordinates as [number, number],
+          pt: f.geometry.coordinates as [number, number],
         },
         f.properties.sort,
       ]);
@@ -63,11 +49,11 @@
       }
       list.push([
         {
-          poi_kind: f.properties.poi_kind,
+          kind: f.properties.poi_kind,
           idx: f.properties.idx!,
-          name: f.properties.name || "This greenspace",
+          description: f.properties.description!,
           reachable: f.properties.reachable!,
-          position: f.properties.centroid!,
+          pt: f.properties.centroid!,
         },
         f.properties.sort!,
       ]);
@@ -83,7 +69,6 @@
     recalc();
   }
 
-  // TODO It'd be nice to sort these roughly by distance to the viewport?
   function filterPOIs(
     allPOIs: POI[],
     filterKind: PoiKind | "all",
@@ -92,7 +77,7 @@
     filterIdx = 0;
 
     return allPOIs.filter((poi) => {
-      if (filterKind != "all" && poi.poi_kind != filterKind) {
+      if (filterKind != "all" && poi.kind != filterKind) {
         return false;
       }
       if (
@@ -108,24 +93,19 @@
   $: warp($currentPOI);
 
   $: if (filteredPOIs.length > 0) {
-    $currentPOI = {
-      idx: filteredPOIs[filterIdx].idx,
-      kind: filteredPOIs[filterIdx].poi_kind,
-      reachable: filteredPOIs[filterIdx].reachable,
-      pt: filteredPOIs[filterIdx].position,
-    };
+    $currentPOI = filteredPOIs[filterIdx];
   } else {
     $currentPOI = null;
   }
 
   // When currentPOI changes elsewhere from clicking on the map, make the filtered list work
-  function resetFilters(currentPOI: CurrentPOI | null) {
+  function resetFilters(currentPOI: POI | null) {
     if (!currentPOI) {
       return;
     }
 
     for (let [i, poi] of filteredPOIs.entries()) {
-      if (poi.poi_kind == currentPOI.kind && poi.idx == currentPOI.idx) {
+      if (poi.kind == currentPOI.kind && poi.idx == currentPOI.idx) {
         filterIdx = i;
         return;
       }
@@ -139,7 +119,7 @@
 
     // Then repeat the above
     for (let [i, poi] of filteredPOIs.entries()) {
-      if (poi.poi_kind == currentPOI.kind && poi.idx == currentPOI.idx) {
+      if (poi.kind == currentPOI.kind && poi.idx == currentPOI.idx) {
         filterIdx = i;
         return;
       }
@@ -148,19 +128,14 @@
   }
   $: resetFilters($currentPOI);
 
-  function warp(currentPOI: CurrentPOI | null) {
+  function warp(currentPOI: POI | null) {
     if (!$map || !currentPOI) {
       return;
     }
-    let poi = allPOIs.find(
-      (poi) => poi.poi_kind == currentPOI.kind && poi.idx == currentPOI.idx,
-    );
-    if (poi) {
-      $map.flyTo({
-        center: poi.position,
-        zoom: 14,
-      });
-    }
+    $map.flyTo({
+      center: currentPOI.pt,
+      zoom: 14,
+    });
   }
 
   async function fixUnreachable() {
@@ -198,26 +173,23 @@
   </label>
 </div>
 
-{#if filteredPOIs.length > 0}
-  {#if $zoom && $zoom > 13}
-    {#if filteredPOIs[filterIdx].reachable}
-      <p>
-        {filteredPOIs[filterIdx].name} is connected to the network. The blue path
-        shows the route through quiet streets to the network.
-      </p>
-    {:else}
-      <p>
-        {filteredPOIs[filterIdx].name} is not connected to the network. Enable the
-        Reachability layer to see the red severances surronding it.
-      </p>
-
-      <button on:click={fixUnreachable}>
-        Add the black local access route to fix
-      </button>
-    {/if}
-
-    <PrevNext list={filteredPOIs} bind:idx={filterIdx} />
+{#if $zoom && $zoom > 13 && $currentPOI}
+  {#if $currentPOI.reachable}
+    <p>
+      {$currentPOI.description} is connected to the network. The blue path shows
+      the route through quiet streets to the network.
+    </p>
   {:else}
-    <p>Zoom in more to connect POIs</p>
+    <button on:click={fixUnreachable}>
+      Add the black local access route to fix
+    </button>
+    <p>
+      {$currentPOI.description} is not connected to the network. Enable the Reachability
+      layer to see the red severances surronding it.
+    </p>
   {/if}
+
+  <PrevNext list={filteredPOIs} bind:idx={filterIdx} />
+{:else}
+  <p>Zoom in more to connect POIs</p>
 {/if}

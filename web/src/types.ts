@@ -97,28 +97,23 @@ export type POIs = FeatureCollection<
   Point,
   {
     poi_kind: PoiKind;
-    name: string;
+    description: string;
     reachable: boolean;
     idx: number;
     sort: number;
-
-    // Just for the description
-    kind: string;
-    pupils?: number;
   }
 >;
 
 export type TownCentres = FeatureCollection<
   MultiPolygon,
-  { poi_kind: PoiKind; name?: string; reachable: boolean; idx: number }
+  { poi_kind: PoiKind; description: string; reachable: boolean; idx: number }
 >;
 
 export type Settlements = FeatureCollection<
   MultiPolygon,
   {
     poi_kind: PoiKind;
-    name?: string;
-    population: number;
+    description: string;
     reachable: boolean;
     idx: number;
   }
@@ -129,7 +124,7 @@ export type Greenspaces = FeatureCollection<
   {
     poi_kind: PoiKind;
     kind: "greenspace" | "access point";
-    name?: string;
+    description?: string;
     reachable?: boolean;
     idx?: number;
     sort?: number;

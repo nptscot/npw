@@ -3,18 +3,24 @@
   import { emptyGeojson } from "svelte-utils/map";
   import { layerId } from "../common";
   import { backend } from "../stores";
-  import type { SetRouteInput } from "../types";
-  import { type CurrentPOI } from "./stores";
+  import type { PoiKind, SetRouteInput } from "../types";
+
+  // For town centres and settlements and POIs
+  interface SimplePOI {
+    kind: PoiKind;
+    idx: number;
+    reachable: boolean;
+  }
 
   export let layerName: string;
-  export let current: Omit<CurrentPOI, "pt"> | null;
+  export let current: SimplePOI | null;
   export let show: boolean;
 
   let debug = emptyGeojson();
   let fixUnreachable: SetRouteInput | null = null;
   $: updateDebug(current);
 
-  async function updateDebug(current: Omit<CurrentPOI, "pt"> | null) {
+  async function updateDebug(current: SimplePOI | null) {
     if ($backend && current) {
       if (current.reachable) {
         debug = await $backend.debugReachablePath(current.kind, current.idx);

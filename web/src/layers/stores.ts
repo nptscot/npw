@@ -63,12 +63,12 @@ export let lastReferenceStyle: Writable<ReferenceRoadStyle> = writable("off");
 export let populationStyle: Writable<"off" | "population" | "deprived"> =
   writable("off");
 
-// TODO Move to a component after merging some of the POI components?
-export interface CurrentPOI {
+export interface POI {
   kind: PoiKind;
   idx: number;
+  description: string;
   reachable: boolean;
   pt: [number, number];
 }
 
-export let currentPOI: Writable<CurrentPOI | null> = writable(null);
+export let currentPOI: Writable<POI | null> = writable(null);

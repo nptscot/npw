@@ -61,7 +61,7 @@
     hoverCursor="pointer"
   >
     <Popup openOn="click" let:props>
-      Settlement {props.name || ""} with population {props.population.toLocaleString()}
+      {props.description}
       {props.reachable ? "is" : "is not"} reachable.
     </Popup>
   </FillLayer>

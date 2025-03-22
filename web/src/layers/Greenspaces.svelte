@@ -11,7 +11,7 @@
   import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { Greenspaces } from "../types";
-  import { currentPOI, localPOIs as show, type CurrentPOI } from "./stores";
+  import { currentPOI, localPOIs as show, type POI } from "./stores";
 
   let lastUpdate = 0;
   let data: Greenspaces = {
@@ -30,7 +30,7 @@
     recalc();
   }
 
-  function fillOpacity(currentPOI: CurrentPOI | null): ExpressionSpecification {
+  function fillOpacity(currentPOI: POI | null): ExpressionSpecification {
     if (currentPOI?.kind == "greenspaces") {
       return [
         "case",
@@ -47,6 +47,7 @@
     $currentPOI = {
       kind: e.detail.features[0].properties!.poi_kind,
       idx: e.detail.features[0].properties!.idx,
+      description: e.detail.features[0].properties!.description,
       reachable: e.detail.features[0].properties!.reachable,
       pt: e.detail.event.lngLat.toArray(),
     };

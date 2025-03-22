@@ -6,7 +6,7 @@
   import type { PoiKind, POIs } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
-  import { currentPOI, localPOIs as show, type CurrentPOI } from "./stores";
+  import { currentPOI, localPOIs as show, type POI } from "./stores";
   import StreetViewPOI from "./StreetViewPOI.svelte";
   import WarpToPOIs from "./WarpToPOIs.svelte";
 
@@ -42,7 +42,7 @@
 
   function iconImage(
     poiKind: PoiKind,
-    currentPOI: CurrentPOI | null,
+    currentPOI: POI | null,
   ): ExpressionSpecification {
     let reachable = [
       "case",
@@ -66,6 +66,7 @@
     $currentPOI = {
       kind: e.detail.features[0].properties!.poi_kind,
       idx: e.detail.features[0].properties!.idx,
+      description: e.detail.features[0].properties!.description,
       reachable: e.detail.features[0].properties!.reachable,
       pt: e.detail.event.lngLat.toArray(),
     };

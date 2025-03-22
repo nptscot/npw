@@ -29,11 +29,23 @@ impl School {
         let mut f = mercator.to_wgs84_gj(&self.point);
         f.set_property("poi_kind", "schools");
         f.set_property("kind", self.kind.clone());
-        f.set_property("name", self.name.clone());
-        f.set_property("pupils", self.pupils);
         f.set_property("reachable", reachable);
         f.set_property("idx", idx);
         f.set_property("sort", self.sort);
+
+        let name = if self.name.is_empty() {
+            "This school"
+        } else {
+            &self.name
+        };
+        f.set_property(
+            "description",
+            format!(
+                "{name} (a {} school with {} pupils)",
+                self.kind, self.pupils
+            ),
+        );
+
         f
     }
 
@@ -89,11 +101,16 @@ impl GPHospital {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.point);
         f.set_property("poi_kind", "gp_hospitals");
-        f.set_property("kind", self.kind.clone());
-        f.set_property("name", self.name.clone());
         f.set_property("reachable", reachable);
         f.set_property("idx", idx);
         f.set_property("sort", self.sort);
+
+        if self.name.is_empty() {
+            f.set_property("description", format!("This {}", self.kind));
+        } else {
+            f.set_property("description", self.name.clone());
+        }
+
         f
     }
 
@@ -141,6 +158,51 @@ struct GPHospitalGJ {
 ////
 
 #[derive(Serialize, Deserialize)]
+pub struct Greenspace {
+    pub polygon: MultiPolygon,
+    pub centroid_wgs84: Coord,
+    pub name: Option<String>,
+    pub access_points: Vec<Point>,
+    pub roads: HashSet<RoadID>,
+    pub sort: f64,
+}
+
+impl Greenspace {
+    pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Vec<Feature> {
+        let mut features = Vec::new();
+        {
+            let mut f = mercator.to_wgs84_gj(&self.polygon);
+            f.set_property("poi_kind", "greenspaces");
+            f.set_property("kind", "greenspace");
+            f.set_property(
+                "description",
+                if let Some(name) = &self.name {
+                    name
+                } else {
+                    "This greenspace"
+                },
+            );
+            f.set_property("reachable", reachable);
+            f.set_property("idx", idx);
+            f.set_property("sort", self.sort);
+            f.set_property(
+                "centroid",
+                vec![self.centroid_wgs84.x, self.centroid_wgs84.y],
+            );
+            features.push(f);
+        }
+        for pt in &self.access_points {
+            let mut f = mercator.to_wgs84_gj(pt);
+            f.set_property("kind", "access point");
+            features.push(f);
+        }
+        features
+    }
+}
+
+////
+
+#[derive(Serialize, Deserialize)]
 pub struct TownCentre {
     polygon: MultiPolygon,
     name: Option<String>,
@@ -151,7 +213,14 @@ impl TownCentre {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.polygon);
         f.set_property("poi_kind", "town_centres");
-        f.set_property("name", self.name.clone());
+        f.set_property(
+            "description",
+            if let Some(name) = &self.name {
+                name
+            } else {
+                "This town centre"
+            },
+        );
         f.set_property("reachable", reachable);
         f.set_property("idx", idx);
         f
@@ -205,10 +274,19 @@ impl Settlement {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.polygon);
         f.set_property("poi_kind", "settlements");
-        f.set_property("name", self.name.clone());
-        f.set_property("population", self.population);
         f.set_property("reachable", reachable);
         f.set_property("idx", idx);
+
+        let name = if let Some(name) = &self.name {
+            name
+        } else {
+            "This settlement"
+        };
+        f.set_property(
+            "description",
+            format!("{name} with population {}", self.population),
+        );
+
         f
     }
 
@@ -351,42 +429,4 @@ struct DataZoneGJ {
     percentile: usize,
     population: usize,
     area: f64,
-}
-
-////
-
-#[derive(Serialize, Deserialize)]
-pub struct Greenspace {
-    pub polygon: MultiPolygon,
-    pub centroid_wgs84: Coord,
-    pub name: Option<String>,
-    pub access_points: Vec<Point>,
-    pub roads: HashSet<RoadID>,
-    pub sort: f64,
-}
-
-impl Greenspace {
-    pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Vec<Feature> {
-        let mut features = Vec::new();
-        {
-            let mut f = mercator.to_wgs84_gj(&self.polygon);
-            f.set_property("poi_kind", "greenspaces");
-            f.set_property("kind", "greenspace");
-            f.set_property("name", self.name.clone());
-            f.set_property("reachable", reachable);
-            f.set_property("idx", idx);
-            f.set_property("sort", self.sort);
-            f.set_property(
-                "centroid",
-                vec![self.centroid_wgs84.x, self.centroid_wgs84.y],
-            );
-            features.push(f);
-        }
-        for pt in &self.access_points {
-            let mut f = mercator.to_wgs84_gj(pt);
-            f.set_property("kind", "access point");
-            features.push(f);
-        }
-        features
-    }
 }
