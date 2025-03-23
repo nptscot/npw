@@ -1,5 +1,8 @@
 <script lang="ts">
   import { stats } from "../stores";
+  import FinalReport from "./FinalReport.svelte";
+
+  let showFinalReport = false;
 
   // Returns something [0, 1]
   function percent(x: number, total: number): number {
@@ -10,40 +13,44 @@
   }
 </script>
 
+<FinalReport bind:show={showFinalReport} />
+
 {#if $stats}
   <div class="progress-summary">
-    <ul>
-      <li title="What percent of your network has high Level of Service?">
-        Safety
-        <br />
-        <progress
-          value={percent(
-            $stats.total_high_los_length,
-            $stats.total_network_length,
-          )}
-          max="100"
-        />
-      </li>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={() => (showFinalReport = true)}>
+      <ul>
+        <li title="What percent of your network has high Level of Service?">
+          Safety
+          <br />
+          <progress
+            value={percent(
+              $stats.total_high_los_length,
+              $stats.total_network_length,
+            )}
+            max="100"
+          />
+        </li>
 
-      <li title="TODO: Placeholder score">
-        Directness
-        <br />
-        <progress value="50" max="100" />
-      </li>
+        <li title="TODO: Placeholder score">
+          Directness
+          <br />
+          <progress value="50" max="100" />
+        </li>
 
-      <li title="Percent of main roads covered by network">
-        Coherence
-        <br />
-        <progress
-          value={percent(
-            $stats.covered_main_road_length,
-            $stats.total_main_road_length,
-          )}
-          max="100"
-        />
-      </li>
+        <li title="Percent of main roads covered by network">
+          Coherence
+          <br />
+          <progress
+            value={percent(
+              $stats.covered_main_road_length,
+              $stats.total_main_road_length,
+            )}
+            max="100"
+          />
+        </li>
 
-      <!--<li title="Density of primary/secondary network within settlements">
+        <!--<li title="Density of primary/secondary network within settlements">
         Coherence (density)
         <br />
         {#if $stats.density_network_in_settlements}
@@ -53,24 +60,25 @@
         {/if}
       </li>-->
 
-      <li title="What percent of your network is on low gradient (&le; 3%)?">
-        Comfort
-        <br />
-        <progress
-          value={percent(
-            $stats.total_low_gradient_length,
-            $stats.total_network_length,
-          )}
-          max="100"
-        />
-      </li>
+        <li title="What percent of your network is on low gradient (&le; 3%)?">
+          Comfort
+          <br />
+          <progress
+            value={percent(
+              $stats.total_low_gradient_length,
+              $stats.total_network_length,
+            )}
+            max="100"
+          />
+        </li>
 
-      <li title="TODO: Placeholder score">
-        Attractiveness
-        <br />
-        <progress value="50" max="100" />
-      </li>
-    </ul>
+        <li title="TODO: Placeholder score">
+          Attractiveness
+          <br />
+          <progress value="50" max="100" />
+        </li>
+      </ul>
+    </a>
   </div>
 {/if}
 
@@ -80,11 +88,10 @@
     margin-left: auto;
   }
 
-  /* TODO Does this do anything? Why the big <a>?
   .progress-summary a {
     text-decoration: none;
     color: #1a1a1a;
-    }*/
+  }
   .progress-summary ul {
     height: 100%;
     list-style: none;

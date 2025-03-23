@@ -3,14 +3,12 @@
   import { Modal, percent as percent2 } from "../common";
   import { backend, stats } from "../stores";
 
-  let show = false;
+  export let show = false;
 
   function percent(pct: number): string {
     return `${Math.round(pct * 100)}%`;
   }
 </script>
-
-<div><button on:click={() => (show = true)}>Final report</button></div>
 
 <Modal bind:show>
   {#if $stats}

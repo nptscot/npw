@@ -17,6 +17,8 @@
   // because its only used in a stage that doesn't have much editing.
   let lastUpdateOD = 0;
 
+  let showFinalReport = false;
+
   async function recalcOD() {
     loading = "Recalculating OD stats";
     $odStats = await $backend!.recalculateODStats();
@@ -34,6 +36,8 @@
 </script>
 
 <Loading {loading} />
+
+<FinalReport bind:show={showFinalReport} />
 
 {#if $stats}
   <div class="assess">
@@ -84,11 +88,24 @@
     {:else if $currentStage == "LongDistance"}
       <Metric label="Settlements" pct={$stats.percent_reachable_settlements} />
     {:else if $currentStage == "assessment"}
-      <FinalReport />
+      <div>
+        <button
+          class="ds_button ds_button--secondary"
+          on:click={() => (showFinalReport = true)}
+        >
+          Final report
+        </button>
+      </div>
 
-      <button on:click={recalcOD} disabled={$mutationCounter == lastUpdateOD}>
-        Recalculate
-      </button>
+      <div>
+        <button
+          class="ds_button ds_button--secondary"
+          on:click={recalcOD}
+          disabled={$mutationCounter == lastUpdateOD}
+        >
+          Recalculate route network
+        </button>
+      </div>
 
       {#if $odStats}
         <div style:margin-top="4px" style:border="2px solid black">
