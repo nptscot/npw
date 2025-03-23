@@ -129,17 +129,4 @@
     border-top: 1px solid #ccc;
     padding: 12px 20px 8px;
   }
-
-  .assess :global(strong) {
-    float: right;
-  }
-
-  .assess :global(progress) {
-    width: 100%;
-    --color: var(--primary-tier-colour);
-  }
-  .assess :global(p) {
-    margin-bottom: 12px;
-    line-height: 20px;
-  }
 </style>
