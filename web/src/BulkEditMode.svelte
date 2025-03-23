@@ -306,8 +306,15 @@
     </select>
   </label>
 
-  <button on:click={changeTier}>Change tier</button>
-  <button on:click={() => (showTierModal = false)}>Cancel</button>
+  <div class="ds_button-group">
+    <button class="ds_button" on:click={changeTier}>Change tier</button>
+    <button
+      class="ds_button ds_button--secondary"
+      on:click={() => (showTierModal = false)}
+    >
+      Cancel
+    </button>
+  </div>
 </Modal>
 
 <Modal bind:show={showInfraTypeModal}>
@@ -325,8 +332,17 @@
 
   <PickInfraType bind:current={overrideInfraType} />
 
-  <button on:click={changeInfraType}>Change infrastructure type</button>
-  <button on:click={() => (showInfraTypeModal = false)}>Cancel</button>
+  <div class="ds_button-group">
+    <button class="ds_button" on:click={changeInfraType}>
+      Change infrastructure type
+    </button>
+    <button
+      class="ds_button ds_button--secondary"
+      on:click={() => (showInfraTypeModal = false)}
+    >
+      Cancel
+    </button>
+  </div>
 </Modal>
 
 <style>

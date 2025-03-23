@@ -111,9 +111,19 @@
   <div
     style="display: flex; justify-content: space-between; align-items: center;"
   >
-    <button disabled={filterIdx == 0} on:click={prev}>Previous</button>
+    <button
+      class="ds_button ds_button--secondary"
+      disabled={filterIdx == 0}
+      on:click={prev}
+    >
+      Previous
+    </button>
     {filterIdx + 1} / {filteredPOIs.length}
-    <button disabled={filterIdx == filteredPOIs.length - 1} on:click={next}>
+    <button
+      class="ds_button ds_button--secondary"
+      disabled={filterIdx == filteredPOIs.length - 1}
+      on:click={next}
+    >
       Next
     </button>
   </div>

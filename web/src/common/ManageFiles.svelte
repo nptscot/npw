@@ -163,17 +163,33 @@
   <p>
     You're currently editing: <u>{$currentFilename}</u>
   </p>
-  <div role="group">
-    <button on:click={rename}>Rename</button>
-    <button on:click={makeCopy}>Make copy</button>
-    <button on:click={exportFile}>Export</button>
-    <button on:click={clearFile}>Clear all routes</button>
-    <button on:click={deleteFile} disabled={fileList.length < 2}>Delete</button>
+  <div class="ds_button-group">
+    <button class="ds_button ds_button--secondary" on:click={rename}>
+      Rename
+    </button>
+    <button class="ds_button ds_button--secondary" on:click={makeCopy}>
+      Make copy
+    </button>
+    <button class="ds_button ds_button--secondary" on:click={exportFile}>
+      Export
+    </button>
+    <button class="ds_button ds_button--secondary" on:click={clearFile}>
+      Clear all routes
+    </button>
+    <button
+      class="ds_button ds_button--secondary"
+      on:click={deleteFile}
+      disabled={fileList.length < 2}
+    >
+      Delete
+    </button>
   </div>
 
   <hr />
 
-  <button on:click={newFile}>New file</button>
+  <button class="ds_button ds_button--secondary" on:click={newFile}>
+    New file
+  </button>
 
   <p>Load a different file in {$boundaryName}:</p>
   <ul>
@@ -195,5 +211,7 @@
     <input bind:this={fileInput} on:change={importFile} type="file" />
   </label>
 
-  <button on:click={() => (open = false)}>OK</button>
+  <div>
+    <button class="ds_button" on:click={() => (open = false)}>OK</button>
+  </div>
 </Modal>

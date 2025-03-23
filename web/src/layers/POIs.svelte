@@ -96,7 +96,7 @@
           the route through quiet streets to the network.
         </p>
       {:else}
-        <button on:click={fixUnreachable}>
+        <button class="ds_button" on:click={fixUnreachable}>
           Add the black local access route to fix
         </button>
         <p>
