@@ -16,10 +16,9 @@
   } from "./colors";
   import { layerId } from "./common";
   import { SplitComponent } from "./common/layout";
-  import Directions from "./Directions.svelte";
   import RelevantLayers from "./layers/RelevantLayers.svelte";
   import { backend, mode, routeA, routeB, type Mode } from "./stores";
-  import type { RouteGJ, WorstRoutes } from "./types";
+  import type { RouteGJ, Step, WorstRoutes } from "./types";
 
   export let prevMode: Mode;
   export let browse: WorstRoutes;
@@ -73,96 +72,153 @@
       $mode = { kind: "main" };
     }
   }
+
+  let byInfraType = (step: Step) => step.infra_type;
+  let byLos = (step: Step) => step.los;
+
+  function numChanges(gj: RouteGJ, key: (step: Step) => string): number {
+    let count = 0;
+    // No windows(2)?
+    for (let i = 0; i < gj.directions.length - 1; i++) {
+      let x1 = key(gj.directions[i]);
+      let x2 = key(gj.directions[i + 1]);
+      if (x1 != x2) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  function percentages(gj: RouteGJ, key: (step: Step) => string): string {
+    let lengthByKey: { [name: string]: number } = {};
+    for (let step of gj.directions) {
+      let x = key(step);
+      if (!Object.hasOwn(lengthByKey, x)) {
+        lengthByKey[x] = 0;
+      }
+      lengthByKey[x] += step.length;
+    }
+    let total = 0;
+    for (let length of Object.values(lengthByKey)) {
+      total += length;
+    }
+
+    let results = [];
+    for (let [x, length] of Object.entries(lengthByKey).toSorted(
+      (a, b) => b[1] - a[1],
+    )) {
+      let percent = Math.round((length / total) * 100);
+      results.push(`${percent}% ${x}`);
+    }
+    return results.join(", ");
+  }
 </script>
 
 <svelte:window on:keydown={keyDown} />
 
 <SplitComponent>
   <div slot="controls">
-    <h2>Evaluate a journey</h2>
+    <div class="main-controls">
+      <header class="ds_page-header">
+        <h2 class="ds_page-header__title">Evaluate a journey</h2>
+      </header>
 
-    <button on:click={() => ($mode = prevMode)}>Back</button>
+      <div>
+        <button class="ds_link" on:click={() => ($mode = prevMode)}>
+          &lt; Back
+        </button>
+      </div>
 
-    {#if browse.length > 0}
+      {#if browse.length > 0}
+        <p>
+          These routes, from a sample of the OD data, have the worst directness.
+        </p>
+
+        <div>
+          <button
+            on:click={() => currentBrowse--}
+            disabled={currentBrowse == 0}
+          >
+            Previous
+          </button>
+          {currentBrowse + 1} / {browse.length}
+          <button
+            on:click={() => currentBrowse++}
+            disabled={currentBrowse == browse.length - 1}
+          >
+            Next
+          </button>
+        </div>
+      {/if}
+
       <p>
-        These routes, from a sample of the OD data, have the worst directness.
+        Move the <b>A</b>
+        and
+        <b>B</b>
+        pins. (Hint: right-click to set the first pin somewhere.)
+      </p>
+      <p>
+        Note the direct route is shown, ignoring bad infrastructure. This is to
+        emphasize whether or not that direct route has been adequately improved
+        by your network edits so far.
       </p>
 
-      <div>
-        <button on:click={() => currentBrowse--} disabled={currentBrowse == 0}>
-          Previous
-        </button>
-        {currentBrowse + 1} / {browse.length}
-        <button
-          on:click={() => currentBrowse++}
-          disabled={currentBrowse == browse.length - 1}
-        >
-          Next
-        </button>
-      </div>
-    {/if}
+      {#if err}
+        <p>{err}</p>
+      {/if}
 
-    <p>
-      Move the <b>A</b>
-      and
-      <b>B</b>
-      pins. (Hint: right-click to set the first pin somewhere.)
-    </p>
-    <p>
-      Note the direct route is shown, ignoring bad infrastructure. This is to
-      emphasize whether or not that direct route has been adequately improved by
-      your network edits so far.
-    </p>
+      <label>
+        Show details along route
+        <select bind:value={breakdown}>
+          <option value="">Just show route</option>
+          <option value="los">Level of service</option>
+          <option value="infra_type">Infrastructure type</option>
+          <option value="gradient">Gradient</option>
+        </select>
+      </label>
 
-    {#if err}
-      <p>{err}</p>
-    {/if}
+      {#if breakdown == "los"}
+        <QualitativeLegend horiz colors={levelOfServiceColors} />
+      {:else if breakdown == "gradient"}
+        <QualitativeLegend horiz colors={gradientColors} />
+      {/if}
 
-    <label>
-      Show details along route
-      <select bind:value={breakdown}>
-        <option value="">Just show route</option>
-        <option value="los">Level of service</option>
-        <option value="infra_type">Infrastructure type</option>
-        <option value="gradient">Gradient</option>
-      </select>
-    </label>
+      {#if gj}
+        <div>
+          <label>
+            <input type="checkbox" bind:checked={showCarRoute} />
+            <b>{(gj.direct_bike_length / gj.car_length).toFixed(1)}x</b>
+            longer than the driving route (in
+            <span style:color="red">red</span>
+            )
+          </label>
+        </div>
 
-    {#if breakdown == "los"}
-      <QualitativeLegend horiz colors={levelOfServiceColors} />
-    {:else if breakdown == "gradient"}
-      <QualitativeLegend horiz colors={gradientColors} />
-    {/if}
+        <div>
+          <label>
+            <input type="checkbox" bind:checked={showQuietBikeRoute} />
+            <b>{(gj.direct_bike_length / gj.quiet_bike_length).toFixed(1)}x</b>
+            longer than the quiet cycling route (in
+            <span style:color="blue">blue</span>
+            )
+          </label>
+        </div>
 
-    {#if gj}
-      <div>
-        <label>
-          <input type="checkbox" bind:checked={showCarRoute} />
-          <b>{(gj.direct_bike_length / gj.car_length).toFixed(1)}x</b>
-          longer than the driving route (in
-          <span style:color="red">red</span>
-          )
-        </label>
-      </div>
+        <hr />
 
-      <div>
-        <label>
-          <input type="checkbox" bind:checked={showQuietBikeRoute} />
-          <b>{(gj.direct_bike_length / gj.quiet_bike_length).toFixed(1)}x</b>
-          longer than the quiet cycling route (in
-          <span style:color="blue">blue</span>
-          )
-        </label>
-      </div>
+        <p>{numChanges(gj, byInfraType)} changes in infrastructure type</p>
+        <p>By length: {percentages(gj, byInfraType)}</p>
+
+        <hr />
+
+        <p>{numChanges(gj, byLos)} changes in level of service</p>
+        <p>By length: {percentages(gj, byLos)}</p>
+      {/if}
 
       <hr />
 
-      <Directions {gj} />
-    {/if}
-
-    <hr />
-
-    <RelevantLayers />
+      <RelevantLayers />
+    </div>
   </div>
 
   <div slot="map">
@@ -251,5 +307,10 @@
     color: white;
     background-color: blue;
     font-weight: bold;
+  }
+
+  .main-controls {
+    overflow-y: auto;
+    padding: 20px;
   }
 </style>
