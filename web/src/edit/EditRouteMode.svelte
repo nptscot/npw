@@ -195,67 +195,117 @@
 >
   <div slot="extra-controls" class="main-controls">
     {#if $waypoints.length >= 2}
-      {#if overrideInfraType}
-        <p>
-          You've forced this route to always use {infraType}, assuming high
-          Level of Service.
-        </p>
-        <button
-          class="ds_button ds_button--secondary"
-          on:click={() => (overrideInfraType = false)}
-        >
-          Remove override
-        </button>
-      {:else}
-        <p>
-          The route you've drawn has been split into sections, automatically
-          picking an infrastructure type to achieve the best possible Level of
-          Service.
-        </p>
-        <button
-          class="ds_button ds_button--secondary"
-          on:click={() => {
-            overrideInfraType = true;
-            showOverrideModal = true;
-          }}
-        >
-          Override infrastructure type
-        </button>
-      {/if}
-
       {@const pctFits = percentFits(sectionsGj)}
-      {#if pctFits != "100%"}
-        <p>
-          Only {pctFits} of the route fits in the available streetspace. You may
-          need to override the infrastructure type for some sections.
-        </p>
-      {/if}
-
       {@const pctHighLoS = percentHighLoS(sectionsGj)}
-      {#if pctHighLoS != "100%"}
-        <p>
-          Only {pctHighLoS} of the route has a high level of service. You may need
-          to override the infrastructure type for some sections and reduce traffic
-          speeds and volumes.
-        </p>
-      {/if}
 
-      <div>
-        <label>
-          Show details along route
-          <select bind:value={$editModeBreakdown}>
-            <option value="infra_type">Infrastructure type</option>
-            <option value="gradient">Gradient</option>
-            <option value="deliverability">Streetspace deliverability</option>
-            <option value="los">Level of Service</option>
-          </select>
-        </label>
-      </div>
+      <section>
+        <h4>
+          <!-- svelte-ignore a11y-invalid-attribute -->
+          <a
+            href="#"
+            on:click|preventDefault={() => ($editModeBreakdown = "infra_type")}
+            class:focused={$editModeBreakdown == "infra_type"}
+          >
+            Infrastructure type
+          </a>
+        </h4>
 
-      <SectionDiagram breakdown={$editModeBreakdown} {sectionsGj} />
+        <SectionDiagram breakdown="infra_type" {sectionsGj} />
+
+        {#if overrideInfraType}
+          <p>
+            You've forced this route to always use {infraType}, assuming high
+            Level of Service.
+          </p>
+
+          <button
+            class="ds_button ds_button--secondary"
+            on:click={() => (overrideInfraType = false)}
+          >
+            Remove override
+          </button>
+        {:else}
+          <p>
+            The route you've drawn has been split into sections, automatically
+            picking an infrastructure type to achieve the best possible Level of
+            Service.
+          </p>
+
+          <button
+            class="ds_button ds_button--secondary"
+            on:click={() => {
+              overrideInfraType = true;
+              showOverrideModal = true;
+            }}
+          >
+            Override infrastructure type
+          </button>
+        {/if}
+      </section>
+
+      <section>
+        <!-- svelte-ignore a11y-invalid-attribute -->
+        <h4>
+          <a
+            href="#"
+            on:click|preventDefault={() =>
+              ($editModeBreakdown = "deliverability")}
+            class:focused={$editModeBreakdown == "deliverability"}
+          >
+            Deliverability
+          </a>
+        </h4>
+
+        <SectionDiagram breakdown="deliverability" {sectionsGj} />
+
+        {#if pctFits != "100%"}
+          <p>
+            Only {pctFits} of the route fits in the available streetspace. You may
+            need to override the infrastructure type for some sections.
+          </p>
+        {/if}
+      </section>
+
+      <section>
+        <h4>
+          <!-- svelte-ignore a11y-invalid-attribute -->
+          <a
+            href="#"
+            on:click|preventDefault={() => ($editModeBreakdown = "los")}
+            class:focused={$editModeBreakdown == "los"}
+          >
+            Level of Service
+          </a>
+        </h4>
+
+        <SectionDiagram breakdown="los" {sectionsGj} />
+
+        {#if pctHighLoS != "100%"}
+          <p>
+            Only {pctHighLoS} of the route has a high level of service. You may need
+            to override the infrastructure type for some sections and reduce traffic
+            speeds and volumes.
+          </p>
+        {/if}
+      </section>
+
+      <section>
+        <h4>
+          <!-- svelte-ignore a11y-invalid-attribute -->
+          <a
+            href="#"
+            on:click|preventDefault={() => ($editModeBreakdown = "gradient")}
+            class:focused={$editModeBreakdown == "gradient"}
+          >
+            Gradient
+          </a>
+        </h4>
+
+        <SectionDiagram breakdown="gradient" {sectionsGj} />
+      </section>
     {/if}
 
-    <br />
+    <h4>Route properties</h4>
 
     <input
       class="ds_input ds_input--fixed-20"
@@ -321,5 +371,9 @@
   .main-controls {
     overflow-y: auto;
     padding: 20px;
+  }
+
+  .focused {
+    text-decoration: underline;
   }
 </style>
