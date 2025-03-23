@@ -6,6 +6,7 @@
   // TODO Use name for this
   export let style: ReferenceRoadStyle;
   export let icon: string;
+  export let relevant = false;
 
   function toggle() {
     if ($referenceRoadStyle == style) {
@@ -18,7 +19,11 @@
 </script>
 
 <li>
-  <button class:selected={$referenceRoadStyle == style} on:click={toggle}>
+  <button
+    class:selected={$referenceRoadStyle == style}
+    class:relevant
+    on:click={toggle}
+  >
     <i class="fa-solid {icon}"></i>
     {#if $referenceRoadStyle == "off" && $lastReferenceStyle == style}
       <b>{name}</b>

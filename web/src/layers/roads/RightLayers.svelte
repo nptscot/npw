@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { referenceRoadStyle } from "../../stores";
+  import { currentStage, referenceRoadStyle } from "../../stores";
   import { lastReferenceStyle } from "../stores";
   import PopulationToggle from "./PopulationToggle.svelte";
   import Toggle from "./Toggle.svelte";
@@ -48,6 +48,7 @@
       name="NPT full network"
       style="precalculated_rnet"
       icon="fa-diagram-project"
+      relevant={$currentStage == "Primary" || $currentStage == "Secondary"}
     />
   </ul>
 
@@ -64,18 +65,26 @@
       name="Network disconnections"
       style="disconnections"
       icon="fa-link-slash"
+      relevant={$currentStage == "assessment"}
     />
     <Toggle
       name="Streetspace deliverability"
       style="deliverability"
       icon="fa-person-digging"
+      relevant={$currentStage == "assessment"}
     />
     <hr />
-    <PopulationToggle name="Population" style="population" icon="fa-person" />
+    <PopulationToggle
+      name="Population"
+      style="population"
+      icon="fa-person"
+      relevant={$currentStage == "LocalAccess"}
+    />
     <PopulationToggle
       name="Deprived population (SIMD)"
       style="deprived"
       icon="fa-house-user"
+      relevant={$currentStage == "LocalAccess"}
     />
   </ul>
 </div>
