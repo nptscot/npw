@@ -34,9 +34,7 @@
   on:click|stopPropagation={onClick}
   on:keydown={onKeyDown}
 >
-  <article>
-    <slot />
-  </article>
+  <slot />
 </dialog>
 
 <style>

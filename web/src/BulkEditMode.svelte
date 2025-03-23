@@ -264,6 +264,60 @@
         {/if}
       {/if}
     </div>
+
+    <Modal bind:show={showTierModal}>
+      <p>
+        The routes you've selected have tiers: {describeCounts(selectedTiers)}
+      </p>
+
+      <label>
+        Change their tier to:
+        <select bind:value={overrideTier}>
+          <option value="Primary">Primary routes</option>
+          <option value="Secondary">Secondary routes</option>
+          <option value="LocalAccess">Local access routes</option>
+          <option value="LongDistance">Long distance routes</option>
+        </select>
+      </label>
+
+      <div class="ds_button-group">
+        <button class="ds_button" on:click={changeTier}>Change tier</button>
+        <button
+          class="ds_button ds_button--secondary"
+          on:click={() => (showTierModal = false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </Modal>
+
+    <Modal bind:show={showInfraTypeModal}>
+      <p>
+        The routes you've selected have infrastructure types: {describeCounts(
+          selectedInfraTypes,
+        )}
+      </p>
+      <p>
+        You can override the infrastructure type for these routes, instead of
+        automatically picking the most appropriate type. If you do this, you're
+        making the promise that this type is appropriate to achieve high Level
+        of Service.
+      </p>
+
+      <PickInfraType bind:current={overrideInfraType} />
+
+      <div class="ds_button-group">
+        <button class="ds_button" on:click={changeInfraType}>
+          Change infrastructure type
+        </button>
+        <button
+          class="ds_button ds_button--secondary"
+          on:click={() => (showInfraTypeModal = false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </Modal>
   </div>
 
   <div slot="map">
@@ -290,60 +344,6 @@
     {/if}
   </div>
 </SplitComponent>
-
-<Modal bind:show={showTierModal}>
-  <p>
-    The routes you've selected have tiers: {describeCounts(selectedTiers)}
-  </p>
-
-  <label>
-    Change their tier to:
-    <select bind:value={overrideTier}>
-      <option value="Primary">Primary routes</option>
-      <option value="Secondary">Secondary routes</option>
-      <option value="LocalAccess">Local access routes</option>
-      <option value="LongDistance">Long distance routes</option>
-    </select>
-  </label>
-
-  <div class="ds_button-group">
-    <button class="ds_button" on:click={changeTier}>Change tier</button>
-    <button
-      class="ds_button ds_button--secondary"
-      on:click={() => (showTierModal = false)}
-    >
-      Cancel
-    </button>
-  </div>
-</Modal>
-
-<Modal bind:show={showInfraTypeModal}>
-  <p>
-    The routes you've selected have infrastructure types: {describeCounts(
-      selectedInfraTypes,
-    )}
-  </p>
-  <p>
-    You can override the infrastructure type for these routes, instead of
-    automatically picking the most appropriate type. If you do this, you're
-    making the promise that this type is appropriate to achieve high Level of
-    Service.
-  </p>
-
-  <PickInfraType bind:current={overrideInfraType} />
-
-  <div class="ds_button-group">
-    <button class="ds_button" on:click={changeInfraType}>
-      Change infrastructure type
-    </button>
-    <button
-      class="ds_button ds_button--secondary"
-      on:click={() => (showInfraTypeModal = false)}
-    >
-      Cancel
-    </button>
-  </div>
-</Modal>
 
 <style>
   .main-controls {

@@ -343,6 +343,13 @@
     <RelevantLayers />
 
     <LeftSidebarStats />
+
+    <Modal bind:show={showOverrideModal}>
+      <PickInfraType bind:current={infraType} />
+      <button class="ds_button" on:click={() => (showOverrideModal = false)}>
+        OK
+      </button>
+    </Modal>
   </div>
 
   <span slot="extra-map">
@@ -358,13 +365,6 @@
     </GeoJSON>
   </span>
 </RouteControls>
-
-<Modal bind:show={showOverrideModal}>
-  <PickInfraType bind:current={infraType} />
-  <button class="ds_button" on:click={() => (showOverrideModal = false)}>
-    OK
-  </button>
-</Modal>
 
 <style>
   /** TODO These get nested in a strange way**/
