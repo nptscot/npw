@@ -4,7 +4,7 @@
   import { onDestroy } from "svelte";
   import { GeoJSON, LineLayer, MapEvents, Marker } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
-  import { tierLabels } from "../colors";
+  import { stageColors, tierLabels } from "../colors";
   import { HelpButton, layerId } from "../common";
   import { SplitComponent } from "../common/layout";
   import { backend, currentStage } from "../stores";
@@ -256,6 +256,9 @@
 
   // @ts-expect-error Need to write a proper type for this
   $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
+
+  // @ts-expect-error TS doesn't understand the ... syntax?
+  $: labelColor = stageColors[$currentStage];
 </script>
 
 <svelte:window on:keydown={keyDown} />
@@ -264,7 +267,10 @@
   <div slot="controls">
     <div class="main-controls">
       <header class="ds_page-header">
-        <span class="ds_page-header__label ds_content-label">
+        <span
+          class="ds_page-header__label ds_content-label"
+          style:color={labelColor}
+        >
           {headerLabel}
         </span>
 

@@ -32,9 +32,6 @@ progress[value]::-moz-progress-bar {
 body .ds_page-header {
   margin: 0 0 14px;
 }
-body .ds_page-header .ds_page-header__label {
-  color: var(--primary-tier-colour);
-}
 body .ds_link {
   font-size: 0.93rem;
   margin-bottom: 14px;

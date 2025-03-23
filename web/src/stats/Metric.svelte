@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { tierColors } from "../colors";
+  import { stageColors } from "../colors";
   import { currentStage } from "../stores";
 
   export let label: string;
@@ -7,10 +7,7 @@
   export let tooltip: string | undefined = undefined;
 
   // @ts-expect-error TS doesn't understand the ... syntax?
-  $: color = {
-    ...tierColors,
-    assessment: "black",
-  }[$currentStage];
+  $: color = stageColors[$currentStage];
 </script>
 
 <p title={tooltip}>

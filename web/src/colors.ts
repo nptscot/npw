@@ -17,7 +17,11 @@ export let tierColors: { [name: string]: string } = {
   LocalAccess: "#feae01",
   LongDistance: "#fef157",
 };
-export let networkAssessmentColor = "#1b1464";
+
+export let stageColors = {
+  ...tierColors,
+  assessment: "#1b1464",
+};
 
 export let tierLabels: { [name: string]: string } = {
   Primary: "Primary",
