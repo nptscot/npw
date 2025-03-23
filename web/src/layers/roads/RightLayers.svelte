@@ -55,7 +55,12 @@
   <h3>Evaluation layers</h3>
   <ul>
     <Toggle name="Level of Service" style="los" icon="fa-face-smile" />
-    <Toggle name="Reachability" style="reachability" icon="fa-link" />
+    <Toggle
+      name="Reachability"
+      style="reachability"
+      icon="fa-link"
+      relevant={$currentStage == "LocalAccess"}
+    />
     <Toggle
       name="Route network (calculated)"
       style="calculated_rnet"
