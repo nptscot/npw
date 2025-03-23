@@ -70,9 +70,8 @@
 
   function warp() {
     if ($map && $currentPOI) {
-      $map.flyTo({
+      $map.easeTo({
         center: $currentPOI.pt,
-        zoom: 14,
       });
     }
   }
