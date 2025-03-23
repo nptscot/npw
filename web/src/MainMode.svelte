@@ -126,15 +126,44 @@
       {#if $currentStage != "LocalAccess"}
         <RelevantLayers />
       {/if}
+
+      <p>More content...</p>
+      <p>More content...</p>
+      <p>More content...</p>
+      <p>More content...</p>
+      <p>More content...</p>
+      <p>More content...</p>
+      <p>More content...</p>
     </div>
 
-    <LeftSidebarStats />
+    <div class="assess-sticky-bottom">
+      <LeftSidebarStats />
+    </div>
   </div>
 </SplitComponent>
 
 <style>
+  div[slot="controls"] {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /*background: red;*/
+
+    /* TODO I can't get this to be 100% of the height beneath the top bar */
+    height: 600px;
+  }
+
   .main-controls {
     overflow-y: auto;
     padding: 20px;
+  }
+
+  .assess-sticky-bottom {
+    margin-top: auto;
+    height: auto;
+    width: 100%;
+    padding: 0 20px;
+    border-top: 1px solid #ccc;
+    padding: 12px 20px 8px;
   }
 </style>
