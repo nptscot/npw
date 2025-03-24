@@ -10,7 +10,7 @@ export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 export type Mode =
   | { kind: "main" }
   | { kind: "edit-route"; id: number | null }
-  | { kind: "evaluate-journey"; prevMode: Mode; browse: WorstRoutes }
+  | { kind: "evaluate-journey"; browse: WorstRoutes }
   | { kind: "bulk-edit" };
 
 export let boundaryName = writable("");

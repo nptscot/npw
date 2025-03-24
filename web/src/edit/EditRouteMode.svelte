@@ -21,8 +21,6 @@
     currentStage,
     editModeBreakdown,
     mode,
-    routeA,
-    routeB,
   } from "../stores";
   import type { AutosplitRoute, Waypoint } from "../types";
   import PickInfraType from "./PickInfraType.svelte";
@@ -95,21 +93,6 @@
 
   function cancel() {
     $mode = { kind: "main" };
-  }
-
-  // TODO Unless we recalculate immediately, this will be very misleading!
-  async function evalRoute() {
-    let feature = await $backend!.snapRoute($waypoints);
-    let pt1 = feature.geometry.coordinates[0];
-    let pt2 =
-      feature.geometry.coordinates[feature.geometry.coordinates.length - 1];
-    $routeA = { lng: pt1[0], lat: pt1[1] };
-    $routeB = { lng: pt2[0], lat: pt2[1] };
-    $mode = {
-      kind: "evaluate-journey",
-      prevMode: { kind: "edit-route", id },
-      browse: [],
-    };
   }
 
   async function recalculateSections(
@@ -331,14 +314,6 @@
         </select>
       </label>
     </div>
-
-    <button
-      class="ds_button ds_button--secondary"
-      on:click={evalRoute}
-      disabled={$waypoints.length < 2}
-    >
-      Evaluate this route
-    </button>
 
     <RelevantLayers />
 

@@ -17,10 +17,9 @@
   import { layerId } from "./common";
   import { SplitComponent } from "./common/layout";
   import RelevantLayers from "./layers/RelevantLayers.svelte";
-  import { backend, mode, routeA, routeB, type Mode } from "./stores";
+  import { backend, mode, routeA, routeB } from "./stores";
   import type { RouteGJ, Step, WorstRoutes } from "./types";
 
-  export let prevMode: Mode;
   export let browse: WorstRoutes;
   let currentBrowse = 0;
 
@@ -124,7 +123,7 @@
       </header>
 
       <div>
-        <button class="ds_link" on:click={() => ($mode = prevMode)}>
+        <button class="ds_link" on:click={() => ($mode = { kind: "main" })}>
           &lt; Back
         </button>
       </div>

@@ -49,7 +49,6 @@
         on:click|preventDefault={() =>
           ($mode = {
             kind: "evaluate-journey",
-            prevMode: $mode,
             browse: [],
           })}
       >
@@ -130,7 +129,6 @@
               on:click|preventDefault={() =>
                 ($mode = {
                   kind: "evaluate-journey",
-                  prevMode: { kind: "main" },
                   browse: notNull($odStats).worst_directness_routes,
                 })}
             >

@@ -247,10 +247,7 @@
           {:else if $mode.kind == "edit-route" && map}
             <EditRouteMode id={$mode.id} {map} />
           {:else if $mode.kind == "evaluate-journey"}
-            <EvaluateJourneyMode
-              prevMode={$mode.prevMode}
-              browse={$mode.browse}
-            />
+            <EvaluateJourneyMode browse={$mode.browse} />
           {:else if $mode.kind == "bulk-edit"}
             <BulkEditMode />
           {/if}
