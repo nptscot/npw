@@ -441,8 +441,9 @@
       <LineLayer
         {...layerId("snapper-preview")}
         paint={{
-          "line-color": "black",
+          "line-color": "blue",
           "line-width": 3,
+          "line-dasharray": [3, 2],
         }}
       />
     </GeoJSON>
