@@ -41,7 +41,21 @@
 
 {#if $stats}
   <div class="assess">
-    <h3>Assess this tier</h3>
+    <div style="display: flex; justify-content: space-between;">
+      <h3>Assess this tier</h3>
+      <!-- svelte-ignore a11y-invalid-attribute -->
+      <a
+        href="#"
+        on:click|preventDefault={() =>
+          ($mode = {
+            kind: "evaluate-journey",
+            prevMode: $mode,
+            browse: [],
+          })}
+      >
+        Evaluate a journey
+      </a>
+    </div>
 
     {#if $currentStage == "Primary"}
       <Metric

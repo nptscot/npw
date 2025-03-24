@@ -109,19 +109,6 @@
           Bulk edit
         </button>
       </div>
-      <div>
-        <button
-          class="ds_button ds_button--secondary"
-          on:click={() =>
-            ($mode = {
-              kind: "evaluate-journey",
-              prevMode: { kind: "main" },
-              browse: [],
-            })}
-        >
-          Evaluate a journey
-        </button>
-      </div>
 
       {#if $currentStage != "LocalAccess"}
         <RelevantLayers />
