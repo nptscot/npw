@@ -22,9 +22,6 @@
     map.getCanvas().style.cursor = "inherit";
   });
 
-  let drawMode: "append-start" | "append-end" | "adjust" = editingExisting
-    ? "adjust"
-    : "append-end";
   let undoStates: Waypoint[][] = [];
 
   interface ExtraNode {
@@ -33,19 +30,22 @@
     snapped: boolean;
   }
   let extraNodes: ExtraNode[] = [];
-  $: updateExtraNodes($waypoints, drawMode, draggingExtraNode);
+  $: updateExtraNodes($waypoints, draggingExtraNode);
 
   let cursor: Waypoint | null = null;
-  let hoveringOnMarker = false;
-  let draggingMarker = false;
+  let hoveringOnWaypoint = false;
+  let hoveringOnExtraNode = false;
+  let draggingWaypoint = false;
   let draggingExtraNode = false;
 
   let previewGj: Feature | FeatureCollection = emptyGeojson();
   $: updatePreview(
     $waypoints,
-    drawMode,
     cursor,
-    hoveringOnMarker || draggingMarker,
+    hoveringOnWaypoint ||
+      hoveringOnExtraNode ||
+      draggingWaypoint ||
+      draggingExtraNode,
   );
 
   let currentRouteGj: Feature | FeatureCollection = emptyGeojson();
@@ -75,17 +75,10 @@
   function onMapClick(e: CustomEvent<MapMouseEvent>) {
     captureUndoState();
     waypoints.update((w) => {
-      if (drawMode == "append-start") {
-        w.splice(0, 0, {
-          point: e.detail.lngLat.toArray(),
-          snapped: true,
-        });
-      } else if (drawMode == "append-end") {
-        w.push({
-          point: e.detail.lngLat.toArray(),
-          snapped: true,
-        });
-      }
+      w.push({
+        point: e.detail.lngLat.toArray(),
+        snapped: true,
+      });
       return w;
     });
   }
@@ -112,7 +105,7 @@
       w.splice(idx, 1);
       return w;
     });
-    hoveringOnMarker = false;
+    hoveringOnWaypoint = false;
   }
 
   async function updateCurrentRoute(waypoints: Waypoint[]) {
@@ -125,7 +118,6 @@
 
   async function updatePreview(
     waypoints: Waypoint[],
-    drawMode: "append-start" | "append-end" | "adjust",
     cursor: Waypoint | null,
     suppress: boolean,
   ) {
@@ -135,16 +127,11 @@
     }
     try {
       if (waypoints.length > 0 && cursor) {
-        if (drawMode == "append-start") {
-          previewGj = await $backend!.snapRoute([cursor, waypoints[0]]);
-          return;
-        } else if (drawMode == "append-end") {
-          previewGj = await $backend!.snapRoute([
-            waypoints[waypoints.length - 1],
-            cursor,
-          ]);
-          return;
-        }
+        previewGj = await $backend!.snapRoute([
+          waypoints[waypoints.length - 1],
+          cursor,
+        ]);
+        return;
       }
     } catch (err) {}
     previewGj = emptyGeojson();
@@ -152,14 +139,9 @@
 
   async function updateExtraNodes(
     waypoints: Waypoint[],
-    drawMode: "append-start" | "append-end" | "adjust",
     draggingExtraNode: boolean,
   ) {
     if (draggingExtraNode) {
-      return;
-    }
-    if (drawMode != "adjust") {
-      extraNodes = [];
       return;
     }
 
@@ -188,6 +170,7 @@
       });
       return w;
     });
+    hoveringOnExtraNode = false;
     draggingExtraNode = true;
   }
 
@@ -215,12 +198,6 @@
     } else if (e.key === "Escape") {
       e.stopPropagation();
       cancel();
-    } else if (e.key == "1" && !formFocused) {
-      drawMode = "append-start";
-    } else if (e.key == "2" && !formFocused) {
-      drawMode = "append-end";
-    } else if (e.key == "3" && !formFocused) {
-      drawMode = "adjust";
     } else if (e.key == "z" && e.ctrlKey) {
       e.stopPropagation();
       undo();
@@ -229,18 +206,15 @@
 
   function startDraggingWaypoint() {
     captureUndoState();
-    draggingMarker = true;
+    draggingWaypoint = true;
   }
 
   function onClickWaypoint(idx: number) {
     if ($waypoints.length < 2) {
       return;
     }
-    // Click the end to finish if we're appending to the end, or the start otherwise
-    if (
-      (drawMode == "append-start" && idx == 0) ||
-      (drawMode == "append-end" && idx == $waypoints.length - 1)
-    ) {
+    // Click the end to finish
+    if (idx == $waypoints.length - 1) {
       finish();
     }
   }
@@ -352,29 +326,6 @@
         </HelpButton>
       </div>
 
-      <fieldset>
-        <label>
-          <input type="radio" value="append-start" bind:group={drawMode} />
-          Extend from start (
-          <kbd>1</kbd>
-          )
-        </label>
-        <br />
-        <label>
-          <input type="radio" value="append-end" bind:group={drawMode} />
-          Extend from end (
-          <kbd>2</kbd>
-          )
-        </label>
-        <br />
-        <label>
-          <input type="radio" value="adjust" bind:group={drawMode} />
-          Adjust middle points (
-          <kbd>3</kbd>
-          )
-        </label>
-      </fieldset>
-
       <hr />
 
       <slot name="extra-controls" />
@@ -388,6 +339,8 @@
       <Marker
         draggable
         bind:lngLat={node.point}
+        on:mouseenter={() => (hoveringOnExtraNode = true)}
+        on:mouseleave={() => (hoveringOnExtraNode = false)}
         on:dragstart={() => addNode(node)}
         on:drag={() => updateDrag(node)}
         on:dragend={finalizeDrag}
@@ -403,10 +356,10 @@
         bind:lngLat={waypt.point}
         on:click={() => onClickWaypoint(idx)}
         on:contextmenu={() => removeWaypoint(idx)}
-        on:mouseenter={() => (hoveringOnMarker = true)}
-        on:mouseleave={() => (hoveringOnMarker = false)}
+        on:mouseenter={() => (hoveringOnWaypoint = true)}
+        on:mouseleave={() => (hoveringOnWaypoint = false)}
         on:dragstart={startDraggingWaypoint}
-        on:dragend={() => (draggingMarker = false)}
+        on:dragend={() => (draggingWaypoint = false)}
         zIndex={1}
       >
         <span class="waypoint">{idx + 1}</span>
