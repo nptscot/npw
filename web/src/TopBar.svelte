@@ -55,13 +55,12 @@
             target="_blank"
           >
             <img id="logo" src={logo} alt="NPT logo" />
-            &nbsp;&gt;
           </a>
         </li>
 
         <li class="ds_site-navigation__item">
           <a class="ds_site-navigation__link" href="index.html">
-            Pick area &nbsp;&gt;
+            Pick area <i class="fa-solid fa-chevron-right"></i>
           </a>
         </li>
 
@@ -80,7 +79,7 @@
             >
               {label}
               {#if stage != "assessment"}
-                &nbsp;&gt;
+                <i class="fa-solid fa-chevron-right"></i>
               {/if}
             </a>
           </li>

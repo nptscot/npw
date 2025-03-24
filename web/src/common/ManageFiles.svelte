@@ -154,7 +154,7 @@
   href="#"
   on:click|preventDefault={() => (open = true)}
 >
-  Pick project&nbsp;&gt;
+  Pick project <i class="fa-solid fa-chevron-right"></i>
 </a>
 
 <Modal bind:show={open}>
