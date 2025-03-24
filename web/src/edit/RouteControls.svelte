@@ -25,7 +25,6 @@
   let drawMode: "append-start" | "append-end" | "adjust" = editingExisting
     ? "adjust"
     : "append-end";
-  let snapMode: "snap" | "free" = "snap";
   let undoStates: Waypoint[][] = [];
 
   interface ExtraNode {
@@ -73,26 +72,18 @@
     undoStates = [...undoStates, JSON.parse(JSON.stringify($waypoints))];
   }
 
-  // @ts-expect-error Unused, but eventually will be implemented
-  function toggleSnap() {
-    snapMode = snapMode == "snap" ? "free" : "snap";
-    if (cursor) {
-      cursor.snapped = snapMode == "snap";
-    }
-  }
-
   function onMapClick(e: CustomEvent<MapMouseEvent>) {
     captureUndoState();
     waypoints.update((w) => {
       if (drawMode == "append-start") {
         w.splice(0, 0, {
           point: e.detail.lngLat.toArray(),
-          snapped: snapMode == "snap",
+          snapped: true,
         });
       } else if (drawMode == "append-end") {
         w.push({
           point: e.detail.lngLat.toArray(),
-          snapped: snapMode == "snap",
+          snapped: true,
         });
       }
       return w;
@@ -102,7 +93,7 @@
   function onMouseMove(e: CustomEvent<MapMouseEvent>) {
     cursor = {
       point: e.detail.lngLat.toArray(),
-      snapped: snapMode == "snap",
+      snapped: true,
     };
   }
 
@@ -402,12 +393,7 @@
         on:dragend={finalizeDrag}
         zIndex={0}
       >
-        <span
-          class="dot"
-          class:snapped-node={node.snapped}
-          class:free-node={!node.snapped}
-          class:hide={draggingExtraNode}
-        />
+        <span class="extra-node" class:hide={draggingExtraNode} />
       </Marker>
     {/each}
 
@@ -423,7 +409,7 @@
         on:dragend={() => (draggingMarker = false)}
         zIndex={1}
       >
-        <span class="dot" class:snapped={waypt.snapped}>{idx + 1}</span>
+        <span class="waypoint">{idx + 1}</span>
       </Marker>
     {/each}
 
@@ -454,7 +440,7 @@
 
 <style>
   /** Styling on the map **/
-  .dot {
+  .waypoint {
     width: 30px;
     height: 30px;
     border-radius: 50%;
@@ -467,25 +453,23 @@
     font-weight: bold;
   }
 
-  .dot:hover {
+  .waypoint:hover {
     border: 1px solid black;
     cursor: pointer;
   }
 
-  .snapped {
-    background-color: red;
-  }
-
-  .free-node,
-  .snapped-node {
+  .extra-node {
     width: 10px;
     height: 10px;
+    border-radius: 50%;
+    display: flex;
     background-color: white;
   }
 
-  .free-node,
-  .snapped-node:hover {
-    background-color: red;
+  .extra-node:hover {
+    background-color: blue;
+    width: 20px;
+    height: 20px;
   }
 
   .hide {
