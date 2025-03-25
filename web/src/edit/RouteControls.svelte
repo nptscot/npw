@@ -5,7 +5,7 @@
   import { GeoJSON, LineLayer, MapEvents, Marker } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
   import { stageColors, tierLabels } from "../colors";
-  import { HelpButton, layerId } from "../common";
+  import { layerId } from "../common";
   import { SplitComponent } from "../common/layout";
   import { backend, currentStage } from "../stores";
   import type { Waypoint } from "../types";
@@ -246,87 +246,46 @@
         {/if}
       </header>
 
-      <div>
-        <button
-          class="ds_link"
-          on:click={finish}
-          disabled={$waypoints.length < 2}
-        >
-          &lt; Finish and back
-        </button>
-      </div>
+      {#if $waypoints.length == 0}
+        <p>Click to set the start of the route.</p>
+      {:else if $waypoints.length == 1}
+        <p>Click to set the end of the route.</p>
+      {:else}
+        <p>
+          Click to extend the route, drag points to adjust, or change the route
+          properties.
+        </p>
 
-      <div class="ds_button-group">
-        <button
-          class="ds_button ds_button--secondary ds_button--small"
-          disabled={undoStates.length == 0}
-          on:click={undo}
-        >
-          {#if undoStates.length == 0}
+        <div class="ds_button-group">
+          <button class="ds_button" on:click={finish}>Finish</button>
+          <span>or</span>
+          <button class="ds_button ds_button--cancel" on:click={cancel}>
+            Cancel
+          </button>
+        </div>
+
+        {#if editingExisting}
+          <div>
+            <button
+              class="ds_button ds_button--secondary"
+              on:click={deleteRoute}
+            >
+              Delete
+            </button>
+          </div>
+        {/if}
+
+        <div>
+          <button
+            class="ds_button ds_button--secondary"
+            disabled={undoStates.length == 0}
+            on:click={undo}
+            title="Undo last change on the map"
+          >
             Undo
-          {:else}
-            Undo ({undoStates.length})
-          {/if}
-        </button>
-        <button
-          class="ds_button ds_button--secondary ds_button--small"
-          on:click={deleteRoute}
-        >
-          Delete
-        </button>
-        <button
-          class="ds_button ds_button--cancel ds_button--small"
-          on:click={cancel}
-        >
-          Cancel
-        </button>
-        <HelpButton>
-          <ul>
-            <li>
-              <b>Click</b>
-              the map to add new points, while extending from the start or end
-            </li>
-            <li>
-              <b>Click and drag</b>
-              any point to move it
-            </li>
-            <li>
-              <b>Right click</b>
-              a waypoint to delete it
-            </li>
-          </ul>
-
-          <p>Keyboard shortcuts:</p>
-          <ul>
-            <li>
-              <b>1</b>
-              to extend from start
-            </li>
-            <li>
-              <b>2</b>
-              to extend from end
-            </li>
-            <li>
-              <b>3</b>
-              to drag middle points
-            </li>
-            <li>
-              <b>Control+Z</b>
-              to undo your last change
-            </li>
-            <li>
-              <b>Enter</b>
-              to finish
-            </li>
-            <li>
-              <b>Escape</b>
-              to cancel
-            </li>
-          </ul>
-        </HelpButton>
-      </div>
-
-      <hr />
+          </button>
+        </div>
+      {/if}
 
       <slot name="extra-controls" />
     </div>

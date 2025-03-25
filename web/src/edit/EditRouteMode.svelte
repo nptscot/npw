@@ -286,34 +286,34 @@
 
         <SectionDiagram breakdown="gradient" {sectionsGj} />
       </section>
+
+      <h4>Route properties</h4>
+
+      <input
+        class="ds_input ds_input--fixed-20"
+        placeholder="Name"
+        bind:value={name}
+      />
+
+      <textarea
+        class="ds_input"
+        rows="2"
+        placeholder="Notes"
+        bind:value={notes}
+      />
+
+      <div>
+        <label>
+          Tier:
+          <select bind:value={tier}>
+            <option value="Primary">Primary routes</option>
+            <option value="Secondary">Secondary routes</option>
+            <option value="LocalAccess">Local access routes</option>
+            <option value="LongDistance">Long distance routes</option>
+          </select>
+        </label>
+      </div>
     {/if}
-
-    <h4>Route properties</h4>
-
-    <input
-      class="ds_input ds_input--fixed-20"
-      placeholder="Name"
-      bind:value={name}
-    />
-
-    <textarea
-      class="ds_input"
-      rows="2"
-      placeholder="Notes"
-      bind:value={notes}
-    />
-
-    <div>
-      <label>
-        Tier:
-        <select bind:value={tier}>
-          <option value="Primary">Primary routes</option>
-          <option value="Secondary">Secondary routes</option>
-          <option value="LocalAccess">Local access routes</option>
-          <option value="LongDistance">Long distance routes</option>
-        </select>
-      </label>
-    </div>
 
     <RelevantLayers />
 
