@@ -33,6 +33,8 @@
   // Array<Record<string, string | number | undefined>>
   let dynamicData: DynamicRoad[] = [];
 
+  let hovered: Feature | null;
+
   function castToRecord(
     d: DynamicRoad[],
   ): Record<string, string | number | undefined>[] {
@@ -70,6 +72,7 @@
     style: EditsRoadStyle,
     showTiers: { [name: string]: boolean },
     showInfraTypes: { [name: string]: boolean },
+    hovered: Feature | null,
   ): DataDrivenPropertyValueSpecification<number> {
     // Moot point, invisibile anyway
     if (style == "off") {
@@ -113,7 +116,22 @@
       ];
     }
 
-    return ["case", showLayer, opacity, 0.0];
+    // @ts-expect-error This really works
+    let highlightHoveredRoute: ExpressionSpecification = opacity;
+    if (hovered != null) {
+      let roadId = hovered.properties!.id;
+      let routeId = dynamicData[roadId].current_route_id;
+      if (routeId != null) {
+        highlightHoveredRoute = [
+          "case",
+          ["==", ["feature-state", "current_route_id"], routeId],
+          opacity / 2,
+          opacity,
+        ];
+      }
+    }
+
+    return ["case", showLayer, highlightHoveredRoute, 0.0];
   }
 
   function lineColor(
@@ -155,6 +173,7 @@
             $editsRoadStyle,
             $showNetworkTiers,
             $showNetworkInfraTypes,
+            hovered,
           ),
           "line-width": roadLineWidth(1),
         }}
@@ -167,6 +186,7 @@
         manageHoverState
         hoverCursor="pointer"
         on:click={editRouteMap}
+        bind:hovered
       >
         <Popup openOn="hover" let:data canOpen={showEditPopup}>
           {@const props = data?.properties}
