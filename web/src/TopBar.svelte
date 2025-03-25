@@ -1,45 +1,8 @@
 <script lang="ts">
   import logo from "../assets/npt_logo.png?url";
   import { tierLabels } from "./colors";
-  import ManageFiles from "./common/ManageFiles.svelte";
-  import {
-    currentPOI,
-    disableLayersPerStage,
-    enableLayersPerStage,
-  } from "./layers/stores";
   import TopBarStats from "./stats/TopBarStats.svelte";
-  import { currentStage, referenceRoadStyle } from "./stores";
-  import type { Tier } from "./types";
-
-  function changeStage(rawNewStage: string) {
-    // Workaround TS
-    let newStage = rawNewStage as Tier | "assessment";
-
-    // Disable old layers
-    for (let show of disableLayersPerStage[$currentStage]) {
-      show.set(false);
-    }
-    if (
-      $currentStage == "assessment" &&
-      $referenceRoadStyle == "disconnections"
-    ) {
-      $referenceRoadStyle = "off";
-    }
-    if ($currentStage == "LocalAccess") {
-      $currentPOI = null;
-    }
-
-    $currentStage = newStage;
-
-    // Show new layers
-    for (let show of enableLayersPerStage[newStage]) {
-      show.set(true);
-    }
-
-    if ($currentStage == "assessment") {
-      $referenceRoadStyle = "disconnections";
-    }
-  }
+  import { changeStage, currentStage, mode } from "./stores";
 
   let stages = { ...tierLabels, assessment: "Assess" };
 </script>
@@ -59,13 +22,15 @@
         </li>
 
         <li class="ds_site-navigation__item">
-          <a class="ds_site-navigation__link" href="index.html">
-            Pick area <i class="fa-solid fa-chevron-right"></i>
+          <!-- svelte-ignore a11y-invalid-attribute -->
+          <a
+            class="ds_site-navigation__link"
+            class:ds_current={$mode.kind == "overview"}
+            href="#"
+            on:click|preventDefault={() => ($mode = { kind: "overview" })}
+          >
+            Overview <i class="fa-solid fa-chevron-right"></i>
           </a>
-        </li>
-
-        <li class="ds_site-navigation__item">
-          <ManageFiles />
         </li>
 
         {#each Object.entries(stages) as [stage, label]}
@@ -73,7 +38,7 @@
             <!-- svelte-ignore a11y-invalid-attribute -->
             <a
               class="ds_site-navigation__link {stage}"
-              class:ds_current={$currentStage == stage}
+              class:ds_current={$mode.kind == "main" && $currentStage == stage}
               href="#"
               on:click|preventDefault={() => changeStage(stage)}
             >

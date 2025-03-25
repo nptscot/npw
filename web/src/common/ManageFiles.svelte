@@ -148,14 +148,7 @@
   }
 </script>
 
-<!-- svelte-ignore a11y-invalid-attribute -->
-<a
-  class="ds_site-navigation__link"
-  href="#"
-  on:click|preventDefault={() => (open = true)}
->
-  Pick project <i class="fa-solid fa-chevron-right"></i>
-</a>
+<button on:click={() => (open = true)}>Pick project</button>
 
 <Modal bind:show={open}>
   <h2>Manage files</h2>

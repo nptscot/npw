@@ -16,6 +16,7 @@
   }
 
   let titles = {
+    overview: "",
     Primary: "Design primary network",
     Secondary: "Design secondary network",
     LocalAccess: "Design local access network",

@@ -33,6 +33,7 @@
   import LegendPanel from "./layers/roads/LegendPanel.svelte";
   import RightLayers from "./layers/roads/RightLayers.svelte";
   import MainMode from "./MainMode.svelte";
+  import OverviewMode from "./OverviewMode.svelte";
   import {
     assetUrl,
     backend,
@@ -242,7 +243,9 @@
           <LegendPanel />
           <BottomPanel />
 
-          {#if $mode.kind == "main"}
+          {#if $mode.kind == "overview"}
+            <OverviewMode />
+          {:else if $mode.kind == "main"}
             <MainMode />
           {:else if $mode.kind == "edit-route" && map}
             <EditRouteMode id={$mode.id} {map} />

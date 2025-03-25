@@ -2,12 +2,18 @@ import * as Comlink from "comlink";
 import type { Map } from "maplibre-gl";
 import { get, writable, type Writable } from "svelte/store";
 import { getKey, setLocalStorage } from "./common/files";
+import {
+  currentPOI,
+  disableLayersPerStage,
+  enableLayersPerStage,
+} from "./layers/stores";
 import type { ODStats, Stats, Tier, WorstRoutes } from "./types";
 import type { Backend } from "./worker";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 
 export type Mode =
+  | { kind: "overview" }
   | { kind: "main" }
   | { kind: "edit-route"; id: number | null }
   | { kind: "evaluate-journey"; browse: WorstRoutes }
@@ -16,7 +22,7 @@ export type Mode =
 export let boundaryName = writable("");
 // This may be updated by App upfront
 export let currentFilename = writable("untitled");
-export let mode: Writable<Mode> = writable({ kind: "main" });
+export let mode: Writable<Mode> = writable({ kind: "overview" });
 export let currentStage: Writable<Tier | "assessment"> = writable("Primary");
 export let map: Writable<Map | null> = writable(null);
 export let zoom: Writable<number | undefined> = writable(undefined);
@@ -92,4 +98,34 @@ export function assetUrl(path: string): string {
   let dir =
     import.meta.env.BASE_URL == "/npw/demo" ? "demo_npw" : "tmp_npt_editor";
   return get(remoteStorage) ? `https://assets.od2net.org/${dir}/${path}` : path;
+}
+
+export function changeStage(rawNewStage: string) {
+  mode.set({ kind: "main" });
+
+  // Workaround TS
+  let newStage = rawNewStage as Tier | "assessment";
+  let oldStage = get(currentStage);
+
+  // Disable old layers
+  for (let show of disableLayersPerStage[oldStage]) {
+    show.set(false);
+  }
+  if (oldStage == "assessment" && get(referenceRoadStyle) == "disconnections") {
+    referenceRoadStyle.set("off");
+  }
+  if (oldStage == "LocalAccess") {
+    currentPOI.set(null);
+  }
+
+  currentStage.set(newStage);
+
+  // Show new layers
+  for (let show of enableLayersPerStage[newStage]) {
+    show.set(true);
+  }
+
+  if (newStage == "assessment") {
+    referenceRoadStyle.set("disconnections");
+  }
 }
