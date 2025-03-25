@@ -125,16 +125,26 @@
       previewGj = emptyGeojson();
       return;
     }
+
     try {
       if (waypoints.length > 0 && cursor) {
+        // Immediately show a straight line
+        previewGj = {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "LineString",
+            coordinates: [waypoints[waypoints.length - 1].point, cursor.point],
+          },
+        };
+
+        // Asynchronously update to the real route (if it exists)
         previewGj = await $backend!.snapRoute([
           waypoints[waypoints.length - 1],
           cursor,
         ]);
-        return;
       }
     } catch (err) {}
-    previewGj = emptyGeojson();
   }
 
   async function updateExtraNodes(
