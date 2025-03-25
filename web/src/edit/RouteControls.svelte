@@ -305,7 +305,9 @@
         on:dragend={finalizeDrag}
         zIndex={0}
       >
-        <span class="extra-node" class:hide={draggingExtraNode} />
+        <span class="extra-node-clickable" class:hide={draggingExtraNode}>
+          <span class="extra-node-display" class:hide={draggingExtraNode} />
+        </span>
       </Marker>
     {/each}
 
@@ -370,18 +372,32 @@
     cursor: pointer;
   }
 
-  .extra-node {
+  .extra-node-clickable {
     width: 10px;
     height: 10px;
     border-radius: 50%;
     display: flex;
-    background-color: white;
+    position: relative;
   }
 
-  .extra-node:hover {
+  .extra-node-clickable:hover {
     background-color: blue;
     width: 20px;
     height: 20px;
+  }
+
+  .extra-node-display {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: flex;
+    background-color: white;
+
+    /* Center the small displayed circle inside the larger invisible hitbox circle */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -2.5px 0px 0px -2.5px;
   }
 
   .hide {
