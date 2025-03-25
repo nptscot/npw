@@ -215,8 +215,8 @@
         <Link
           on:click={() => {
             $mode = {
-              kind: "edit-route",
-              id: dynamicData[props.id].current_route_id,
+              kind: "edit-attributes",
+              ids: [notNull(dynamicData[props.id].current_route_id)],
             };
           }}
         >

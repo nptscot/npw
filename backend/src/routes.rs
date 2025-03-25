@@ -12,7 +12,7 @@ use crate::{
 };
 
 impl MapModel {
-    pub fn set_route(&mut self, edit_id: Option<usize>, orig_route: Route) -> Result<()> {
+    pub fn set_route(&mut self, edit_id: Option<usize>, orig_route: Route) -> Result<Vec<usize>> {
         // If we're editing an existing route, first delete it
         if let Some(id) = edit_id {
             if self.routes.remove(&id).is_none() {
@@ -72,14 +72,16 @@ impl MapModel {
             });
         }
 
+        let mut new_ids = Vec::new();
         for route in new_routes {
             let route_id = self.id_counter;
             self.id_counter += 1;
             self.routes.insert(route_id, route);
+            new_ids.push(route_id);
         }
         self.recalculate_after_edits();
 
-        Ok(())
+        Ok(new_ids)
     }
 
     pub fn delete_routes(&mut self, ids: Vec<usize>) -> Result<()> {
@@ -184,12 +186,12 @@ impl MapModel {
     /// Split a route into sections, returning a FeatureCollection
     pub fn autosplit_route(
         &self,
-        editing_route_id: Option<usize>,
+        editing_route_ids: Vec<usize>,
         route: Vec<(RoadID, Dir)>,
         override_infra_type: Option<InfraType>,
     ) -> Result<String> {
         let mut used_roads = self.used_roads();
-        if let Some(id) = editing_route_id {
+        for id in editing_route_ids {
             for (r, _) in &self.routes[&id].roads {
                 used_roads.remove(r);
             }

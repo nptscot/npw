@@ -5,7 +5,7 @@
   import { GeoJSON, LineLayer, MapEvents, Marker } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
   import { stageColors, tierLabels } from "../colors";
-  import { HelpButton, layerId } from "../common";
+  import { layerId } from "../common";
   import { SplitComponent } from "../common/layout";
   import { backend, currentStage } from "../stores";
   import type { Waypoint } from "../types";
@@ -14,7 +14,6 @@
   export let map: Map;
   export let finish: () => void;
   export let cancel: () => void;
-  export let deleteRoute: () => void;
   export let editingExisting: boolean;
 
   onDestroy(() => {
@@ -246,15 +245,17 @@
         {/if}
       </header>
 
-      <div>
-        <button
-          class="ds_link"
-          on:click={finish}
-          disabled={$waypoints.length < 2}
-        >
-          &lt; Finish and back
-        </button>
-      </div>
+      {#if $waypoints.length == 0}
+        <p>Click to set a start point.</p>
+      {:else if $waypoints.length == 1}
+        <p>Click to set an end point.</p>
+      {:else}
+        <p>
+          Continue clicking the map to extend the route, or drag points to
+          adjust. Right click a point to delete it.
+        </p>
+        <button class="ds_button" on:click={finish}>Finish drawing</button>
+      {/if}
 
       <div class="ds_button-group">
         <button
@@ -269,61 +270,11 @@
           {/if}
         </button>
         <button
-          class="ds_button ds_button--secondary ds_button--small"
-          on:click={deleteRoute}
-        >
-          Delete
-        </button>
-        <button
           class="ds_button ds_button--cancel ds_button--small"
           on:click={cancel}
         >
           Cancel
         </button>
-        <HelpButton>
-          <ul>
-            <li>
-              <b>Click</b>
-              the map to add new points, while extending from the start or end
-            </li>
-            <li>
-              <b>Click and drag</b>
-              any point to move it
-            </li>
-            <li>
-              <b>Right click</b>
-              a waypoint to delete it
-            </li>
-          </ul>
-
-          <p>Keyboard shortcuts:</p>
-          <ul>
-            <li>
-              <b>1</b>
-              to extend from start
-            </li>
-            <li>
-              <b>2</b>
-              to extend from end
-            </li>
-            <li>
-              <b>3</b>
-              to drag middle points
-            </li>
-            <li>
-              <b>Control+Z</b>
-              to undo your last change
-            </li>
-            <li>
-              <b>Enter</b>
-              to finish
-            </li>
-            <li>
-              <b>Escape</b>
-              to cancel
-            </li>
-          </ul>
-        </HelpButton>
       </div>
 
       <hr />

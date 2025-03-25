@@ -26,7 +26,8 @@
   import { getKey } from "./common/files";
   import { controlsContents, Layout, mapContents } from "./common/layout";
   import StreetView from "./common/StreetView.svelte";
-  import EditRouteMode from "./edit/EditRouteMode.svelte";
+  import EditRouteAttributesMode from "./edit/EditRouteAttributesMode.svelte";
+  import EditRouteGeometryMode from "./edit/EditRouteGeometryMode.svelte";
   import EvaluateJourneyMode from "./EvaluateJourneyMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
   import BottomPanel from "./layers/roads/BottomPanel.svelte";
@@ -244,8 +245,10 @@
 
           {#if $mode.kind == "main"}
             <MainMode />
-          {:else if $mode.kind == "edit-route" && map}
-            <EditRouteMode id={$mode.id} {map} />
+          {:else if $mode.kind == "edit-geometry" && map}
+            <EditRouteGeometryMode id={$mode.id} {map} />
+          {:else if $mode.kind == "edit-attributes"}
+            <EditRouteAttributesMode ids={$mode.ids} />
           {:else if $mode.kind == "evaluate-journey"}
             <EvaluateJourneyMode browse={$mode.browse} />
           {:else if $mode.kind == "bulk-edit"}

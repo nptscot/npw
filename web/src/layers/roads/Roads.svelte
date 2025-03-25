@@ -59,7 +59,7 @@
       let route_id = dynamicData[road_id].current_route_id;
       // If it's null, we clicked an opacity 0 road that's not part of a route
       if (route_id != null) {
-        $mode = { kind: "edit-route", id: route_id };
+        $mode = { kind: "edit-attributes", ids: [route_id] };
       }
     }
   }
@@ -99,13 +99,35 @@
     }
 
     // While editing an existing route, hide it
-    if ($mode.kind == "edit-route" && $mode.id != null) {
+    if ($mode.kind == "edit-geometry" && $mode.id != null) {
       return [
         "case",
         [
           "all",
           ["to-boolean", ["feature-state", "current_infra"]],
           ["!=", $mode.id, ["feature-state", "current_route_id"]],
+          showLayer,
+        ],
+        opacity,
+        0.0,
+      ];
+    }
+
+    if ($mode.kind == "edit-attributes") {
+      return [
+        "case",
+        [
+          "all",
+          ["to-boolean", ["feature-state", "current_infra"]],
+          // TODO Check this carefully
+          [
+            "!",
+            [
+              "in",
+              ["feature-state", "current_route_id"],
+              ["literal", $mode.ids],
+            ],
+          ],
           showLayer,
         ],
         opacity,

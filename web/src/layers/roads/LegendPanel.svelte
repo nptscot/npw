@@ -162,7 +162,7 @@
     <SequentialLegend colorScale={demandColors} limits={demandLimits} />
   {/if}
 
-  {#if $mode.kind == "edit-route"}
+  {#if $mode.kind == "edit-geometry" || $mode.kind == "edit-attributes"}
     {#if $editModeBreakdown == "infra_type"}
       <QualitativeLegend colors={infraTypeColors} />
     {:else if $editModeBreakdown == "gradient"}

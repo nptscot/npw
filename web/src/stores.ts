@@ -9,7 +9,8 @@ export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 
 export type Mode =
   | { kind: "main" }
-  | { kind: "edit-route"; id: number | null }
+  | { kind: "edit-geometry"; id: number | null }
+  | { kind: "edit-attributes"; ids: number[] }
   | { kind: "evaluate-journey"; browse: WorstRoutes }
   | { kind: "bulk-edit" };
 

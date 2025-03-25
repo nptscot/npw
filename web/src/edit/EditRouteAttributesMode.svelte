@@ -2,7 +2,6 @@
   import type {
     DataDrivenPropertyValueSpecification,
     ExpressionSpecification,
-    Map,
   } from "maplibre-gl";
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
@@ -13,6 +12,7 @@
     levelOfServiceColors,
   } from "../colors";
   import { layerId, Modal, percent } from "../common";
+  import { SplitComponent } from "../common/layout";
   import RelevantLayers from "../layers/RelevantLayers.svelte";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
@@ -24,12 +24,10 @@
   } from "../stores";
   import type { AutosplitRoute, Waypoint } from "../types";
   import PickInfraType from "./PickInfraType.svelte";
-  import RouteControls from "./RouteControls.svelte";
   import SectionDiagram from "./SectionDiagram.svelte";
-  import { waypoints } from "./stores";
 
-  export let map: Map;
-  export let id: number | null;
+  // TODO Maybe as an intermediate, we take waypoints, not ids. maybe that's it.
+  export let ids: number[];
 
   let name = "";
   let notes = "";
@@ -37,44 +35,37 @@
   let infraType = "MixedTraffic";
   let overrideInfraType = false;
   let tier = $currentStage == "assessment" ? "Primary" : $currentStage;
+  let waypoints: Waypoint[] = [];
 
   let showOverrideModal = false;
 
   let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
-  $: recalculateSections($waypoints, overrideInfraType, infraType);
+  $: recalculateSections(waypoints, overrideInfraType, infraType);
+  $: pctFits = percentFits(sectionsGj);
+  $: pctHighLoS = percentHighLoS(sectionsGj);
 
   onMount(async () => {
-    $waypoints = [];
-    if (id != null) {
-      let feature = await $backend!.getRoute(id);
-      name = feature.properties.name;
-      notes = feature.properties.notes;
-      infraType = feature.properties.infra_type;
-      overrideInfraType = feature.properties.override_infra_type;
-      tier = feature.properties.tier;
-
-      $waypoints = feature.properties.waypoints;
-    }
+    // TODO not sure how this works
+    let feature = await $backend!.getRoute(ids[0]);
+    name = feature.properties.name;
+    notes = feature.properties.notes;
+    infraType = feature.properties.infra_type;
+    overrideInfraType = feature.properties.override_infra_type;
+    tier = feature.properties.tier;
+    waypoints = feature.properties.waypoints;
   });
 
-  async function deleteRoute() {
-    if (id != null) {
-      await $backend!.deleteRoutes([id]);
-      await autosave();
-    }
+  async function deleteRoutes() {
+    await $backend!.deleteRoutes(ids);
+    await autosave();
     $mode = { kind: "main" };
   }
 
-  async function finish() {
+  async function save() {
     try {
-      let feature = await $backend!.snapRoute($waypoints);
-      // TODO Is this possible still?
-      if (!feature) {
-        window.alert("No route drawn");
-        return;
-      }
+      // TODO changeTier, changeInfraType, etc
 
-      await $backend!.setRoute(id, {
+      /*await $backend!.setRoute(id, {
         feature,
         roads: feature.properties.roads,
 
@@ -83,7 +74,8 @@
         infra_type: infraType,
         override_infra_type: overrideInfraType,
         tier,
-      });
+      });*/
+      window.alert("TODO save this stuff");
       await autosave();
       $mode = { kind: "main" };
     } catch (err) {
@@ -103,10 +95,9 @@
     sectionsGj = emptyGeojson() as AutosplitRoute;
 
     try {
-      // TODO Wasteful; should RouteControls export a read-only view of this?
       let feature = await $backend!.snapRoute(waypts);
       sectionsGj = await $backend!.autosplitRoute(
-        id,
+        ids,
         feature.properties.roads,
         overrideInfraType ? infraType : null,
       );
@@ -169,17 +160,26 @@
   };
 </script>
 
-<RouteControls
-  {map}
-  {finish}
-  {cancel}
-  {deleteRoute}
-  editingExisting={id != null}
->
-  <div slot="extra-controls" class="main-controls">
-    {#if $waypoints.length >= 2}
-      {@const pctFits = percentFits(sectionsGj)}
-      {@const pctHighLoS = percentHighLoS(sectionsGj)}
+<SplitComponent>
+  <div slot="controls">
+    <div class="main-controls">
+      <header class="ds_page-header">
+        <h2 class="ds_page-header__title">Edit a route</h2>
+      </header>
+
+      <div>
+        <button class="ds_button" on:click={save}>Finish editing</button>
+      </div>
+      <div>
+        <button class="ds_button ds_button--secondary" on:click={cancel}>
+          Cancel
+        </button>
+      </div>
+      <div>
+        <button class="ds_button ds_button--secondary" on:click={deleteRoutes}>
+          Delete
+        </button>
+      </div>
 
       <section>
         <h4>
@@ -286,38 +286,38 @@
 
         <SectionDiagram breakdown="gradient" {sectionsGj} />
       </section>
-    {/if}
 
-    <h4>Route properties</h4>
+      <h4>Route properties</h4>
 
-    <input
-      class="ds_input ds_input--fixed-20"
-      placeholder="Name"
-      bind:value={name}
-    />
+      <input
+        class="ds_input ds_input--fixed-20"
+        placeholder="Name"
+        bind:value={name}
+      />
 
-    <textarea
-      class="ds_input"
-      rows="2"
-      placeholder="Notes"
-      bind:value={notes}
-    />
+      <textarea
+        class="ds_input"
+        rows="2"
+        placeholder="Notes"
+        bind:value={notes}
+      />
 
-    <div>
-      <label>
-        Tier:
-        <select bind:value={tier}>
-          <option value="Primary">Primary routes</option>
-          <option value="Secondary">Secondary routes</option>
-          <option value="LocalAccess">Local access routes</option>
-          <option value="LongDistance">Long distance routes</option>
-        </select>
-      </label>
+      <div>
+        <label>
+          Tier:
+          <select bind:value={tier}>
+            <option value="Primary">Primary routes</option>
+            <option value="Secondary">Secondary routes</option>
+            <option value="LocalAccess">Local access routes</option>
+            <option value="LongDistance">Long distance routes</option>
+          </select>
+        </label>
+      </div>
+
+      <RelevantLayers />
+
+      <LeftSidebarStats />
     </div>
-
-    <RelevantLayers />
-
-    <LeftSidebarStats />
 
     <Modal bind:show={showOverrideModal}>
       <PickInfraType bind:current={infraType} />
@@ -327,7 +327,7 @@
     </Modal>
   </div>
 
-  <span slot="extra-map">
+  <div slot="map">
     <GeoJSON data={sectionsGj}>
       <LineLayer
         {...layerId("edit-route-sections")}
@@ -338,8 +338,8 @@
         }}
       />
     </GeoJSON>
-  </span>
-</RouteControls>
+  </div>
+</SplitComponent>
 
 <style>
   /** TODO These get nested in a strange way**/

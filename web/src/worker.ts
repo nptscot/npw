@@ -78,9 +78,9 @@ export class Backend {
   }
 
   // TODO Be consistent about undefined vs null
-  setRoute(id: number | null, input: SetRouteInput) {
+  setRoute(id: number | null, input: SetRouteInput): number[] {
     this.checkReady();
-    this.inner!.setRoute(id == null ? undefined : id, input);
+    return [...this.inner!.setRoute(id == null ? undefined : id, input)];
   }
 
   deleteRoutes(ids: number[]) {
@@ -106,14 +106,14 @@ export class Backend {
   }
 
   autosplitRoute(
-    editingRouteId: number | null,
+    editingRouteIds: number[],
     roads: [number, "Forwards" | "Backwards"][],
     overrideInfraType: string | null,
   ): AutosplitRoute {
     this.checkReady();
     return JSON.parse(
       this.inner!.autosplitRoute(
-        editingRouteId == null ? undefined : editingRouteId,
+        new Uint32Array(editingRouteIds),
         roads,
         overrideInfraType,
       ),

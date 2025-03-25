@@ -10,7 +10,7 @@
       let tag = (e.target as HTMLElement).tagName;
       if (tag != "INPUT") {
         e.preventDefault();
-        $mode = { kind: "edit-route", id: null };
+        $mode = { kind: "edit-geometry", id: null };
       }
     }
   }
@@ -96,7 +96,7 @@
       <div>
         <button
           class="ds_button"
-          on:click={() => ($mode = { kind: "edit-route", id: null })}
+          on:click={() => ($mode = { kind: "edit-geometry", id: null })}
         >
           Draw new route line
         </button>

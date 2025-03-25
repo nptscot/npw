@@ -70,9 +70,13 @@ impl MapModel {
         vec![b.min().x, b.min().y, b.max().x, b.max().y]
     }
 
-    /// Create or edit a route. Returns the ID
+    /// Create or edit a route. Returns all the route IDs
     #[wasm_bindgen(js_name = setRoute)]
-    pub fn set_route_wasm(&mut self, id: Option<usize>, input: JsValue) -> Result<(), JsValue> {
+    pub fn set_route_wasm(
+        &mut self,
+        id: Option<usize>,
+        input: JsValue,
+    ) -> Result<Vec<usize>, JsValue> {
         let route: Route = serde_wasm_bindgen::from_value(input)?;
         self.set_route(id, route).map_err(err_to_js)
     }
@@ -110,14 +114,14 @@ impl MapModel {
     #[wasm_bindgen(js_name = autosplitRoute)]
     pub fn autosplit_route_wasm(
         &self,
-        editing_route_id: Option<usize>,
+        editing_route_ids: Vec<usize>,
         input: JsValue,
         override_infra_type: JsValue,
     ) -> Result<String, JsValue> {
         let roads: Vec<(RoadID, Dir)> = serde_wasm_bindgen::from_value(input)?;
         let override_infra_type: Option<InfraType> =
             serde_wasm_bindgen::from_value(override_infra_type)?;
-        self.autosplit_route(editing_route_id, roads, override_infra_type)
+        self.autosplit_route(editing_route_ids, roads, override_infra_type)
             .map_err(err_to_js)
     }
 

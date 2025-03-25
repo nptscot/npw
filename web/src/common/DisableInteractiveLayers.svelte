@@ -33,7 +33,10 @@
       "fill-opacity": 0.0,
     }}
     layout={{
-      visibility: $mode.kind == "edit-route" ? "visible" : "none",
+      visibility:
+        $mode.kind == "edit-geometry" || $mode.kind == "edit-attributes"
+          ? "visible"
+          : "none",
     }}
   />
 
