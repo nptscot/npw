@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tierColors } from "./colors";
   import { SplitComponent } from "./common/layout";
   import ManageFiles from "./common/ManageFiles.svelte";
   import { changeStage, currentStage } from "./stores";
@@ -18,17 +19,20 @@
         <h2 class="ds_page-header__title">Plan my network</h2>
       </header>
 
-      <div><a href="index.html">Pick area</a></div>
+      <div><a href="index.html">Work in a different area</a></div>
 
       <div><ManageFiles /></div>
 
       <p>
         Start by planning the primary and secondary tiers, before adding access
-        to local places
+        to local places.
       </p>
 
       {#each Object.entries(tiers) as [stage, label]}
-        <div>
+        <div
+          style:border-left="5px solid {tierColors[stage]}"
+          style:padding-left="8px"
+        >
           <button
             class="ds_button"
             class:ds_button--secondary={$currentStage != stage}

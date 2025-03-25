@@ -148,7 +148,9 @@
   }
 </script>
 
-<button on:click={() => (open = true)}>Pick project</button>
+<button class="ds_button ds_button--secondary" on:click={() => (open = true)}>
+  Manage project: <u>{$currentFilename}</u>
+</button>
 
 <Modal bind:show={open}>
   <h2>Manage files</h2>

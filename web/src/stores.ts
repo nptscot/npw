@@ -100,11 +100,7 @@ export function assetUrl(path: string): string {
   return get(remoteStorage) ? `https://assets.od2net.org/${dir}/${path}` : path;
 }
 
-export function changeStage(rawNewStage: string) {
-  mode.set({ kind: "main" });
-
-  // Workaround TS
-  let newStage = rawNewStage as Tier | "assessment";
+export function exitCurrentStage() {
   let oldStage = get(currentStage);
 
   // Disable old layers
@@ -117,7 +113,15 @@ export function changeStage(rawNewStage: string) {
   if (oldStage == "LocalAccess") {
     currentPOI.set(null);
   }
+}
 
+export function changeStage(rawNewStage: string) {
+  exitCurrentStage();
+
+  mode.set({ kind: "main" });
+
+  // Workaround TS
+  let newStage = rawNewStage as Tier | "assessment";
   currentStage.set(newStage);
 
   // Show new layers

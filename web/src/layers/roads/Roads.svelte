@@ -79,7 +79,7 @@
       return 0.0;
     }
 
-    let opacity = $mode.kind == "main" ? 1.0 : 0.5;
+    let opacity = $mode.kind == "main" || $mode.kind == "overview" ? 1.0 : 0.5;
 
     // @ts-expect-error Guaranteed to be set below
     let showLayer: ExpressionSpecification = null;

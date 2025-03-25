@@ -2,9 +2,14 @@
   import logo from "../assets/npt_logo.png?url";
   import { tierLabels } from "./colors";
   import TopBarStats from "./stats/TopBarStats.svelte";
-  import { changeStage, currentStage, mode } from "./stores";
+  import { changeStage, currentStage, exitCurrentStage, mode } from "./stores";
 
   let stages = { ...tierLabels, assessment: "Assess" };
+
+  function gotoOverview() {
+    exitCurrentStage();
+    $mode = { kind: "overview" };
+  }
 </script>
 
 <header>
@@ -27,7 +32,7 @@
             class="ds_site-navigation__link"
             class:ds_current={$mode.kind == "overview"}
             href="#"
-            on:click|preventDefault={() => ($mode = { kind: "overview" })}
+            on:click|preventDefault={gotoOverview}
           >
             Overview <i class="fa-solid fa-chevron-right"></i>
           </a>
