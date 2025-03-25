@@ -47,7 +47,6 @@
 
   let showTierModal = false;
   let overrideTier = "Primary";
-  let overrideInfraType = "Segregated";
   let showInfraTypeModal = false;
 
   let selectedIds: Set<number> = new Set();
@@ -157,8 +156,8 @@
     showTierModal = false;
   }
 
-  async function changeInfraType() {
-    await $backend!.changeInfraType([...selectedIds], overrideInfraType);
+  async function changeInfraType(infraType: string) {
+    await $backend!.changeInfraType([...selectedIds], infraType);
     window.alert("Infrastructure type changed");
     await autosave();
     allRoutes = await $backend!.getAllRoutes();
@@ -304,19 +303,7 @@
         of Service.
       </p>
 
-      <PickInfraType bind:current={overrideInfraType} />
-
-      <div class="ds_button-group">
-        <button class="ds_button" on:click={changeInfraType}>
-          Change infrastructure type
-        </button>
-        <button
-          class="ds_button ds_button--secondary"
-          on:click={() => (showInfraTypeModal = false)}
-        >
-          Cancel
-        </button>
-      </div>
+      <PickInfraType onFinish={changeInfraType} />
     </Modal>
   </div>
 

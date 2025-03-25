@@ -320,10 +320,12 @@
     <LeftSidebarStats />
 
     <Modal bind:show={showOverrideModal}>
-      <PickInfraType bind:current={infraType} />
-      <button class="ds_button" on:click={() => (showOverrideModal = false)}>
-        OK
-      </button>
+      <PickInfraType
+        onFinish={(value) => {
+          infraType = value;
+          showOverrideModal = false;
+        }}
+      />
     </Modal>
   </div>
 

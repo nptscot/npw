@@ -7,7 +7,7 @@
   import sharedFootwayIcon from "../../assets/SharedFootway.jpg";
   import { infraTypeMapping } from "../types";
 
-  export let current: string;
+  export let onFinish: (infraType: string) => void;
 
   // TODO URL isn't used right now
 
@@ -52,11 +52,7 @@
     {@const [label, color] = infraTypeMapping[value]}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div
-      class="card"
-      class:current={current == value}
-      on:click={() => (current = value)}
-    >
+    <div class="card" on:click={() => onFinish(value)}>
       <img src={img} alt={label} />
       <h5 style:color>{label}</h5>
     </div>
@@ -65,11 +61,7 @@
 
 <style>
   .card {
-    flex: 0 0 49%;
+    flex: 0 0 30%;
     cursor: pointer;
-  }
-
-  .current {
-    background: black;
   }
 </style>
