@@ -229,11 +229,27 @@
         <div bind:this={mapDiv} />
 
         {#if $backend}
-          {#await $backend.getInvertedBoundary() then data}
+          {#await $backend.getInvertedBoundaryInsideSettlements() then data}
             <GeoJSON {data}>
               <FillLayer
-                {...layerId("fade-study-area")}
+                {...layerId("fade-study-area-inside")}
                 paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
+                layout={{
+                  visibility:
+                    $currentStage != "LongDistance" ? "visible" : "none",
+                }}
+              />
+            </GeoJSON>
+          {/await}
+          {#await $backend.getInvertedBoundaryOutsideSettlements() then data}
+            <GeoJSON {data}>
+              <FillLayer
+                {...layerId("fade-study-area-outside")}
+                paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
+                layout={{
+                  visibility:
+                    $currentStage == "LongDistance" ? "visible" : "none",
+                }}
               />
             </GeoJSON>
           {/await}

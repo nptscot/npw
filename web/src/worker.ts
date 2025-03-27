@@ -53,9 +53,14 @@ export class Backend {
     ];
   }
 
-  getInvertedBoundary(): Feature<Polygon> {
+  getInvertedBoundaryInsideSettlements(): Feature<Polygon> {
     this.checkReady();
-    return JSON.parse(this.inner!.getInvertedBoundary());
+    return JSON.parse(this.inner!.getInvertedBoundaryInsideSettlements());
+  }
+
+  getInvertedBoundaryOutsideSettlements(): Feature<Polygon> {
+    this.checkReady();
+    return JSON.parse(this.inner!.getInvertedBoundaryOutsideSettlements());
   }
 
   renderStaticRoads(): FeatureCollection<LineString, StaticRoad> {

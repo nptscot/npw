@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::Once;
 
-use geo::{Coord, LineString, Polygon};
+use geo::{Coord, LineString, MultiPolygon, Polygon};
 use geojson::{Feature, FeatureCollection, Geometry};
 use graph::{RoadID, Timer};
 use serde::{Deserialize, Serialize};
@@ -40,25 +40,52 @@ impl MapModel {
         serde_json::to_string(&self.render_dynamic_roads()).map_err(err_to_js)
     }
 
-    /// Return a polygon covering the world, minus a hole for the boundary, in WGS84
-    #[wasm_bindgen(js_name = getInvertedBoundary)]
-    pub fn get_inverted_boundary(&self) -> Result<String, JsValue> {
-        // TODO Assume none of the boundary polygons have holes
-        let polygon = Polygon::new(
-            LineString::from(vec![
-                (180.0, 90.0),
-                (-180.0, 90.0),
-                (-180.0, -90.0),
-                (180.0, -90.0),
-                (180.0, 90.0),
-            ]),
+    #[wasm_bindgen(js_name = getInvertedBoundaryInsideSettlements)]
+    pub fn get_inverted_boundary_inside_settlements(&self) -> Result<String, JsValue> {
+        let the_world = LineString::from(vec![
+            (180.0, 90.0),
+            (-180.0, 90.0),
+            (-180.0, -90.0),
+            (180.0, -90.0),
+            (180.0, 90.0),
+        ]);
+        let mut holes = Vec::new();
+        for s in &self.settlements {
+            for polygon in self.graph.mercator.to_wgs84(&s.polygon) {
+                holes.push(polygon.exterior().clone());
+            }
+        }
+        let polygon = Polygon::new(the_world, holes);
+        let f = Feature::from(Geometry::from(&polygon));
+        let out = serde_json::to_string(&f).map_err(err_to_js)?;
+        Ok(out)
+    }
+
+    #[wasm_bindgen(js_name = getInvertedBoundaryOutsideSettlements)]
+    pub fn get_inverted_boundary_outside_settlements(&self) -> Result<String, JsValue> {
+        let the_world = LineString::from(vec![
+            (180.0, 90.0),
+            (-180.0, 90.0),
+            (-180.0, -90.0),
+            (180.0, -90.0),
+            (180.0, 90.0),
+        ]);
+        let mut polygons = Vec::new();
+        // Fade out everything except the study area
+        polygons.push(Polygon::new(
+            the_world,
             self.boundary_wgs84
                 .0
                 .iter()
                 .map(|p| p.exterior().clone())
                 .collect(),
-        );
-        let f = Feature::from(Geometry::from(&polygon));
+        ));
+
+        // Also fade out all of the settlements, leaving just the rural space in between
+        for s in &self.settlements {
+            polygons.extend(self.graph.mercator.to_wgs84(&s.polygon));
+        }
+        let f = Feature::from(Geometry::from(&MultiPolygon(polygons)));
         let out = serde_json::to_string(&f).map_err(err_to_js)?;
         Ok(out)
     }

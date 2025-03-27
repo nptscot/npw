@@ -130,6 +130,7 @@ const layerZorder = [
 
   streets("Road labels"),
 
-  "fade-study-area",
+  "fade-study-area-inside",
+  "fade-study-area-outside",
   "block-everything",
 ];
