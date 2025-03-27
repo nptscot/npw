@@ -17,11 +17,7 @@
     <nav class="ds_site-navigation">
       <ul class="ds_site-navigation__list">
         <li class="ds_site-navigation__item">
-          <a
-            class="ds_site-navigation__link"
-            href="https://www.npt.scot/"
-            target="_blank"
-          >
+          <a class="ds_site-navigation__link" href="index.html">
             <img id="logo" src={logo} alt="NPT logo" />
           </a>
         </li>
