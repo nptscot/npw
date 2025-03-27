@@ -29,35 +29,49 @@ impl MapModel {
         // - the auto-recommended infrastructure type changes (unless manually overriden)
         // - the route crosses something existing
         // - the infrastructure type does or does not fit in the available streetspace
+        // - the tier changes (based on whether the road is inside a settlement or not)
         #[derive(PartialEq)]
         enum Case {
             AlreadyExists,
-            // bool is fits or not
-            New(InfraType, bool),
+            New {
+                infra_type: InfraType,
+                fits: bool,
+                tier: Tier,
+            },
         }
         let case = |(r, _)| {
             if used_roads.contains(&r) {
                 Case::AlreadyExists
             } else {
-                if orig_route.override_infra_type {
-                    let it = orig_route.infra_type;
-                    Case::New(it, self.does_infra_type_fit(r, it))
+                let infra_type = if orig_route.override_infra_type {
+                    orig_route.infra_type
                 } else {
-                    let it = self.best_infra_type(r);
-                    Case::New(it, self.does_infra_type_fit(r, it))
+                    self.best_infra_type(r)
+                };
+
+                Case::New {
+                    infra_type,
+                    fits: self.does_infra_type_fit(r, infra_type),
+                    tier: fix_tier(
+                        orig_route.tier,
+                        self.within_settlement[r.0],
+                        self.highways[r.0],
+                    ),
                 }
             }
         };
 
         let mut new_routes = Vec::new();
         for roads in orig_route.roads.chunk_by(|a, b| case(*a) == case(*b)) {
-            let infra_type = match case(roads[0]) {
+            let (infra_type, tier) = match case(roads[0]) {
                 Case::AlreadyExists => {
                     // TODO Should we modify that route and add to its notes or description? What
                     // if the tier or something else differs?
                     continue;
                 }
-                Case::New(infra_type, _) => infra_type,
+                Case::New {
+                    infra_type, tier, ..
+                } => (infra_type, tier),
             };
 
             let linestring = glue_route(&self.graph, roads).linestring(&self.graph);
@@ -69,7 +83,7 @@ impl MapModel {
                 roads: roads.to_vec(),
                 infra_type,
                 override_infra_type: orig_route.override_infra_type,
-                tier: orig_route.tier,
+                tier,
             });
         }
 
@@ -227,27 +241,8 @@ impl MapModel {
                     los: self.los[r.0],
                     tier: self.tiers[r.0].unwrap(),
                 }
-            } else if let Some(infra_type) = override_infra_type {
-                let los = get_level_of_service(
-                    infra_type,
-                    self.speeds[r.0],
-                    self.traffic_volumes[r.0],
-                    self.within_settlement[r.0],
-                );
-                let tier = fix_tier(
-                    default_tier,
-                    self.within_settlement[r.0],
-                    self.highways[r.0],
-                );
-                Case::New {
-                    infra_type,
-                    fits: self.does_infra_type_fit(r, infra_type),
-                    gradient,
-                    los,
-                    tier,
-                }
             } else {
-                let infra_type = self.best_infra_type(r);
+                let infra_type = override_infra_type.unwrap_or_else(|| self.best_infra_type(r));
                 let los = get_level_of_service(
                     infra_type,
                     self.speeds[r.0],
