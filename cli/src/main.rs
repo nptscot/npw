@@ -43,7 +43,13 @@ fn main() -> Result<()> {
     let mut timer = Timer::new("build model", None);
     let osm_bytes = std::fs::read(&args.input)?;
     let boundary_gj = std::fs::read_to_string(&args.boundary)?;
-    let study_area_name = args.output.split("/").last().unwrap().strip_suffix(".bin").unwrap();
+    let study_area_name = args
+        .output
+        .split("/")
+        .last()
+        .unwrap()
+        .strip_suffix(".bin")
+        .unwrap();
     let model = create(study_area_name, &osm_bytes, &boundary_gj, &mut timer)?;
 
     timer.step("writing");
@@ -321,13 +327,12 @@ fn read_street_space(
     for input in layer.features() {
         let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
         graph.mercator.to_mercator_in_place(&mut geom);
-        let Some(available_width) = input.field_as_double_by_name("avail_edge_to_edge_width")?
-        else {
+        let Some(combined_2way) = input.field_as_string_by_name("combined_2way")? else {
             // Some are just missing
             continue;
         };
-        // The absolute minimum width for a bidirectional cycletrack, from CbD guidance table 3.2.
-        let segregated_fits = available_width >= 2.0;
+        let segregated_fits =
+            combined_2way == "Absolute minimum" || combined_2way == "Desirable minimum";
 
         source_geometry.push(geom);
         source_data.push(Streetspace { segregated_fits });
