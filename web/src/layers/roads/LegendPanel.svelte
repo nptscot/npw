@@ -6,6 +6,7 @@
     gradientColors,
     infraTypeColors,
     levelOfServiceColors,
+    meshDensity,
     nptStreetSpaceColors,
     population,
     reachabilityColors,
@@ -26,6 +27,7 @@
     cyclingDemandHigh,
     cyclingDemandMedium,
     debugOriginalData,
+    gridMeshDensity,
     populationStyle,
   } from "../stores";
   import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
@@ -196,6 +198,13 @@
       Darker colours are denser. Zones with a red outline are not reachable by
       the current network. Only the top 3 densest quintiles are shown.
     </p>
+  {/if}
+
+  {#if $gridMeshDensity}
+    <SequentialLegend
+      colorScale={meshDensity.colorScale}
+      limits={meshDensity.legendLimits}
+    />
   {/if}
 </div>
 

@@ -111,3 +111,11 @@ export let population = {
   // For density_quintile
   limits: [0, 1, 2, 3, 4, 5],
 };
+
+export let meshDensity = {
+  colorScale: ["#d7191c", "#87d668", "#3a9120", "#054d05"],
+  // Route length
+  limits: [0, 1_600, 3_200, 6_400],
+  // Mesh density units
+  legendLimits: [">800m", "≤800m", "≤400m", "≤200m"],
+};

@@ -20,6 +20,7 @@
   import hospital2Icon from "../assets/hospital_unreachable.png";
   import school1Icon from "../assets/school_reachable.png";
   import school2Icon from "../assets/school_unreachable.png";
+  import AssessMode from "./AssessMode.svelte";
   import BulkEditMode from "./BulkEditMode.svelte";
   import { layerId } from "./common";
   import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";
@@ -262,7 +263,11 @@
           {#if $mode.kind == "overview"}
             <OverviewMode />
           {:else if $mode.kind == "main"}
-            <MainMode />
+            {#if $currentStage == "assessment"}
+              <AssessMode />
+            {:else}
+              <MainMode />
+            {/if}
           {:else if $mode.kind == "edit-route" && map}
             <EditRouteMode id={$mode.id} {map} />
           {:else if $mode.kind == "evaluate-journey"}

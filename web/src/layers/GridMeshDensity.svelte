@@ -1,23 +1,16 @@
 <script lang="ts">
   import { FillLayer, GeoJSON, LineLayer } from "svelte-maplibre";
-  import { SequentialLegend } from "svelte-utils";
   import { makeRamp } from "svelte-utils/map";
+  import { meshDensity } from "../colors";
   import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { GridMeshDensity } from "../types";
-  import LayerControls from "./LayerControls.svelte";
   import { gridMeshDensity as show } from "./stores";
 
   let data: GridMeshDensity = {
     type: "FeatureCollection",
     features: [],
   };
-
-  let colorScale = ["#d7191c", "#87d668", "#3a9120", "#054d05"];
-  // Route length
-  let limits = [0, 1_600, 3_200, 6_400];
-  // Mesh density units
-  let legendLimits = [">800m", "≤800m", "≤400m", "≤200m"];
 
   let resolution = 800;
   let xOffset = 0;
@@ -39,15 +32,15 @@
   }
 </script>
 
-<LayerControls name="Mesh density" bind:show={$show}>
-  <SequentialLegend {colorScale} limits={legendLimits} />
-</LayerControls>
-
 <GeoJSON {data} generateId>
   <FillLayer
     {...layerId("mesh-density-grid")}
     paint={{
-      "fill-color": makeRamp(["get", "routes"], limits, colorScale),
+      "fill-color": makeRamp(
+        ["get", "routes"],
+        meshDensity.limits,
+        meshDensity.colorScale,
+      ),
       "fill-opacity": 0.5,
     }}
     layout={{

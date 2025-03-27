@@ -30,7 +30,7 @@ export let enableLayersPerStage = {
   Secondary: [townCentres],
   LocalAccess: [localPOIs],
   LongDistance: [settlements],
-  assessment: [gridMeshDensity],
+  assessment: [],
 };
 
 export let disableLayersPerStage = {

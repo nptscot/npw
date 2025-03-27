@@ -6,7 +6,6 @@
   let secondary: HTMLDivElement | null = null;
   let localAccess: HTMLDivElement | null = null;
   let longDistance: HTMLDivElement | null = null;
-  let networkAssessment: HTMLDivElement | null = null;
 
   $: update(primary, $allControls, [
     "High cycling demand",
@@ -22,8 +21,6 @@
   ]);
 
   $: update(longDistance, $allControls, ["Settlements"]);
-
-  $: update(networkAssessment, $allControls, ["Mesh density"]);
 
   function update(
     container: HTMLDivElement | null,
@@ -58,8 +55,4 @@
 
 {#if $currentStage == "LongDistance"}
   <div bind:this={longDistance} />
-{/if}
-
-{#if $currentStage == "assessment"}
-  <div bind:this={networkAssessment} />
 {/if}
