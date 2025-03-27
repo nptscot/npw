@@ -35,7 +35,7 @@
         <li title="TODO: Placeholder score">
           Directness
           <br />
-          <progress value="50" max="100" />
+          <progress value="0" max="100" />
         </li>
 
         <li title="Percent of main roads covered by network">
@@ -75,7 +75,7 @@
         <li title="TODO: Placeholder score">
           Attractiveness
           <br />
-          <progress value="50" max="100" />
+          <progress value="0" max="100" />
         </li>
       </ul>
     </a>
