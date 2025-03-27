@@ -16,7 +16,7 @@
       return;
     }
 
-    let list: [POI, number][] = [];
+    let list: [POI, number, number][] = [];
 
     for (let f of (await $backend.getPOIs()).features) {
       list.push([
@@ -27,6 +27,7 @@
           reachable: f.properties.reachable,
           pt: f.geometry.coordinates as [number, number],
         },
+        f.properties.poi_kind == "schools" ? 1 : 2,
         f.properties.sort,
       ]);
     }
@@ -43,14 +44,21 @@
           reachable: f.properties.reachable!,
           pt: f.properties.centroid!,
         },
+        3,
         f.properties.sort!,
       ]);
     }
 
-    // The sort key uses a Hilbert curve to group nearby POIs together.
-    list.sort((a, b) => a[1] - b[1]);
+    // Prioritize schools, then GPs, then greenspaces. Within each group, use a
+    // Hilbert curve to group nearby POIs together.
+    list.sort((a, b) => {
+      if (a[1] != b[1]) {
+        return a[1] - b[1];
+      }
+      return a[2] - b[2];
+    });
 
-    allPOIs = list.map(([poi, _]) => poi);
+    allPOIs = list.map(([poi, _a, _b]) => poi);
     lastUpdate = $mutationCounter;
 
     refilterPOIs();
