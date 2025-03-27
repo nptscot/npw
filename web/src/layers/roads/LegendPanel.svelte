@@ -11,6 +11,7 @@
     reachabilityColors,
     speed,
     streetSpaceColors,
+    tierColors,
     traffic,
   } from "../../colors";
   import { HelpButton, percent, prettyPrintDistance } from "../../common";
@@ -169,6 +170,8 @@
       <QualitativeLegend colors={gradientColors} />
     {:else if $editModeBreakdown == "los"}
       <QualitativeLegend colors={levelOfServiceColors} />
+    {:else if $editModeBreakdown == "tier"}
+      <QualitativeLegend colors={tierColors} />
     {/if}
   {/if}
 

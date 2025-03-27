@@ -113,11 +113,13 @@ impl MapModel {
         editing_route_id: Option<usize>,
         input: JsValue,
         override_infra_type: JsValue,
+        default_tier: String,
     ) -> Result<String, JsValue> {
         let roads: Vec<(RoadID, Dir)> = serde_wasm_bindgen::from_value(input)?;
         let override_infra_type: Option<InfraType> =
             serde_wasm_bindgen::from_value(override_infra_type)?;
-        self.autosplit_route(editing_route_id, roads, override_infra_type)
+        let default_tier: Tier = serde_json::from_str(&default_tier).map_err(err_to_js)?;
+        self.autosplit_route(editing_route_id, roads, override_infra_type, default_tier)
             .map_err(err_to_js)
     }
 

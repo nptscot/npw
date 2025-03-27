@@ -23,6 +23,7 @@ import type {
   Settlements,
   StaticRoad,
   Stats,
+  Tier,
   TownCentres,
   Waypoint,
 } from "./types";
@@ -109,6 +110,7 @@ export class Backend {
     editingRouteId: number | null,
     roads: [number, "Forwards" | "Backwards"][],
     overrideInfraType: string | null,
+    defaultTier: Tier,
   ): AutosplitRoute {
     this.checkReady();
     return JSON.parse(
@@ -116,6 +118,7 @@ export class Backend {
         editingRouteId == null ? undefined : editingRouteId,
         roads,
         overrideInfraType,
+        `"${defaultTier}"`,
       ),
     );
   }

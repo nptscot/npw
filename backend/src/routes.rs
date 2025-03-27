@@ -8,7 +8,8 @@ use graph::{Graph, PathStep, Position, RoadID};
 use crate::join_lines::KeyedLineString;
 use crate::route_snapper::make_route_snapper_feature;
 use crate::{
-    level_of_service::get_level_of_service, Dir, InfraType, LevelOfService, MapModel, Route, Tier,
+    level_of_service::get_level_of_service, Dir, Highway, InfraType, LevelOfService, MapModel,
+    Route, Tier,
 };
 
 impl MapModel {
@@ -187,6 +188,7 @@ impl MapModel {
         editing_route_id: Option<usize>,
         route: Vec<(RoadID, Dir)>,
         override_infra_type: Option<InfraType>,
+        default_tier: Tier,
     ) -> Result<String> {
         let mut used_roads = self.used_roads();
         if let Some(id) = editing_route_id {
@@ -201,33 +203,69 @@ impl MapModel {
         // - the infrastructure type does or does not fit in the available streetspace
         // - the gradient group changes
         // - the level of service changes
+        // - the tier changes (based on whether the road is inside a settlement or not)
         #[derive(PartialEq)]
         enum Case {
-            // bool is fits or not, the str is gradient_group
-            AlreadyExists(&'static str, LevelOfService),
-            New(InfraType, bool, &'static str, LevelOfService),
+            AlreadyExists {
+                gradient: &'static str,
+                los: LevelOfService,
+                tier: Tier,
+            },
+            New {
+                infra_type: InfraType,
+                fits: bool,
+                gradient: &'static str,
+                los: LevelOfService,
+                tier: Tier,
+            },
         }
         let case = |(r, _): (RoadID, _)| {
             let gradient = gradient_group(self.gradients[r.0]);
             if used_roads.contains(&r) {
-                Case::AlreadyExists(gradient, self.los[r.0])
-            } else if let Some(it) = override_infra_type {
+                Case::AlreadyExists {
+                    gradient,
+                    los: self.los[r.0],
+                    tier: self.tiers[r.0].unwrap(),
+                }
+            } else if let Some(infra_type) = override_infra_type {
                 let los = get_level_of_service(
-                    it,
+                    infra_type,
                     self.speeds[r.0],
                     self.traffic_volumes[r.0],
                     self.within_settlement[r.0],
                 );
-                Case::New(it, self.does_infra_type_fit(r, it), gradient, los)
+                let tier = fix_tier(
+                    default_tier,
+                    self.within_settlement[r.0],
+                    self.highways[r.0],
+                );
+                Case::New {
+                    infra_type,
+                    fits: self.does_infra_type_fit(r, infra_type),
+                    gradient,
+                    los,
+                    tier,
+                }
             } else {
-                let it = self.best_infra_type(r);
+                let infra_type = self.best_infra_type(r);
                 let los = get_level_of_service(
-                    it,
+                    infra_type,
                     self.speeds[r.0],
                     self.traffic_volumes[r.0],
                     self.within_settlement[r.0],
                 );
-                Case::New(it, self.does_infra_type_fit(r, it), gradient, los)
+                let tier = fix_tier(
+                    default_tier,
+                    self.within_settlement[r.0],
+                    self.highways[r.0],
+                );
+                Case::New {
+                    infra_type,
+                    fits: self.does_infra_type_fit(r, infra_type),
+                    gradient,
+                    los,
+                    tier,
+                }
             }
         };
 
@@ -237,19 +275,31 @@ impl MapModel {
             let linestring = glue_route(&self.graph, roads).linestring(&self.graph);
             let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
             match c {
-                Case::AlreadyExists(gradient, los) => {
+                Case::AlreadyExists {
+                    gradient,
+                    los,
+                    tier,
+                } => {
                     f.set_property("kind", "overlap");
                     // Don't worry about other routes
                     f.set_property("fits", true);
                     f.set_property("gradient_group", gradient);
                     f.set_property("los", serde_json::to_value(&los).unwrap());
+                    f.set_property("tier", serde_json::to_value(&tier).unwrap());
                 }
-                Case::New(infra_type, fits, gradient, los) => {
+                Case::New {
+                    infra_type,
+                    fits,
+                    gradient,
+                    los,
+                    tier,
+                } => {
                     f.set_property("kind", "new");
                     f.set_property("infra_type", serde_json::to_value(&infra_type).unwrap());
                     f.set_property("fits", fits);
                     f.set_property("gradient_group", gradient);
                     f.set_property("los", serde_json::to_value(&los).unwrap());
+                    f.set_property("tier", serde_json::to_value(&tier).unwrap());
                 }
             }
             f.set_property("length", linestring.length::<Euclidean>());
@@ -412,4 +462,22 @@ pub fn gradient_group(gradient: f64) -> &'static str {
     } else {
         "> 10%"
     }
+}
+
+fn fix_tier(default: Tier, within_settlement: bool, highway: Highway) -> Tier {
+    if within_settlement {
+        if default != Tier::LongDistance {
+            return default;
+        }
+        // If the user is drawing a long-distance route and enters a settlement, then override the
+        // tier to primary for main roads and local access otherwise
+        return if highway.is_main_road() {
+            Tier::Primary
+        } else {
+            Tier::LocalAccess
+        };
+    }
+
+    // If we're outside a settlement, force LongDistance
+    Tier::LongDistance
 }

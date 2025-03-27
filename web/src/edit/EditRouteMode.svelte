@@ -11,6 +11,8 @@
     gradientColors,
     infraTypeColors,
     levelOfServiceColors,
+    tierColors,
+    tierLabels,
   } from "../colors";
   import { layerId, Modal, percent } from "../common";
   import RelevantLayers from "../layers/RelevantLayers.svelte";
@@ -109,6 +111,7 @@
         id,
         feature.properties.roads,
         overrideInfraType ? infraType : null,
+        tier,
       );
     } catch (err) {}
   }
@@ -137,11 +140,24 @@
     return percent(high, total);
   }
 
+  function percentMatchesTier(sectionsGj: AutosplitRoute): string {
+    let total = 0;
+    let matches = 0;
+    for (let f of sectionsGj.features) {
+      total += f.properties.length;
+      if (f.properties.tier == tier) {
+        matches += f.properties.length;
+      }
+    }
+    return percent(matches, total);
+  }
+
   let filterSections = {
     infra_type: ["==", ["get", "kind"], "new"] as ExpressionSpecification,
     gradient: undefined,
     deliverability: undefined,
     los: undefined,
+    tier: undefined,
   };
 
   let colorSections = {
@@ -166,6 +182,7 @@
       levelOfServiceColors,
       "black",
     ),
+    tier: constructMatchExpression(["get", "tier"], tierColors, "black"),
   };
 </script>
 
@@ -180,6 +197,7 @@
     {#if $waypoints.length >= 2}
       {@const pctFits = percentFits(sectionsGj)}
       {@const pctHighLoS = percentHighLoS(sectionsGj)}
+      {@const pctMatchesTier = percentMatchesTier(sectionsGj)}
 
       <section>
         <h4>
@@ -268,6 +286,29 @@
             Only {pctHighLoS} of the route has a high level of service. You may need
             to override the infrastructure type for some sections and reduce traffic
             speeds and volumes.
+          </p>
+        {/if}
+      </section>
+
+      <section>
+        <h4>
+          <!-- svelte-ignore a11y-invalid-attribute -->
+          <a
+            href="#"
+            on:click|preventDefault={() => ($editModeBreakdown = "tier")}
+            class:focused={$editModeBreakdown == "tier"}
+          >
+            Tier
+          </a>
+        </h4>
+
+        <SectionDiagram breakdown="tier" {sectionsGj} />
+
+        {#if pctMatchesTier != "100%"}
+          <p>
+            Only {pctMatchesTier} of the route will use the {tierLabels[tier]} tier.
+            Because the route enters and exits settlements, part of it is assigned
+            to a different tier.
           </p>
         {/if}
       </section>

@@ -60,7 +60,7 @@ export let editsRoadStyle: Writable<EditsRoadStyle> = writable("edits_tier");
 export let referenceRoadStyle: Writable<ReferenceRoadStyle> = writable("off");
 
 export let editModeBreakdown: Writable<
-  "infra_type" | "gradient" | "deliverability" | "los"
+  "infra_type" | "gradient" | "deliverability" | "los" | "tier"
 > = writable("infra_type");
 
 export let interactiveMapLayersEnabled = writable(true);
