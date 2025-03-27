@@ -92,9 +92,9 @@ export let streetSpaceColors = {
 };
 
 export let nptStreetSpaceColors = {
-  "Not enough space": "red",
-  "Absolute minimum": "yellow",
-  "Desirable minimum": "green",
+  "Not enough space": "#dd7777",
+  "Absolute minimum": "#e0b97d",
+  "Desirable minimum": "#75a375",
 };
 
 export let deprived = {

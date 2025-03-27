@@ -133,7 +133,7 @@
     sourceLayer="street_space"
     paint={{
       "line-color": constructMatchExpression(
-        ["get", "carriageway_2way"],
+        ["get", "combined_2way"],
         nptStreetSpaceColors,
         "cyan",
       ),
