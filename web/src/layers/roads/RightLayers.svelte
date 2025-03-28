@@ -65,6 +65,7 @@
       name="Route network (calculated)"
       style="calculated_rnet"
       icon="fa-globe"
+      relevant={$currentStage == "assessment"}
     />
     <Toggle
       name="Network disconnections"

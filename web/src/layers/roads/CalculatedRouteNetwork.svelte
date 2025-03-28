@@ -8,7 +8,6 @@
     lineColorForDemand,
     lineWidthForDemand,
   } from "../../common";
-  import ODBreakdowns from "../../stats/ODBreakdowns.svelte";
   import { backend, mutationCounter, referenceRoadStyle } from "../../stores";
   import type { EvaluateODOut } from "../../types";
 
@@ -80,8 +79,6 @@
       failed
     </p>
     <p>Highest count on any one road is {gj.max_count.toLocaleString()}</p>
-
-    <ODBreakdowns od={gj} />
   {/if}
 {/if}
 

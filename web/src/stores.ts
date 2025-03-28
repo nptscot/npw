@@ -69,8 +69,8 @@ export let remoteStorage = writable(true);
 export let devMode = writable(import.meta.env.MODE == "development");
 
 export let stats: Writable<Stats | null> = writable(null);
-// For now, the user manually recalculates this
 export let odStats: Writable<ODStats | null> = writable(null);
+export let lastUpdateOD = writable(0);
 
 export async function autosave() {
   mutationCounter.update((x) => {
@@ -107,7 +107,7 @@ export function exitCurrentStage() {
   for (let show of disableLayersPerStage[oldStage]) {
     show.set(false);
   }
-  if (oldStage == "assessment" && get(referenceRoadStyle) == "disconnections") {
+  if (oldStage == "assessment") {
     referenceRoadStyle.set("off");
   }
   if (oldStage == "LocalAccess") {
@@ -127,9 +127,5 @@ export function changeStage(rawNewStage: string) {
   // Show new layers
   for (let show of enableLayersPerStage[newStage]) {
     show.set(true);
-  }
-
-  if (newStage == "assessment") {
-    referenceRoadStyle.set("disconnections");
   }
 }
