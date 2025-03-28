@@ -39,6 +39,7 @@
   let infraType = "MixedTraffic";
   let overrideInfraType = false;
   let tier = $currentStage == "assessment" ? "Primary" : $currentStage;
+  let preferMajor = tier == "Primary" || tier == "Secondary";
 
   let showOverrideModal = false;
 
@@ -69,7 +70,7 @@
 
   async function finish() {
     try {
-      let feature = await $backend!.snapRoute($waypoints);
+      let feature = await $backend!.snapRoute($waypoints, preferMajor);
       // TODO Is this possible still?
       if (!feature) {
         window.alert("No route drawn");
@@ -106,7 +107,7 @@
 
     try {
       // TODO Wasteful; should RouteControls export a read-only view of this?
-      let feature = await $backend!.snapRoute(waypts);
+      let feature = await $backend!.snapRoute(waypts, preferMajor);
       sectionsGj = await $backend!.autosplitRoute(
         id,
         feature.properties.roads,

@@ -17,6 +17,8 @@
   export let deleteRoute: () => void;
   export let editingExisting: boolean;
 
+  let preferMajor = $currentStage == "Primary" || $currentStage == "Secondary";
+
   onDestroy(() => {
     $waypoints = [];
     map.getCanvas().style.cursor = "inherit";
@@ -110,7 +112,7 @@
 
   async function updateCurrentRoute(waypoints: Waypoint[]) {
     try {
-      currentRouteGj = await $backend!.snapRoute(waypoints);
+      currentRouteGj = await $backend!.snapRoute(waypoints, preferMajor);
     } catch (err) {
       currentRouteGj = emptyGeojson();
     }
@@ -139,10 +141,11 @@
         };
 
         // Asynchronously update to the real route (if it exists)
-        previewGj = await $backend!.snapRoute([
-          waypoints[waypoints.length - 1],
-          cursor,
-        ]);
+        // TODO Will preferMajor be weird here ever?
+        previewGj = await $backend!.snapRoute(
+          [waypoints[waypoints.length - 1], cursor],
+          preferMajor,
+        );
       }
     } catch (err) {}
   }
@@ -159,7 +162,11 @@
     let insertIdx = 1;
 
     for (let i = 0; i < waypoints.length - 1; i++) {
-      let extra = await $backend!.getExtraNodes(waypoints[i], waypoints[i + 1]);
+      let extra = await $backend!.getExtraNodes(
+        waypoints[i],
+        waypoints[i + 1],
+        preferMajor,
+      );
       for (let [x, y, snapped] of extra) {
         nodes.push({ point: [x, y], snapped, insertIdx });
       }
