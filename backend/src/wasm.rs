@@ -90,6 +90,30 @@ impl MapModel {
         Ok(out)
     }
 
+    #[wasm_bindgen(js_name = getInvertedBoundaryForStudyArea)]
+    pub fn get_inverted_boundary_for_study_area(&self) -> Result<String, JsValue> {
+        let the_world = LineString::from(vec![
+            (180.0, 90.0),
+            (-180.0, 90.0),
+            (-180.0, -90.0),
+            (180.0, -90.0),
+            (180.0, 90.0),
+        ]);
+        // Fade out everything except the study area
+        let polygons = vec![Polygon::new(
+            the_world,
+            self.boundary_wgs84
+                .0
+                .iter()
+                .map(|p| p.exterior().clone())
+                .collect(),
+        )];
+
+        let f = Feature::from(Geometry::from(&MultiPolygon(polygons)));
+        let out = serde_json::to_string(&f).map_err(err_to_js)?;
+        Ok(out)
+    }
+
     /// WGS84
     #[wasm_bindgen(js_name = getBounds)]
     pub fn get_bounds(&self) -> Vec<f64> {

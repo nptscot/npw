@@ -53,6 +53,11 @@ export class Backend {
     ];
   }
 
+  getInvertedBoundaryForStudyArea(): Feature<Polygon> {
+    this.checkReady();
+    return JSON.parse(this.inner!.getInvertedBoundaryForStudyArea());
+  }
+
   getInvertedBoundaryInsideSettlements(): Feature<Polygon> {
     this.checkReady();
     return JSON.parse(this.inner!.getInvertedBoundaryInsideSettlements());

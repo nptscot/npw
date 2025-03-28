@@ -237,7 +237,10 @@
                 paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
                 layout={{
                   visibility:
-                    $currentStage != "LongDistance" ? "visible" : "none",
+                    $currentStage != "LongDistance" &&
+                    $currentStage != "assessment"
+                      ? "visible"
+                      : "none",
                 }}
               />
             </GeoJSON>
@@ -250,6 +253,18 @@
                 layout={{
                   visibility:
                     $currentStage == "LongDistance" ? "visible" : "none",
+                }}
+              />
+            </GeoJSON>
+          {/await}
+          {#await $backend.getInvertedBoundaryForStudyArea() then data}
+            <GeoJSON {data}>
+              <FillLayer
+                {...layerId("fade-study-area-entire")}
+                paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
+                layout={{
+                  visibility:
+                    $currentStage == "assessment" ? "visible" : "none",
                 }}
               />
             </GeoJSON>
