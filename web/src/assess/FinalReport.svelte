@@ -3,11 +3,25 @@
   import { tierColors } from "../colors";
   import { percent as percent2 } from "../common";
   import { backend, stats } from "../stores";
+  import { changePage } from "./index";
 
   function percent(pct: number): string {
     return `${Math.round(pct * 100)}%`;
   }
 </script>
+
+<header class="ds_page-header">
+  <h2 class="ds_page-header__title">Network metrics</h2>
+</header>
+
+<div>
+  <button type="button" class="ds_link" on:click={() => changePage("overview")}>
+    <i class="fa-solid fa-chevron-left"></i>
+    Back to network assessment
+  </button>
+</div>
+
+<p>The network you have designed performs as follows:</p>
 
 {#if $stats}
   {#await notNull($backend).getBaselineStats() then baseline}

@@ -1,10 +1,12 @@
 <script lang="ts">
   import { SplitComponent } from "../common/layout";
-  import FinalReport from "../stats/FinalReport.svelte";
-  import ODBreakdowns from "../stats/ODBreakdowns.svelte";
   import { exitCurrentStage, mode } from "../stores";
   import Disconnections from "./Disconnections.svelte";
+  import FinalReport from "./FinalReport.svelte";
   import { changePage, subpage } from "./index";
+  import MeshDensity from "./MeshDensity.svelte";
+  import ODBreakdowns from "./ODBreakdowns.svelte";
+  import Streetspace from "./Streetspace.svelte";
 
   function gotoOverview() {
     exitCurrentStage();
@@ -78,74 +80,14 @@
           Evaluate a journey
         </button>
       {:else if $subpage == "report"}
-        <header class="ds_page-header">
-          <h2 class="ds_page-header__title">Network metrics</h2>
-        </header>
-
-        <div>
-          <button
-            type="button"
-            class="ds_link"
-            on:click={() => changePage("overview")}
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-            Back to network assessment
-          </button>
-        </div>
-
-        <p>The network you have designed performs as follows:</p>
-
         <FinalReport />
       {:else if $subpage == "disconnected"}
         <Disconnections />
       {:else if $subpage == "mesh-density"}
-        <header class="ds_page-header">
-          <h2 class="ds_page-header__title">Network coverage</h2>
-        </header>
-
-        <div>
-          <button
-            type="button"
-            class="ds_link"
-            on:click={() => changePage("overview")}
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-            Back to network assessment
-          </button>
-        </div>
-
-        TODO
+        <MeshDensity />
       {:else if $subpage == "streetspace"}
-        <header class="ds_page-header">
-          <h2 class="ds_page-header__title">Streetspace deliverability</h2>
-        </header>
-
-        <div>
-          <button
-            type="button"
-            class="ds_link"
-            on:click={() => changePage("overview")}
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-            Back to network assessment
-          </button>
-        </div>
+        <Streetspace />
       {:else if $subpage == "calculated-routes"}
-        <header class="ds_page-header">
-          <h2 class="ds_page-header__title">Network impacts on demand</h2>
-        </header>
-
-        <div>
-          <button
-            type="button"
-            class="ds_link"
-            on:click={() => changePage("overview")}
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-            Back to network assessment
-          </button>
-        </div>
-
         <ODBreakdowns />
       {/if}
     </div>

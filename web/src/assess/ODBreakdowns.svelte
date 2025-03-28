@@ -9,6 +9,7 @@
     mutationCounter,
     odStats,
   } from "../stores";
+  import { changePage } from "./index";
 
   onMount(async () => {
     if ($lastUpdateOD != $mutationCounter) {
@@ -17,6 +18,17 @@
     }
   });
 </script>
+
+<header class="ds_page-header">
+  <h2 class="ds_page-header__title">Network impacts on demand</h2>
+</header>
+
+<div>
+  <button type="button" class="ds_link" on:click={() => changePage("overview")}>
+    <i class="fa-solid fa-chevron-left"></i>
+    Back to network assessment
+  </button>
+</div>
 
 {#if $odStats && $lastUpdateOD == $mutationCounter}
   <p>
