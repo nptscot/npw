@@ -35,6 +35,7 @@ export interface RouteGJ extends FeatureCollection {
   car_length: number;
   quiet_bike_length: number;
   direct_bike_length: number;
+  straight_line_length: number;
   directions: Step[];
 }
 

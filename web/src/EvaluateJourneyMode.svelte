@@ -14,7 +14,7 @@
     infraTypeColors,
     levelOfServiceColors,
   } from "./colors";
-  import { layerId } from "./common";
+  import { layerId, prettyPrintDistance } from "./common";
   import { SplitComponent } from "./common/layout";
   import RelevantLayers from "./layers/RelevantLayers.svelte";
   import { backend, mode, routeA, routeB } from "./stores";
@@ -183,27 +183,39 @@
       {/if}
 
       {#if gj}
+        <h3>Directness</h3>
+
+        <p>
+          Direct cycling route: {prettyPrintDistance(gj.direct_bike_length)}
+        </p>
+
+        <p>
+          Straight as-the-crow-flies line: {prettyPrintDistance(
+            gj.straight_line_length,
+          )}
+        </p>
+
         <div>
           <label>
             <input type="checkbox" bind:checked={showCarRoute} />
-            <b>{(gj.direct_bike_length / gj.car_length).toFixed(1)}x</b>
-            longer than the driving route (in
-            <span style:color="red">red</span>
-            )
+            <span style:color="purple">Driving route</span>
+            : {prettyPrintDistance(gj.car_length)} is
+            <b>{(gj.car_length / gj.direct_bike_length).toFixed(1)}x</b>
+            longer than the direct cycling route
           </label>
         </div>
 
         <div>
           <label>
             <input type="checkbox" bind:checked={showQuietBikeRoute} />
-            <b>{(gj.direct_bike_length / gj.quiet_bike_length).toFixed(1)}x</b>
-            longer than the quiet cycling route (in
-            <span style:color="blue">blue</span>
-            )
+            <span style:color="blue">Quiet cycling route</span>
+            : {prettyPrintDistance(gj.quiet_bike_length)} is
+            <b>{(gj.quiet_bike_length / gj.direct_bike_length).toFixed(1)}x</b>
+            longer than the direct cycling route
           </label>
         </div>
 
-        <hr />
+        <h3>Stats</h3>
 
         <p>{numChanges(gj, byInfraType)} changes in infrastructure type</p>
         <p>By length: {percentages(gj, byInfraType)}</p>
@@ -270,7 +282,7 @@
           }}
           paint={{
             "line-width": 10,
-            "line-color": "red",
+            "line-color": "purple",
             "line-opacity": hoverStateFilter(0.5, 1.0),
           }}
           manageHoverState

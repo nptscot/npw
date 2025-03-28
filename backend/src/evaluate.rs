@@ -1,5 +1,5 @@
 use anyhow::Result;
-use geo::{Coord, Euclidean, Length};
+use geo::{Coord, Distance, Euclidean, Length};
 use geojson::FeatureCollection;
 use graph::PathStep;
 use serde::Serialize;
@@ -102,6 +102,11 @@ impl MapModel {
             features.push(f);
         }
 
+        let straight_line_length = Euclidean::distance(
+            full_route_linestring.points().next().unwrap(),
+            full_route_linestring.points().last().unwrap(),
+        );
+
         Ok(serde_json::to_string(&FeatureCollection {
             features,
             bbox: None,
@@ -110,6 +115,7 @@ impl MapModel {
                     "car_length": car_linestring.length::<Euclidean>(),
                     "direct_bike_length": full_route_linestring.length::<Euclidean>(),
                     "quiet_bike_length": quiet_bike_linestring.length::<Euclidean>(),
+                    "straight_line_length": straight_line_length,
                     "directions": directions,
                 })
                 .as_object()
