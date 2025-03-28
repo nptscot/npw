@@ -1,8 +1,5 @@
 <script lang="ts">
-  import { stats } from "../stores";
-  import FinalReport from "./FinalReport.svelte";
-
-  let showFinalReport = false;
+  import { changeStage, stats } from "../stores";
 
   // Returns something [0, 1]
   function percent(x: number, total: number): number {
@@ -13,12 +10,10 @@
   }
 </script>
 
-<FinalReport bind:show={showFinalReport} />
-
 {#if $stats}
   <div class="progress-summary">
     <!-- svelte-ignore a11y-invalid-attribute -->
-    <a href="#" on:click|preventDefault={() => (showFinalReport = true)}>
+    <a href="#" on:click|preventDefault={() => changeStage("assessment")}>
       <ul>
         <li title="What percent of your network has high Level of Service?">
           Safety
