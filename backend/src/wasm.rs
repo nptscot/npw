@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
 use crate::route_snapper::Waypoint;
-use crate::{evaluate::Breakdown, Dir, InfraType, MapModel, Route, Tier};
+use crate::{evaluate::Breakdown, Dir, Highway, InfraType, MapModel, Route, Tier};
 
 static START: Once = Once::new();
 
@@ -438,6 +438,36 @@ impl MapModel {
         self.to_mercator(&mut waypt1.point);
         self.to_mercator(&mut waypt2.point);
         self.get_extra_nodes(waypt1, waypt2).map_err(err_to_js)
+    }
+
+    #[wasm_bindgen(js_name = getMajorJunctions)]
+    pub fn get_major_junctions(&self) -> Result<String, JsValue> {
+        let mut features = Vec::new();
+        for i in &self.graph.intersections {
+            if i.roads
+                .iter()
+                .filter(|r| {
+                    matches!(
+                        self.highways[r.0],
+                        Highway::Motorway
+                            | Highway::Trunk
+                            | Highway::Primary
+                            | Highway::Secondary
+                            | Highway::Tertiary
+                    )
+                })
+                .count()
+                >= 3
+            {
+                features.push(self.graph.mercator.to_wgs84_gj(&i.point));
+            }
+        }
+        serde_json::to_string(&FeatureCollection {
+            bbox: None,
+            foreign_members: None,
+            features,
+        })
+        .map_err(err_to_js)
     }
 
     fn to_mercator(&self, pt: &mut [f64; 2]) {

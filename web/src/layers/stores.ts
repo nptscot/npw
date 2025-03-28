@@ -12,6 +12,7 @@ export let debugCyclingDemandMin = writable(0);
 export let cyclingDemandHigh = writable(false);
 export let mainRoadCoverage = writable(false);
 export let showUncovered = writable(false);
+export let majorJunctions = writable(false);
 
 export let cyclingDemandMedium = writable(false);
 export let townCentres = writable(false);
@@ -26,16 +27,16 @@ export let severances = writable(false);
 export let debugOriginalData = writable(false);
 
 export let enableLayersPerStage = {
-  Primary: [],
-  Secondary: [townCentres],
+  Primary: [majorJunctions],
+  Secondary: [townCentres, majorJunctions],
   LocalAccess: [localPOIs],
   LongDistance: [settlements],
   assessment: [],
 };
 
 export let disableLayersPerStage = {
-  Primary: [cyclingDemandHigh, mainRoadCoverage],
-  Secondary: [cyclingDemandMedium, townCentres, severances],
+  Primary: [cyclingDemandHigh, mainRoadCoverage, majorJunctions],
+  Secondary: [cyclingDemandMedium, townCentres, severances, majorJunctions],
   LocalAccess: [localPOIs, severances],
   LongDistance: [settlements, severances],
   assessment: [gridMeshDensity],

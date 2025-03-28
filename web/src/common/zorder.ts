@@ -87,6 +87,7 @@ const layerZorder = [
   "greenspaces-outline-reachable",
   "greenspaces-outline-unreachable",
   "greenspace-access-points",
+  "major-junctions",
 
   // Draw these on top of the respective objects, in case the path goes through
   // the middle of a polygon

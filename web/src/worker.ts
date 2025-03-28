@@ -269,6 +269,11 @@ export class Backend {
     return JSON.parse(this.inner!.getExtraNodes(waypt1, waypt2));
   }
 
+  getMajorJunctions(): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.getMajorJunctions());
+  }
+
   private checkReady() {
     if (!this.inner) {
       throw new Error("Backend used without a file loaded");
