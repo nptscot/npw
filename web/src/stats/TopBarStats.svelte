@@ -1,5 +1,11 @@
 <script lang="ts">
+  import { subpage } from "../assess/index";
   import { changeStage, stats } from "../stores";
+
+  function gotoReport() {
+    changeStage("assessment");
+    $subpage = "report";
+  }
 
   // Returns something [0, 1]
   function percent(x: number, total: number): number {
@@ -13,7 +19,7 @@
 {#if $stats}
   <div class="progress-summary">
     <!-- svelte-ignore a11y-invalid-attribute -->
-    <a href="#" on:click|preventDefault={() => changeStage("assessment")}>
+    <a href="#" on:click|preventDefault={gotoReport}>
       <ul>
         <li title="What percent of your network has high Level of Service?">
           Safety
