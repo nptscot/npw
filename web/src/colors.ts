@@ -119,3 +119,11 @@ export let meshDensity = {
   // Mesh density units
   legendLimits: [">800m", "≤800m", "≤400m", "≤200m"],
 };
+
+export let componentColors = [
+  "#1b9e77",
+  "#d95f02",
+  "#7570b3",
+  "#e7298a",
+  "#66a61e",
+];

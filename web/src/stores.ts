@@ -7,7 +7,13 @@ import {
   disableLayersPerStage,
   enableLayersPerStage,
 } from "./layers/stores";
-import type { ODStats, Stats, Tier, WorstRoutes } from "./types";
+import type {
+  ConnectedComponents,
+  ODStats,
+  Stats,
+  Tier,
+  WorstRoutes,
+} from "./types";
 import type { Backend } from "./worker";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
@@ -71,6 +77,13 @@ export let devMode = writable(import.meta.env.MODE == "development");
 export let stats: Writable<Stats | null> = writable(null);
 export let odStats: Writable<ODStats | null> = writable(null);
 export let lastUpdateOD = writable(0);
+
+export let connectedComponents: Writable<ConnectedComponents> = writable({
+  type: "FeatureCollection",
+  features: [],
+  component_lengths: [],
+  component_bboxes: [],
+});
 
 export async function autosave() {
   mutationCounter.update((x) => {

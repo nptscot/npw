@@ -7,33 +7,23 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
-  import {
-    layerId,
-    Link,
-    prettyPrintDistance,
-    roadLineWidth,
-  } from "../../common";
+  import { componentColors } from "../../colors";
+  import { layerId, roadLineWidth } from "../../common";
   import {
     backend,
+    connectedComponents,
     map,
     mutationCounter,
     referenceRoadStyle,
   } from "../../stores";
-  import type { ConnectedComponents } from "../../types";
 
   $: show = $referenceRoadStyle == "disconnections";
 
   let lastUpdate = 0;
-  let data: ConnectedComponents = {
-    type: "FeatureCollection",
-    features: [],
-    component_lengths: [],
-    component_bboxes: [],
-  };
 
   async function recalc() {
     if ($backend && lastUpdate != $mutationCounter) {
-      data = await $backend.getConnectedComponents();
+      $connectedComponents = await $backend.getConnectedComponents();
       lastUpdate = $mutationCounter;
     }
   }
@@ -42,10 +32,11 @@
     recalc();
   }
 
-  let colors = ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e"];
   let colorByComponent = constructMatchExpression(
     ["to-string", ["get", "component"]],
-    Object.fromEntries(colors.map((color, i) => [i.toString(), color])),
+    Object.fromEntries(
+      componentColors.map((color, i) => [i.toString(), color]),
+    ),
     "black",
   ) as ExpressionSpecification;
 
@@ -79,31 +70,9 @@
   }
 </script>
 
-{#if $referenceRoadStyle == "disconnections"}
-  <p>
-    The network you create should usually all be connected as one component.
-  </p>
-
-  <p>Components:</p>
-  <ul>
-    {#each data.component_lengths.slice(0, 5) as length, idx}
-      <li style:color={colors[idx]}>
-        <Link on:click={() => $map?.fitBounds(data.component_bboxes[idx])}>
-          {prettyPrintDistance(length)}
-        </Link>
-      </li>
-    {/each}
-    {#if data.component_lengths.length > 5}
-      <p>
-        ({data.component_lengths.length} components total; only 5 largest shown)
-      </p>
-    {/if}
-  </ul>
-{/if}
-
 <MapEvents on:click={onClick} />
 
-<GeoJSON {data} generateId>
+<GeoJSON data={$connectedComponents} generateId>
   <LineLayer
     {...layerId("network-disconnections")}
     layout={{

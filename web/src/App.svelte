@@ -20,7 +20,7 @@
   import hospital2Icon from "../assets/hospital_unreachable.png";
   import school1Icon from "../assets/school_reachable.png";
   import school2Icon from "../assets/school_unreachable.png";
-  import AssessMode from "./AssessMode.svelte";
+  import AssessMode from "./assess/AssessMode.svelte";
   import BulkEditMode from "./BulkEditMode.svelte";
   import { layerId } from "./common";
   import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";

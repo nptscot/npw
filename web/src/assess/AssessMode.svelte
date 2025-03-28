@@ -1,46 +1,21 @@
 <script lang="ts">
-  import { SplitComponent } from "./common/layout";
-  import { gridMeshDensity } from "./layers/stores";
-  import FinalReport from "./stats/FinalReport.svelte";
-  import ODBreakdowns from "./stats/ODBreakdowns.svelte";
-  import { exitCurrentStage, mode, referenceRoadStyle } from "./stores";
-
-  type Subpage =
-    | "overview"
-    | "report"
-    | "disconnected"
-    | "mesh-density"
-    | "streetspace"
-    | "calculated-routes";
-  let subpage: Subpage = "overview";
+  import { SplitComponent } from "../common/layout";
+  import FinalReport from "../stats/FinalReport.svelte";
+  import ODBreakdowns from "../stats/ODBreakdowns.svelte";
+  import { exitCurrentStage, mode } from "../stores";
+  import Disconnections from "./Disconnections.svelte";
+  import { changePage, subpage } from "./index";
 
   function gotoOverview() {
     exitCurrentStage();
     $mode = { kind: "overview" };
-  }
-
-  function changePage(page: Subpage) {
-    $gridMeshDensity = false;
-    $referenceRoadStyle = "off";
-
-    subpage = page;
-
-    if (subpage == "disconnected") {
-      $referenceRoadStyle = "disconnections";
-    } else if (subpage == "mesh-density") {
-      $gridMeshDensity = true;
-    } else if (subpage == "streetspace") {
-      $referenceRoadStyle = "deliverability";
-    } else if (subpage == "calculated-routes") {
-      $referenceRoadStyle = "calculated_rnet";
-    }
   }
 </script>
 
 <SplitComponent>
   <div slot="controls">
     <div class="main-controls">
-      {#if subpage == "overview"}
+      {#if $subpage == "overview"}
         <header class="ds_page-header">
           <h2 class="ds_page-header__title">Assess the new network</h2>
         </header>
@@ -65,7 +40,6 @@
 
         <h4>Disconnections</h4>
 
-        <p>TODO show number of components</p>
         <button class="ds_button" on:click={() => changePage("disconnected")}>
           Identify disconnected areas
         </button>
@@ -78,7 +52,6 @@
 
         <h4>Deliverability</h4>
 
-        <p>TODO show percent</p>
         <button class="ds_button" on:click={() => changePage("streetspace")}>
           Check routes that do not fit in available streetspace
         </button>
@@ -91,7 +64,20 @@
         >
           See how the demand uses the network
         </button>
-      {:else if subpage == "report"}
+
+        <h4>Evaluate a journey</h4>
+
+        <button
+          class="ds_button"
+          on:click={() =>
+            ($mode = {
+              kind: "evaluate-journey",
+              browse: [],
+            })}
+        >
+          Evaluate a journey
+        </button>
+      {:else if $subpage == "report"}
         <header class="ds_page-header">
           <h2 class="ds_page-header__title">Network metrics</h2>
         </header>
@@ -110,24 +96,9 @@
         <p>The network you have designed performs as follows:</p>
 
         <FinalReport />
-      {:else if subpage == "disconnected"}
-        <header class="ds_page-header">
-          <h2 class="ds_page-header__title">Network disconnections</h2>
-        </header>
-
-        <div>
-          <button
-            type="button"
-            class="ds_link"
-            on:click={() => changePage("overview")}
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-            Back to network assessment
-          </button>
-        </div>
-
-        TODO
-      {:else if subpage == "mesh-density"}
+      {:else if $subpage == "disconnected"}
+        <Disconnections />
+      {:else if $subpage == "mesh-density"}
         <header class="ds_page-header">
           <h2 class="ds_page-header__title">Network coverage</h2>
         </header>
@@ -144,7 +115,7 @@
         </div>
 
         TODO
-      {:else if subpage == "streetspace"}
+      {:else if $subpage == "streetspace"}
         <header class="ds_page-header">
           <h2 class="ds_page-header__title">Streetspace deliverability</h2>
         </header>
@@ -159,7 +130,7 @@
             Back to network assessment
           </button>
         </div>
-      {:else if subpage == "calculated-routes"}
+      {:else if $subpage == "calculated-routes"}
         <header class="ds_page-header">
           <h2 class="ds_page-header__title">Network impacts on demand</h2>
         </header>
