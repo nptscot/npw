@@ -12,3 +12,9 @@
     Back to network assessment
   </button>
 </div>
+
+<p>
+  This map measures the mesh density of your network. Only areas touching a
+  settlement are shown. For any squares with poor coverage, you can return to an
+  appropriate tier and add more routes.
+</p>

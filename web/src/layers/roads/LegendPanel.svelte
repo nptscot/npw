@@ -15,13 +15,12 @@
     tierColors,
     traffic,
   } from "../../colors";
-  import { HelpButton, percent, prettyPrintDistance } from "../../common";
+  import { HelpButton } from "../../common";
   import {
     devMode,
     editModeBreakdown,
     mode,
     referenceRoadStyle,
-    stats,
   } from "../../stores";
   import {
     cyclingDemandHigh,
@@ -149,14 +148,6 @@
 
   <CalculatedRouteNetwork />
   <NetworkDisconnections />
-
-  {#if $referenceRoadStyle == "deliverability" && $stats}
-    <p>
-      {percent($stats.total_undeliverable_length, $stats.total_network_length)} of
-      infrastructure ({prettyPrintDistance($stats.total_undeliverable_length)})
-      doesn't fit in the available streetspace.
-    </p>
-  {/if}
 
   <!-- TODO: There could be a legend for both reference layers, population,
   per-tier layers, and edit mode all at the same time... -->
