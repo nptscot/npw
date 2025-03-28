@@ -87,14 +87,8 @@ impl MapModel {
         }
 
         let quiet_bike_profile = self.graph.profile_names["bicycle_quiet"];
-        // TODO Guaranteed to be the same
-        let quiet_bike_start = self.graph.snap_to_road(pt1, quiet_bike_profile);
-        let quiet_bike_end = self.graph.snap_to_road(pt2, quiet_bike_profile);
-        let quiet_bike_route = self.graph.routers[quiet_bike_profile.0].route(
-            &self.graph,
-            quiet_bike_start,
-            quiet_bike_end,
-        )?;
+        let quiet_bike_route =
+            self.graph.routers[quiet_bike_profile.0].route(&self.graph, start, end)?;
         let quiet_bike_linestring = quiet_bike_route.linestring(&self.graph);
         {
             let mut f = self.graph.mercator.to_wgs84_gj(&quiet_bike_linestring);

@@ -148,6 +148,8 @@
             Next
           </button>
         </div>
+
+        <hr />
       {/if}
 
       <p>
@@ -197,20 +199,20 @@
 
         <div>
           <label>
-            <input type="checkbox" bind:checked={showCarRoute} />
-            <span style:color="purple">Driving route</span>
-            : {prettyPrintDistance(gj.car_length)} is
-            <b>{(gj.car_length / gj.direct_bike_length).toFixed(1)}x</b>
+            <input type="checkbox" bind:checked={showQuietBikeRoute} />
+            <span style:color="blue">Quiet cycling route</span>
+            : {prettyPrintDistance(gj.quiet_bike_length)} is
+            <b>{(gj.quiet_bike_length / gj.direct_bike_length).toFixed(1)}x</b>
             longer than the direct cycling route
           </label>
         </div>
 
         <div>
           <label>
-            <input type="checkbox" bind:checked={showQuietBikeRoute} />
-            <span style:color="blue">Quiet cycling route</span>
-            : {prettyPrintDistance(gj.quiet_bike_length)} is
-            <b>{(gj.quiet_bike_length / gj.direct_bike_length).toFixed(1)}x</b>
+            <input type="checkbox" bind:checked={showCarRoute} />
+            <span style:color="purple">Driving route</span>
+            : {prettyPrintDistance(gj.car_length)} is
+            <b>{(gj.car_length / gj.direct_bike_length).toFixed(1)}x</b>
             longer than the direct cycling route
           </label>
         </div>

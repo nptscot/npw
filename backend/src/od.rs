@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use enum_map::EnumMap;
-use geo::{BoundingRect, Contains, Coord, Distance, Euclidean, Intersects, MultiPolygon};
+use geo::{BoundingRect, Contains, Coord, Intersects, MultiPolygon};
 use geojson::{FeatureCollection, Value};
 use graph::{PathStep, RoadID};
 use nanorand::{Rng, WyRand};
@@ -99,7 +99,7 @@ impl CountsOD {
 impl MapModel {
     pub fn od_counts(&self, fast_sample: bool) -> Result<CountsOD> {
         let keep_directness_routes = 10;
-        let profile = self.graph.profile_names["bicycle_direct"];
+        let direct_profile = self.graph.profile_names["bicycle_direct"];
 
         let mut rng = WyRand::new_seed(42);
 
@@ -124,46 +124,37 @@ impl MapModel {
                 let pt1 = self.od_zones[zone1].random_point(&mut rng);
                 let pt2 = self.od_zones[zone2].random_point(&mut rng);
 
-                let start = self.graph.snap_to_road(pt1, profile);
-                let end = self.graph.snap_to_road(pt2, profile);
-                let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) else {
+                let start = self.graph.snap_to_road(pt1, direct_profile);
+                let end = self.graph.snap_to_road(pt2, direct_profile);
+                let Ok(route) = self.graph.routers[direct_profile.0].route(&self.graph, start, end)
+                else {
                     failed += 1;
                     continue;
                 };
                 succeeded += 1;
 
-                // TODO Still deciding which to use
-                let compare_length = if true {
-                    // Compare with the car route
-                    let car_profile = self.graph.profile_names["car"];
-                    let car_start = self.graph.snap_to_road(pt1, car_profile);
-                    let car_end = self.graph.snap_to_road(pt2, car_profile);
-                    if let Ok(car_route) =
-                        self.graph.routers[car_profile.0].route(&self.graph, car_start, car_end)
+                let quiet_length = {
+                    // Compare with the quiet bike route
+                    let quiet_profile = self.graph.profile_names["bicycle_quiet"];
+                    if let Ok(quiet_route) =
+                        self.graph.routers[quiet_profile.0].route(&self.graph, start, end)
                     {
-                        let mut car_length = 0.0;
-                        for step in &car_route.steps {
+                        let mut quiet_length = 0.0;
+                        for step in &quiet_route.steps {
                             if let PathStep::Road { road, .. } = step {
-                                car_length += self.graph.roads[road.0].length_meters;
+                                quiet_length += self.graph.roads[road.0].length_meters;
                             }
                         }
-                        car_length
+                        quiet_length
                     } else {
                         // Skip this one
                         0.0
                     }
-                } else {
-                    // Straight line distance.
-                    Euclidean::distance(
-                        self.graph.intersections[start.intersection.0].point,
-                        self.graph.intersections[end.intersection.0].point,
-                    )
                 };
 
                 // TODO route.linestring() is more accurate, but slower, and then we have to do the
                 // same for comparisons
                 let mut route_length = 0.0;
-                // TODO Use a lower-level API to squeeze out some speed
                 for step in &route.steps {
                     if let PathStep::Road { road, .. } = step {
                         route_length += self.graph.roads[road.0].length_meters;
@@ -178,8 +169,8 @@ impl MapModel {
                     }
                 }
 
-                if compare_length > 0.0 {
-                    let directness = route_length / compare_length;
+                if quiet_length > 0.0 {
+                    let directness = quiet_length / route_length;
                     sum_directness += count * directness;
                     sum_count += count;
 
