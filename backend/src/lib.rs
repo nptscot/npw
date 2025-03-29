@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use enum_map::Enum;
 use geo::{Area, MultiPolygon, Point};
 use geojson::{Feature, GeoJson};
-use graph::{Graph, IntersectionID, RoadID, Timer};
+use graph::{Graph, Intersection, IntersectionID, RoadID, Timer};
 use rstar::{primitives::GeomWithData, RTree};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
@@ -38,7 +38,8 @@ mod wasm;
 #[derive(Serialize, Deserialize)]
 pub struct MapModel {
     graph: Graph,
-    closest_intersection: RTree<GeomWithData<Point, IntersectionID>>,
+    closest_intersection_all: RTree<GeomWithData<Point, IntersectionID>>,
+    closest_intersection_major: RTree<GeomWithData<Point, IntersectionID>>,
 
     #[serde(skip_serializing, skip_deserializing, default)]
     routes: HashMap<usize, Route>,
@@ -163,18 +164,26 @@ impl MapModel {
         is_attractive: Vec<bool>,
         gradients: Vec<f64>,
     ) -> Self {
-        let closest_intersection = RTree::bulk_load(
+        let highways: Vec<_> = graph
+            .roads
+            .iter()
+            .map(|r| Highway::classify(&r.osm_tags).unwrap())
+            .collect();
+        let closest_intersection_all = RTree::bulk_load(
             graph
                 .intersections
                 .iter()
                 .map(|i| GeomWithData::new(i.point, i.id))
                 .collect(),
         );
-        let highways: Vec<_> = graph
-            .roads
-            .iter()
-            .map(|r| Highway::classify(&r.osm_tags).unwrap())
-            .collect();
+        let closest_intersection_major = RTree::bulk_load(
+            graph
+                .intersections
+                .iter()
+                .filter(|i| is_major_junction(i, &highways))
+                .map(|i| GeomWithData::new(i.point, i.id))
+                .collect(),
+        );
         let within_settlement = graph
             .roads
             .iter()
@@ -211,7 +220,8 @@ impl MapModel {
 
         let mut model = Self {
             graph,
-            closest_intersection,
+            closest_intersection_all,
+            closest_intersection_major,
             routes: HashMap::new(),
             id_counter: 0,
             boundary_wgs84,
@@ -448,4 +458,13 @@ fn is_offroad(highway: Highway, tags: &::utils::Tags) -> bool {
     }
 
     false
+}
+
+pub fn is_major_junction(intersection: &Intersection, highways: &Vec<Highway>) -> bool {
+    intersection
+        .roads
+        .iter()
+        .filter(|r| highways[r.0].is_main_road())
+        .count()
+        >= 3
 }

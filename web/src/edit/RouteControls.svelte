@@ -7,6 +7,7 @@
   import { stageColors, tierLabels } from "../colors";
   import { layerId } from "../common";
   import { SplitComponent } from "../common/layout";
+  import { majorJunctions } from "../layers/stores";
   import { backend, currentStage } from "../stores";
   import type { Tier, Waypoint } from "../types";
   import { waypoints } from "./stores";
@@ -142,6 +143,7 @@
           [waypoints[waypoints.length - 1], cursor],
           null,
           tier,
+          $majorJunctions,
         );
       }
     } catch (err) {}
@@ -159,7 +161,11 @@
     let insertIdx = 1;
 
     for (let i = 0; i < waypoints.length - 1; i++) {
-      let extra = await $backend!.getExtraNodes(waypoints[i], waypoints[i + 1]);
+      let extra = await $backend!.getExtraNodes(
+        waypoints[i],
+        waypoints[i + 1],
+        $majorJunctions,
+      );
       for (let [x, y, snapped] of extra) {
         nodes.push({ point: [x, y], snapped, insertIdx });
       }
@@ -255,6 +261,13 @@
           <h2 class="ds_page-header__title">Draw a new route</h2>
         {/if}
       </header>
+
+      {#if $currentStage == "Primary" || $currentStage == "Secondary"}
+        <label>
+          <input type="checkbox" bind:checked={$majorJunctions} />
+          Snap to main roads
+        </label>
+      {/if}
 
       {#if $waypoints.length == 0}
         <p>Click to set the start of the route.</p>

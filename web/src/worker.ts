@@ -121,6 +121,7 @@ export class Backend {
     waypoints: Waypoint[],
     overrideInfraType: string | null,
     defaultTier: Tier,
+    preferMajor: boolean,
   ): AutosplitRoute {
     this.checkReady();
     return JSON.parse(
@@ -129,6 +130,7 @@ export class Backend {
         waypoints,
         overrideInfraType,
         `"${defaultTier}"`,
+        preferMajor,
       ),
     );
   }
@@ -256,17 +258,21 @@ export class Backend {
     return JSON.parse(this.inner!.getConnectedComponents());
   }
 
-  snapRoute(waypoints: Waypoint[]): Feature<LineString, RouteProps> {
+  snapRoute(
+    waypoints: Waypoint[],
+    preferMajor: boolean,
+  ): Feature<LineString, RouteProps> {
     this.checkReady();
-    return JSON.parse(this.inner!.snapRoute(waypoints));
+    return JSON.parse(this.inner!.snapRoute(waypoints, preferMajor));
   }
 
   getExtraNodes(
     waypt1: Waypoint,
     waypt2: Waypoint,
+    preferMajor: boolean,
   ): [number, number, boolean][] {
     this.checkReady();
-    return JSON.parse(this.inner!.getExtraNodes(waypt1, waypt2));
+    return JSON.parse(this.inner!.getExtraNodes(waypt1, waypt2, preferMajor));
   }
 
   getMajorJunctions(): FeatureCollection {

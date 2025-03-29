@@ -12,6 +12,7 @@
   } from "../colors";
   import { layerId, Modal, percent } from "../common";
   import RelevantLayers from "../layers/RelevantLayers.svelte";
+  import { majorJunctions } from "../layers/stores";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
     autosave,
@@ -66,7 +67,7 @@
   async function finish() {
     try {
       // TODO Now snapRoute and setRoute are kind of redundant
-      let feature = await $backend!.snapRoute($waypoints);
+      let feature = await $backend!.snapRoute($waypoints, $majorJunctions);
       // TODO Is this possible still?
       if (!feature) {
         window.alert("No route drawn");
@@ -105,6 +106,7 @@
         waypts,
         overrideInfraType ? infraType : null,
         tier,
+        $majorJunctions,
       );
     } catch (err) {}
   }

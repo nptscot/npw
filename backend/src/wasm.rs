@@ -7,7 +7,7 @@ use graph::{RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-use crate::{evaluate::Breakdown, Highway, InfraType, MapModel, Route, Tier, Waypoint};
+use crate::{evaluate::Breakdown, InfraType, MapModel, Route, Tier, Waypoint};
 
 static START: Once = Once::new();
 
@@ -164,6 +164,7 @@ impl MapModel {
         raw_waypoints: JsValue,
         override_infra_type: JsValue,
         default_tier: String,
+        prefer_major: bool,
     ) -> Result<String, JsValue> {
         let mut waypoints: Vec<Waypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
         for w in &mut waypoints {
@@ -178,6 +179,7 @@ impl MapModel {
             waypoints,
             override_infra_type,
             default_tier,
+            prefer_major,
         )
         .map_err(err_to_js)
     }
@@ -425,12 +427,16 @@ impl MapModel {
 
     /// For the route snapper, return a Feature with the full geometry and properties.
     #[wasm_bindgen(js_name = snapRoute)]
-    pub fn snap_route_wasm(&self, raw_waypoints: JsValue) -> Result<String, JsValue> {
+    pub fn snap_route_wasm(
+        &self,
+        raw_waypoints: JsValue,
+        prefer_major: bool,
+    ) -> Result<String, JsValue> {
         let mut waypoints: Vec<Waypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
         for w in &mut waypoints {
             self.to_mercator(&mut w.point);
         }
-        self.snap_route(waypoints).map_err(err_to_js)
+        self.snap_route(waypoints, prefer_major).map_err(err_to_js)
     }
 
     /// From exactly two waypoints, return a list of extra intermediate nodes and a boolean to
@@ -440,33 +446,21 @@ impl MapModel {
         &self,
         raw_waypt1: JsValue,
         raw_waypt2: JsValue,
+        prefer_major: bool,
     ) -> Result<String, JsValue> {
         let mut waypt1: Waypoint = serde_wasm_bindgen::from_value(raw_waypt1)?;
         let mut waypt2: Waypoint = serde_wasm_bindgen::from_value(raw_waypt2)?;
         self.to_mercator(&mut waypt1.point);
         self.to_mercator(&mut waypt2.point);
-        self.get_extra_nodes(waypt1, waypt2).map_err(err_to_js)
+        self.get_extra_nodes(waypt1, waypt2, prefer_major)
+            .map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = getMajorJunctions)]
     pub fn get_major_junctions(&self) -> Result<String, JsValue> {
         let mut features = Vec::new();
         for i in &self.graph.intersections {
-            if i.roads
-                .iter()
-                .filter(|r| {
-                    matches!(
-                        self.highways[r.0],
-                        Highway::Motorway
-                            | Highway::Trunk
-                            | Highway::Primary
-                            | Highway::Secondary
-                            | Highway::Tertiary
-                    )
-                })
-                .count()
-                >= 3
-            {
+            if crate::is_major_junction(i, &self.highways) {
                 features.push(self.graph.mercator.to_wgs84_gj(&i.point));
             }
         }

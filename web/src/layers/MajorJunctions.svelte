@@ -4,9 +4,6 @@
   import { layerId } from "../common";
   import { backend, mode } from "../stores";
   import { majorJunctions as show } from "./stores";
-
-  // TODO Stay disabled until we snap to them too
-  let enable = false;
 </script>
 
 {#if $backend}
@@ -21,8 +18,7 @@
           "circle-blur": 0.5,
         }}
         layout={{
-          visibility:
-            enable && $show && $mode.kind == "edit-route" ? "visible" : "none",
+          visibility: $show && $mode.kind == "edit-route" ? "visible" : "none",
         }}
       />
     </GeoJSON>

@@ -203,6 +203,7 @@ impl MapModel {
         waypoints: Vec<Waypoint>,
         override_infra_type: Option<InfraType>,
         default_tier: Tier,
+        prefer_major: bool,
     ) -> Result<String> {
         let mut used_roads = self.used_roads();
         if let Some(id) = editing_route_id {
@@ -211,7 +212,7 @@ impl MapModel {
             }
         }
 
-        let (route_roads, _) = self.waypoints_to_path(&waypoints);
+        let (route_roads, _) = self.waypoints_to_path(&waypoints, prefer_major);
 
         // Split when:
         // - the auto-recommended or manual infrastructure type changes

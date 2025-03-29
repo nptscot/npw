@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use geo::{Coord, LineString};
+use geo::{Coord, LineString, Point};
 use geojson::Feature;
 use graph::{Graph, IntersectionID, PathStep, RoadID};
 use serde::{Deserialize, Serialize};
@@ -8,8 +8,8 @@ use serde::{Deserialize, Serialize};
 use crate::{Dir, MapModel};
 
 impl MapModel {
-    pub fn snap_route(&self, waypoints: Vec<Waypoint>) -> Result<String> {
-        let (roads, linestring) = self.waypoints_to_path(&waypoints);
+    pub fn snap_route(&self, waypoints: Vec<Waypoint>, prefer_major: bool) -> Result<String> {
+        let (roads, linestring) = self.waypoints_to_path(&waypoints, prefer_major);
 
         // TODO Should we change the input_waypoints to their snapped position?
 
@@ -29,12 +29,17 @@ impl MapModel {
         Ok(serde_json::to_string(&feature)?)
     }
 
-    pub fn get_extra_nodes(&self, waypt1: Waypoint, waypt2: Waypoint) -> Result<String> {
+    pub fn get_extra_nodes(
+        &self,
+        waypt1: Waypoint,
+        waypt2: Waypoint,
+        prefer_major: bool,
+    ) -> Result<String> {
         // TODO If both waypoints aren't snapped, just return one extra node in the middle
         assert!(waypt1.snapped);
         assert!(waypt2.snapped);
 
-        let (roads, _) = self.waypoints_to_path(&vec![waypt1, waypt2]);
+        let (roads, _) = self.waypoints_to_path(&vec![waypt1, waypt2], prefer_major);
         let intersections = roads_to_intersections(&self.graph, &roads);
 
         let mut extra_nodes: Vec<(f64, f64, bool)> = Vec::new();
@@ -55,7 +60,11 @@ impl MapModel {
     }
 
     /// Turns waypoints into a full path description and a LineString
-    pub fn waypoints_to_path(&self, waypts: &Vec<Waypoint>) -> (Vec<(RoadID, Dir)>, LineString) {
+    pub fn waypoints_to_path(
+        &self,
+        waypts: &Vec<Waypoint>,
+        prefer_major: bool,
+    ) -> (Vec<(RoadID, Dir)>, LineString) {
         let profile = self.graph.profile_names["bicycle_direct"];
         let mut roads = Vec::new();
         let mut pts: Vec<Coord> = Vec::new();
@@ -65,16 +74,8 @@ impl MapModel {
             pts.push(pair[0].point.into());
 
             if pair[0].snapped && pair[1].snapped {
-                let start = self
-                    .closest_intersection
-                    .nearest_neighbor(&pair[0].point.into())
-                    .unwrap()
-                    .data;
-                let end = self
-                    .closest_intersection
-                    .nearest_neighbor(&pair[1].point.into())
-                    .unwrap()
-                    .data;
+                let start = self.snap_to_intersection(pair[0].point.into(), prefer_major);
+                let end = self.snap_to_intersection(pair[1].point.into(), prefer_major);
 
                 if let Ok(route) = self.graph.routers[profile.0].route_between_intersections(
                     &self.graph,
@@ -114,6 +115,23 @@ impl MapModel {
 
         pts.dedup();
         (roads, LineString::new(pts))
+    }
+
+    fn snap_to_intersection(&self, pt: Point, prefer_major: bool) -> IntersectionID {
+        if prefer_major {
+            let i = self
+                .closest_intersection_major
+                .nearest_neighbor(&pt)
+                .unwrap()
+                .data;
+            // TODO Check distance
+            return i;
+        }
+
+        self.closest_intersection_all
+            .nearest_neighbor(&pt)
+            .unwrap()
+            .data
     }
 }
 
