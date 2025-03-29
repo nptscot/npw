@@ -64,7 +64,7 @@
         labels: Object.keys($odStats.od_percents_los),
         datasets: [
           {
-            data: Object.values($odStats.od_percents_los),
+            data: Object.values($odStats.od_percents_los).map((p) => p * 100),
             backgroundColor: Object.keys($odStats.od_percents_los).map(
               (key) => levelOfServiceColors[key],
             ),
@@ -82,9 +82,11 @@
         labels: Object.keys($odStats.od_percents_infra_type),
         datasets: [
           {
-            data: Object.values($odStats.od_percents_infra_type),
+            data: Object.values($odStats.od_percents_infra_type).map(
+              (p) => p * 100,
+            ),
             backgroundColor: Object.keys($odStats.od_percents_infra_type).map(
-              (key) => infraTypeColors[key] || "black",
+              (key) => infraTypeColors[key] || "grey",
             ),
           },
         ],
@@ -100,9 +102,9 @@
         labels: Object.keys($odStats.od_percents_tier),
         datasets: [
           {
-            data: Object.values($odStats.od_percents_tier),
+            data: Object.values($odStats.od_percents_tier).map((p) => p * 100),
             backgroundColor: Object.keys($odStats.od_percents_tier).map(
-              (key) => tierColors[key] || "black",
+              (key) => tierColors[key] || "grey",
             ),
           },
         ],
