@@ -72,7 +72,7 @@
     filter={["get", "reachable"]}
     paint={{
       "line-color": "green",
-      "line-width": 2,
+      "line-width": 1,
     }}
     layout={{
       visibility: $show ? "visible" : "none",
@@ -84,7 +84,7 @@
     filter={["!", ["get", "reachable"]]}
     paint={{
       "line-color": "red",
-      "line-width": 2,
+      "line-width": 1,
       "line-dasharray": [3, 2],
     }}
     layout={{
