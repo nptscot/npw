@@ -71,11 +71,15 @@
     undoStates = [...undoStates, JSON.parse(JSON.stringify($waypoints))];
   }
 
-  function onMapClick(e: CustomEvent<MapMouseEvent>) {
+  async function onMapClick(e: CustomEvent<MapMouseEvent>) {
     captureUndoState();
+    let point = await $backend!.snapPoint(
+      e.detail.lngLat.toArray(),
+      $majorJunctions,
+    );
     waypoints.update((w) => {
       w.push({
-        point: e.detail.lngLat.toArray(),
+        point,
         snapped: true,
       });
       return w;
@@ -198,8 +202,14 @@
     });
   }
 
-  function finalizeDrag() {
+  async function finalizeDrag(node: ExtraNode) {
     draggingExtraNode = false;
+
+    let point = await $backend!.snapPoint(node.point, $majorJunctions);
+    waypoints.update((w) => {
+      w[node.insertIdx].point = point;
+      return w;
+    });
   }
 
   function keyDown(e: KeyboardEvent) {
@@ -223,6 +233,19 @@
   function startDraggingWaypoint() {
     captureUndoState();
     draggingWaypoint = true;
+  }
+
+  async function stopDraggingWaypoint(idx: number) {
+    draggingWaypoint = false;
+
+    let point = await $backend!.snapPoint(
+      $waypoints[idx].point,
+      $majorJunctions,
+    );
+    waypoints.update((w) => {
+      w[idx].point = point;
+      return w;
+    });
   }
 
   function onClickWaypoint(idx: number) {
@@ -325,7 +348,7 @@
         on:mouseleave={() => (hoveringOnExtraNode = false)}
         on:dragstart={() => addNode(node)}
         on:drag={() => updateDrag(node)}
-        on:dragend={finalizeDrag}
+        on:dragend={() => finalizeDrag(node)}
         zIndex={0}
       >
         <span class="extra-node-clickable" class:hide={draggingExtraNode}>
@@ -343,7 +366,7 @@
         on:mouseenter={() => (hoveringOnWaypoint = true)}
         on:mouseleave={() => (hoveringOnWaypoint = false)}
         on:dragstart={startDraggingWaypoint}
-        on:dragend={() => (draggingWaypoint = false)}
+        on:dragend={() => stopDraggingWaypoint(idx)}
         zIndex={1}
       >
         <span class="waypoint">{idx + 1}</span>

@@ -184,6 +184,17 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = snapPoint)]
+    pub fn snap_point(&self, lon: f64, lat: f64, prefer_major: bool) -> Vec<f64> {
+        let pt = self.graph.mercator.pt_to_mercator(Coord { x: lon, y: lat });
+        let i = self.snap_to_intersection(pt.into(), prefer_major);
+        let snapped = self
+            .graph
+            .mercator
+            .pt_to_wgs84(self.graph.intersections[i.0].point.into());
+        vec![snapped.x, snapped.y]
+    }
+
     /// Returns GJ Features of every route
     #[wasm_bindgen(js_name = getAllRoutes)]
     pub fn get_all_routes_wasm(&self) -> Result<String, JsValue> {

@@ -266,6 +266,12 @@ export class Backend {
     return JSON.parse(this.inner!.snapRoute(waypoints, preferMajor));
   }
 
+  snapPoint(pt: number[], preferMajor: boolean): [number, number] {
+    this.checkReady();
+    let snapped = this.inner!.snapPoint(pt[0], pt[1], preferMajor);
+    return [snapped[0], snapped[1]];
+  }
+
   getExtraNodes(
     waypt1: Waypoint,
     waypt2: Waypoint,

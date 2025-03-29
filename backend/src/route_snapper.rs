@@ -117,7 +117,7 @@ impl MapModel {
         (roads, LineString::new(pts))
     }
 
-    fn snap_to_intersection(&self, pt: Point, prefer_major: bool) -> IntersectionID {
+    pub fn snap_to_intersection(&self, pt: Point, prefer_major: bool) -> IntersectionID {
         if prefer_major {
             let i = self
                 .closest_intersection_major
