@@ -83,8 +83,18 @@
 
         <tr>
           <th scope="row">Attractiveness</th>
-          <td>TODO</td>
-          <td>TODO</td>
+          <td>
+            {percent2(
+              baseline.total_attractive_length,
+              baseline.total_network_length,
+            )}
+          </td>
+          <td>
+            {percent2(
+              $stats.total_attractive_length,
+              $stats.total_network_length,
+            )}
+          </td>
         </tr>
 
         <!-- Primary -->

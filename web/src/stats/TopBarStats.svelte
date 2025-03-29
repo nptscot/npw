@@ -73,10 +73,16 @@
           />
         </li>
 
-        <li title="TODO: Placeholder score">
+        <li title="What percent of your network is next to greenspace?">
           Attractiveness
           <br />
-          <progress value="0" max="100" />
+          <progress
+            value={percent(
+              $stats.total_attractive_length,
+              $stats.total_network_length,
+            )}
+            max="100"
+          />
         </li>
       </ul>
     </a>

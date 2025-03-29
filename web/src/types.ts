@@ -87,6 +87,7 @@ export interface Stats {
   total_high_los_length: number;
   total_low_gradient_length: number;
   total_undeliverable_length: number;
+  total_attractive_length: number;
 
   total_main_road_length: number;
   covered_main_road_length: number;

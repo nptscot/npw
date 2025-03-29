@@ -27,6 +27,7 @@ pub struct Stats {
     total_high_los_length: f64,
     total_low_gradient_length: f64,
     total_undeliverable_length: f64,
+    total_attractive_length: f64,
 
     density_network_in_settlements: Option<f64>,
 }
@@ -124,6 +125,7 @@ impl MapModel {
         let mut total_high_los_length = 0.0;
         let mut total_low_gradient_length = 0.0;
         let mut total_undeliverable_length = 0.0;
+        let mut total_attractive_length = 0.0;
         let mut total_main_road_length = 0.0;
         let mut covered_main_road_length = 0.0;
         let mut length_in_settlements = 0.0;
@@ -149,6 +151,10 @@ impl MapModel {
 
                 if !self.does_infra_type_fit(RoadID(idx), self.infra_types[idx].unwrap()) {
                     total_undeliverable_length += road.length_meters;
+                }
+
+                if self.is_attractive[idx] {
+                    total_attractive_length += road.length_meters;
                 }
             }
 
@@ -184,6 +190,7 @@ impl MapModel {
             total_high_los_length,
             total_low_gradient_length,
             total_undeliverable_length,
+            total_attractive_length,
 
             total_main_road_length,
             covered_main_road_length,
