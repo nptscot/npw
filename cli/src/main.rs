@@ -559,7 +559,9 @@ fn find_streets_by_greenspace(
         graph.mercator.to_mercator_in_place(&mut geom);
 
         // Buffer the greenspace a bit, then see if that intersects any roads, even at one point
-        let buffered = buffer_polygon(&geom, 10.0)?;
+        let Ok(buffered) = buffer_polygon(&geom, 10.0) else {
+            continue;
+        };
         // TODO rstar can't directly calculate a MultiPolygon envelope
         let bbox: Rect = buffered.bounding_rect().unwrap().into();
         let envelope = AABB::from_corners(

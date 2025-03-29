@@ -44,6 +44,7 @@
       style="speed"
       icon="fa-gauge-simple-high"
     />
+    <Toggle name="Attractive streets" style="attractive" icon="fa-tree" />
     <Toggle
       name="NPT full network"
       style="precalculated_rnet"

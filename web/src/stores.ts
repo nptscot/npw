@@ -55,6 +55,7 @@ export type ReferenceRoadStyle =
   | "gradient"
   | "street_space"
   | "speed"
+  | "attractive"
   | "los"
   | "reachability"
   | "disconnections"

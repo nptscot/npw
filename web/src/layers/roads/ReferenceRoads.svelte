@@ -41,6 +41,8 @@
       return ["to-boolean", ["get", "existing_infra"]];
     } else if (style == "street_space") {
       return ["to-boolean", ["get", "street_space"]];
+    } else if (style == "attractive") {
+      return ["get", "is_attractive"];
     }
     return undefined;
   }
@@ -107,6 +109,7 @@
         "cyan",
       ),
       speed: makeRamp(["get", "speed"], speed.limits, speed.colorScale),
+      attractive: "green",
       los: constructMatchExpression(
         ["feature-state", "los"],
         levelOfServiceColors,
@@ -158,6 +161,7 @@
       gradient: true,
       street_space: true,
       speed: true,
+      attractive: true,
       los: true,
       reachability: true,
       disconnections: false,
@@ -187,6 +191,7 @@
   <Popup openOn="click" let:props>
     <p>Main road? {props.is_main_road ? "yes" : "no"}</p>
     <p>Within a settlement? {props.within_settlement ? "yes" : "no"}</p>
+    <p>Is next to greenspace? {props.is_attractive ? "yes" : "no"}</p>
     <p>Traffic: {props.traffic.toLocaleString()}</p>
     <p>Gradient: {props.gradient.toFixed(1)}%</p>
     <p>Speed: {props.speed} mph</p>
