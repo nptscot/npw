@@ -91,7 +91,7 @@ pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Dura
 
     // 10mph
     let speed = 4.4704;
-    let cost = Duration::from_secs_f64(linestring.length::<Euclidean>() / speed);
+    let cost = Duration::from_secs_f64(Euclidean.length(linestring) / speed);
     (Direction::Both, cost)
 }
 
@@ -119,7 +119,7 @@ pub fn car_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration
     };
     // mph to m/s
     let speed = (get_speed_mph(hwy, tags) as f64) / 0.44704;
-    let cost = Duration::from_secs_f64(linestring.length::<Euclidean>() / speed);
+    let cost = Duration::from_secs_f64(Euclidean.length(linestring) / speed);
     (dir, cost)
 }
 

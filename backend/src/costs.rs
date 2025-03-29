@@ -34,5 +34,5 @@ fn quiet_edge_cost(road: &Road, los: LevelOfService) -> Duration {
     };
 
     // TODO Ignore cyclist speed for now. Later, do include it -- slower on SharedFootway or uphill
-    Duration::from_secs_f64(penalty * road.linestring.length::<Euclidean>())
+    Duration::from_secs_f64(penalty * Euclidean.length(&road.linestring))
 }

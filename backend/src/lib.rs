@@ -67,6 +67,7 @@ pub struct MapModel {
     // Go Dutch totals for all purposes
     precalculated_demands: Vec<usize>,
     street_space: Vec<Option<Streetspace>>,
+    is_attractive: Vec<bool>,
     // mph
     speeds: Vec<usize>,
     // A percent. Positive if uphill in the forwards direction, negative if downhill
@@ -158,6 +159,7 @@ impl MapModel {
         core_network: Vec<Option<Tier>>,
         precalculated_demands: Vec<usize>,
         street_space: Vec<Option<Streetspace>>,
+        is_attractive: Vec<bool>,
         gradients: Vec<f64>,
     ) -> Self {
         let closest_intersection = RTree::bulk_load(
@@ -228,6 +230,7 @@ impl MapModel {
             core_network,
             precalculated_demands,
             street_space,
+            is_attractive,
             speeds,
             gradients,
             // Calculated below

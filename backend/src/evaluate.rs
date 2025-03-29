@@ -96,7 +96,7 @@ impl MapModel {
             features.push(f);
         }
 
-        let straight_line_length = Euclidean::distance(
+        let straight_line_length = Euclidean.distance(
             full_route_linestring.points().next().unwrap(),
             full_route_linestring.points().last().unwrap(),
         );
@@ -106,9 +106,9 @@ impl MapModel {
             bbox: None,
             foreign_members: Some(
                 serde_json::json!({
-                    "car_length": car_linestring.length::<Euclidean>(),
-                    "direct_bike_length": full_route_linestring.length::<Euclidean>(),
-                    "quiet_bike_length": quiet_bike_linestring.length::<Euclidean>(),
+                    "car_length": Euclidean.length(&car_linestring),
+                    "direct_bike_length": Euclidean.length(&full_route_linestring),
+                    "quiet_bike_length": Euclidean.length(&quiet_bike_linestring),
                     "straight_line_length": straight_line_length,
                     "directions": directions,
                 })

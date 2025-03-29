@@ -7,9 +7,13 @@ use anyhow::{bail, Result};
 use clap::Parser;
 use elevation::GeoTiffElevation;
 use gdal::{vector::LayerAccess, Dataset};
-use geo::{Centroid, Geometry, Intersects, LineString, MultiPolygon, Point};
+use geo::{
+    Area, BoundingRect, Buffer, Centroid, Geometry, Intersects, LineString, MultiPolygon, Point,
+    Polygon, Rect,
+};
 use graph::{Graph, RoadID, Timer};
 use log::{info, warn};
+use rstar::AABB;
 use serde::Deserialize;
 
 use self::disconnected::remove_disconnected_components;
@@ -156,6 +160,13 @@ fn create(
 
     let street_space = read_street_space("../data_prep/tmp/streetspace.gpkg", &graph, timer)?;
 
+    let is_attractive = find_streets_by_greenspace(
+        "../data_prep/tmp/all_greenspace.gpkg",
+        &boundary_wgs84,
+        &graph,
+        timer,
+    )?;
+
     let gradients = read_gradients("../data_prep/tmp/UK-dem-50m-4326.tif", &graph, timer)?;
 
     Ok(MapModel::create(
@@ -174,6 +185,7 @@ fn create(
         core_network,
         precalculated_flows,
         street_space,
+        is_attractive,
         gradients,
     ))
 }
@@ -218,13 +230,14 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
     let mut layer = dataset.layer(0)?;
     let b = &graph.mercator.wgs84_bounds;
     layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+    let pred_flows_idx = layer.defn().field_index("pred_flows")?;
 
     let mut source_geometry = Vec::new();
     let mut source_data = Vec::new();
     for input in layer.features() {
         let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
         graph.mercator.to_mercator_in_place(&mut geom);
-        let Some(flows) = input.field_as_integer_by_name("pred_flows")? else {
+        let Some(flows) = input.field_as_integer(pred_flows_idx)? else {
             // TODO Why missing?
             continue;
         };
@@ -278,13 +291,15 @@ fn read_precalculated_flows(path: &str, graph: &Graph, timer: &mut Timer) -> Res
     let mut layer = dataset.layer(0)?;
     let b = &graph.mercator.wgs84_bounds;
     layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+    let all_fastest_bicycle_go_dutch_idx =
+        layer.defn().field_index("all_fastest_bicycle_go_dutch")?;
 
     let mut source_geometry = Vec::new();
     let mut source_data = Vec::new();
     for input in layer.features() {
         let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
         graph.mercator.to_mercator_in_place(&mut geom);
-        let Some(flow) = input.field_as_integer_by_name("all_fastest_bicycle_go_dutch")? else {
+        let Some(flow) = input.field_as_integer(all_fastest_bicycle_go_dutch_idx)? else {
             bail!("combined_network is missing all_fastest_bicycle_go_dutch");
         };
         source_geometry.push(geom);
@@ -321,13 +336,14 @@ fn read_street_space(
     let mut layer = dataset.layer(0)?;
     let b = &graph.mercator.wgs84_bounds;
     layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+    let combined_2way_idx = layer.defn().field_index("combined_2way")?;
 
     let mut source_geometry = Vec::new();
     let mut source_data = Vec::new();
     for input in layer.features() {
         let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
         graph.mercator.to_mercator_in_place(&mut geom);
-        let Some(combined_2way) = input.field_as_string_by_name("combined_2way")? else {
+        let Some(combined_2way) = input.field_as_string(combined_2way_idx)? else {
             // Some are just missing
             continue;
         };
@@ -393,11 +409,12 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
     let mut layer = dataset.layer(0)?;
     let b = &graph.mercator.wgs84_bounds;
     layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+    let road_function_npt_idx = layer.defn().field_index("road_function_npt")?;
 
     let mut source_geometry = Vec::new();
     let mut source_data = Vec::new();
     for input in layer.features() {
-        let Some(function) = input.field_as_string_by_name("road_function_npt")? else {
+        let Some(function) = input.field_as_string(road_function_npt_idx)? else {
             bail!("Missing road_function_npt");
         };
         let tier = match function.as_str() {
@@ -470,13 +487,15 @@ fn read_greenspaces(
     let mut layer = dataset.layer(0)?;
     let b = &graph.mercator.wgs84_bounds;
     layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+    let id_idx = layer.defn().field_index("id")?;
+    let name_idx = layer.defn().field_index("name")?;
 
     let mut greenspaces = Vec::new();
     for input in layer.features() {
-        let Some(id) = input.field_as_string_by_name("id")? else {
+        let Some(id) = input.field_as_string(id_idx)? else {
             bail!("Missing id");
         };
-        let name = input.field_as_string_by_name("name")?;
+        let name = input.field_as_string(name_idx)?;
         let mut geom: MultiPolygon = input.geometry().unwrap().to_geo()?.try_into()?;
         if !boundary_wgs84.intersects(&geom) {
             continue;
@@ -513,15 +532,65 @@ fn read_greenspaces(
     Ok(greenspaces)
 }
 
-fn read_access_points(path: &str, graph: &Graph) -> Result<HashMap<String, Vec<Point>>> {
+fn find_streets_by_greenspace(
+    path: &str,
+    boundary_wgs84: &MultiPolygon,
+    graph: &Graph,
+    timer: &mut Timer,
+) -> Result<Vec<bool>> {
+    timer.step("find streets near greenspaces");
+    let profile = graph.profile_names["bicycle_direct"];
+    let mut is_attractive: Vec<bool> = std::iter::repeat(false).take(graph.roads.len()).collect();
+
     let dataset = Dataset::open(path)?;
     let mut layer = dataset.layer(0)?;
     let b = &graph.mercator.wgs84_bounds;
     layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
 
+    for input in layer.features() {
+        let Ok(mut geom): std::result::Result<MultiPolygon, geo_types::Error> =
+            input.geometry().unwrap().to_geo()?.try_into()
+        else {
+            continue;
+        };
+        if !boundary_wgs84.intersects(&geom) {
+            continue;
+        }
+        graph.mercator.to_mercator_in_place(&mut geom);
+
+        // Buffer the greenspace a bit, then see if that intersects any roads, even at one point
+        let buffered = buffer_polygon(&geom, 10.0)?;
+        // TODO rstar can't directly calculate a MultiPolygon envelope
+        let bbox: Rect = buffered.bounding_rect().unwrap().into();
+        let envelope = AABB::from_corners(
+            Point::new(bbox.min().x, bbox.min().y),
+            Point::new(bbox.max().x, bbox.max().y),
+        );
+
+        for obj in graph.routers[profile.0]
+            .closest_road
+            .locate_in_envelope_intersecting(&envelope)
+        {
+            let road = &graph.roads[obj.data.0];
+            if !is_attractive[road.id.0] && road.linestring.intersects(&buffered) {
+                is_attractive[road.id.0] = true;
+            }
+        }
+    }
+
+    Ok(is_attractive)
+}
+
+fn read_access_points(path: &str, graph: &Graph) -> Result<HashMap<String, Vec<Point>>> {
+    let dataset = Dataset::open(path)?;
+    let mut layer = dataset.layer(0)?;
+    let b = &graph.mercator.wgs84_bounds;
+    layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
+    let site_id_idx = layer.defn().field_index("site_id")?;
+
     let mut pts_per_site = HashMap::new();
     for input in layer.features() {
-        let Some(id) = input.field_as_string_by_name("site_id")? else {
+        let Some(id) = input.field_as_string(site_id_idx)? else {
             bail!("Missing site_id");
         };
         let mut geom: Point = input.geometry().unwrap().to_geo()?.try_into()?;
@@ -543,4 +612,39 @@ fn get_anime_match<T: Copy>(
         .into_iter()
         .max_by_key(|c| (c.shared_len * 1000.0) as usize)?;
     Some(source_data[c.source_index])
+}
+
+// TODO By michaelkirk, copied from ltn repo -- will wind up upstreamed in geo likely soon
+/// Buffers a polygon, returning the largest of the output Polygons
+///
+/// Buffering can leave floating artifacts.
+/// I haven't investigated why yet, but dealing with it is simple enough.
+/// i_overlay offers a relevant sounding `min_area` parameter, but it's not currently exposed
+/// by geo's buffer integration.
+fn buffer_polygon(area: &impl Buffer<Scalar = f64>, distance: f64) -> Result<Polygon> {
+    let merged = area.buffer(distance);
+
+    let area_polygons = merged.0.into_iter().map(|p| (p.unsigned_area(), p));
+
+    // Buffering can leave floating artifacts.
+    //
+    // I haven't investigated why yet, but dealing with it is simple enough.
+    // i_overaly offers a relevant sounding `min_area` parameter, but it's not currently exposed
+    // by geo's buffer integration.
+    //
+    // For perspective, a 60m (interior) roundabout has an area around 2800m²
+    // We may have to tweak or parameterize this if we encounter errors with the current value.
+    let buffering_artifact_threshold_m2 = 1000.;
+    let mut merged_boundaries: Vec<_> = area_polygons
+        .filter(|(area, _polygon)| *area > buffering_artifact_threshold_m2)
+        .collect();
+
+    let polygon = match merged_boundaries.len() {
+        0 => bail!("Empty boundary"),
+        1 => merged_boundaries.pop().expect("verified non-empty").1,
+        _ => {
+            bail!("All included boundaries must be adjacent");
+        }
+    };
+    Ok(polygon)
 }

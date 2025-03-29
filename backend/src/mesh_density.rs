@@ -37,7 +37,7 @@ impl MapModel {
                 y_offset,
                 ls,
                 |pair, clipped| {
-                    pair.0 += clipped.length::<Euclidean>();
+                    pair.0 += Euclidean.length(&clipped);
                 },
             );
         }
@@ -51,7 +51,7 @@ impl MapModel {
                 y_offset,
                 road.linestring.clone(),
                 |pair, clipped| {
-                    pair.1 += clipped.length::<Euclidean>();
+                    pair.1 += Euclidean.length(&clipped);
                 },
             );
         }

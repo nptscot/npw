@@ -136,6 +136,9 @@ function greenspace {
           -t_srs EPSG:4326 \
           opgrsp_gb.gpkg \
           -sql 'SELECT id, distinctive_name_1 as name, geometry FROM greenspace_site WHERE function IN ("Playing Field", "Public Park Or Garden")'
+  ogr2ogr tmp/all_greenspace.gpkg \
+          -t_srs EPSG:4326 \
+          opgrsp_gb.gpkg
   ogr2ogr tmp/greenspace_access_points.gpkg \
           -t_srs EPSG:4326 \
           opgrsp_gb.gpkg \

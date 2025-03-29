@@ -297,7 +297,7 @@ impl MapModel {
                     f.set_property("tier", serde_json::to_value(&tier).unwrap());
                 }
             }
-            f.set_property("length", linestring.length::<Euclidean>());
+            f.set_property("length", Euclidean.length(&linestring));
             sections.push(f);
         }
         Ok(serde_json::to_string(&GeoJson::from(sections))?)

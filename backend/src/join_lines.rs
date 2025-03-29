@@ -119,7 +119,7 @@ fn find_longest_path(
                 graph,
                 *src,
                 |i| i == *dst,
-                |(_, _, idx)| edges[idx.0].linestring.length::<Euclidean>(),
+                |(_, _, idx)| Euclidean.length(&edges[idx.0].linestring),
                 |_| 0.0,
             ) {
                 if path.len() > 2 && length > best_length {
