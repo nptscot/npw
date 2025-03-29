@@ -1,20 +1,6 @@
 <script lang="ts">
   import { changePage } from "./index";
   import ReportContents from "./ReportContents.svelte";
-  import PrintableReport from "./ReportContents.svelte";
-
-  let reportContent: HTMLDivElement | undefined = undefined;
-
-  function makeReport() {
-    let newTab = window.open("", "_blank");
-    if (!newTab || !reportContent) {
-      return;
-    }
-
-    reportContent.style.display = "block";
-    newTab.document.write(reportContent.outerHTML);
-    reportContent.style.display = "none";
-  }
 </script>
 
 <header class="ds_page-header">
@@ -28,11 +14,4 @@
   </button>
 </div>
 
-<button class="ds_button" on:click={makeReport}>Print report</button>
-
 <ReportContents />
-
-<!-- Render an invisible component to steal its HTML -->
-<div bind:this={reportContent} style:display="none">
-  <PrintableReport />
-</div>

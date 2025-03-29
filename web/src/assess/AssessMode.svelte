@@ -6,11 +6,25 @@
   import { changePage, subpage } from "./index";
   import MeshDensity from "./MeshDensity.svelte";
   import ODBreakdowns from "./ODBreakdowns.svelte";
+  import PrintableReport from "./PrintableReport.svelte";
   import Streetspace from "./Streetspace.svelte";
 
   function gotoOverview() {
     exitCurrentStage();
     $mode = { kind: "overview" };
+  }
+
+  let reportContent: HTMLDivElement | undefined = undefined;
+
+  function makeReport() {
+    let newTab = window.open("", "_blank");
+    if (!newTab || !reportContent) {
+      return;
+    }
+
+    reportContent.style.display = "block";
+    newTab.document.write(reportContent.outerHTML);
+    reportContent.style.display = "none";
   }
 </script>
 
@@ -36,9 +50,15 @@
 
         <h4>Metrics</h4>
 
-        <button class="ds_button" on:click={() => changePage("report")}>
-          Show network metrics
-        </button>
+        <div>
+          <button class="ds_button" on:click={() => changePage("report")}>
+            Show network metrics
+          </button>
+        </div>
+
+        <div>
+          <button class="ds_button" on:click={makeReport}>Print report</button>
+        </div>
 
         <h4>Disconnections</h4>
 
@@ -93,6 +113,11 @@
     </div>
   </div>
 </SplitComponent>
+
+<!-- Render an invisible component to steal its HTML -->
+<div bind:this={reportContent} style:display="none">
+  <PrintableReport />
+</div>
 
 <style>
   .main-controls {
