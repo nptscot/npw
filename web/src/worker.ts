@@ -118,7 +118,7 @@ export class Backend {
 
   autosplitRoute(
     editingRouteId: number | null,
-    roads: [number, "Forwards" | "Backwards"][],
+    waypoints: Waypoint[],
     overrideInfraType: string | null,
     defaultTier: Tier,
   ): AutosplitRoute {
@@ -126,7 +126,7 @@ export class Backend {
     return JSON.parse(
       this.inner!.autosplitRoute(
         editingRouteId == null ? undefined : editingRouteId,
-        roads,
+        waypoints,
         overrideInfraType,
         `"${defaultTier}"`,
       ),

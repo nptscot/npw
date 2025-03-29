@@ -55,7 +55,7 @@ impl MapModel {
     }
 
     /// Turns waypoints into a full path description and a LineString
-    fn waypoints_to_path(&self, waypts: &Vec<Waypoint>) -> (Vec<(RoadID, Dir)>, LineString) {
+    pub fn waypoints_to_path(&self, waypts: &Vec<Waypoint>) -> (Vec<(RoadID, Dir)>, LineString) {
         let profile = self.graph.profile_names["bicycle_direct"];
         let mut roads = Vec::new();
         let mut pts: Vec<Coord> = Vec::new();

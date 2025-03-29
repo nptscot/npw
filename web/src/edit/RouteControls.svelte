@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Feature, FeatureCollection } from "geojson";
+  import type { FeatureCollection } from "geojson";
   import type { Map, MapMouseEvent } from "maplibre-gl";
   import { onDestroy } from "svelte";
   import { GeoJSON, LineLayer, MapEvents, Marker } from "svelte-maplibre";
@@ -8,7 +8,7 @@
   import { layerId } from "../common";
   import { SplitComponent } from "../common/layout";
   import { backend, currentStage } from "../stores";
-  import type { Waypoint } from "../types";
+  import type { Tier, Waypoint } from "../types";
   import { waypoints } from "./stores";
 
   export let map: Map;
@@ -16,6 +16,7 @@
   export let cancel: () => void;
   export let deleteRoute: () => void;
   export let editingExisting: boolean;
+  export let tier: Tier;
 
   onDestroy(() => {
     $waypoints = [];
@@ -38,7 +39,7 @@
   let draggingWaypoint = false;
   let draggingExtraNode = false;
 
-  let previewGj: Feature | FeatureCollection = emptyGeojson();
+  let previewGj: FeatureCollection = emptyGeojson();
   $: updatePreview(
     $waypoints,
     cursor,
@@ -47,9 +48,6 @@
       draggingWaypoint ||
       draggingExtraNode,
   );
-
-  let currentRouteGj: Feature | FeatureCollection = emptyGeojson();
-  $: updateCurrentRoute($waypoints);
 
   $: updateCursor($waypoints);
   function updateCursor(waypoints: Waypoint[]) {
@@ -108,14 +106,6 @@
     hoveringOnWaypoint = false;
   }
 
-  async function updateCurrentRoute(waypoints: Waypoint[]) {
-    try {
-      currentRouteGj = await $backend!.snapRoute(waypoints);
-    } catch (err) {
-      currentRouteGj = emptyGeojson();
-    }
-  }
-
   async function updatePreview(
     waypoints: Waypoint[],
     cursor: Waypoint | null,
@@ -130,19 +120,29 @@
       if (waypoints.length > 0 && cursor) {
         // Immediately show a straight line
         previewGj = {
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "LineString",
-            coordinates: [waypoints[waypoints.length - 1].point, cursor.point],
-          },
+          type: "FeatureCollection",
+          features: [
+            {
+              type: "Feature",
+              properties: {},
+              geometry: {
+                type: "LineString",
+                coordinates: [
+                  waypoints[waypoints.length - 1].point,
+                  cursor.point,
+                ],
+              },
+            },
+          ],
         };
 
         // Asynchronously update to the real route (if it exists)
-        previewGj = await $backend!.snapRoute([
-          waypoints[waypoints.length - 1],
-          cursor,
-        ]);
+        previewGj = await $backend!.autosplitRoute(
+          null,
+          [waypoints[waypoints.length - 1], cursor],
+          null,
+          tier,
+        );
       }
     } catch (err) {}
   }
@@ -336,16 +336,6 @@
         <span class="waypoint">{idx + 1}</span>
       </Marker>
     {/each}
-
-    <GeoJSON data={currentRouteGj}>
-      <LineLayer
-        {...layerId("snapper-lines")}
-        paint={{
-          "line-color": "black",
-          "line-width": 12,
-        }}
-      />
-    </GeoJSON>
 
     <GeoJSON data={previewGj}>
       <LineLayer

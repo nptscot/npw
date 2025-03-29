@@ -1,9 +1,5 @@
 <script lang="ts">
-  import type {
-    DataDrivenPropertyValueSpecification,
-    ExpressionSpecification,
-    Map,
-  } from "maplibre-gl";
+  import type { DataDrivenPropertyValueSpecification, Map } from "maplibre-gl";
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
@@ -69,6 +65,7 @@
 
   async function finish() {
     try {
+      // TODO Now snapRoute and setRoute are kind of redundant
       let feature = await $backend!.snapRoute($waypoints);
       // TODO Is this possible still?
       if (!feature) {
@@ -102,14 +99,10 @@
     overrideInfraType: boolean,
     infraType: string,
   ) {
-    sectionsGj = emptyGeojson() as AutosplitRoute;
-
     try {
-      // TODO Wasteful; should RouteControls export a read-only view of this?
-      let feature = await $backend!.snapRoute(waypts);
       sectionsGj = await $backend!.autosplitRoute(
         id,
-        feature.properties.roads,
+        waypts,
         overrideInfraType ? infraType : null,
         tier,
       );
@@ -152,14 +145,6 @@
     return percent(matches, total);
   }
 
-  let filterSections = {
-    infra_type: ["==", ["get", "kind"], "new"] as ExpressionSpecification,
-    gradient: undefined,
-    deliverability: undefined,
-    los: undefined,
-    tier: undefined,
-  };
-
   let colorSections = {
     infra_type: constructMatchExpression(
       ["get", "infra_type"],
@@ -192,6 +177,7 @@
   {cancel}
   {deleteRoute}
   editingExisting={id != null}
+  {tier}
 >
   <div slot="extra-controls" class="main-controls">
     {#if $waypoints.length >= 2}
@@ -374,7 +360,6 @@
     <GeoJSON data={sectionsGj}>
       <LineLayer
         {...layerId("edit-route-sections")}
-        filter={filterSections[$editModeBreakdown]}
         paint={{
           "line-width": 10,
           "line-color": colorSections[$editModeBreakdown],

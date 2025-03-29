@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { notNull } from "svelte-utils";
   import {
     gradientColors,
     infraTypeColors,
@@ -18,23 +17,20 @@
   export let sectionsGj: AutosplitRoute;
 
   $: total = sum(sectionsGj.features.map((f) => f.properties.length));
+
+  // TODO Slight nit: infraTypeColors[overlap] is undefined, which gives a
+  // white background correctly, but is a bit messy.
 </script>
 
 <div style:display="flex" style:border="1px solid black">
   {#each sectionsGj.features as f}
     {#if breakdown == "infra_type"}
-      {#if f.properties.kind == "new"}
-        <span
-          style:background={infraTypeColors[notNull(f.properties.infra_type)]}
-          style:width={(f.properties.length / total) * 100 + "%"}
-        >
-          &nbsp;
-        </span>
-      {:else}
-        <span style:width={(f.properties.length / total) * 100 + "%"}>
-          &nbsp;
-        </span>
-      {/if}
+      <span
+        style:background={infraTypeColors[f.properties.infra_type]}
+        style:width={(f.properties.length / total) * 100 + "%"}
+      >
+        &nbsp;
+      </span>
     {:else if breakdown == "gradient"}
       <span
         style:background={gradientColors[f.properties.gradient_group]}

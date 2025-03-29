@@ -9,7 +9,7 @@ use crate::join_lines::KeyedLineString;
 use crate::route_snapper::make_route_snapper_feature;
 use crate::{
     level_of_service::get_level_of_service, Dir, Highway, InfraType, LevelOfService, MapModel,
-    Route, Tier,
+    Route, Tier, Waypoint,
 };
 
 impl MapModel {
@@ -200,7 +200,7 @@ impl MapModel {
     pub fn autosplit_route(
         &self,
         editing_route_id: Option<usize>,
-        route: Vec<(RoadID, Dir)>,
+        waypoints: Vec<Waypoint>,
         override_infra_type: Option<InfraType>,
         default_tier: Tier,
     ) -> Result<String> {
@@ -210,6 +210,8 @@ impl MapModel {
                 used_roads.remove(r);
             }
         }
+
+        let (route_roads, _) = self.waypoints_to_path(&waypoints);
 
         // Split when:
         // - the auto-recommended or manual infrastructure type changes
@@ -265,7 +267,7 @@ impl MapModel {
         };
 
         let mut sections = Vec::new();
-        for roads in route.chunk_by(|a, b| case(*a) == case(*b)) {
+        for roads in route_roads.chunk_by(|a, b| case(*a) == case(*b)) {
             let c = case(roads[0]);
             let linestring = glue_route(&self.graph, roads).linestring(&self.graph);
             let mut f = self.graph.mercator.to_wgs84_gj(&linestring);
@@ -275,8 +277,7 @@ impl MapModel {
                     los,
                     tier,
                 } => {
-                    f.set_property("kind", "overlap");
-                    // Don't worry about other routes
+                    f.set_property("infra_type", "overlap");
                     f.set_property("fits", true);
                     f.set_property("gradient_group", gradient);
                     f.set_property("los", serde_json::to_value(&los).unwrap());
@@ -289,7 +290,6 @@ impl MapModel {
                     los,
                     tier,
                 } => {
-                    f.set_property("kind", "new");
                     f.set_property("infra_type", serde_json::to_value(&infra_type).unwrap());
                     f.set_property("fits", fits);
                     f.set_property("gradient_group", gradient);

@@ -201,9 +201,9 @@ export type ConnectedComponents = FeatureCollection<
 export type AutosplitRoute = FeatureCollection<
   LineString,
   {
-    kind: "new" | "overlap";
     length: number;
-    infra_type?: string;
+    // or "overlap"
+    infra_type: string;
     fits: boolean;
     gradient_group: "<= 3%" | "3 - 5%" | "5 - 7%" | "7 - 10%" | "> 10%";
     los: string;

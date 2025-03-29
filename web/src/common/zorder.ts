@@ -117,7 +117,6 @@ const layerZorder = [
   "block-reference-layers",
 
   // Edit mode
-  "snapper-lines",
   "edit-route-sections",
   "snapper-preview",
 

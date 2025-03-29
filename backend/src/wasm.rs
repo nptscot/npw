@@ -7,8 +7,7 @@ use graph::{RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-use crate::route_snapper::Waypoint;
-use crate::{evaluate::Breakdown, Dir, Highway, InfraType, MapModel, Route, Tier};
+use crate::{evaluate::Breakdown, Highway, InfraType, MapModel, Route, Tier, Waypoint};
 
 static START: Once = Once::new();
 
@@ -162,16 +161,25 @@ impl MapModel {
     pub fn autosplit_route_wasm(
         &self,
         editing_route_id: Option<usize>,
-        input: JsValue,
+        raw_waypoints: JsValue,
         override_infra_type: JsValue,
         default_tier: String,
     ) -> Result<String, JsValue> {
-        let roads: Vec<(RoadID, Dir)> = serde_wasm_bindgen::from_value(input)?;
+        let mut waypoints: Vec<Waypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
+        for w in &mut waypoints {
+            self.to_mercator(&mut w.point);
+        }
+
         let override_infra_type: Option<InfraType> =
             serde_wasm_bindgen::from_value(override_infra_type)?;
         let default_tier: Tier = serde_json::from_str(&default_tier).map_err(err_to_js)?;
-        self.autosplit_route(editing_route_id, roads, override_infra_type, default_tier)
-            .map_err(err_to_js)
+        self.autosplit_route(
+            editing_route_id,
+            waypoints,
+            override_infra_type,
+            default_tier,
+        )
+        .map_err(err_to_js)
     }
 
     /// Returns GJ Features of every route

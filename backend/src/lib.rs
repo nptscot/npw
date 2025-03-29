@@ -15,6 +15,7 @@ use wasm_bindgen::prelude::*;
 
 pub use crate::existing::Highway;
 use crate::level_of_service::LevelOfService;
+use crate::route_snapper::Waypoint;
 
 mod costs;
 mod disconnected;
