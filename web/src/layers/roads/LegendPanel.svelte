@@ -37,7 +37,6 @@
   import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
   import CoreNetwork from "./CoreNetwork.svelte";
   import ExistingNetwork from "./ExistingNetwork.svelte";
-  import NetworkDisconnections from "./NetworkDisconnections.svelte";
   import NptFullNetwork from "./NptFullNetwork.svelte";
 
   // common has functions ForDemand, duplicating values here
@@ -165,7 +164,6 @@
   {/if}
 
   <CalculatedRouteNetwork />
-  <NetworkDisconnections />
 
   <!-- TODO: There could be a legend for both reference layers, population,
   per-tier layers, and edit mode all at the same time... -->

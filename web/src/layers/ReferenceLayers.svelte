@@ -8,6 +8,7 @@
   import MajorJunctions from "./MajorJunctions.svelte";
   import POIs from "./POIs.svelte";
   import DebugNptPmtiles from "./roads/DebugNptPmtiles.svelte";
+  import NetworkDisconnections from "./roads/NetworkDisconnections.svelte";
   import Roads from "./roads/Roads.svelte";
   import Settlements from "./Settlements.svelte";
   import { cyclingDemandHigh, cyclingDemandMedium } from "./stores";
@@ -44,3 +45,4 @@
 <!-- Network assessment -->
 
 <GridMeshDensity />
+<NetworkDisconnections />
