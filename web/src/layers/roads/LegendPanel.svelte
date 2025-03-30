@@ -93,35 +93,36 @@
 
     <br />
 
-    <p>What fits within the carriageway, verges, and footways?</p>
-
-    <HelpButton>
-      <p>
-        Contains <a
-          href="https://www.ordnancesurvey.co.uk/customers/public-sector/public-sector-licensing/copyright-acknowledgments"
-          target="_blank"
-        >
-          OS data
-        </a>
-        &copy; Crown copyright and database rights 2025 OS licence number 100046668.
-      </p>
-      <ul>
-        <li>
-          You are granted a non-exclusive, royalty free revocable licence solely
-          to view the licensed data for non-commercial purposes for the period
-          during which Transport Scotland makes it available;
-        </li>
-        <li>
-          You are not permitted to copy, sub-license, distribute, sell or
-          otherwise make available the licensed data to third parties in any
-          form; and
-        </li>
-        <li>
-          Third party rights to enforce the terms of this licence shall be
-          reserved to OS.
-        </li>
-      </ul>
-    </HelpButton>
+    <p>
+      What fits within the carriageway, verges, and footways?
+      <HelpButton>
+        <p>
+          Contains <a
+            href="https://www.ordnancesurvey.co.uk/customers/public-sector/public-sector-licensing/copyright-acknowledgments"
+            target="_blank"
+          >
+            OS data
+          </a>
+          &copy; Crown copyright and database rights 2025 OS licence number 100046668.
+        </p>
+        <ul>
+          <li>
+            You are granted a non-exclusive, royalty free revocable licence
+            solely to view the licensed data for non-commercial purposes for the
+            period during which Transport Scotland makes it available;
+          </li>
+          <li>
+            You are not permitted to copy, sub-license, distribute, sell or
+            otherwise make available the licensed data to third parties in any
+            form; and
+          </li>
+          <li>
+            Third party rights to enforce the terms of this licence shall be
+            reserved to OS.
+          </li>
+        </ul>
+      </HelpButton>
+    </p>
 
     {#if $devMode}
       <label>
