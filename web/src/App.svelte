@@ -33,6 +33,7 @@
   import BottomPanel from "./layers/roads/BottomPanel.svelte";
   import LegendPanel from "./layers/roads/LegendPanel.svelte";
   import RightLayers from "./layers/roads/RightLayers.svelte";
+  import LocalAccessMode from "./LocalAccessMode.svelte";
   import MainMode from "./MainMode.svelte";
   import OverviewMode from "./OverviewMode.svelte";
   import {
@@ -282,6 +283,8 @@
           {:else if $mode.kind == "main"}
             {#if $currentStage == "assessment"}
               <AssessMode />
+            {:else if $currentStage == "LocalAccess"}
+              <LocalAccessMode />
             {:else}
               <MainMode />
             {/if}

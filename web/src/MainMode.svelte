@@ -15,13 +15,13 @@
     }
   }
 
+  // Some stages are unreachable here
   let titles = {
-    overview: "",
     Primary: "Design primary network",
     Secondary: "Design secondary network",
-    LocalAccess: "Design local access network",
+    LocalAccess: "",
     LongDistance: "Design long distance network",
-    assessment: "Assess the new network",
+    assessment: "",
   };
 </script>
 
@@ -49,12 +49,6 @@
               To draw the secondary route, please connect town centres and cover
               medium cycling demand routes on the base map.
             </p>
-          {:else if $currentStage == "LocalAccess"}
-            <p>
-              To draw the local access route, connect schools, GPs, hospitals,
-              green spaces, and neighbourhoods (especially deprived and densely
-              populated ones).
-            </p>
           {:else if $currentStage == "LongDistance"}
             <ul>
               <li>
@@ -75,11 +69,6 @@
                 direct/more scenic routes (NCN)
               </li>
             </ul>
-          {:else if $currentStage == "assessment"}
-            <p>
-              Having designed your network, you can now assess its performance
-              and fix any problems.
-            </p>
           {/if}
 
           <label>
@@ -88,11 +77,6 @@
           </label>
         </HelpButton>
       </header>
-
-      {#if $currentStage == "LocalAccess"}
-        <RelevantLayers />
-        <br />
-      {/if}
 
       <div>
         <button
@@ -111,9 +95,7 @@
         </button>
       </div>
 
-      {#if $currentStage != "LocalAccess"}
-        <RelevantLayers />
-      {/if}
+      <RelevantLayers />
     </div>
 
     <LeftSidebarStats />
