@@ -27,6 +27,8 @@
 {#if $referenceRoadStyle == "existing_infra"}
   <QualitativeLegend colors={infraTypeColors} />
 
+  <br />
+
   <div>
     <button on:click={() => (showImportModal = true)}>
       Import existing routes
@@ -34,6 +36,8 @@
   </div>
 
   {#if $devMode}
+    <br />
+
     <label>
       <input type="checkbox" bind:checked={$debugOriginalData} />
       Show osmactive data

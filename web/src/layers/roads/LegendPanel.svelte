@@ -69,6 +69,8 @@
     <SequentialLegend colorScale={traffic.colorScale} limits={traffic.limits} />
 
     {#if $devMode}
+      <br />
+
       <label>
         <input type="checkbox" bind:checked={$debugOriginalData} />
         Show original data
@@ -85,10 +87,12 @@
 
   {#if $referenceRoadStyle == "street_space"}
     {#if $debugOriginalData}
-      <QualitativeLegend colors={nptStreetSpaceColors} horiz />
+      <QualitativeLegend colors={nptStreetSpaceColors} />
     {:else}
-      <QualitativeLegend colors={streetSpaceColors} horiz />
+      <QualitativeLegend colors={streetSpaceColors} />
     {/if}
+
+    <br />
 
     <p>What fits within the carriageway, verges, and footways?</p>
 
@@ -132,6 +136,8 @@
     <SequentialLegend colorScale={speed.colorScale} limits={speed.limits} />
 
     {#if $devMode}
+      <br />
+
       <label>
         <input type="checkbox" bind:checked={$debugOriginalData} />
         Show original data
@@ -142,9 +148,11 @@
   <NptFullNetwork />
 
   {#if $referenceRoadStyle == "los"}
-    <QualitativeLegend colors={levelOfServiceColors} horiz />
+    <QualitativeLegend colors={levelOfServiceColors} />
 
     {#if $devMode}
+      <br />
+
       <label>
         <input type="checkbox" bind:checked={$debugOriginalData} />
         Show original data
@@ -153,7 +161,7 @@
   {/if}
 
   {#if $referenceRoadStyle == "reachability"}
-    <QualitativeLegend colors={reachabilityColors} horiz />
+    <QualitativeLegend colors={reachabilityColors} />
   {/if}
 
   <CalculatedRouteNetwork />
@@ -221,5 +229,6 @@
     min-height: 30px;
 
     background: white;
+    padding: 4px;
   }
 </style>

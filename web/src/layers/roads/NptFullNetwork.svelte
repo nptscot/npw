@@ -78,6 +78,8 @@
     </label>
   </div>
 
+  <br />
+
   <div>
     <label>
       Scenario:
@@ -88,6 +90,8 @@
       </select>
     </label>
   </div>
+
+  <br />
 
   <div>
     <label>
@@ -100,6 +104,8 @@
     </label>
   </div>
 
+  <br />
+
   <div>
     <label>
       Color by:
@@ -110,6 +116,8 @@
       </select>
     </label>
   </div>
+
+  <br />
 
   <div>
     <label>

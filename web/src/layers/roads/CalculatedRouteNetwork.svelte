@@ -48,12 +48,16 @@
     </button>
   </div>
 
+  <br />
+
   <div>
     <label>
       <input type="checkbox" bind:checked={fastSample} />
       Just sample desire lines (fast)
     </label>
   </div>
+
+  <br />
 
   <div>
     <label>
@@ -66,6 +70,8 @@
     </label>
   </div>
 
+  <br />
+
   <div>
     <label>
       Show demand above:
@@ -74,6 +80,8 @@
   </div>
 
   {#if gj}
+    <br />
+
     <p>
       {gj.succeeded.toLocaleString()} routes succeeded, {gj.failed.toLocaleString()}
       failed

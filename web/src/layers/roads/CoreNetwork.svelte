@@ -22,11 +22,15 @@
 <Loading {loading} />
 
 {#if $referenceRoadStyle == "cn"}
-  <QualitativeLegend colors={cnTierColors} horiz />
+  <QualitativeLegend colors={cnTierColors} />
+
+  <br />
 
   <div><button on:click={importExisting}>Import core network</button></div>
 
   {#if $devMode}
+    <br />
+
     <label>
       <input type="checkbox" bind:checked={$debugOriginalData} />
       Show original data
