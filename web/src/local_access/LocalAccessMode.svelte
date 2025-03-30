@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { MapEvents } from "svelte-maplibre";
   import { HelpButton } from "../common";
   import { SplitComponent } from "../common/layout";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
@@ -56,6 +57,11 @@
             shows the route through quiet streets to the network.
           </p>
         {:else}
+          <p>
+            {$currentPOI.description} is not connected to the network. Enable the
+            Reachability layer to see the red severances surrounding it.
+          </p>
+
           <div>
             <button class="ds_button" on:click={fixUnreachable}>
               Add the dashed local access route to connect to the network
@@ -71,11 +77,6 @@
               Manually draw route instead
             </button>
           </div>
-
-          <p>
-            {$currentPOI.description} is not connected to the network. Enable the
-            Reachability layer to see the red severances surrounding it.
-          </p>
         {/if}
       {/if}
 
@@ -86,6 +87,8 @@
   </div>
 
   <div slot="map">
+    <MapEvents on:click={() => ($currentPOI = null)} />
+
     <Greenspaces />
 
     <PointPOIs />
