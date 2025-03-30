@@ -1,6 +1,6 @@
 <script lang="ts">
+  import SummarizeStats from "../stats/SummarizeStats.svelte";
   import { changePage } from "./index";
-  import ReportContents from "./ReportContents.svelte";
 </script>
 
 <header class="ds_page-header">
@@ -14,4 +14,4 @@
   </button>
 </div>
 
-<ReportContents />
+<SummarizeStats />

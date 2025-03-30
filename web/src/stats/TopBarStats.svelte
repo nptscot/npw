@@ -1,10 +1,13 @@
 <script lang="ts">
-  import { subpage } from "../assess/index";
+  import { Modal } from "../common";
   import { changeStage, stats } from "../stores";
+  import SummarizeStats from "./SummarizeStats.svelte";
 
-  function gotoReport() {
+  let showStats = false;
+
+  function gotoAssess() {
     changeStage("assessment");
-    $subpage = "report";
+    showStats = false;
   }
 
   // Returns something [0, 1]
@@ -17,9 +20,17 @@
 </script>
 
 {#if $stats}
+  <Modal bind:show={showStats}>
+    <SummarizeStats />
+
+    <button class="ds_button ds_button--secondary" on:click={gotoAssess}>
+      See full assessment
+    </button>
+  </Modal>
+
   <div class="progress-summary">
     <!-- svelte-ignore a11y-invalid-attribute -->
-    <a href="#" on:click|preventDefault={gotoReport}>
+    <a href="#" on:click|preventDefault={() => (showStats = true)}>
       <ul>
         <li title="What percent of your network has high Level of Service?">
           Safety
