@@ -84,20 +84,15 @@
     }
   }
 
-  function prev() {
-    if (filterIdx != 0) {
-      filterIdx--;
-      $currentPOI = filteredPOIs[filterIdx];
-      warp();
-    }
-  }
-
-  function next() {
+  function findAnother() {
     if (filterIdx != filteredPOIs.length - 1) {
       filterIdx++;
-      $currentPOI = filteredPOIs[filterIdx];
-      warp();
+    } else {
+      filterIdx = 0;
     }
+
+    $currentPOI = filteredPOIs[filterIdx];
+    warp();
   }
 </script>
 
@@ -115,24 +110,10 @@
   </label>
 </div>
 
-{#if filteredPOIs.length > 0}
-  <div
-    style="display: flex; justify-content: space-between; align-items: center;"
-  >
-    <button
-      class="ds_button ds_button--secondary"
-      disabled={filterIdx == 0}
-      on:click={prev}
-    >
-      Previous
-    </button>
-    {filterIdx + 1} / {filteredPOIs.length}
-    <button
-      class="ds_button ds_button--secondary"
-      disabled={filterIdx == filteredPOIs.length - 1}
-      on:click={next}
-    >
-      Next
-    </button>
-  </div>
-{/if}
+<button
+  class="ds_button ds_button--secondary"
+  disabled={filteredPOIs.length == 0}
+  on:click={findAnother}
+>
+  Find another
+</button>
