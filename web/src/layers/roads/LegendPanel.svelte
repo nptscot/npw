@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { QualitativeLegend, SequentialLegend } from "svelte-utils";
+  import {
+    downloadGeneratedFile,
+    QualitativeLegend,
+    SequentialLegend,
+  } from "svelte-utils";
   import {
     deprived,
     gradient,
@@ -17,6 +21,7 @@
   } from "../../colors";
   import { HelpButton } from "../../common";
   import {
+    backend,
     devMode,
     editModeBreakdown,
     mode,
@@ -48,6 +53,11 @@
     "#0000FF",
     "#FF00C5",
   ];
+
+  async function downloadDataZones() {
+    let gj = await $backend!.getDataZones();
+    downloadGeneratedFile("data_zones.geojson", JSON.stringify(gj));
+  }
 </script>
 
 <div class="panel">
@@ -189,6 +199,9 @@
       Darker colours are denser. Zones with a red outline are not reachable by
       the current network. Only the top 3 densest quintiles are shown.
     </p>
+    {#if $devMode}
+      <button on:click={downloadDataZones}>Download data zones</button>
+    {/if}
   {/if}
 
   {#if $gridMeshDensity}
