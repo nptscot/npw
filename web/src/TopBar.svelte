@@ -39,7 +39,9 @@
             <!-- svelte-ignore a11y-invalid-attribute -->
             <a
               class="ds_site-navigation__link {stage}"
-              class:ds_current={$mode.kind == "main" && $currentStage == stage}
+              class:ds_current={$mode.kind != "overview" &&
+                $mode.kind != "evaluate-journey" &&
+                $currentStage == stage}
               href="#"
               on:click|preventDefault={() => changeStage(stage)}
             >
