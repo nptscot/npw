@@ -52,7 +52,7 @@
     }}
   >
     <Popup openOn="hover" let:props>
-      <p>
+      <p style:max-width="200px">
         Data zone {props.id}
         {props.reachable ? "is" : "is not"} reachable. It has {props.population.toLocaleString()}
         people, and a SIMD rank of {props.imd_rank}, putting it in the {props.imd_percentile}

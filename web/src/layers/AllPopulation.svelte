@@ -53,7 +53,7 @@
     }}
   >
     <Popup openOn="hover" let:props>
-      <p style:max-width="30vw">
+      <p style:max-width="200px">
         Data zone {props.id}
         {props.reachable ? "is" : "is not"} reachable. It has {props.population.toLocaleString()}
         people, with a density of {Math.round(
