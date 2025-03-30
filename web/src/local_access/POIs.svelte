@@ -2,11 +2,12 @@
   import type { ExpressionSpecification } from "maplibre-gl";
   import { GeoJSON, SymbolLayer, type LayerClickInfo } from "svelte-maplibre";
   import { layerId } from "../common";
+  import LayerControls from "../layers/LayerControls.svelte";
+  import { localPOIs as show } from "../layers/stores";
   import { autosave, backend, mutationCounter, zoom } from "../stores";
   import type { PoiKind, POIs } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
-  import LayerControls from "./LayerControls.svelte";
-  import { currentPOI, localPOIs as show, type POI } from "./stores";
+  import { currentPOI, type POI } from "./stores";
   import StreetViewPOI from "./StreetViewPOI.svelte";
   import WarpToPOIs from "./WarpToPOIs.svelte";
 

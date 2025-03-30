@@ -2,11 +2,8 @@ import * as Comlink from "comlink";
 import type { Map } from "maplibre-gl";
 import { get, writable, type Writable } from "svelte/store";
 import { getKey, setLocalStorage } from "./common/files";
-import {
-  currentPOI,
-  disableLayersPerStage,
-  enableLayersPerStage,
-} from "./layers/stores";
+import { disableLayersPerStage, enableLayersPerStage } from "./layers/stores";
+import { currentPOI } from "./local_access/stores";
 import type {
   ConnectedComponents,
   ODStats,

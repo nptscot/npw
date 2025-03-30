@@ -9,9 +9,10 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { layerId } from "../common";
+  import { localPOIs as show } from "../layers/stores";
   import { backend, mutationCounter } from "../stores";
   import type { Greenspaces } from "../types";
-  import { currentPOI, localPOIs as show, type POI } from "./stores";
+  import { currentPOI, type POI } from "./stores";
 
   let lastUpdate = 0;
   let data: Greenspaces = {

@@ -2,11 +2,9 @@
   import AllPopulation from "./AllPopulation.svelte";
   import CyclingDemandCoverage from "./CyclingDemandCoverage.svelte";
   import DeprivedPopulation from "./DeprivedPopulation.svelte";
-  import Greenspaces from "./Greenspaces.svelte";
   import GridMeshDensity from "./GridMeshDensity.svelte";
   import MainRoadCoverage from "./MainRoadCoverage.svelte";
   import MajorJunctions from "./MajorJunctions.svelte";
-  import POIs from "./POIs.svelte";
   import DebugNptPmtiles from "./roads/DebugNptPmtiles.svelte";
   import NetworkDisconnections from "./roads/NetworkDisconnections.svelte";
   import Roads from "./roads/Roads.svelte";
@@ -32,11 +30,6 @@
 
 <CyclingDemandCoverage label="Medium" bind:show={$cyclingDemandMedium} />
 <TownCentres />
-
-<!-- Local acces -->
-
-<POIs />
-<Greenspaces />
 
 <!-- Long distance -->
 

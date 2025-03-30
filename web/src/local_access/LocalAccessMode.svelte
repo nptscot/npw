@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { HelpButton } from "./common";
-  import { SplitComponent } from "./common/layout";
-  import RelevantLayers from "./layers/RelevantLayers.svelte";
-  import LeftSidebarStats from "./stats/LeftSidebarStats.svelte";
-  import { devMode, mode } from "./stores";
+  import { HelpButton } from "../common";
+  import { SplitComponent } from "../common/layout";
+  import RelevantLayers from "../layers/RelevantLayers.svelte";
+  import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
+  import { devMode, mode } from "../stores";
+  import Greenspaces from "./Greenspaces.svelte";
+  import POIs from "./POIs.svelte";
 </script>
 
 <SplitComponent>
@@ -44,6 +46,12 @@
     </div>
 
     <LeftSidebarStats />
+  </div>
+
+  <div slot="map">
+    <Greenspaces />
+
+    <POIs />
   </div>
 </SplitComponent>
 

@@ -8,9 +8,9 @@
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
+  import DebugReachability from "../local_access/DebugReachability.svelte";
   import { backend, mutationCounter } from "../stores";
   import type { PoiKind, TownCentres } from "../types";
-  import DebugReachability from "./DebugReachability.svelte";
   import LayerControls from "./LayerControls.svelte";
   import { townCentres as show } from "./stores";
 

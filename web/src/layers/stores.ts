@@ -1,6 +1,5 @@
 import { writable, type Writable } from "svelte/store";
 import type { ReferenceRoadStyle } from "../stores";
-import type { PoiKind } from "../types";
 
 export let allControls: Writable<Map<string, HTMLDivElement>> = writable(
   new Map(),
@@ -63,13 +62,3 @@ export let lastReferenceStyle: Writable<ReferenceRoadStyle> = writable("off");
 
 export let populationStyle: Writable<"off" | "population" | "deprived"> =
   writable("off");
-
-export interface POI {
-  kind: PoiKind;
-  idx: number;
-  description: string;
-  reachable: boolean;
-  pt: [number, number];
-}
-
-export let currentPOI: Writable<POI | null> = writable(null);
