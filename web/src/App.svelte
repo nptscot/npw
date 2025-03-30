@@ -237,8 +237,7 @@
                 paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
                 layout={{
                   visibility:
-                    $currentStage != "LongDistance" &&
-                    $currentStage != "assessment"
+                    $currentStage == "Primary" || $currentStage == "Secondary"
                       ? "visible"
                       : "none",
                 }}
@@ -264,7 +263,10 @@
                 paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
                 layout={{
                   visibility:
-                    $currentStage == "assessment" ? "visible" : "none",
+                    $currentStage == "LocalAccess" ||
+                    $currentStage == "assessment"
+                      ? "visible"
+                      : "none",
                 }}
               />
             </GeoJSON>
