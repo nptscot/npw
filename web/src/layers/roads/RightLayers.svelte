@@ -62,25 +62,9 @@
       icon="fa-link"
       relevant={$currentStage == "LocalAccess"}
     />
-    <Toggle
-      name="Route network (calculated)"
-      style="calculated_rnet"
-      icon="fa-globe"
-      relevant={$currentStage == "assessment"}
-    />
-    <Toggle
-      name="Network disconnections"
-      style="disconnections"
-      icon="fa-link-slash"
-      relevant={$currentStage == "assessment"}
-    />
-    <Toggle
-      name="Streetspace deliverability"
-      style="deliverability"
-      icon="fa-person-digging"
-      relevant={$currentStage == "assessment"}
-    />
+
     <hr />
+
     <PopulationToggle
       name="Population"
       style="population"
