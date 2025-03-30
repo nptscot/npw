@@ -296,6 +296,8 @@
         <p>Click to set the start of the route.</p>
       {:else if $waypoints.length == 1}
         <p>Click to set the end of the route.</p>
+
+        <button type="button" class="ds_link" on:click={cancel}>Cancel</button>
       {:else}
         <p>
           Click to extend the route, drag points to adjust, or change the route
