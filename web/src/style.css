@@ -37,6 +37,10 @@ body .ds_link {
   margin-bottom: 14px;
 }
 
+body .ds_button {
+  text-align: left;
+}
+
 :root {
   --primary-tier-colour: #970f52;
   --secondary-tier-colour: #ff978c;
