@@ -1,6 +1,7 @@
 <script lang="ts">
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
+  import { tierColors } from "../colors";
   import { layerId } from "../common";
   import { backend } from "../stores";
   import type { PoiKind, SetRouteInput } from "../types";
@@ -62,7 +63,8 @@
     }}
     paint={{
       "line-width": 5,
-      "line-color": "black",
+      "line-color": tierColors.LocalAccess,
+      "line-dasharray": [2, 1],
     }}
   />
 </GeoJSON>

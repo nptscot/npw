@@ -97,11 +97,11 @@
         </p>
       {:else}
         <button class="ds_button" on:click={fixUnreachable}>
-          Add the black local access route to fix
+          Add the dashed local access route to connect to the network
         </button>
         <p>
           {$currentPOI.description} is not connected to the network. Enable the Reachability
-          layer to see the red severances surronding it.
+          layer to see the red severances surrounding it.
         </p>
       {/if}
     {/if}
