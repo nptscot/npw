@@ -1,11 +1,27 @@
 <script lang="ts">
   import { HelpButton } from "../common";
   import { SplitComponent } from "../common/layout";
-  import RelevantLayers from "../layers/RelevantLayers.svelte";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
-  import { devMode, mode } from "../stores";
+  import { autosave, backend, devMode, mode } from "../stores";
   import Greenspaces from "./Greenspaces.svelte";
-  import POIs from "./POIs.svelte";
+  import PointPOIs from "./PointPOIs.svelte";
+  import { currentPOI } from "./stores";
+  import StreetViewPOI from "./StreetViewPOI.svelte";
+  import WarpToPOIs from "./WarpToPOIs.svelte";
+
+  async function fixUnreachable() {
+    if ($currentPOI) {
+      let input = await $backend!.fixUnreachablePOI(
+        $currentPOI.kind,
+        $currentPOI.idx,
+      );
+      await $backend!.setRoute(null, input);
+      await autosave();
+
+      // TODO This assumes the fix succeeded. Can we easily check?
+      $currentPOI.reachable = true;
+    }
+  }
 </script>
 
 <SplitComponent>
@@ -31,18 +47,39 @@
         </HelpButton>
       </header>
 
-      <RelevantLayers />
+      {#if $currentPOI}
+        <h4>Connect POIs</h4>
 
-      <br />
+        {#if $currentPOI.reachable}
+          <p>
+            {$currentPOI.description} is connected to the network. The blue path
+            shows the route through quiet streets to the network.
+          </p>
+        {:else}
+          <div>
+            <button class="ds_button" on:click={fixUnreachable}>
+              Add the dashed local access route to connect to the network
+            </button>
+          </div>
 
-      <div>
-        <button
-          class="ds_button"
-          on:click={() => ($mode = { kind: "edit-route", id: null })}
-        >
-          Draw new route line
-        </button>
-      </div>
+          <div>
+            <button
+              type="button"
+              class="ds_link"
+              on:click={() => ($mode = { kind: "edit-route", id: null })}
+            >
+              Manually draw route instead
+            </button>
+          </div>
+
+          <p>
+            {$currentPOI.description} is not connected to the network. Enable the
+            Reachability layer to see the red severances surrounding it.
+          </p>
+        {/if}
+      {/if}
+
+      <WarpToPOIs />
     </div>
 
     <LeftSidebarStats />
@@ -51,7 +88,9 @@
   <div slot="map">
     <Greenspaces />
 
-    <POIs />
+    <PointPOIs />
+
+    <StreetViewPOI />
   </div>
 </SplitComponent>
 

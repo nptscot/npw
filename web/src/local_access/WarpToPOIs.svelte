@@ -96,7 +96,7 @@
   }
 </script>
 
-<h4>Fix unconnected POIs</h4>
+<h4>Find unconnected POIs</h4>
 
 <div>
   <label>
@@ -109,6 +109,8 @@
     </select>
   </label>
 </div>
+
+<br />
 
 <button
   class="ds_button ds_button--secondary"

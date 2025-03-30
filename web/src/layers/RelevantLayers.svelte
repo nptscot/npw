@@ -2,9 +2,10 @@
   import { currentStage } from "../stores";
   import { allControls } from "./stores";
 
+  // TODO This way of doing things is on its way out
+
   let primary: HTMLDivElement | null = null;
   let secondary: HTMLDivElement | null = null;
-  let localAccess: HTMLDivElement | null = null;
   let longDistance: HTMLDivElement | null = null;
 
   $: update(primary, $allControls, [
@@ -13,12 +14,6 @@
   ]);
 
   $: update(secondary, $allControls, ["Medium cycling demand", "Town centres"]);
-
-  $: update(localAccess, $allControls, [
-    "POIs",
-    "Population",
-    "Deprived population (SIMD)",
-  ]);
 
   $: update(longDistance, $allControls, ["Settlements"]);
 
@@ -39,20 +34,17 @@
   }
 </script>
 
-<h3>Relevant layers</h3>
-
 {#if $currentStage == "Primary"}
+  <h3>Relevant layers</h3>
   <div bind:this={primary} />
 {/if}
 
 {#if $currentStage == "Secondary"}
+  <h3>Relevant layers</h3>
   <div bind:this={secondary} />
 {/if}
 
-{#if $currentStage == "LocalAccess"}
-  <div bind:this={localAccess} />
-{/if}
-
 {#if $currentStage == "LongDistance"}
+  <h3>Relevant layers</h3>
   <div bind:this={longDistance} />
 {/if}
