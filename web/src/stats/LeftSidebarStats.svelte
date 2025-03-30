@@ -13,19 +13,24 @@
 
 {#if $stats}
   <div class="assess">
-    <div style="display: flex; justify-content: space-between;">
+    <div
+      style="display: flex; justify-content: space-between; margin-bottom: 12px"
+    >
       <h3>Assess this tier</h3>
       <!-- svelte-ignore a11y-invalid-attribute -->
-      <a
-        href="#"
-        on:click|preventDefault={() =>
+      <button
+        type="button"
+        class="ds_link"
+        on:click={() =>
           ($mode = {
             kind: "evaluate-journey",
             browse: [],
           })}
       >
-        Evaluate a journey
-      </a>
+        Evaluate a
+        <br />
+        journey
+      </button>
     </div>
 
     {#if $currentStage == "Primary"}
