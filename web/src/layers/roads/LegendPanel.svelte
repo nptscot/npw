@@ -224,11 +224,11 @@
   .panel {
     position: absolute;
     top: 10px;
-    right: calc(10px + 15% + 10px);
-    width: 15%;
+    right: 200px;
+    width: 200px;
     min-height: 30px;
 
     background: white;
-    padding: 4px;
+    padding: 8px;
   }
 </style>
