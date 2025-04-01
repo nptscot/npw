@@ -12,6 +12,7 @@
     map,
     mode,
     mutationCounter,
+    zoom,
   } from "../stores";
   import type { PoiKind } from "../types";
   import Greenspaces from "./Greenspaces.svelte";
@@ -142,6 +143,13 @@
       }
     }
   }
+
+  function startFixing() {
+    if ($zoom && $zoom < 14 && $map) {
+      $map.setZoom(14);
+    }
+    findAnother();
+  }
 </script>
 
 <svelte:window on:keydown={onKeyDown} />
@@ -199,7 +207,7 @@
 
         {#if filteredPOIs.length > 0}
           <div>
-            <button class="ds_button" on:click={findAnother}>
+            <button class="ds_button" on:click={startFixing}>
               Fix connectivity for remaining POIs
             </button>
           </div>
