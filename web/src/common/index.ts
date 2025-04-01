@@ -107,3 +107,7 @@ export function lineColorForDemand(
     "#FF00C5",
   ] as ExpressionSpecification;
 }
+
+export function stripPrefix(value: string, prefix: string): string {
+  return value.startsWith(prefix) ? value.slice(prefix.length) : value;
+}

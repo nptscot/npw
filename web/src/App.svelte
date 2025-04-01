@@ -305,7 +305,7 @@
           {/if}
 
           {#if $mode.kind == "setup"}
-            <SetupMode />
+            <SetupMode subpage={$mode.subpage} />
           {:else if $mode.kind == "overview"}
             <OverviewMode />
           {:else if $mode.kind == "main"}

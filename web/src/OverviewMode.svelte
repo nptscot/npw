@@ -1,7 +1,6 @@
 <script lang="ts">
   import { tierColors } from "./colors";
   import { SplitComponent } from "./common/layout";
-  import ManageFiles from "./common/ManageFiles.svelte";
   import { changeStage, currentStage, mode } from "./stores";
 
   let tiers = {
@@ -23,14 +22,12 @@
         <button
           type="button"
           class="ds_link"
-          on:click={() => ($mode = { kind: "setup" })}
+          on:click={() => ($mode = { kind: "setup", subpage: "project-list" })}
         >
           <i class="fa-solid fa-chevron-left"></i>
           Close project
         </button>
       </div>
-
-      <div><ManageFiles /></div>
 
       <p>
         Start by planning the primary and secondary tiers, before adding access
