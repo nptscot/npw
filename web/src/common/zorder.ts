@@ -67,10 +67,7 @@ const layerZorder = [
   streets("Ferry line"),
 
   // Reference layers (areas)
-  "all-population",
-  "all-population-outline",
-  "simd",
-  "simd-outline",
+  "population",
   "uncovered-population",
   "mesh-density-grid",
   "mesh-density-grid-outline",

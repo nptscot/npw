@@ -1,9 +1,5 @@
 <script lang="ts">
-  import {
-    downloadGeneratedFile,
-    QualitativeLegend,
-    SequentialLegend,
-  } from "svelte-utils";
+  import { QualitativeLegend, SequentialLegend } from "svelte-utils";
   import {
     deprived,
     gradient,
@@ -21,7 +17,6 @@
   } from "../../colors";
   import { HelpButton } from "../../common";
   import {
-    backend,
     devMode,
     editModeBreakdown,
     mode,
@@ -52,11 +47,6 @@
     "#0000FF",
     "#FF00C5",
   ];
-
-  async function downloadDataZones() {
-    let gj = await $backend!.getDataZones();
-    downloadGeneratedFile("data_zones.geojson", JSON.stringify(gj));
-  }
 </script>
 
 <div class="panel">
@@ -166,8 +156,8 @@
 
   <CalculatedRouteNetwork />
 
-  <!-- TODO: There could be a legend for both reference layers, population,
-  per-tier layers, and edit mode all at the same time... -->
+  <!-- TODO: There could be a legend for reference layers, per-tier layers, and
+  edit mode all at the same time... -->
 
   {#if $cyclingDemandHigh || $cyclingDemandMedium}
     <SequentialLegend colorScale={demandColors} limits={demandLimits} />
@@ -191,8 +181,7 @@
       limits={deprived.limits}
     />
     <p>
-      Darker colours are more deprived. Zones with a red outline are not
-      reachable by the current network. Only the top 20%ile most deprived zones
+      Darker colours are more deprived. Only the top 20%ile most deprived zones
       are shown.
     </p>
   {/if}
@@ -203,12 +192,8 @@
       limits={population.limits}
     />
     <p>
-      Darker colours are denser. Zones with a red outline are not reachable by
-      the current network. Only the top 3 densest quintiles are shown.
+      Darker colours are denser. Only the top 3 densest quintiles are shown.
     </p>
-    {#if $devMode}
-      <button on:click={downloadDataZones}>Download data zones</button>
-    {/if}
   {/if}
 
   {#if $gridMeshDensity}

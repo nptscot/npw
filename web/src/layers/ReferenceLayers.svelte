@@ -1,10 +1,9 @@
 <script lang="ts">
-  import AllPopulation from "./AllPopulation.svelte";
   import CyclingDemandCoverage from "./CyclingDemandCoverage.svelte";
-  import DeprivedPopulation from "./DeprivedPopulation.svelte";
   import GridMeshDensity from "./GridMeshDensity.svelte";
   import MainRoadCoverage from "./MainRoadCoverage.svelte";
   import MajorJunctions from "./MajorJunctions.svelte";
+  import Population from "./Population.svelte";
   import DebugNptPmtiles from "./roads/DebugNptPmtiles.svelte";
   import NetworkDisconnections from "./roads/NetworkDisconnections.svelte";
   import Roads from "./roads/Roads.svelte";
@@ -18,8 +17,7 @@
 
 <Roads />
 <DebugNptPmtiles />
-<AllPopulation />
-<DeprivedPopulation />
+<Population />
 
 <!-- Primary -->
 

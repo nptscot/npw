@@ -1,5 +1,12 @@
 <script lang="ts">
+  import { downloadGeneratedFile } from "svelte-utils";
+  import { backend, devMode } from "../stores";
   import { changePage } from "./index";
+
+  async function downloadDataZones() {
+    let gj = await $backend!.getDataZones();
+    downloadGeneratedFile("data_zones.geojson", JSON.stringify(gj));
+  }
 </script>
 
 <header class="ds_page-header">
@@ -17,3 +24,7 @@
   Zones with a red outline are not connected by the current network. To connect
   a zone, return to the appropriate tier and draw a route.
 </p>
+
+{#if $devMode}
+  <button on:click={downloadDataZones}>Download data zones</button>
+{/if}
