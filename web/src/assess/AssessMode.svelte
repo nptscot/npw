@@ -6,6 +6,7 @@
   import { changePage, subpage } from "./index";
   import MeshDensity from "./MeshDensity.svelte";
   import ODBreakdowns from "./ODBreakdowns.svelte";
+  import Population from "./Population.svelte";
   import Streetspace from "./Streetspace.svelte";
 
   function gotoOverview() {
@@ -34,14 +35,6 @@
           fix any problems.
         </p>
 
-        <h4>Metrics</h4>
-
-        <div>
-          <button class="ds_button" on:click={() => changePage("report")}>
-            Show network metrics
-          </button>
-        </div>
-
         <h4>Disconnections</h4>
 
         <button class="ds_button" on:click={() => changePage("disconnected")}>
@@ -54,11 +47,25 @@
           Analyse mesh density
         </button>
 
+        <button class="ds_button" on:click={() => changePage("population")}>
+          Identify population zones without coverage
+        </button>
+
         <h4>Deliverability</h4>
 
         <button class="ds_button" on:click={() => changePage("streetspace")}>
           Check routes that do not fit in available streetspace
         </button>
+
+        <hr />
+
+        <h4>Metrics</h4>
+
+        <div>
+          <button class="ds_button" on:click={() => changePage("report")}>
+            Show network metrics
+          </button>
+        </div>
 
         <h4>Effects on demand</h4>
 
@@ -89,6 +96,8 @@
         <MeshDensity />
       {:else if $subpage == "streetspace"}
         <Streetspace />
+      {:else if $subpage == "population"}
+        <Population />
       {:else if $subpage == "calculated-routes"}
         <ODBreakdowns />
       {/if}

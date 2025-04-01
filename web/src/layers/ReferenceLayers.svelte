@@ -11,6 +11,7 @@
   import Settlements from "./Settlements.svelte";
   import { cyclingDemandHigh, cyclingDemandMedium } from "./stores";
   import TownCentres from "./TownCentres.svelte";
+  import UncoveredPopulation from "./UncoveredPopulation.svelte";
 </script>
 
 <!-- Common -->
@@ -39,3 +40,4 @@
 
 <GridMeshDensity />
 <NetworkDisconnections />
+<UncoveredPopulation />

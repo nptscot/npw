@@ -21,6 +21,7 @@ export let localPOIs = writable(false);
 export let settlements = writable(false);
 
 export let gridMeshDensity = writable(false);
+export let uncoveredPopulation = writable(false);
 
 export let severances = writable(false);
 export let debugOriginalData = writable(false);
@@ -39,7 +40,7 @@ export let disableLayersPerStage = {
   Secondary: [cyclingDemandMedium, townCentres, severances, majorJunctions],
   LocalAccess: [localPOIs, severances],
   LongDistance: [settlements, severances],
-  assessment: [gridMeshDensity],
+  assessment: [gridMeshDensity, uncoveredPopulation],
 };
 
 export let showNetworkTiers = writable({

@@ -71,6 +71,7 @@ const layerZorder = [
   "all-population-outline",
   "simd",
   "simd-outline",
+  "uncovered-population",
   "mesh-density-grid",
   "mesh-density-grid-outline",
 
