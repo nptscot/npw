@@ -94,7 +94,19 @@
     $currentPOI = filteredPOIs[filterIdx];
     warp();
   }
+
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.key == "f" && filteredPOIs.length > 0) {
+      let tag = (e.target as HTMLElement).tagName;
+      if (tag != "INPUT") {
+        e.preventDefault();
+        findAnother();
+      }
+    }
+  }
 </script>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <h4>Find unconnected POIs</h4>
 
@@ -117,5 +129,5 @@
   disabled={filteredPOIs.length == 0}
   on:click={findAnother}
 >
-  Find another
+  Find another (f)
 </button>

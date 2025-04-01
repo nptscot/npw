@@ -23,7 +23,19 @@
       $currentPOI.reachable = true;
     }
   }
+
+  async function onKeyDown(e: KeyboardEvent) {
+    if (e.key == "a" && $currentPOI && !$currentPOI.reachable) {
+      let tag = (e.target as HTMLElement).tagName;
+      if (tag != "INPUT") {
+        e.preventDefault();
+        await fixUnreachable();
+      }
+    }
+  }
 </script>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <SplitComponent>
   <div slot="controls">
@@ -64,7 +76,7 @@
 
           <div>
             <button class="ds_button" on:click={fixUnreachable}>
-              Add the dashed local access route to connect to the network
+              Add the dashed local access route to connect to the network (a)
             </button>
           </div>
 
