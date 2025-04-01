@@ -12,28 +12,30 @@
 </script>
 
 <div class="network-style">
-  <p>Show network as:</p>
+  <div style="display: flex">
+    <span style:margin-right="8px">Show network as:</span>
 
-  <ul>
-    <li class="tier" class:selected={$editsRoadStyle == "edits_tier"}>
-      <button on:click={() => ($editsRoadStyle = "edits_tier")}>
-        ‖‖&nbsp; Tier
-      </button>
-    </li>
-    <li
-      class="infrastructure"
-      class:selected={$editsRoadStyle == "edits_infra"}
-    >
-      <button on:click={() => ($editsRoadStyle = "edits_infra")}>
-        ☰&nbsp; Infrastructure type
-      </button>
-    </li>
-    <li class="hidden" class:selected={$editsRoadStyle == "off"}>
-      <button on:click={() => ($editsRoadStyle = "off")}>
-        &#10680;&nbsp; Hidden
-      </button>
-    </li>
-  </ul>
+    <ul style:flex-grow="1">
+      <li class="tier" class:selected={$editsRoadStyle == "edits_tier"}>
+        <button on:click={() => ($editsRoadStyle = "edits_tier")}>
+          ‖‖&nbsp; Tier
+        </button>
+      </li>
+      <li
+        class="infrastructure"
+        class:selected={$editsRoadStyle == "edits_infra"}
+      >
+        <button on:click={() => ($editsRoadStyle = "edits_infra")}>
+          ☰&nbsp; Infrastructure type
+        </button>
+      </li>
+      <li class="hidden" class:selected={$editsRoadStyle == "off"}>
+        <button on:click={() => ($editsRoadStyle = "off")}>
+          &#10680;&nbsp; Hidden
+        </button>
+      </li>
+    </ul>
+  </div>
 
   {#if $editsRoadStyle == "edits_infra"}
     <LegendWithToggles
@@ -59,7 +61,7 @@
   .network-style {
     position: absolute;
     bottom: 10px;
-    width: 600px;
+    width: 610px;
     left: 0;
     right: 0;
     margin-inline: auto;
@@ -67,7 +69,6 @@
     padding: 10px;
     font-size: 14px;
   }
-  .network-style p,
   .network-style :global(ul) {
     margin: 0;
   }
