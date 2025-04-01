@@ -1,6 +1,13 @@
 <script lang="ts">
+  import type { FeatureCollection } from "geojson";
   import type { ExpressionSpecification } from "maplibre-gl";
-  import { GeoJSON, SymbolLayer, type LayerClickInfo } from "svelte-maplibre";
+  import {
+    CircleLayer,
+    GeoJSON,
+    SymbolLayer,
+    type LayerClickInfo,
+  } from "svelte-maplibre";
+  import { emptyGeojson } from "svelte-utils/map";
   import { layerId } from "../common";
   import { localPOIs as show } from "../layers/stores";
   import { backend, mutationCounter } from "../stores";
@@ -38,36 +45,48 @@
     recalc();
   }
 
-  function iconImage(
-    poiKind: PoiKind,
-    currentPOI: POI | null,
-  ): ExpressionSpecification {
-    let reachable = [
+  function iconImage(poiKind: PoiKind): ExpressionSpecification {
+    return [
       "case",
       ["get", "reachable"],
       `${poiKind}_reachable`,
       `${poiKind}_unreachable`,
     ] as ExpressionSpecification;
-    if (currentPOI?.kind == poiKind) {
-      return [
-        "case",
-        ["==", ["get", "idx"], currentPOI.idx],
-        "current_poi",
-        reachable,
-      ];
-    } else {
-      return reachable;
-    }
   }
 
   function setCurrentPOI(e: CustomEvent<LayerClickInfo>) {
-    $currentPOI = {
-      kind: e.detail.features[0].properties!.poi_kind,
-      idx: e.detail.features[0].properties!.idx,
-      description: e.detail.features[0].properties!.description,
-      reachable: e.detail.features[0].properties!.reachable,
-      pt: e.detail.event.lngLat.toArray(),
-    };
+    // Find the original feature, to set the point correctly
+    let collection =
+      e.detail.features[0].properties!.poi_kind == "schools"
+        ? schools
+        : gpHospitals;
+    let feature = collection.features.find(
+      (f) => f.properties.idx == e.detail.features[0].properties!.idx,
+    );
+    if (feature) {
+      $currentPOI = {
+        kind: feature.properties.poi_kind,
+        idx: feature.properties.idx,
+        description: feature.properties.description,
+        reachable: feature.properties.reachable,
+        pt: feature.geometry.coordinates as [number, number],
+      };
+    }
+  }
+
+  function focusCurrentPOI(currentPOI: POI | null): FeatureCollection {
+    let gj = emptyGeojson();
+    if (currentPOI && currentPOI.kind != "greenspaces") {
+      gj.features.push({
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "Point",
+          coordinates: currentPOI.pt,
+        },
+      });
+    }
+    return gj;
   }
 </script>
 
@@ -79,7 +98,7 @@
       visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
-      "icon-image": iconImage("schools", $currentPOI),
+      "icon-image": iconImage("schools"),
     }}
     hoverCursor="pointer"
     on:click={setCurrentPOI}
@@ -94,10 +113,25 @@
       visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
-      "icon-image": iconImage("gp_hospitals", $currentPOI),
+      "icon-image": iconImage("gp_hospitals"),
     }}
     hoverCursor="pointer"
     on:click={setCurrentPOI}
+  />
+</GeoJSON>
+
+<GeoJSON data={focusCurrentPOI($currentPOI)}>
+  <CircleLayer
+    {...layerId("current-poi")}
+    layout={{
+      visibility: $show ? "visible" : "none",
+    }}
+    paint={{
+      "circle-radius": 15,
+      "circle-opacity": 0,
+      "circle-stroke-color": "black",
+      "circle-stroke-width": 4,
+    }}
   />
 </GeoJSON>
 

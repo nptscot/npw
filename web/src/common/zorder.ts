@@ -77,6 +77,7 @@ const layerZorder = [
   // Reference layers (points or polygons)
   "gp-hospitals",
   "schools",
+  "current-poi",
   "settlements-fill",
   "settlements-outline-reachable",
   "settlements-outline-unreachable",

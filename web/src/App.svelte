@@ -15,7 +15,6 @@
   } from "svelte-maplibre";
   import { fetchWithProgress, Loading } from "svelte-utils";
   import { Geocoder } from "svelte-utils/map";
-  import currentPoiIcon from "../assets/current_poi.png";
   import hospital1Icon from "../assets/hospital_reachable.png";
   import hospital2Icon from "../assets/hospital_unreachable.png";
   import school1Icon from "../assets/school_reachable.png";
@@ -216,7 +215,6 @@
           { id: "schools_unreachable", url: school2Icon },
           { id: "gp_hospitals_reachable", url: hospital1Icon },
           { id: "gp_hospitals_unreachable", url: hospital2Icon },
-          { id: "current_poi", url: currentPoiIcon },
         ]}
         hash
       >
