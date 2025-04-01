@@ -83,7 +83,9 @@
           class="ds_button"
           on:click={() => ($mode = { kind: "edit-route", id: null })}
         >
-          Draw new route line
+          Draw new route line (
+          <kbd>r</kbd>
+          )
         </button>
       </div>
       <div>

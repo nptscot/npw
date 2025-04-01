@@ -248,7 +248,9 @@
 
           <div>
             <button class="ds_button" on:click={fixUnreachable}>
-              Add the dashed line to fix (a)
+              Add the dashed line to fix (
+              <kbd>a</kbd>
+              )
             </button>
           </div>
 
@@ -269,7 +271,9 @@
           on:click={findAnother}
           style:float="right"
         >
-          Next POI (n)
+          Next POI (
+          <kbd>n</kbd>
+          )
         </button>
       {/if}
     </div>
