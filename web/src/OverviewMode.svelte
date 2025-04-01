@@ -23,7 +23,7 @@
         <button
           type="button"
           class="ds_link"
-          on:click={() => ($mode = { kind: "explore" })}
+          on:click={() => ($mode = { kind: "setup" })}
         >
           <i class="fa-solid fa-chevron-left"></i>
           Close project

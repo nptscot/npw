@@ -30,7 +30,6 @@
   import StreetView from "./common/StreetView.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import EvaluateJourneyMode from "./EvaluateJourneyMode.svelte";
-  import ExploreMode from "./ExploreMode.svelte";
   import ExportMode from "./ExportMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
   import BottomPanel from "./layers/roads/BottomPanel.svelte";
@@ -39,6 +38,7 @@
   import LocalAccessMode from "./local_access/LocalAccessMode.svelte";
   import MainMode from "./MainMode.svelte";
   import OverviewMode from "./OverviewMode.svelte";
+  import SetupMode from "./SetupMode.svelte";
   import {
     assetUrl,
     backend,
@@ -191,7 +191,7 @@
   }
 
   function invertLayer(mode: Mode, currentStage: Tier | "assessment"): string {
-    if (mode.kind == "explore" || mode.kind == "overview") {
+    if (mode.kind == "setup" || mode.kind == "overview") {
       return "all";
     }
 
@@ -214,7 +214,7 @@
 
 <Layout>
   <header slot="top">
-    {#if $mode.kind != "explore"}
+    {#if $mode.kind != "setup"}
       <TopBar />
     {/if}
   </header>
@@ -300,12 +300,12 @@
           <ReferenceLayers />
           <RightLayers />
           <LegendPanel />
-          {#if $mode.kind != "explore"}
+          {#if $mode.kind != "setup"}
             <BottomPanel />
           {/if}
 
-          {#if $mode.kind == "explore"}
-            <ExploreMode />
+          {#if $mode.kind == "setup"}
+            <SetupMode />
           {:else if $mode.kind == "overview"}
             <OverviewMode />
           {:else if $mode.kind == "main"}

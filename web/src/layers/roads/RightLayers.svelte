@@ -64,7 +64,7 @@
     />
   </ul>
 
-  {#if $mode.kind != "explore"}
+  {#if $mode.kind != "setup"}
     <h3>Evaluation layers</h3>
     <ul>
       <Toggle name="Level of Service" style="los" icon="fa-face-smile" />
