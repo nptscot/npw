@@ -188,16 +188,13 @@
           shown in red and need to be fixed.
         </p>
 
-        <label class="ds_label" for="filterKind">Filter POIs</label>
-        <div class="ds_select-wrapper ds_input--fluid-one-third">
+        <div class="ds_select-wrapper ds_input--fluid-two-thirds">
           <select
             class="ds_select"
-            id="filterKind"
-            name="filterKind"
             bind:value={filterKind}
             on:change={refilterPOIs}
           >
-            <option value="all">All</option>
+            <option value="all">Showing all POIs</option>
             <option value="schools">Schools</option>
             <option value="gp_hospitals">GPs/hospitals</option>
             <option value="greenspaces">Greenspaces</option>
@@ -205,15 +202,15 @@
           <span class="ds_select-arrow" aria-hidden="true"></span>
         </div>
 
-        {#if filteredPOIs.length > 0}
-          <div>
-            <button class="ds_button" on:click={startFixing}>
-              Fix connectivity for remaining POIs
-            </button>
-          </div>
-        {:else}
-          <p>All POIs are connected.</p>
-        {/if}
+        <div>
+          <button
+            class="ds_button"
+            on:click={startFixing}
+            disabled={filteredPOIs.length == 0}
+          >
+            Fix connectivity for remaining POIs
+          </button>
+        </div>
       {:else}
         <header class="ds_page-header">
           <span
@@ -232,7 +229,7 @@
             on:click={() => ($currentPOI = null)}
           >
             <i class="fa-solid fa-chevron-left"></i>
-            Filter for different POIs
+            Back to POIs introduction/filter
           </button>
         </div>
 
