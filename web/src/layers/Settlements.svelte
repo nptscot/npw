@@ -67,25 +67,12 @@
   </FillLayer>
 
   <LineLayer
-    {...layerId("settlements-outline-reachable")}
-    interactive={false}
-    filter={["get", "reachable"]}
-    paint={{
-      "line-color": "green",
-      "line-width": 1,
-    }}
-    layout={{
-      visibility: $show ? "visible" : "none",
-    }}
-  />
-  <LineLayer
-    {...layerId("settlements-outline-unreachable")}
+    {...layerId("settlements-outline")}
     interactive={false}
     filter={["!", ["get", "reachable"]]}
     paint={{
       "line-color": "red",
-      "line-width": 1,
-      "line-dasharray": [3, 2],
+      "line-width": 3,
     }}
     layout={{
       visibility: $show ? "visible" : "none",
