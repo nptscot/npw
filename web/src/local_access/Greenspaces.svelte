@@ -11,8 +11,12 @@
   import { layerId } from "../common";
   import { localPOIs as show } from "../layers/stores";
   import { backend, mutationCounter } from "../stores";
-  import type { Greenspaces } from "../types";
+  import type { Greenspaces, PoiKind } from "../types";
   import { currentPOI, type POI } from "./stores";
+
+  export let filterKind: PoiKind | "all" = "all";
+
+  $: showGreenspaces = filterKind == "all" || filterKind == "greenspaces";
 
   let lastUpdate = 0;
   let data: Greenspaces = {
@@ -60,7 +64,9 @@
     {...layerId("greenspaces-fill")}
     manageHoverState
     paint={{
-      "fill-color": ["case", ["get", "reachable"], "green", "red"],
+      "fill-color": showGreenspaces
+        ? ["case", ["get", "reachable"], "green", "red"]
+        : "#666666",
       "fill-opacity": fillOpacity($currentPOI),
     }}
     layout={{
@@ -71,23 +77,12 @@
   />
 
   <LineLayer
-    {...layerId("greenspaces-outline-reachable")}
+    {...layerId("greenspaces-outline")}
     interactive={false}
-    filter={["get", "reachable"]}
     paint={{
-      "line-color": "green",
-      "line-width": 1,
-    }}
-    layout={{
-      visibility: $show ? "visible" : "none",
-    }}
-  />
-  <LineLayer
-    {...layerId("greenspaces-outline-unreachable")}
-    interactive={false}
-    filter={["!", ["get", "reachable"]]}
-    paint={{
-      "line-color": "red",
+      "line-color": showGreenspaces
+        ? ["case", ["get", "reachable"], "green", "red"]
+        : "#666666",
       "line-width": 1,
     }}
     layout={{
@@ -104,7 +99,7 @@
       "circle-radius": ["step", ["zoom"], 0, 14, 5],
     }}
     layout={{
-      visibility: $show ? "visible" : "none",
+      visibility: $show && showGreenspaces ? "visible" : "none",
     }}
   />
 </GeoJSON>

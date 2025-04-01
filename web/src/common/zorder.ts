@@ -85,8 +85,7 @@ const layerZorder = [
   "town-centres-outline-reachable",
   "town-centres-outline-unreachable",
   "greenspaces-fill",
-  "greenspaces-outline-reachable",
-  "greenspaces-outline-unreachable",
+  "greenspaces-outline",
   "greenspace-access-points",
   "major-junctions",
 

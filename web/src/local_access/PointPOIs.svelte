@@ -15,6 +15,8 @@
   import DebugReachability from "./DebugReachability.svelte";
   import { currentPOI, type POI } from "./stores";
 
+  export let filterKind: PoiKind | "all" = "all";
+
   let lastUpdate = 0;
   let schools: POIs = {
     type: "FeatureCollection",
@@ -45,7 +47,15 @@
     recalc();
   }
 
-  function iconImage(poiKind: PoiKind): ExpressionSpecification {
+  function iconImage(
+    poiKind: PoiKind,
+    filterKind: PoiKind | "all",
+  ): ExpressionSpecification {
+    if (filterKind != "all" && filterKind != poiKind) {
+      // @ts-expect-error
+      return `${poiKind}_ignore`;
+    }
+
     return [
       "case",
       ["get", "reachable"],
@@ -98,7 +108,7 @@
       visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
-      "icon-image": iconImage("schools"),
+      "icon-image": iconImage("schools", filterKind),
     }}
     hoverCursor="pointer"
     on:click={setCurrentPOI}
@@ -113,7 +123,7 @@
       visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
-      "icon-image": iconImage("gp_hospitals"),
+      "icon-image": iconImage("gp_hospitals", filterKind),
     }}
     hoverCursor="pointer"
     on:click={setCurrentPOI}

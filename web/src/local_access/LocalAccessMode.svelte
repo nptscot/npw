@@ -275,9 +275,9 @@
   <div slot="map">
     <MapEvents on:click={() => ($currentPOI = null)} />
 
-    <Greenspaces />
+    <Greenspaces {filterKind} />
 
-    <PointPOIs />
+    <PointPOIs {filterKind} />
 
     <StreetViewPOI />
   </div>
