@@ -154,6 +154,9 @@
   }
 
   function showEditPopup(features: Feature[]): boolean {
+    if ($mode.kind == "export") {
+      return false;
+    }
     let roadId = features[0]?.properties?.id;
     return dynamicData[roadId].current_route_id != null;
   }

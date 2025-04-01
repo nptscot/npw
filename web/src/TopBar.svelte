@@ -10,6 +10,11 @@
     exitCurrentStage();
     $mode = { kind: "overview" };
   }
+
+  function gotoExport() {
+    exitCurrentStage();
+    $mode = { kind: "export" };
+  }
 </script>
 
 <header>
@@ -41,17 +46,28 @@
               class="ds_site-navigation__link {stage}"
               class:ds_current={$mode.kind != "overview" &&
                 $mode.kind != "evaluate-journey" &&
+                $mode.kind != "export" &&
                 $currentStage == stage}
               href="#"
               on:click|preventDefault={() => changeStage(stage)}
             >
               {label}
-              {#if stage != "assessment"}
-                <i class="fa-solid fa-chevron-right"></i>
-              {/if}
+              <i class="fa-solid fa-chevron-right"></i>
             </a>
           </li>
         {/each}
+
+        <li class="ds_site-navigation__item">
+          <!-- svelte-ignore a11y-invalid-attribute -->
+          <a
+            class="ds_site-navigation__link"
+            class:ds_current={$mode.kind == "export"}
+            href="#"
+            on:click|preventDefault={gotoExport}
+          >
+            Export
+          </a>
+        </li>
       </ul>
     </nav>
   </div>

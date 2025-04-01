@@ -20,7 +20,8 @@ export type Mode =
   | { kind: "main" }
   | { kind: "edit-route"; id: number | null }
   | { kind: "evaluate-journey"; browse: WorstRoutes }
-  | { kind: "bulk-edit" };
+  | { kind: "bulk-edit" }
+  | { kind: "export" };
 
 export let boundaryName = writable("");
 // This may be updated by App upfront

@@ -30,6 +30,7 @@
   import StreetView from "./common/StreetView.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import EvaluateJourneyMode from "./EvaluateJourneyMode.svelte";
+  import ExportMode from "./ExportMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
   import BottomPanel from "./layers/roads/BottomPanel.svelte";
   import LegendPanel from "./layers/roads/LegendPanel.svelte";
@@ -296,6 +297,8 @@
             <EvaluateJourneyMode browse={$mode.browse} />
           {:else if $mode.kind == "bulk-edit"}
             <BulkEditMode />
+          {:else if $mode.kind == "export"}
+            <ExportMode />
           {/if}
         {/if}
       </MapLibre>

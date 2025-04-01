@@ -2,7 +2,7 @@
   import { tierColors } from "./colors";
   import { SplitComponent } from "./common/layout";
   import ManageFiles from "./common/ManageFiles.svelte";
-  import { changeStage, currentStage } from "./stores";
+  import { changeStage, currentStage, mode } from "./stores";
 
   let tiers = {
     Primary: "Design primary routes",
@@ -50,6 +50,15 @@
         on:click={() => changeStage("assessment")}
       >
         Assess performance of the network
+      </button>
+
+      <h4>Export project</h4>
+
+      <button
+        class="ds_button ds_button--secondary"
+        on:click={() => ($mode = { kind: "export" })}
+      >
+        Export project
       </button>
     </div>
   </div>
