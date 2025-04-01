@@ -129,6 +129,8 @@
         "green",
         "red",
       ] as DataDrivenPropertyValueSpecification<string>,
+      population: invisibile,
+      deprived: invisibile,
     }[style];
   }
 
@@ -168,6 +170,8 @@
       precalculated_rnet: false,
       calculated_rnet: false,
       deliverability: true,
+      population: false,
+      deprived: false,
     }[style];
   }
 </script>

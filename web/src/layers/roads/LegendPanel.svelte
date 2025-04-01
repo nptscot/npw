@@ -27,7 +27,6 @@
     cyclingDemandMedium,
     debugOriginalData,
     gridMeshDensity,
-    populationStyle,
   } from "../stores";
   import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
   import CoreNetwork from "./CoreNetwork.svelte";
@@ -175,7 +174,7 @@
     {/if}
   {/if}
 
-  {#if $populationStyle == "deprived"}
+  {#if $referenceRoadStyle == "deprived"}
     <SequentialLegend
       colorScale={deprived.colorScale}
       limits={deprived.limits}
@@ -186,7 +185,7 @@
     </p>
   {/if}
 
-  {#if $populationStyle == "population"}
+  {#if $referenceRoadStyle == "population"}
     <SequentialLegend
       colorScale={population.colorScale}
       limits={population.limits}

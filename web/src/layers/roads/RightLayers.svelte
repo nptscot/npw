@@ -1,7 +1,6 @@
 <script lang="ts">
   import { currentStage, referenceRoadStyle } from "../../stores";
   import { lastReferenceStyle } from "../stores";
-  import PopulationToggle from "./PopulationToggle.svelte";
   import Toggle from "./Toggle.svelte";
 
   function onKeyDown(e: KeyboardEvent) {
@@ -51,6 +50,18 @@
       icon="fa-diagram-project"
       relevant={$currentStage == "Primary" || $currentStage == "Secondary"}
     />
+    <Toggle
+      name="Population"
+      style="population"
+      icon="fa-person"
+      relevant={$currentStage == "LocalAccess"}
+    />
+    <Toggle
+      name="Deprived population (SIMD)"
+      style="deprived"
+      icon="fa-house-user"
+      relevant={$currentStage == "LocalAccess"}
+    />
   </ul>
 
   <h3>Evaluation layers</h3>
@@ -60,21 +71,6 @@
       name="Reachability"
       style="reachability"
       icon="fa-link"
-      relevant={$currentStage == "LocalAccess"}
-    />
-
-    <hr />
-
-    <PopulationToggle
-      name="Population"
-      style="population"
-      icon="fa-person"
-      relevant={$currentStage == "LocalAccess"}
-    />
-    <PopulationToggle
-      name="Deprived population (SIMD)"
-      style="deprived"
-      icon="fa-house-user"
       relevant={$currentStage == "LocalAccess"}
     />
   </ul>

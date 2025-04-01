@@ -61,6 +61,3 @@ export let showNetworkInfraTypes = writable({
 
 // Remember the last reference style enabled. "off" means none.
 export let lastReferenceStyle: Writable<ReferenceRoadStyle> = writable("off");
-
-export let populationStyle: Writable<"off" | "population" | "deprived"> =
-  writable("off");
