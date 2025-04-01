@@ -19,7 +19,16 @@
         <h2 class="ds_page-header__title">Plan my network</h2>
       </header>
 
-      <div><a href="index.html">Work in a different area</a></div>
+      <div>
+        <button
+          type="button"
+          class="ds_link"
+          on:click={() => ($mode = { kind: "explore" })}
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+          Close project
+        </button>
+      </div>
 
       <div><ManageFiles /></div>
 

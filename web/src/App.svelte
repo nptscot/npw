@@ -30,6 +30,7 @@
   import StreetView from "./common/StreetView.svelte";
   import EditRouteMode from "./edit/EditRouteMode.svelte";
   import EvaluateJourneyMode from "./EvaluateJourneyMode.svelte";
+  import ExploreMode from "./ExploreMode.svelte";
   import ExportMode from "./ExportMode.svelte";
   import ReferenceLayers from "./layers/ReferenceLayers.svelte";
   import BottomPanel from "./layers/roads/BottomPanel.svelte";
@@ -53,8 +54,10 @@
     routeB,
     stats,
     zoom,
+    type Mode,
   } from "./stores";
   import TopBar from "./TopBar.svelte";
+  import type { Tier } from "./types";
   import type { Backend } from "./worker";
   import workerWrapper from "./worker?worker";
 
@@ -120,7 +123,7 @@
           $currentFilename = openFile;
         } catch (err) {
           window.alert(`Couldn't restore saved state: ${err}`);
-          window.location.href = "index.html";
+          window.location.href = "./";
         }
       }
     }
@@ -186,6 +189,21 @@
   $: if ($backend && $mutationCounter > 0) {
     recalcFastStats();
   }
+
+  function invertLayer(mode: Mode, currentStage: Tier | "assessment"): string {
+    if (mode.kind == "explore" || mode.kind == "overview") {
+      return "all";
+    }
+
+    if (currentStage == "Primary" || currentStage == "Secondary") {
+      return "inside";
+    }
+    if (currentStage == "LongDistance") {
+      return "outside";
+    }
+
+    return "all";
+  }
 </script>
 
 <svelte:head>
@@ -196,7 +214,9 @@
 
 <Layout>
   <header slot="top">
-    <TopBar />
+    {#if $mode.kind != "explore"}
+      <TopBar />
+    {/if}
   </header>
   <main slot="controls">
     <div bind:this={controlsDiv} />
@@ -241,7 +261,7 @@
                 paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
                 layout={{
                   visibility:
-                    $currentStage == "Primary" || $currentStage == "Secondary"
+                    invertLayer($mode, $currentStage) == "inside"
                       ? "visible"
                       : "none",
                 }}
@@ -255,7 +275,9 @@
                 paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
                 layout={{
                   visibility:
-                    $currentStage == "LongDistance" ? "visible" : "none",
+                    invertLayer($mode, $currentStage) == "outside"
+                      ? "visible"
+                      : "none",
                 }}
               />
             </GeoJSON>
@@ -267,8 +289,7 @@
                 paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
                 layout={{
                   visibility:
-                    $currentStage == "LocalAccess" ||
-                    $currentStage == "assessment"
+                    invertLayer($mode, $currentStage) == "all"
                       ? "visible"
                       : "none",
                 }}
@@ -279,9 +300,13 @@
           <ReferenceLayers />
           <RightLayers />
           <LegendPanel />
-          <BottomPanel />
+          {#if $mode.kind != "explore"}
+            <BottomPanel />
+          {/if}
 
-          {#if $mode.kind == "overview"}
+          {#if $mode.kind == "explore"}
+            <ExploreMode />
+          {:else if $mode.kind == "overview"}
             <OverviewMode />
           {:else if $mode.kind == "main"}
             {#if $currentStage == "assessment"}

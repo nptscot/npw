@@ -35,7 +35,7 @@
 <main class="container">
   <h1>Clean local storage</h1>
 
-  <a href="index.html">Back to NPW</a>
+  <a href="./">Back to NPW</a>
 
   <p>
     All files are stored in your browser's local storage. There's a 5MB size

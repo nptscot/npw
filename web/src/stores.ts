@@ -16,6 +16,7 @@ import type { Backend } from "./worker";
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 
 export type Mode =
+  | { kind: "explore" }
   | { kind: "overview" }
   | { kind: "main" }
   | { kind: "edit-route"; id: number | null }
@@ -26,7 +27,7 @@ export type Mode =
 export let boundaryName = writable("");
 // This may be updated by App upfront
 export let currentFilename = writable("untitled");
-export let mode: Writable<Mode> = writable({ kind: "overview" });
+export let mode: Writable<Mode> = writable({ kind: "explore" });
 export let currentStage: Writable<Tier | "assessment"> = writable("Primary");
 export let map: Writable<Map | null> = writable(null);
 export let zoom: Writable<number | undefined> = writable(undefined);

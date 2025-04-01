@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { backgroundLayer, currentStage } from "../../stores";
+  import { backgroundLayer, currentStage, mode } from "../../stores";
   import { lastBackgroundLayer } from "../stores";
   import Toggle from "./Toggle.svelte";
 
@@ -64,16 +64,18 @@
     />
   </ul>
 
-  <h3>Evaluation layers</h3>
-  <ul>
-    <Toggle name="Level of Service" style="los" icon="fa-face-smile" />
-    <Toggle
-      name="Reachability"
-      style="reachability"
-      icon="fa-link"
-      relevant={$currentStage == "LocalAccess"}
-    />
-  </ul>
+  {#if $mode.kind != "explore"}
+    <h3>Evaluation layers</h3>
+    <ul>
+      <Toggle name="Level of Service" style="los" icon="fa-face-smile" />
+      <Toggle
+        name="Reachability"
+        style="reachability"
+        icon="fa-link"
+        relevant={$currentStage == "LocalAccess"}
+      />
+    </ul>
+  {/if}
 </div>
 
 <style>
