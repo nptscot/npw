@@ -18,10 +18,10 @@
   } from "../../colors";
   import { layerId, Link, roadLineWidth } from "../../common";
   import {
+    backgroundLayer,
     mode,
-    referenceRoadStyle,
+    type BackgroundLayer,
     type Mode,
-    type ReferenceRoadStyle,
   } from "../../stores";
   import { infraTypeMapping, type DynamicRoad } from "../../types";
   import { debugOriginalData, severances } from "../stores";
@@ -30,7 +30,7 @@
 
   function makeFilter(
     severances: boolean,
-    style: ReferenceRoadStyle,
+    style: BackgroundLayer,
   ): ExpressionSpecification | undefined {
     if (severances) {
       return undefined;
@@ -51,7 +51,7 @@
   function lineOpacity(
     mode: Mode,
     severances: boolean,
-    style: ReferenceRoadStyle,
+    style: BackgroundLayer,
   ): DataDrivenPropertyValueSpecification<number> {
     let show = $mode.kind == "main" ? 1.0 : 0.5;
 
@@ -83,7 +83,7 @@
 
   function lineColor(
     severances: boolean,
-    style: ReferenceRoadStyle,
+    style: BackgroundLayer,
   ): DataDrivenPropertyValueSpecification<string> {
     if (severances) {
       return "red";
@@ -137,7 +137,7 @@
   function showLayer(
     severances: boolean,
     debugOriginalData: boolean,
-    style: ReferenceRoadStyle,
+    style: BackgroundLayer,
   ): boolean {
     if (severances) {
       return true;
@@ -178,14 +178,14 @@
 
 <LineLayer
   {...layerId("reference-roads")}
-  filter={makeFilter($severances, $referenceRoadStyle)}
+  filter={makeFilter($severances, $backgroundLayer)}
   paint={{
-    "line-color": lineColor($severances, $referenceRoadStyle),
-    "line-opacity": lineOpacity($mode, $severances, $referenceRoadStyle),
+    "line-color": lineColor($severances, $backgroundLayer),
+    "line-opacity": lineOpacity($mode, $severances, $backgroundLayer),
     "line-width": roadLineWidth(0),
   }}
   layout={{
-    visibility: showLayer($severances, $debugOriginalData, $referenceRoadStyle)
+    visibility: showLayer($severances, $debugOriginalData, $backgroundLayer)
       ? "visible"
       : "none",
   }}

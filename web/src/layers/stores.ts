@@ -1,5 +1,5 @@
 import { writable, type Writable } from "svelte/store";
-import type { ReferenceRoadStyle } from "../stores";
+import type { BackgroundLayer } from "../stores";
 
 export let allControls: Writable<Map<string, HTMLDivElement>> = writable(
   new Map(),
@@ -60,4 +60,4 @@ export let showNetworkInfraTypes = writable({
 });
 
 // Remember the last reference style enabled. "off" means none.
-export let lastReferenceStyle: Writable<ReferenceRoadStyle> = writable("off");
+export let lastBackgroundLayer: Writable<BackgroundLayer> = writable("off");

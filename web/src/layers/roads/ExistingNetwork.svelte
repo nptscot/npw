@@ -2,7 +2,7 @@
   import { Loading, QualitativeLegend } from "svelte-utils";
   import { infraTypeColors } from "../../colors";
   import { Modal } from "../../common";
-  import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
+  import { autosave, backend, backgroundLayer, devMode } from "../../stores";
   import { debugOriginalData } from "../stores";
 
   let showImportModal = false;
@@ -17,14 +17,14 @@
       let noun = numChanges == 1 ? "route segment" : "route segments";
       await autosave();
       window.alert(`Imported ${numChanges} ${noun}`);
-      $referenceRoadStyle = "off";
+      $backgroundLayer = "off";
     }
   }
 </script>
 
 <Loading {loading} />
 
-{#if $referenceRoadStyle == "existing_infra"}
+{#if $backgroundLayer == "existing_infra"}
   <QualitativeLegend colors={infraTypeColors} />
 
   <br />

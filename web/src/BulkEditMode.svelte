@@ -26,10 +26,10 @@
   import {
     autosave,
     backend,
+    backgroundLayer,
     editsRoadStyle,
     map,
     mode,
-    referenceRoadStyle,
     type EditsRoadStyle,
   } from "./stores";
   import { infraTypeMapping, type RouteProps } from "./types";
@@ -39,10 +39,10 @@
     allRoutes = await $backend!.getAllRoutes();
   });
 
-  let origReferenceStyle = $referenceRoadStyle;
-  $referenceRoadStyle = "off";
+  let origBackgroundLayer = $backgroundLayer;
+  $backgroundLayer = "off";
   onDestroy(() => {
-    $referenceRoadStyle = origReferenceStyle;
+    $backgroundLayer = origBackgroundLayer;
   });
 
   let showTierModal = false;

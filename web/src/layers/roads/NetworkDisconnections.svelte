@@ -11,13 +11,13 @@
   import { layerId, roadLineWidth } from "../../common";
   import {
     backend,
+    backgroundLayer,
     connectedComponents,
     map,
     mutationCounter,
-    referenceRoadStyle,
   } from "../../stores";
 
-  $: show = $referenceRoadStyle == "disconnections";
+  $: show = $backgroundLayer == "disconnections";
 
   let lastUpdate = 0;
 

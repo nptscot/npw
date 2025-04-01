@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Loading, QualitativeLegend } from "svelte-utils";
   import { cnTierColors } from "../../colors";
-  import { autosave, backend, devMode, referenceRoadStyle } from "../../stores";
+  import { autosave, backend, backgroundLayer, devMode } from "../../stores";
   import { debugOriginalData } from "../stores";
 
   let loading = "";
@@ -14,14 +14,14 @@
       let noun = numChanges == 1 ? "route segment" : "route segments";
       await autosave();
       window.alert(`Imported ${numChanges} ${noun}`);
-      $referenceRoadStyle = "off";
+      $backgroundLayer = "off";
     }
   }
 </script>
 
 <Loading {loading} />
 
-{#if $referenceRoadStyle == "cn"}
+{#if $backgroundLayer == "cn"}
   <QualitativeLegend colors={cnTierColors} />
 
   <br />

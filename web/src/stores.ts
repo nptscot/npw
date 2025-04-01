@@ -45,7 +45,7 @@ export let routeB: Writable<{ lng: number; lat: number } | null> =
 // TODO Move disconnections here?
 export type EditsRoadStyle = "off" | "edits_infra" | "edits_tier";
 
-export type ReferenceRoadStyle =
+export type BackgroundLayer =
   | "off"
   | "cn"
   | "existing_infra"
@@ -64,7 +64,7 @@ export type ReferenceRoadStyle =
   | "deprived";
 
 export let editsRoadStyle: Writable<EditsRoadStyle> = writable("edits_tier");
-export let referenceRoadStyle: Writable<ReferenceRoadStyle> = writable("off");
+export let backgroundLayer: Writable<BackgroundLayer> = writable("off");
 
 export let editModeBreakdown: Writable<
   "infra_type" | "gradient" | "deliverability" | "los" | "tier"
@@ -122,7 +122,7 @@ export function exitCurrentStage() {
     show.set(false);
   }
   if (oldStage == "assessment") {
-    referenceRoadStyle.set("off");
+    backgroundLayer.set("off");
   }
   if (oldStage == "LocalAccess") {
     currentPOI.set(null);

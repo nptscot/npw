@@ -7,16 +7,12 @@
   import { makeRamp, Popup } from "svelte-utils/map";
   import { deprived, population } from "../colors";
   import { layerId } from "../common";
-  import {
-    backend,
-    referenceRoadStyle,
-    type ReferenceRoadStyle,
-  } from "../stores";
+  import { backend, backgroundLayer, type BackgroundLayer } from "../stores";
 
   function fillColor(
-    referenceRoadStyle: ReferenceRoadStyle,
+    backgroundLayer: BackgroundLayer,
   ): DataDrivenPropertyValueSpecification<string> {
-    if (referenceRoadStyle == "population") {
+    if (backgroundLayer == "population") {
       return makeRamp(
         ["get", "density_quintile"],
         population.limits,
@@ -31,9 +27,9 @@
   }
 
   function makeFilter(
-    referenceRoadStyle: ReferenceRoadStyle,
+    backgroundLayer: BackgroundLayer,
   ): ExpressionSpecification {
-    if (referenceRoadStyle == "population") {
+    if (backgroundLayer == "population") {
       return ["<", ["get", "density_quintile"], 4];
     }
     return ["<=", ["get", "imd_percentile"], 20];
@@ -46,15 +42,14 @@
       <FillLayer
         {...layerId("population")}
         manageHoverState
-        filter={makeFilter($referenceRoadStyle)}
+        filter={makeFilter($backgroundLayer)}
         paint={{
-          "fill-color": fillColor($referenceRoadStyle),
+          "fill-color": fillColor($backgroundLayer),
           "fill-opacity": hoverStateFilter(0.7, 0.9),
         }}
         layout={{
           visibility:
-            $referenceRoadStyle == "population" ||
-            $referenceRoadStyle == "deprived"
+            $backgroundLayer == "population" || $backgroundLayer == "deprived"
               ? "visible"
               : "none",
         }}

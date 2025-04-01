@@ -8,10 +8,10 @@
     lineColorForDemand,
     lineWidthForDemand,
   } from "../../common";
-  import { backend, mutationCounter, referenceRoadStyle } from "../../stores";
+  import { backend, backgroundLayer, mutationCounter } from "../../stores";
   import type { EvaluateODOut } from "../../types";
 
-  $: show = $referenceRoadStyle == "calculated_rnet";
+  $: show = $backgroundLayer == "calculated_rnet";
   let fastSample = true;
   let colorBy: "demand" | "infra_type" | "los" = "los";
   let minDemand = 0;
@@ -38,7 +38,7 @@
 
 <Loading {loading} />
 
-{#if $referenceRoadStyle == "calculated_rnet"}
+{#if $backgroundLayer == "calculated_rnet"}
   <div>
     <button
       on:click={recalc}

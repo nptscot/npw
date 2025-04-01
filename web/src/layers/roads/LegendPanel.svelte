@@ -17,10 +17,10 @@
   } from "../../colors";
   import { HelpButton } from "../../common";
   import {
+    backgroundLayer,
     devMode,
     editModeBreakdown,
     mode,
-    referenceRoadStyle,
   } from "../../stores";
   import {
     cyclingDemandHigh,
@@ -53,7 +53,7 @@
 
   <ExistingNetwork />
 
-  {#if $referenceRoadStyle == "traffic"}
+  {#if $backgroundLayer == "traffic"}
     <SequentialLegend colorScale={traffic.colorScale} limits={traffic.limits} />
 
     {#if $devMode}
@@ -66,14 +66,14 @@
     {/if}
   {/if}
 
-  {#if $referenceRoadStyle == "gradient"}
+  {#if $backgroundLayer == "gradient"}
     <SequentialLegend
       colorScale={gradient.colorScale}
       limits={gradient.limits}
     />
   {/if}
 
-  {#if $referenceRoadStyle == "street_space"}
+  {#if $backgroundLayer == "street_space"}
     {#if $debugOriginalData}
       <QualitativeLegend colors={nptStreetSpaceColors} />
     {:else}
@@ -121,7 +121,7 @@
     {/if}
   {/if}
 
-  {#if $referenceRoadStyle == "speed"}
+  {#if $backgroundLayer == "speed"}
     <SequentialLegend colorScale={speed.colorScale} limits={speed.limits} />
 
     {#if $devMode}
@@ -136,7 +136,7 @@
 
   <NptFullNetwork />
 
-  {#if $referenceRoadStyle == "los"}
+  {#if $backgroundLayer == "los"}
     <QualitativeLegend colors={levelOfServiceColors} />
 
     {#if $devMode}
@@ -149,7 +149,7 @@
     {/if}
   {/if}
 
-  {#if $referenceRoadStyle == "reachability"}
+  {#if $backgroundLayer == "reachability"}
     <QualitativeLegend colors={reachabilityColors} />
   {/if}
 
@@ -174,7 +174,7 @@
     {/if}
   {/if}
 
-  {#if $referenceRoadStyle == "deprived"}
+  {#if $backgroundLayer == "deprived"}
     <SequentialLegend
       colorScale={deprived.colorScale}
       limits={deprived.limits}
@@ -185,7 +185,7 @@
     </p>
   {/if}
 
-  {#if $referenceRoadStyle == "population"}
+  {#if $backgroundLayer == "population"}
     <SequentialLegend
       colorScale={population.colorScale}
       limits={population.limits}

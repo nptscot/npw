@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { currentStage, referenceRoadStyle } from "../../stores";
-  import { lastReferenceStyle } from "../stores";
+  import { backgroundLayer, currentStage } from "../../stores";
+  import { lastBackgroundLayer } from "../stores";
   import Toggle from "./Toggle.svelte";
 
   function onKeyDown(e: KeyboardEvent) {
@@ -9,11 +9,11 @@
       if (tag != "INPUT") {
         e.preventDefault();
 
-        if ($referenceRoadStyle == "off") {
-          $referenceRoadStyle = $lastReferenceStyle;
+        if ($backgroundLayer == "off") {
+          $backgroundLayer = $lastBackgroundLayer;
         } else {
-          $lastReferenceStyle = $referenceRoadStyle;
-          $referenceRoadStyle = "off";
+          $lastBackgroundLayer = $backgroundLayer;
+          $backgroundLayer = "off";
         }
       }
     }

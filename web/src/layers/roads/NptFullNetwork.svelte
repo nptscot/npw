@@ -8,9 +8,9 @@
     lineColorForDemand,
     lineWidthForDemand,
   } from "../../common";
-  import { assetUrl, referenceRoadStyle } from "../../stores";
+  import { assetUrl, backgroundLayer } from "../../stores";
 
-  $: show = $referenceRoadStyle == "precalculated_rnet";
+  $: show = $backgroundLayer == "precalculated_rnet";
   let purpose = "all";
   let scenario = "bicycle_go_dutch";
   let networkType = "fastest";
@@ -66,7 +66,7 @@
   }[colorBy] as ExpressionSpecification;
 </script>
 
-{#if $referenceRoadStyle == "precalculated_rnet"}
+{#if $backgroundLayer == "precalculated_rnet"}
   <div>
     <label>
       Trip purpose:
