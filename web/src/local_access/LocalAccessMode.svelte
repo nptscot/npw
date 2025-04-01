@@ -40,28 +40,47 @@
 <SplitComponent>
   <div slot="controls">
     <div class="main-controls">
-      <header
-        class="ds_page-header"
-        style="display: flex; justify-content: space-between;"
-      >
-        <h2 class="ds_page-header__title">Design local access network</h2>
+      {#if !$currentPOI}
+        <header
+          class="ds_page-header"
+          style="display: flex; justify-content: space-between;"
+        >
+          <h2 class="ds_page-header__title">Design local access network</h2>
 
-        <HelpButton>
-          <p>
-            To draw the local access route, connect schools, GPs, hospitals,
-            green spaces, and neighbourhoods (especially deprived and densely
-            populated ones).
-          </p>
+          <HelpButton>
+            <p>
+              To draw the local access route, connect schools, GPs, hospitals,
+              green spaces, and neighbourhoods (especially deprived and densely
+              populated ones).
+            </p>
 
-          <label>
-            <input type="checkbox" bind:checked={$devMode} />
-            Dev mode
-          </label>
-        </HelpButton>
-      </header>
+            <label>
+              <input type="checkbox" bind:checked={$devMode} />
+              Dev mode
+            </label>
+          </HelpButton>
+        </header>
 
-      {#if $currentPOI}
-        <h4>Connect POIs</h4>
+        <p>
+          Your network needs to provide connectivity to key points of interest,
+          such as schools, hospitals and green spaces.
+        </p>
+
+        <p>
+          These places are shown on the map. POIs with severed connectivity are
+          shown in red and need to be fixed.
+        </p>
+
+        <p>TODO filter</p>
+
+        <p>TODO main button</p>
+      {:else}
+        <header class="ds_page-header">
+          <span class="ds_page-header__label ds_content-label">
+            Local Access
+          </span>
+          <h2 class="ds_page-header__title">Fix connectivity for a POI</h2>
+        </header>
 
         {#if $currentPOI.reachable}
           <p>
@@ -70,13 +89,13 @@
           </p>
         {:else}
           <p>
-            {$currentPOI.description} is not connected to the network. Enable the
-            Reachability layer to see the red severances surrounding it.
+            {$currentPOI.description} is not connected to the network.
           </p>
+          <p>A suggested local access route is shown dashed.</p>
 
           <div>
             <button class="ds_button" on:click={fixUnreachable}>
-              Add the dashed local access route to connect to the network (a)
+              Add the dashed line to fix (a)
             </button>
           </div>
 
@@ -86,7 +105,7 @@
               class="ds_link"
               on:click={() => ($mode = { kind: "edit-route", id: null })}
             >
-              Manually draw route instead
+              Or draw a new route line manually
             </button>
           </div>
         {/if}
