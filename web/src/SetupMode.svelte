@@ -54,20 +54,6 @@
     }
   }
 
-  // TODO Where should this go?
-  async function clearFile() {
-    if (
-      !window.confirm(
-        `Really clear all routes and reset ${$currentFilename} to a blank file? You can't undo this`,
-      )
-    ) {
-      return;
-    }
-    await $backend!.clearAllRoutes();
-    await autosave();
-    $mode = { kind: "overview" };
-  }
-
   function deleteFile(name: string) {
     if (!window.confirm(`Really delete ${name}? You can't undo this`)) {
       return;
