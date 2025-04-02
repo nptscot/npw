@@ -1,7 +1,7 @@
 <script lang="ts">
   import { tierColors } from "./colors";
   import { SplitComponent } from "./common/layout";
-  import { changeStage, currentStage, mode } from "./stores";
+  import { changeStage, currentFilename, currentStage, mode } from "./stores";
 
   let tiers = {
     Primary: "Design primary routes",
@@ -25,7 +25,7 @@
           on:click={() => ($mode = { kind: "setup", subpage: "project-list" })}
         >
           <i class="fa-solid fa-chevron-left"></i>
-          Close project
+          Close project ({$currentFilename})
         </button>
       </div>
 

@@ -121,10 +121,13 @@
         try {
           await backendWorker.loadSavefile(item);
           $currentFilename = openFile;
+          $mode = { kind: "overview" };
         } catch (err) {
-          window.alert(`Couldn't restore saved state: ${err}`);
-          window.location.href = "./";
+          window.alert(`Couldn't restore saved file ${openFile}: ${err}`);
+          // Continue with the initial setup mode
         }
+      } else {
+        window.alert(`No saved file called ${openFile}`);
       }
     }
 

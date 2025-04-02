@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { downloadGeneratedFile } from "svelte-utils";
+  import { onMount } from "svelte";
   import { Link, stripPrefix } from "./common";
   import { getKey, listFilesInBoundary, setLocalStorage } from "./common/files";
   import { SplitComponent } from "./common/layout";
@@ -16,21 +16,19 @@
 
   let fileList = listFilesInBoundary($boundaryName);
 
+  // When entering this mode, clear out any state
+  onMount(async () => {
+    $currentFilename = "";
+    await $backend!.clearAllRoutes();
+    $mutationCounter += 1;
+
+    let url = new URL(window.location.href);
+    url.searchParams.delete("file");
+    window.history.replaceState(null, "", url.toString());
+  });
+
   function prettyprintBoundary() {
     return stripPrefix($boundaryName, "LAD_");
-  }
-
-  async function rename() {
-    let oldName = $currentFilename;
-    let newName = window.prompt(`Rename file ${oldName} to what?`, oldName);
-    // TODO Confirm overwriting
-    if (newName) {
-      let value = await $backend!.toSavefile();
-      setLocalStorage(getKey($boundaryName, newName), value);
-      window.localStorage.removeItem(getKey($boundaryName, oldName));
-      setCurrentFile(newName);
-      fileList = listFilesInBoundary($boundaryName);
-    }
   }
 
   async function newFile() {
@@ -39,30 +37,9 @@
     if (!name) {
       return;
     }
-    await $backend!.clearAllRoutes();
-    $currentFilename = name;
-    $mutationCounter += 1;
-    $mode = { kind: "overview" };
-  }
-
-  async function makeCopy() {
-    let oldName = $currentFilename;
-    let newName = window.prompt(
-      `Make a copy of file ${oldName} as what name?`,
-      `${oldName} v2`,
-    );
-    // TODO Confirm overwriting
-    if (newName) {
-      let value = await $backend!.toSavefile();
-      setLocalStorage(getKey($boundaryName, newName), value);
-      setCurrentFile(newName);
-      fileList = listFilesInBoundary($boundaryName);
-    }
-  }
-
-  async function exportFile() {
-    let file = `npw_${$boundaryName}_${$currentFilename}.geojson`;
-    downloadGeneratedFile(file, await $backend!.toSavefile());
+    setCurrentFile(name);
+    // Immediately save the blank file
+    await autosave();
   }
 
   async function openFile(filename: string) {
@@ -71,14 +48,13 @@
       try {
         await $backend!.loadSavefile(value);
         setCurrentFile(filename);
-        $mutationCounter += 1;
-        $mode = { kind: "overview" };
       } catch (err) {
         window.alert(`Couldn't restore saved state: ${err}`);
       }
     }
   }
 
+  // TODO Where should this go?
   async function clearFile() {
     if (
       !window.confirm(
@@ -124,10 +100,7 @@
       // TODO Confirm overwriting
       if (newName) {
         setLocalStorage(getKey($boundaryName, newName), value);
-        fileList = listFilesInBoundary($boundaryName);
         setCurrentFile(newName);
-        $mutationCounter += 1;
-        $mode = { kind: "overview" };
         return;
       }
     }
@@ -145,9 +118,11 @@
     return filename;
   }
 
-  // Updates the URL
+  // Updates the URL and enters the main state
   function setCurrentFile(name: string) {
     $currentFilename = name;
+    $mutationCounter += 1;
+    $mode = { kind: "overview" };
 
     let url = new URL(window.location.href);
     url.searchParams.set("file", name);
@@ -205,57 +180,15 @@
 
       <p>Start a new project for this area or choose a previous project.</p>
 
-      <button
-        class="ds_button"
-        disabled={!$currentFilename}
-        on:click={() => ($mode = { kind: "overview" })}
-      >
-        Start
-      </button>
+      <button class="ds_button" on:click={newFile}>New blank project</button>
 
-      <p>
-        You're currently editing: <u>{$currentFilename}</u>
-      </p>
-      <div class="ds_button-group">
-        <button class="ds_button ds_button--secondary" on:click={rename}>
-          Rename
-        </button>
-        <button class="ds_button ds_button--secondary" on:click={makeCopy}>
-          Make copy
-        </button>
-        <button class="ds_button ds_button--secondary" on:click={exportFile}>
-          Export
-        </button>
-        <button class="ds_button ds_button--secondary" on:click={clearFile}>
-          Clear all routes
-        </button>
-        <button
-          class="ds_button ds_button--secondary"
-          on:click={deleteFile}
-          disabled={fileList.length < 2}
-        >
-          Delete
-        </button>
-      </div>
-
-      <hr />
-
-      <button class="ds_button ds_button--secondary" on:click={newFile}>
-        New file
-      </button>
-
-      <p>Load a different file in {$boundaryName}:</p>
       <ul>
         {#each fileList as [filename, description]}
-          {#if filename == $currentFilename}
-            <li>{filename} (currently open)</li>
-          {:else}
-            <li>
-              <Link on:click={() => openFile(filename)}>
-                {filename} ({description})
-              </Link>
-            </li>
-          {/if}
+          <li>
+            <Link on:click={() => openFile(filename)}>
+              {filename} ({description})
+            </Link>
+          </li>
         {/each}
       </ul>
 

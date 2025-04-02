@@ -25,9 +25,12 @@ export type Mode =
   | { kind: "export" };
 
 export let boundaryName = writable("");
-// This may be updated by App upfront
-export let currentFilename = writable("untitled");
-export let mode: Writable<Mode> = writable({ kind: "setup", subpage: "explore" });
+// When this is blank, changes aren't saved.
+export let currentFilename = writable("");
+export let mode: Writable<Mode> = writable({
+  kind: "setup",
+  subpage: "explore",
+});
 export let currentStage: Writable<Tier | "assessment"> = writable("Primary");
 export let map: Writable<Map | null> = writable(null);
 export let zoom: Writable<number | undefined> = writable(undefined);
@@ -92,21 +95,26 @@ export async function autosave() {
     return x + 1;
   });
 
+  let filename = get(currentFilename);
+  if (!filename) {
+    console.error(`Autosave called without currentFilename set`);
+    return;
+  }
+
   let backendValue = get(backend);
   let boundary = get(boundaryName);
   if (!backendValue || !boundary) {
     return;
   }
-  let filename = get(currentFilename);
   let state = await backendValue.toSavefile();
   setLocalStorage(getKey(boundary, filename), state);
 
   // TODO Temporary debugging
-  let total = 0;
+  /*let total = 0;
   for (let route of Object.values(JSON.parse(state).routes)) {
     total += (route as any).feature.properties.waypoints.length;
   }
-  console.log(`Autosaving. ${total} waypoints in all routes`);
+  console.log(`Autosaving. ${total} waypoints in all routes`);*/
 }
 
 export function assetUrl(path: string): string {
