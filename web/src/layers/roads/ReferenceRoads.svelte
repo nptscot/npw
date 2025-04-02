@@ -16,7 +16,7 @@
     streetSpaceColors,
     traffic,
   } from "../../colors";
-  import { layerId, Link, roadLineWidth } from "../../common";
+  import { layerId, roadLineWidth } from "../../common";
   import {
     backgroundLayer,
     mode,
@@ -220,19 +220,6 @@
     <hr />
 
     {#if dynamicData[props.id].current_route_id != null}
-      {#if $mode.kind == "main"}
-        <Link
-          on:click={() => {
-            $mode = {
-              kind: "edit-route",
-              id: dynamicData[props.id].current_route_id,
-            };
-          }}
-        >
-          Edit route
-        </Link>
-      {/if}
-
       <p>
         Part of {dynamicData[props.id].current_route_name}: {infraTypeMapping[
           notNull(dynamicData[props.id].current_infra)

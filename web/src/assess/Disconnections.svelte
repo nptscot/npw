@@ -1,6 +1,6 @@
 <script lang="ts">
   import { componentColors } from "../colors";
-  import { Link, prettyPrintDistance } from "../common";
+  import { prettyPrintDistance } from "../common";
   import { connectedComponents, map } from "../stores";
   import { changePage } from "./index";
 </script>
@@ -27,13 +27,16 @@
 <p>Click a piece to see it:</p>
 <ul>
   {#each $connectedComponents.component_lengths.slice(0, 5) as length, idx}
-    <li style:color={componentColors[idx]}>
-      <Link
-        on:click={() =>
+    <li>
+      <!-- svelte-ignore a11y-invalid-attribute -->
+      <a
+        style:color={componentColors[idx]}
+        href="#"
+        on:click|preventDefault={() =>
           $map?.fitBounds($connectedComponents.component_bboxes[idx])}
       >
         {prettyPrintDistance(length)}
-      </Link>
+      </a>
     </li>
   {/each}
   {#if $connectedComponents.component_lengths.length > 5}
