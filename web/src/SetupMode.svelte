@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { Link, stripPrefix } from "./common";
+  import { stripPrefix } from "./common";
   import { getKey, listFilesInBoundary, setLocalStorage } from "./common/files";
   import { SplitComponent } from "./common/layout";
   import {
@@ -68,15 +68,12 @@
     $mode = { kind: "overview" };
   }
 
-  async function deleteFile() {
-    if (
-      !window.confirm(`Really delete ${$currentFilename}? You can't undo this`)
-    ) {
+  function deleteFile(name: string) {
+    if (!window.confirm(`Really delete ${name}? You can't undo this`)) {
       return;
     }
-    window.localStorage.removeItem(getKey($boundaryName, $currentFilename));
+    window.localStorage.removeItem(getKey($boundaryName, name));
     fileList = listFilesInBoundary($boundaryName);
-    await openFile(fileList[0][0]);
   }
 
   let fileInput: HTMLInputElement;
@@ -178,19 +175,30 @@
         </button>
       </div>
 
-      <p>Start a new project for this area or choose a previous project.</p>
+      <h4>Start a new project for this area.</h4>
 
       <button class="ds_button" on:click={newFile}>New blank project</button>
 
-      <ul>
+      {#if fileList.length > 0}
+        <h4>Choose an existing project.</h4>
+
         {#each fileList as [filename, description]}
-          <li>
-            <Link on:click={() => openFile(filename)}>
+          <div style="display: flex; justify-content: space-between;">
+            <button class="ds_button" on:click={() => openFile(filename)}>
               {filename} ({description})
-            </Link>
-          </li>
+            </button>
+
+            <button
+              class="ds_button ds_button--secondary"
+              on:click={() => deleteFile(filename)}
+            >
+              Delete
+            </button>
+          </div>
         {/each}
-      </ul>
+      {/if}
+
+      <h4>Load from a file.</h4>
 
       <label>
         Load from an exported file
