@@ -3,16 +3,17 @@
   import { stripPrefix } from "./common";
   import { getKey, listFilesInBoundary, setLocalStorage } from "./common/files";
   import { SplitComponent } from "./common/layout";
+  import NewProject from "./NewProject.svelte";
   import {
-    autosave,
     backend,
     boundaryName,
     currentFilename,
     mode,
     mutationCounter,
+    setCurrentFile,
   } from "./stores";
 
-  export let subpage: "explore" | "project-list";
+  export let subpage: "explore" | "project-list" | "new-project";
 
   let fileList = listFilesInBoundary($boundaryName);
 
@@ -29,17 +30,6 @@
 
   function prettyprintBoundary() {
     return stripPrefix($boundaryName, "LAD_");
-  }
-
-  async function newFile() {
-    let name = window.prompt(`What do you want to name the new file?`);
-    // TODO Confirm overwriting
-    if (!name) {
-      return;
-    }
-    setCurrentFile(name);
-    // Immediately save the blank file
-    await autosave();
   }
 
   async function openFile(filename: string) {
@@ -100,17 +90,6 @@
     }
     return filename;
   }
-
-  // Updates the URL and enters the main state
-  function setCurrentFile(name: string) {
-    $currentFilename = name;
-    $mutationCounter += 1;
-    $mode = { kind: "overview" };
-
-    let url = new URL(window.location.href);
-    url.searchParams.set("file", name);
-    window.history.replaceState(null, "", url.toString());
-  }
 </script>
 
 <SplitComponent>
@@ -163,7 +142,9 @@
 
       <h4>Start a new project for this area.</h4>
 
-      <button class="ds_button" on:click={newFile}>New blank project</button>
+      <button class="ds_button" on:click={() => (subpage = "new-project")}>
+        New blank project
+      </button>
 
       {#if fileList.length > 0}
         <h4>Choose an existing project.</h4>
@@ -190,6 +171,8 @@
         Load from an exported file
         <input bind:this={fileInput} on:change={importFile} type="file" />
       </label>
+    {:else if subpage == "new-project"}
+      <NewProject bind:subpage />
     {/if}
   </div>
 </SplitComponent>

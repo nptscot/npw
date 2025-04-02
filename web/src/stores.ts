@@ -117,6 +117,19 @@ export async function autosave() {
   console.log(`Autosaving. ${total} waypoints in all routes`);*/
 }
 
+// Updates the URL and enters the main state
+export function setCurrentFile(name: string) {
+  currentFilename.set(name);
+  mutationCounter.update((x) => {
+    return x + 1;
+  });
+  mode.set({ kind: "overview" });
+
+  let url = new URL(window.location.href);
+  url.searchParams.set("file", name);
+  window.history.replaceState(null, "", url.toString());
+}
+
 export function assetUrl(path: string): string {
   let dir =
     import.meta.env.BASE_URL == "/npw/demo" ? "demo_npw" : "tmp_npt_editor";
