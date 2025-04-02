@@ -108,7 +108,7 @@
       visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
-      "icon-image": iconImage("schools", filterKind),
+      "icon-image": "school",
     }}
     hoverCursor="pointer"
     on:click={setCurrentPOI}
@@ -123,7 +123,7 @@
       visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
-      "icon-image": iconImage("gp_hospitals", filterKind),
+      "icon-image": "hospital",
     }}
     hoverCursor="pointer"
     on:click={setCurrentPOI}

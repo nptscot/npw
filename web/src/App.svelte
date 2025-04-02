@@ -15,12 +15,8 @@
   } from "svelte-maplibre";
   import { fetchWithProgress, Loading } from "svelte-utils";
   import { Geocoder } from "svelte-utils/map";
-  import hospital3Icon from "../assets/hospital_ignore.png";
-  import hospital1Icon from "../assets/hospital_reachable.png";
-  import hospital2Icon from "../assets/hospital_unreachable.png";
-  import school3Icon from "../assets/school_ignore.png";
-  import school1Icon from "../assets/school_reachable.png";
-  import school2Icon from "../assets/school_unreachable.png";
+  import hospitalIcon from "../assets/hospital_sdf.png";
+  import schoolIcon from "../assets/school_sdf.png";
   import AssessMode from "./assess/AssessMode.svelte";
   import BulkEditMode from "./BulkEditMode.svelte";
   import { layerId } from "./common";
@@ -237,12 +233,8 @@
           console.log(e.detail.error);
         }}
         images={[
-          { id: "schools_reachable", url: school1Icon },
-          { id: "schools_unreachable", url: school2Icon },
-          { id: "schools_ignore", url: school3Icon },
-          { id: "gp_hospitals_reachable", url: hospital1Icon },
-          { id: "gp_hospitals_unreachable", url: hospital2Icon },
-          { id: "gp_hospitals_ignore", url: hospital3Icon },
+          { id: "gp_hospitals", url: hospitalIcon, options: { sdf: true } },
+          { id: "schools", url: schoolIcon, options: { sdf: true } },
         ]}
         hash
       >
