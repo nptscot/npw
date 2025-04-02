@@ -16,7 +16,7 @@ import type { Backend } from "./worker";
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 
 export type Mode =
-  | { kind: "setup"; subpage: "explore" | "project-list" }
+  | { kind: "setup"; subpage: "explore" | "project-list" | "new-project" }
   | { kind: "overview" }
   | { kind: "main" }
   | { kind: "edit-route"; id: number | null }

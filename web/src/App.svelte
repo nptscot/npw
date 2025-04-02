@@ -303,12 +303,12 @@
           <ReferenceLayers />
           <RightLayers />
           <LegendPanel />
-          {#if $mode.kind != "setup"}
+          {#if $mode.kind != "setup" || $mode.subpage == "new-project"}
             <BottomPanel />
           {/if}
 
           {#if $mode.kind == "setup"}
-            <SetupMode subpage={$mode.subpage} />
+            <SetupMode bind:subpage={$mode.subpage} />
           {:else if $mode.kind == "overview"}
             <OverviewMode />
           {:else if $mode.kind == "main"}
