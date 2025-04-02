@@ -80,6 +80,17 @@
 
       <div>
         <button
+          type="button"
+          class="ds_link"
+          on:click={() => ($mode = { kind: "overview" })}
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+          Back to project overview
+        </button>
+      </div>
+
+      <div>
+        <button
           class="ds_button"
           on:click={() => ($mode = { kind: "edit-route", id: null })}
         >

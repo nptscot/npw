@@ -178,6 +178,17 @@
           </HelpButton>
         </header>
 
+        <div>
+          <button
+            type="button"
+            class="ds_link"
+            on:click={() => ($mode = { kind: "overview" })}
+          >
+            <i class="fa-solid fa-chevron-left"></i>
+            Back to project overview
+          </button>
+        </div>
+
         <p>
           Your network needs to provide connectivity to key points of interest,
           such as schools, hospitals and green spaces.
