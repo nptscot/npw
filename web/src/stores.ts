@@ -167,3 +167,14 @@ export function changeStage(rawNewStage: string) {
     show.set(true);
   }
 }
+
+export async function call(cb) {
+  loadingSpinners.update((x) => {
+          return x + 1;
+  });
+  let result = await cb(get(backend));
+  loadingSpinners.update((x) => {
+          return x - 1;
+  });
+  return result;
+}

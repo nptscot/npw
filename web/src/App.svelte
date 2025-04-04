@@ -87,7 +87,7 @@
     let MyWorker: Comlink.Remote<WorkerConstructor> = Comlink.wrap(
       new workerWrapper(),
     );
-    let backendWorker = asyncWrapper(await new MyWorker());
+    let backendWorker = await new MyWorker();
 
     // Detect if we're running locally first
     let bytes: Uint8Array<ArrayBufferLike> = new Uint8Array();
@@ -146,35 +146,6 @@
     backend.set(backendWorker);
     await zoomToFit();
   });
-
-  function asyncWrapper(obj) {
-    let handler = {
-      get(target, prop, receiver) {
-        let orig = target[prop];
-        if (
-          typeof orig == "function" &&
-          typeof prop == "string" &&
-          prop != "checkReady" &&
-          prop != "inner"
-        ) {
-          console.log(`wrapping: ${prop}`);
-          console.log(
-            `is it async? ${orig.constructor.name === "AsyncFunction"}`,
-          );
-
-          return async function (...args) {
-            console.log(`Starting ${prop}...`);
-            let result = await orig.apply(this, args);
-            console.log(`Done with ${prop}`);
-            console.log({ done: result });
-            return result;
-          };
-        }
-        return orig;
-      },
-    };
-    return new Proxy(obj, handler);
-  }
 
   function lerp(pct: number, a: number, b: number): number {
     return a + pct * (b - a);

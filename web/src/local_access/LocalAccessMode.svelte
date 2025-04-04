@@ -7,6 +7,7 @@
   import {
     autosave,
     backend,
+    call,
     currentStage,
     devMode,
     map,
@@ -35,7 +36,7 @@
 
     let list: [POI, number, number][] = [];
 
-    for (let f of (await $backend.getPOIs()).features) {
+    for (let f of (await call((b) => b.getPOIs())).features) {
       list.push([
         {
           kind: f.properties.poi_kind,
@@ -49,7 +50,7 @@
       ]);
     }
 
-    for (let f of (await $backend.getGreenspaces()).features) {
+    for (let f of (await call((b) => b.getGreenspaces())).features) {
       if (f.properties.kind == "access point") {
         continue;
       }
@@ -114,11 +115,11 @@
 
   async function fixUnreachable() {
     if ($currentPOI) {
-      let input = await $backend!.fixUnreachablePOI(
+      let input = await call((b) => b.fixUnreachablePOI(
         $currentPOI.kind,
         $currentPOI.idx,
-      );
-      await $backend!.setRoute(null, input);
+      ));
+      await call((b) => b.setRoute(null, input));
       await autosave();
 
       // TODO This assumes the fix succeeded. Can we easily check?
