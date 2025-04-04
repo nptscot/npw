@@ -35,7 +35,7 @@
     useExistingSomeTypes: boolean,
     useExistingHighLoS: boolean,
   ) {
-    loading = "Importing network";
+    loading = "Loading network for preview";
     await $backend!.clearAllRoutes();
 
     if (useCN) {

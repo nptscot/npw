@@ -217,9 +217,7 @@
 
 <Layout>
   <header slot="top">
-    {#if $mode.kind != "setup"}
-      <TopBar />
-    {/if}
+    <TopBar />
   </header>
   <main slot="controls">
     <div bind:this={controlsDiv} />

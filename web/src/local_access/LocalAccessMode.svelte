@@ -228,7 +228,7 @@
             class="ds_page-header__label ds_content-label"
             style:color={tierColors.LocalAccess}
           >
-            Local Access
+            Local access
           </span>
           <h2 class="ds_page-header__title">Fix connectivity for a POI</h2>
         </header>

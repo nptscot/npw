@@ -27,52 +27,56 @@
           </a>
         </li>
 
-        <li class="ds_site-navigation__item">
-          <!-- svelte-ignore a11y-invalid-attribute -->
-          <a
-            class="ds_site-navigation__link"
-            class:ds_current={$mode.kind == "overview"}
-            href="#"
-            on:click|preventDefault={gotoOverview}
-          >
-            Overview <i class="fa-solid fa-chevron-right"></i>
-          </a>
-        </li>
-
-        {#each Object.entries(stages) as [stage, label]}
+        {#if $mode.kind != "setup"}
           <li class="ds_site-navigation__item">
             <!-- svelte-ignore a11y-invalid-attribute -->
             <a
-              class="ds_site-navigation__link {stage}"
-              class:ds_current={$mode.kind != "overview" &&
-                $mode.kind != "evaluate-journey" &&
-                $mode.kind != "export" &&
-                $currentStage == stage}
+              class="ds_site-navigation__link"
+              class:ds_current={$mode.kind == "overview"}
               href="#"
-              on:click|preventDefault={() => changeStage(stage)}
+              on:click|preventDefault={gotoOverview}
             >
-              {label}
-              <i class="fa-solid fa-chevron-right"></i>
+              Overview <i class="fa-solid fa-chevron-right"></i>
             </a>
           </li>
-        {/each}
 
-        <li class="ds_site-navigation__item">
-          <!-- svelte-ignore a11y-invalid-attribute -->
-          <a
-            class="ds_site-navigation__link"
-            class:ds_current={$mode.kind == "export"}
-            href="#"
-            on:click|preventDefault={gotoExport}
-          >
-            Export
-          </a>
-        </li>
+          {#each Object.entries(stages) as [stage, label]}
+            <li class="ds_site-navigation__item">
+              <!-- svelte-ignore a11y-invalid-attribute -->
+              <a
+                class="ds_site-navigation__link {stage}"
+                class:ds_current={$mode.kind != "overview" &&
+                  $mode.kind != "evaluate-journey" &&
+                  $mode.kind != "export" &&
+                  $currentStage == stage}
+                href="#"
+                on:click|preventDefault={() => changeStage(stage)}
+              >
+                {label}
+                <i class="fa-solid fa-chevron-right"></i>
+              </a>
+            </li>
+          {/each}
+
+          <li class="ds_site-navigation__item">
+            <!-- svelte-ignore a11y-invalid-attribute -->
+            <a
+              class="ds_site-navigation__link"
+              class:ds_current={$mode.kind == "export"}
+              href="#"
+              on:click|preventDefault={gotoExport}
+            >
+              Export
+            </a>
+          </li>
+        {/if}
       </ul>
     </nav>
   </div>
 
-  <TopBarStats />
+  {#if $mode.kind != "setup"}
+    <TopBarStats />
+  {/if}
 </header>
 
 <style>

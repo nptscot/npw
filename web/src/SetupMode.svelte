@@ -140,14 +140,14 @@
         </button>
       </div>
 
-      <h4>Start a new project for this area.</h4>
+      <h4>Start a new project for this area</h4>
 
       <button class="ds_button" on:click={() => (subpage = "new-project")}>
         New blank project
       </button>
 
       {#if fileList.length > 0}
-        <h4>Choose an existing project.</h4>
+        <h4>Or choose an existing project</h4>
 
         {#each fileList as [filename, description]}
           <div style="display: flex; justify-content: space-between;">
@@ -165,9 +165,9 @@
         {/each}
       {/if}
 
-      <h4>Load from a file.</h4>
+      <h4>Load from a file</h4>
 
-      <label>
+      <label style:display="block">
         Load from an exported file
         <input bind:this={fileInput} on:change={importFile} type="file" />
       </label>
