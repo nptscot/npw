@@ -1,7 +1,7 @@
 <script lang="ts">
   import { LineLayer, VectorTileSource } from "svelte-maplibre";
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
-  import { nptStreetSpaceColors, speed } from "../../colors";
+  import { nptStreetSpaceColors, speed, tierColors } from "../../colors";
   import { layerId, roadLineWidth } from "../../common";
   import { assetUrl, backgroundLayer } from "../../stores";
   import { debugOriginalData } from "../stores";
@@ -111,8 +111,8 @@
       "line-color": constructMatchExpression(
         ["get", "road_function_npt"],
         {
-          Primary: "#c00000",
-          Secondary: "#e97132",
+          Primary: tierColors.Primary,
+          Secondary: tierColors.Secondary,
         },
         "cyan",
       ),
