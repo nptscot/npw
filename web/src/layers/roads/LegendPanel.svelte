@@ -45,9 +45,18 @@
     "#0000FF",
     "#FF00C5",
   ];
+
+  $: anyEnabled =
+    !["off", "attractive", "disconnections", "deliverability"].includes(
+      $backgroundLayer,
+    ) ||
+    $cyclingDemandHigh ||
+    $cyclingDemandMedium ||
+    $mode.kind == "edit-route" ||
+    $gridMeshDensity;
 </script>
 
-<div class="panel">
+<div class="panel" class:hidden={!anyEnabled}>
   {#if $backgroundLayer == "cn"}
     <QualitativeLegend colors={cnTierColors} />
 
@@ -59,9 +68,7 @@
         Show original data
       </label>
     {/if}
-  {/if}
-
-  {#if $backgroundLayer == "existing_infra"}
+  {:else if $backgroundLayer == "existing_infra"}
     <QualitativeLegend colors={infraTypeColors} />
 
     {#if $devMode}
@@ -72,9 +79,7 @@
         Show osmactive data
       </label>
     {/if}
-  {/if}
-
-  {#if $backgroundLayer == "traffic"}
+  {:else if $backgroundLayer == "traffic"}
     <SequentialLegend colorScale={traffic.colorScale} limits={traffic.limits} />
 
     {#if $devMode}
@@ -85,16 +90,12 @@
         Show original data
       </label>
     {/if}
-  {/if}
-
-  {#if $backgroundLayer == "gradient"}
+  {:else if $backgroundLayer == "gradient"}
     <SequentialLegend
       colorScale={gradient.colorScale}
       limits={gradient.limits}
     />
-  {/if}
-
-  {#if $backgroundLayer == "street_space"}
+  {:else if $backgroundLayer == "street_space"}
     {#if $debugOriginalData}
       <QualitativeLegend colors={nptStreetSpaceColors} />
     {:else}
@@ -140,9 +141,7 @@
         Show original data
       </label>
     {/if}
-  {/if}
-
-  {#if $backgroundLayer == "speed"}
+  {:else if $backgroundLayer == "speed"}
     <SequentialLegend colorScale={speed.colorScale} limits={speed.limits} />
 
     {#if $devMode}
@@ -153,12 +152,7 @@
         Show original data
       </label>
     {/if}
-  {/if}
-
-  <NptFullNetwork />
-  <CalculatedRouteNetwork />
-
-  {#if $backgroundLayer == "los"}
+  {:else if $backgroundLayer == "los"}
     <QualitativeLegend colors={levelOfServiceColors} />
 
     {#if $devMode}
@@ -169,11 +163,29 @@
         Show original data
       </label>
     {/if}
+  {:else if $backgroundLayer == "reachability"}
+    <QualitativeLegend colors={reachabilityColors} />
+  {:else if $backgroundLayer == "deprived"}
+    <SequentialLegend
+      colorScale={deprived.colorScale}
+      limits={deprived.limits}
+    />
+    <p>
+      Darker colours are more deprived. Only the top 20%ile most deprived zones
+      are shown.
+    </p>
+  {:else if $backgroundLayer == "population"}
+    <SequentialLegend
+      colorScale={population.colorScale}
+      limits={population.limits}
+    />
+    <p>
+      Darker colours are denser. Only the top 3 densest quintiles are shown.
+    </p>
   {/if}
 
-  {#if $backgroundLayer == "reachability"}
-    <QualitativeLegend colors={reachabilityColors} />
-  {/if}
+  <NptFullNetwork />
+  <CalculatedRouteNetwork />
 
   <!-- TODO: There could be a legend for reference layers, per-tier layers, and
   edit mode all at the same time... -->
@@ -194,27 +206,6 @@
     {/if}
   {/if}
 
-  {#if $backgroundLayer == "deprived"}
-    <SequentialLegend
-      colorScale={deprived.colorScale}
-      limits={deprived.limits}
-    />
-    <p>
-      Darker colours are more deprived. Only the top 20%ile most deprived zones
-      are shown.
-    </p>
-  {/if}
-
-  {#if $backgroundLayer == "population"}
-    <SequentialLegend
-      colorScale={population.colorScale}
-      limits={population.limits}
-    />
-    <p>
-      Darker colours are denser. Only the top 3 densest quintiles are shown.
-    </p>
-  {/if}
-
   {#if $gridMeshDensity}
     <SequentialLegend
       colorScale={meshDensity.colorScale}
@@ -232,5 +223,9 @@
 
     background: white;
     padding: 8px;
+  }
+
+  .hidden {
+    display: none;
   }
 </style>

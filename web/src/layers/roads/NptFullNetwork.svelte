@@ -66,7 +66,7 @@
   }[colorBy] as ExpressionSpecification;
 </script>
 
-{#if $backgroundLayer == "precalculated_rnet"}
+{#if show}
   <div>
     <label>
       Trip purpose:

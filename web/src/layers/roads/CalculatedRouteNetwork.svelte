@@ -38,7 +38,7 @@
 
 <Loading {loading} />
 
-{#if $backgroundLayer == "calculated_rnet"}
+{#if show}
   <div>
     <button
       on:click={recalc}
