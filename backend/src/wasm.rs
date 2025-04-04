@@ -212,7 +212,7 @@ impl MapModel {
     pub fn evaluate_route_wasm(&mut self, input: JsValue) -> Result<String, JsValue> {
         if !self.quiet_router_ok {
             let mut timer = Timer::new("recalculate bicycle_quiet", None);
-            self.recalculate_router(&mut timer);
+            self.recalculate_quiet_router(&mut timer);
             self.quiet_router_ok = true;
         }
 

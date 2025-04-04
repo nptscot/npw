@@ -2,9 +2,10 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use enum_map::EnumMap;
-use geo::{BoundingRect, Contains, Coord, Intersects, MultiPolygon};
+use geo::{BoundingRect, Contains, Coord, Distance, Euclidean, Intersects, MultiPolygon};
 use geojson::{FeatureCollection, Value};
 use graph::{PathStep, RoadID};
+use itertools::Itertools;
 use nanorand::{Rng, WyRand};
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
@@ -121,11 +122,11 @@ impl MapModel {
             };
 
             for _ in 0..iterations {
-                let pt1 = self.od_zones[zone1].random_point(&mut rng);
-                let pt2 = self.od_zones[zone2].random_point(&mut rng);
+                let input_pt1 = self.od_zones[zone1].random_point(&mut rng);
+                let input_pt2 = self.od_zones[zone2].random_point(&mut rng);
 
-                let start = self.graph.snap_to_road(pt1, direct_profile);
-                let end = self.graph.snap_to_road(pt2, direct_profile);
+                let start = self.graph.snap_to_road(input_pt1, direct_profile);
+                let end = self.graph.snap_to_road(input_pt2, direct_profile);
                 let Ok(route) = self.graph.routers[direct_profile.0].route(&self.graph, start, end)
                 else {
                     failed += 1;
@@ -133,32 +134,52 @@ impl MapModel {
                 };
                 succeeded += 1;
 
-                let quiet_length = {
-                    // Compare with the quiet bike route
-                    let quiet_profile = self.graph.profile_names["bicycle_quiet"];
-                    if let Ok(quiet_route) =
-                        self.graph.routers[quiet_profile.0].route(&self.graph, start, end)
-                    {
-                        let mut quiet_length = 0.0;
-                        for step in &quiet_route.steps {
-                            if let PathStep::Road { road, .. } = step {
-                                quiet_length += self.graph.roads[road.0].length_meters;
-                            }
-                        }
-                        quiet_length
-                    } else {
-                        // Skip this one
-                        0.0
-                    }
-                };
-
-                // TODO route.linestring() is more accurate, but slower, and then we have to do the
-                // same for comparisons
+                // route.linestring() is more accurate, but slower
                 let mut route_length = 0.0;
-                for step in &route.steps {
-                    if let PathStep::Road { road, .. } = step {
-                        route_length += self.graph.roads[road.0].length_meters;
+                let mut snapped_pt1 = None;
+                let mut snapped_pt2 = None;
+                for (pos, step) in route.steps.iter().with_position() {
+                    if let PathStep::Road { road, forwards } = step {
+                        let road = &self.graph.roads[road.0];
+                        route_length += road.length_meters;
+
+                        match pos {
+                            itertools::Position::First => {
+                                snapped_pt1 = Some(if *forwards {
+                                    road.linestring.0[0]
+                                } else {
+                                    *road.linestring.0.last().unwrap()
+                                });
+                            }
+                            itertools::Position::Last => {
+                                snapped_pt2 = Some(if !*forwards {
+                                    road.linestring.0[0]
+                                } else {
+                                    *road.linestring.0.last().unwrap()
+                                });
+                            }
+                            itertools::Position::Only => {
+                                snapped_pt1 = Some(if *forwards {
+                                    road.linestring.0[0]
+                                } else {
+                                    *road.linestring.0.last().unwrap()
+                                });
+                                snapped_pt2 = Some(if !*forwards {
+                                    road.linestring.0[0]
+                                } else {
+                                    *road.linestring.0.last().unwrap()
+                                });
+                            }
+                            itertools::Position::Middle => {}
+                        }
                     }
+                }
+
+                let straight_line_length =
+                    Euclidean.distance(snapped_pt1.unwrap(), snapped_pt2.unwrap());
+                if straight_line_length == 0.0 {
+                    // This should never happen in practice; this was a degenerately empty route
+                    continue;
                 }
 
                 let count = uptake::pct_godutch_2020(route_length) * uptake_multiplier;
@@ -169,19 +190,17 @@ impl MapModel {
                     }
                 }
 
-                if quiet_length > 0.0 {
-                    let directness = quiet_length / route_length;
-                    sum_directness += count * directness;
-                    sum_count += count;
+                let directness = route_length / straight_line_length;
+                sum_directness += count * directness;
+                sum_count += count;
 
-                    if worst_directness_routes.len() < keep_directness_routes {
-                        worst_directness_routes.push((pt1, pt2, directness));
-                        worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
-                    } else if worst_directness_routes.last().as_ref().unwrap().2 < directness {
-                        worst_directness_routes.pop();
-                        worst_directness_routes.push((pt1, pt2, directness));
-                        worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
-                    }
+                if worst_directness_routes.len() < keep_directness_routes {
+                    worst_directness_routes.push((input_pt1, input_pt2, directness));
+                    worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
+                } else if worst_directness_routes.last().as_ref().unwrap().2 < directness {
+                    worst_directness_routes.pop();
+                    worst_directness_routes.push((input_pt1, input_pt2, directness));
+                    worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
                 }
             }
         }

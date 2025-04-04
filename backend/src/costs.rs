@@ -7,7 +7,7 @@ use crate::{LevelOfService, MapModel};
 
 impl MapModel {
     /// After some kind of edit, recalculate edge costs for bicycle_quiet.
-    pub fn recalculate_router(&mut self, timer: &mut Timer) {
+    pub fn recalculate_quiet_router(&mut self, timer: &mut Timer) {
         timer.step("recalculate edge costs for bicycle_quiet");
 
         let mut costs = Vec::new();
