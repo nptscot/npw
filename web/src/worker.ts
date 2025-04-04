@@ -1,4 +1,5 @@
 import init, { MapModel } from "backend";
+import { loadingSpinners } from "./stores";
 import * as Comlink from "comlink";
 import type {
   Feature,
@@ -263,7 +264,10 @@ export class Backend {
     preferMajor: boolean,
   ): Feature<LineString, RouteProps> {
     this.checkReady();
-    return JSON.parse(this.inner!.snapRoute(waypoints, preferMajor));
+    start();
+    let x = JSON.parse(this.inner!.snapRoute(waypoints, preferMajor));
+    stop();
+    return x;
   }
 
   snapPoint(pt: number[], preferMajor: boolean): [number, number] {
@@ -283,7 +287,10 @@ export class Backend {
 
   getMajorJunctions(): FeatureCollection {
     this.checkReady();
-    return JSON.parse(this.inner!.getMajorJunctions());
+    start();
+    let x = JSON.parse(this.inner!.getMajorJunctions());
+    stop();
+    return x;
   }
 
   private checkReady() {
@@ -291,6 +298,18 @@ export class Backend {
       throw new Error("Backend used without a file loaded");
     }
   }
+}
+
+function start() {
+  loadingSpinners.update((x) => {
+                    return x + 1;
+            });
+}
+
+function stop() {
+  loadingSpinners.update((x) => {
+                    return x - 1;
+            });
 }
 
 Comlink.expose(Backend);
