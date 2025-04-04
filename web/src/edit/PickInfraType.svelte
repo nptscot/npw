@@ -47,13 +47,13 @@
   have to go edit that other route to override it.
 </p>
 
-<div style="display: flex; flex-wrap: wrap; gap: 4px">
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
   {#each cases as [value, img, _url]}
     {@const [label, color] = infraTypeMapping[value]}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div class="card" on:click={() => onFinish(value)}>
-      <img src={img} alt={label} />
+      <img src={img} alt={label} style:height="150px" />
       <h5 style:color>{label}</h5>
     </div>
   {/each}
@@ -63,5 +63,9 @@
   .card {
     flex: 0 0 30%;
     cursor: pointer;
+  }
+
+  .card:hover {
+    background: #d3d3d3;
   }
 </style>

@@ -21,11 +21,14 @@
 
 {#if $stats}
   <Modal bind:show={showStats}>
-    <SummarizeStats />
-
-    <button class="ds_button ds_button--secondary" on:click={gotoAssess}>
+    <button
+      class="ds_button ds_button--secondary"
+      on:click={gotoAssess}
+      style="float: right"
+    >
       See full assessment
     </button>
+    <SummarizeStats />
   </Modal>
 
   <div class="progress-summary">
