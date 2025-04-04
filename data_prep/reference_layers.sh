@@ -45,7 +45,7 @@ function town_centres {
   ogr2ogr tmp/town_centres.geojson \
           -t_srs EPSG:4326 \
           $1 \
-          -nlt PROMOTE_TO_MULTI \
+          -explodecollections \
           -sql 'SELECT site_name AS name FROM "Town_Centres_-_Scotland"'
 
   # The bboxes or something else included are breaking parsing, so clean these up

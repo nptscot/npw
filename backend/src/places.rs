@@ -1,7 +1,9 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
-use geo::{Area, BooleanOps, BoundingRect, Contains, Coord, Intersects, MultiPolygon, Point, Rect};
+use geo::{
+    Area, BooleanOps, BoundingRect, Contains, Coord, Intersects, MultiPolygon, Point, Polygon, Rect,
+};
 use geojson::Feature;
 use graph::{Graph, RoadID};
 use rstar::AABB;
@@ -204,7 +206,7 @@ impl Greenspace {
 
 #[derive(Serialize, Deserialize)]
 pub struct TownCentre {
-    polygon: MultiPolygon,
+    polygon: Polygon,
     name: Option<String>,
     pub roads: HashSet<RoadID>,
 }
@@ -256,7 +258,7 @@ impl TownCentre {
 #[derive(Deserialize)]
 struct TownCentreGJ {
     #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
-    geometry: MultiPolygon,
+    geometry: Polygon,
     name: Option<String>,
 }
 
