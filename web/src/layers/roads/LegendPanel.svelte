@@ -1,6 +1,7 @@
 <script lang="ts">
   import { QualitativeLegend, SequentialLegend } from "svelte-utils";
   import {
+    cnTierColors,
     deprived,
     gradient,
     gradientColors,
@@ -29,8 +30,6 @@
     gridMeshDensity,
   } from "../stores";
   import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
-  import CoreNetwork from "./CoreNetwork.svelte";
-  import ExistingNetwork from "./ExistingNetwork.svelte";
   import NptFullNetwork from "./NptFullNetwork.svelte";
 
   // common has functions ForDemand, duplicating values here
@@ -49,9 +48,31 @@
 </script>
 
 <div class="panel">
-  <CoreNetwork />
+  {#if $backgroundLayer == "cn"}
+    <QualitativeLegend colors={cnTierColors} />
 
-  <ExistingNetwork />
+    {#if $devMode}
+      <br />
+
+      <label>
+        <input type="checkbox" bind:checked={$debugOriginalData} />
+        Show original data
+      </label>
+    {/if}
+  {/if}
+
+  {#if $backgroundLayer == "existing_infra"}
+    <QualitativeLegend colors={infraTypeColors} />
+
+    {#if $devMode}
+      <br />
+
+      <label>
+        <input type="checkbox" bind:checked={$debugOriginalData} />
+        Show osmactive data
+      </label>
+    {/if}
+  {/if}
 
   {#if $backgroundLayer == "traffic"}
     <SequentialLegend colorScale={traffic.colorScale} limits={traffic.limits} />
@@ -135,6 +156,7 @@
   {/if}
 
   <NptFullNetwork />
+  <CalculatedRouteNetwork />
 
   {#if $backgroundLayer == "los"}
     <QualitativeLegend colors={levelOfServiceColors} />
@@ -152,8 +174,6 @@
   {#if $backgroundLayer == "reachability"}
     <QualitativeLegend colors={reachabilityColors} />
   {/if}
-
-  <CalculatedRouteNetwork />
 
   <!-- TODO: There could be a legend for reference layers, per-tier layers, and
   edit mode all at the same time... -->
@@ -209,7 +229,6 @@
     top: 10px;
     right: 200px;
     width: 200px;
-    min-height: 30px;
 
     background: white;
     padding: 8px;
