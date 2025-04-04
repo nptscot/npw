@@ -391,6 +391,7 @@ impl MapModel {
                 .iter()
                 .enumerate()
                 .map(|(idx, x)| x.to_gj(&self.graph.mercator, roads.covers_any(&x.roads), idx))
+                .chain(self.get_town_centre_od())
                 .collect(),
         })
         .map_err(err_to_js)
