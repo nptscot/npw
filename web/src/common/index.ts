@@ -6,6 +6,7 @@ import type {
 export { default as DrawRectangle } from "./DrawRectangle.svelte";
 export { default as HelpButton } from "./HelpButton.svelte";
 export { default as LegendWithToggles } from "./LegendWithToggles.svelte";
+export { default as LoadingSpinner } from "./LoadingSpinner.svelte";
 export { default as Modal } from "./Modal.svelte";
 export { layerId } from "./zorder";
 

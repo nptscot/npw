@@ -35,6 +35,8 @@ export let currentStage: Writable<Tier | "assessment"> = writable("Primary");
 export let map: Writable<Map | null> = writable(null);
 export let zoom: Writable<number | undefined> = writable(undefined);
 
+export let loadingSpinners: Writable<number> = writable(0);
+
 // When the state is modified, trigger to refresh various things
 export let mutationCounter = writable(1);
 
