@@ -6,7 +6,7 @@
     hoverStateFilter,
     LineLayer,
   } from "svelte-maplibre";
-  import { Popup } from "svelte-utils/map";
+  import { isLine, Popup } from "svelte-utils/map";
   import { layerId } from "../common";
   import DebugReachability from "../local_access/DebugReachability.svelte";
   import { backend, mutationCounter } from "../stores";
@@ -72,6 +72,19 @@
     paint={{
       "line-color": ["case", ["get", "reachable"], "green", "red"],
       "line-width": 1,
+    }}
+    layout={{
+      visibility: $show ? "visible" : "none",
+    }}
+  />
+
+  <LineLayer
+    {...layerId("town-centres-od")}
+    interactive={false}
+    filter={isLine}
+    paint={{
+      "line-color": "black",
+      "line-width": 5,
     }}
     layout={{
       visibility: $show ? "visible" : "none",

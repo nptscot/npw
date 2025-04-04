@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use enum_map::EnumMap;
-use geo::{BoundingRect, Contains, Coord, Distance, Euclidean, Intersects, MultiPolygon};
-use geojson::{FeatureCollection, Value};
+use geo::{BoundingRect, LineString, Centroid, Euclidean, Distance, Contains, Coord, Intersects, MultiPolygon};
+use geojson::{FeatureCollection, Value, Feature};
 use graph::{PathStep, RoadID};
 use itertools::Itertools;
 use nanorand::{Rng, WyRand};
@@ -262,6 +262,30 @@ impl MapModel {
             bbox: None,
             foreign_members: Some(foreign_members),
         })?)
+    }
+
+    /// Get straight lines between all pairs of town centres less than 5km
+    pub fn get_town_centre_od(&self) -> Vec<Feature> {
+        let mut features = Vec::new();
+        for (idx1, tc1) in self.town_centres.iter().enumerate() {
+            for (idx2, tc2) in self.town_centres.iter().enumerate() {
+                if idx1 >= idx2 {
+                    continue;
+                }
+                let centroid1 = tc1.polygon.centroid().unwrap();
+                let centroid2 = tc2.polygon.centroid().unwrap();
+                let dist = Euclidean.distance(centroid1, centroid2);
+                if dist > 5000.0 {
+                    continue;
+                }
+                features.push(
+                    self.graph
+                        .mercator
+                        .to_wgs84_gj(&LineString::new(vec![centroid1.into(), centroid2.into()])),
+                );
+            }
+        }
+        features
     }
 }
 
