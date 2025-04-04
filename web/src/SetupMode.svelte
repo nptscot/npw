@@ -103,7 +103,7 @@
         <button
           type="button"
           class="ds_link"
-          on:click={() => (window.location.href = "./html")}
+          on:click={() => (window.location.href = "./")}
         >
           <i class="fa-solid fa-chevron-left"></i>
           Work in a different area

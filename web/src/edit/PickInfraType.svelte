@@ -44,7 +44,7 @@
 </p>
 <p>
   Note if this route overlaps another one, this override won't apply there. You
-  have to go edit that other route to override it.
+  would need to edit that other route to override it.
 </p>
 
 <div style="display: flex; flex-wrap: wrap; gap: 10px">
