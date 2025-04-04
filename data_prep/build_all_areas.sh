@@ -37,20 +37,19 @@ function build_graph_files {
         cd ../data_prep
         bin=../cli/target/release/cli
 
-        mkdir -p graph-files baseline_stats
+        mkdir -p baseline_stats
         IFS=$'\n'
         for osm in osm/out/*; do
           geojson=$(basename $osm .osm.pbf).geojson
           out=$(basename $osm .osm.pbf).bin
           stats=$(basename $osm .osm.pbf).json
-          task=$(pueue add --print-task-id --escape $bin --input "$osm" --boundary "osm/$geojson" --output "graph-files/$out" --stats-output "baseline_stats/$stats")
+          task=$(pueue add --print-task-id --escape $bin --input "$osm" --boundary "osm/$geojson" --output "../web/public/areas/$out" --stats-output "baseline_stats/$stats")
           # TODO get gzip encoding to work on cloudflare
           #pueue add --after $task --escape gzip "graph-files/$out"
         done
 
         # Manually wait for pueue to finish
-        # Then upload graph-files/ somewhere and make sure content encoding is set to gzip
 }
 
-split_osm
+#split_osm
 build_graph_files
