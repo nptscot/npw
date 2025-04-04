@@ -2,8 +2,11 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use enum_map::EnumMap;
-use geo::{BoundingRect, LineString, Centroid, Euclidean, Distance, Contains, Coord, Intersects, MultiPolygon};
-use geojson::{FeatureCollection, Value, Feature};
+use geo::{
+    BoundingRect, Centroid, Contains, Coord, Distance, Euclidean, Intersects, LineString,
+    MultiPolygon,
+};
+use geojson::{Feature, FeatureCollection, Value};
 use graph::{PathStep, RoadID};
 use itertools::Itertools;
 use nanorand::{Rng, WyRand};
@@ -266,23 +269,36 @@ impl MapModel {
 
     /// Get straight lines between all pairs of town centres less than 5km
     pub fn get_town_centre_od(&self) -> Vec<Feature> {
+        let centroids: Vec<_> = self
+            .town_centres
+            .iter()
+            .map(|tc| tc.polygon.centroid().unwrap())
+            .collect();
+
         let mut features = Vec::new();
-        for (idx1, tc1) in self.town_centres.iter().enumerate() {
-            for (idx2, tc2) in self.town_centres.iter().enumerate() {
-                if idx1 >= idx2 {
-                    continue;
-                }
-                let centroid1 = tc1.polygon.centroid().unwrap();
-                let centroid2 = tc2.polygon.centroid().unwrap();
-                let dist = Euclidean.distance(centroid1, centroid2);
-                if dist > 5000.0 {
-                    continue;
-                }
-                features.push(
-                    self.graph
-                        .mercator
-                        .to_wgs84_gj(&LineString::new(vec![centroid1.into(), centroid2.into()])),
-                );
+        for (idx1, centroid1) in centroids.iter().enumerate() {
+            // Calculate distance to every other town centre
+            let mut distances: Vec<_> = centroids
+                .iter()
+                .enumerate()
+                .filter_map(|(idx2, centroid2)| {
+                    let dist = Euclidean.distance(centroid1, centroid2);
+                    if idx1 == idx2 || dist > 5000.0 {
+                        None
+                    } else {
+                        Some((idx2, dist))
+                    }
+                })
+                .collect();
+            distances.sort_by_key(|(_, dist)| (*dist * 1000.0) as usize);
+
+            // Only include the top few
+            // TODO Prune out duplicates in the opposite direction
+            for (idx2, _) in distances.into_iter().take(3) {
+                features.push(self.graph.mercator.to_wgs84_gj(&LineString::new(vec![
+                    (*centroid1).into(),
+                    centroids[idx2].into(),
+                ])));
             }
         }
         features
