@@ -21,7 +21,7 @@
     editModeBreakdown,
     mode,
   } from "../stores";
-  import type { AutosplitRoute, Waypoint } from "../types";
+  import type { AutosplitRoute, InfraType, Waypoint } from "../types";
   import PickInfraType from "./PickInfraType.svelte";
   import RouteControls from "./RouteControls.svelte";
   import SectionDiagram from "./SectionDiagram.svelte";
@@ -65,30 +65,17 @@
   }
 
   async function finish() {
-    try {
-      // TODO Now snapRoute and setRoute are kind of redundant
-      let feature = await $backend!.snapRoute($waypoints, $majorJunctions);
-      // TODO Is this possible still?
-      if (!feature) {
-        window.alert("No route drawn");
-        return;
-      }
+    await $backend!.setRoute(id, {
+      waypoints: $waypoints,
 
-      await $backend!.setRoute(id, {
-        feature,
-        roads: feature.properties.roads,
-
-        name,
-        notes,
-        infra_type: infraType,
-        override_infra_type: overrideInfraType,
-        tier,
-      });
-      await autosave();
-      $mode = { kind: "main" };
-    } catch (err) {
-      window.alert(err);
-    }
+      name,
+      notes,
+      infra_type: infraType as InfraType,
+      override_infra_type: overrideInfraType,
+      tier,
+    });
+    await autosave();
+    $mode = { kind: "main" };
   }
 
   function cancel() {

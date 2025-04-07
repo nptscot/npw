@@ -78,7 +78,9 @@ export class Backend {
     return JSON.parse(this.inner!.renderDynamicRoads());
   }
 
-  getAllRoutes(): FeatureCollection<LineString, RouteProps> {
+  getAllRoutes(): FeatureCollection<LineString, RouteProps> & {
+    id_counter: number;
+  } {
     this.checkReady();
     return JSON.parse(this.inner!.getAllRoutes());
   }
@@ -199,11 +201,6 @@ export class Backend {
     return this.inner!.importCoreNetwork();
   }
 
-  toSavefile(): string {
-    this.checkReady();
-    return this.inner!.toSavefile();
-  }
-
   loadSavefile(contents: string) {
     this.checkReady();
     this.inner!.loadSavefile(contents);
@@ -245,25 +242,17 @@ export class Backend {
     return JSON.parse(this.inner!.debugUnreachablePath(kind, idx));
   }
 
-  fixUnreachablePOI(kind: string, idx: number): SetRouteInput {
+  fixUnreachablePOI(
+    kind: string,
+    idx: number,
+  ): Feature<LineString, SetRouteInput> {
     this.checkReady();
-    let route = JSON.parse(this.inner!.fixUnreachablePOI(kind, idx));
-    // TODO Hack around this necessary duplication
-    route.roads = route.feature.properties.roads;
-    return route;
+    return JSON.parse(this.inner!.fixUnreachablePOI(kind, idx));
   }
 
   getConnectedComponents(): ConnectedComponents {
     this.checkReady();
     return JSON.parse(this.inner!.getConnectedComponents());
-  }
-
-  snapRoute(
-    waypoints: Waypoint[],
-    preferMajor: boolean,
-  ): Feature<LineString, RouteProps> {
-    this.checkReady();
-    return JSON.parse(this.inner!.snapRoute(waypoints, preferMajor));
   }
 
   snapPoint(pt: number[], preferMajor: boolean): [number, number] {

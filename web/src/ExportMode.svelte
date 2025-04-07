@@ -19,7 +19,7 @@
 
   async function exportFile() {
     let file = `npw_${$boundaryName}_${$currentFilename}.geojson`;
-    downloadGeneratedFile(file, await $backend!.toSavefile());
+    downloadGeneratedFile(file, JSON.stringify(await $backend!.getAllRoutes()));
   }
 </script>
 

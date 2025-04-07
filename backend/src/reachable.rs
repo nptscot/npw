@@ -1,13 +1,13 @@
 use std::collections::{BinaryHeap, HashMap, HashSet};
 
 use anyhow::Result;
-use geojson::FeatureCollection;
+use geojson::{Feature, FeatureCollection, Geometry};
 use graph::{Graph, RoadID};
 use utils::PriorityQueueItem;
 
 use crate::route_snapper::roads_to_waypoints;
 use crate::routes::glue_route_wgs84;
-use crate::{Dir, InMemoryRoute, InfraType, LevelOfService, MapModel, Tier};
+use crate::{Dir, InfraType, LevelOfService, MapModel, SetRouteInput, Tier};
 
 pub struct Reachability {
     pub network: HashSet<RoadID>,
@@ -173,7 +173,7 @@ impl MapModel {
     }
 
     /// Calculates a route to connect any of start_roads with the network. Returns a stringified
-    /// FeatureCollection of the autosplit segments.
+    /// Feature<LineString, SetRouteInput>.
     pub fn fix_unreachable_poi(&self, start_roads: HashSet<RoadID>) -> Result<String> {
         let mut visited: HashSet<RoadID> = HashSet::new();
         let mut backrefs: HashMap<RoadID, RoadID> = HashMap::new();
@@ -204,21 +204,23 @@ impl MapModel {
                 let roads = roads_to_steps(&self.graph, roads_in_order)?;
                 let waypoints_wgs84 = roads_to_waypoints(&self.graph, &roads);
                 let linestring_wgs84 = glue_route_wgs84(&self.graph, &roads);
+                let mut f = Feature::from(Geometry::from(&linestring_wgs84));
+                f.properties = Some(
+                    serde_json::to_value(&SetRouteInput {
+                        waypoints: waypoints_wgs84,
 
-                return Ok(serde_json::to_string(&InMemoryRoute {
-                    waypoints_wgs84,
-
-                    linestring_wgs84,
-
-                    roads,
-
-                    name: "connection to local POI".to_string(),
-                    notes: String::new(),
-                    // Doesn't matter
-                    infra_type: InfraType::MixedTraffic,
-                    override_infra_type: false,
-                    tier: Tier::LocalAccess,
-                })?);
+                        name: "connection to local POI".to_string(),
+                        notes: String::new(),
+                        // Doesn't matter
+                        infra_type: InfraType::MixedTraffic,
+                        override_infra_type: false,
+                        tier: Tier::LocalAccess,
+                    })?
+                    .as_object()
+                    .unwrap()
+                    .clone(),
+                );
+                return Ok(serde_json::to_string(&f)?);
             }
 
             let road1 = &self.graph.roads[r1.0];

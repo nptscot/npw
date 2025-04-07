@@ -15,7 +15,7 @@ use wasm_bindgen::prelude::*;
 
 pub use crate::existing::Highway;
 use crate::level_of_service::LevelOfService;
-use crate::routes::{Dir, InMemoryRoute, Waypoint};
+use crate::routes::{Dir, InMemoryRoute, SavedRoute, SetRouteInput, Waypoint};
 
 mod costs;
 mod disconnected;

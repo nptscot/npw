@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Feature, LineString } from "geojson";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
   import { tierColors } from "../colors";
@@ -18,7 +19,7 @@
   export let show: boolean;
 
   let debug = emptyGeojson();
-  let fixUnreachable: SetRouteInput | null = null;
+  let fixUnreachable: Feature<LineString, SetRouteInput> | null = null;
   $: updateDebug(current);
 
   async function updateDebug(current: SimplePOI | null) {
@@ -54,7 +55,7 @@
   />
 </GeoJSON>
 
-<GeoJSON data={fixUnreachable?.feature || emptyGeojson()}>
+<GeoJSON data={fixUnreachable || emptyGeojson()}>
   <LineLayer
     {...layerId("fix-reachability-" + layerName)}
     interactive={false}

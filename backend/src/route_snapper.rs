@@ -2,32 +2,10 @@ use anyhow::Result;
 
 use geo::{Coord, LineString, Point};
 use graph::{Graph, IntersectionID, PathStep, RoadID};
-use serde::Serialize;
 
 use crate::{Dir, MapModel, Waypoint};
 
 impl MapModel {
-    pub fn snap_route(&self, waypoints: Vec<Waypoint>, prefer_major: bool) -> Result<String> {
-        let (roads, linestring) = self.waypoints_to_path(&waypoints, prefer_major);
-
-        // TODO Should we change the input_waypoints to their snapped position?
-
-        let mut feature = self.graph.mercator.to_wgs84_gj(&linestring);
-
-        let props = SerializeRouteProps { roads, waypoints };
-        feature.properties = Some(
-            serde_json::to_value(&props)
-                .unwrap()
-                .as_object()
-                .unwrap()
-                .clone(),
-        );
-
-        // TODO Don't we need to set all the RouteProps?
-
-        Ok(serde_json::to_string(&feature)?)
-    }
-
     pub fn get_extra_nodes(
         &self,
         waypt1: Waypoint,
@@ -212,11 +190,4 @@ fn find_minimal_waypoints(
 // plenty of precision
 fn trim_lon_lat(x: f64) -> f64 {
     (x * 10e6).round() / 10e6
-}
-
-// TODO Maybe temporary
-#[derive(Serialize)]
-struct SerializeRouteProps {
-    roads: Vec<(RoadID, Dir)>,
-    waypoints: Vec<Waypoint>,
 }

@@ -1,5 +1,4 @@
 import type {
-  Feature,
   FeatureCollection,
   LineString,
   MultiPolygon,
@@ -165,14 +164,12 @@ export interface Waypoint {
   snapped: boolean;
 }
 
-// TODO Reconcile these two
 export interface SetRouteInput {
-  feature: Feature<LineString, RouteProps>;
-  roads: [number, "Forwards" | "Backwards"][];
+  waypoints: Waypoint[];
 
   name: string;
   notes: string;
-  infra_type: string;
+  infra_type: InfraType;
   override_infra_type: boolean;
   tier: Tier;
 }

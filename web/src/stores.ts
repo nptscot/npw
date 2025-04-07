@@ -106,8 +106,8 @@ export async function autosave() {
   if (!backendValue || !boundary) {
     return;
   }
-  let state = await backendValue.toSavefile();
-  setLocalStorage(getKey(boundary, filename), state);
+  let state = await backendValue.getAllRoutes();
+  setLocalStorage(getKey(boundary, filename), JSON.stringify(state));
 
   // TODO Temporary debugging
   /*let total = 0;

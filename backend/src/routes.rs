@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use anyhow::Result;
 use geo::{Haversine, Length, LineString};
-use geojson::{Feature, GeoJson, Geometry};
+use geojson::{Feature, FeatureCollection, GeoJson, Geometry};
 use graph::{Graph, PathStep, Position, RoadID};
 use serde::{Deserialize, Serialize};
 
@@ -12,7 +12,7 @@ use crate::{
     level_of_service::get_level_of_service, Highway, InfraType, LevelOfService, MapModel, Tier,
 };
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone)]
 pub struct InMemoryRoute {
     // The input used to determine geometry. These waypoints are the snapped positions, already
     // accounting for things like preferring major roads.
@@ -38,14 +38,50 @@ pub struct Waypoint {
     pub snapped: bool,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Dir {
     Forwards,
     Backwards,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct SavedRoute {
+    // WGS84
+    #[serde(
+        serialize_with = "geojson::ser::serialize_geometry",
+        deserialize_with = "geojson::de::deserialize_geometry"
+    )]
+    geometry: LineString,
+
+    pub id: usize,
+    waypoints: Vec<Waypoint>,
+
+    name: String,
+    notes: String,
+    infra_type: InfraType,
+    override_infra_type: bool,
+    tier: Tier,
+}
+
+/// Just the props, no linestring and no ID. The _intention_ is that this'll get auto split up to
+/// actually create routes.
+#[derive(Serialize, Deserialize)]
+pub struct SetRouteInput {
+    pub waypoints: Vec<Waypoint>,
+
+    pub name: String,
+    pub notes: String,
+    pub infra_type: InfraType,
+    pub override_infra_type: bool,
+    pub tier: Tier,
+}
+
 impl MapModel {
-    pub fn set_route(&mut self, edit_id: Option<usize>, orig_route: InMemoryRoute) -> Result<()> {
+    pub fn set_route(&mut self, edit_id: Option<usize>, orig_route: SetRouteInput) -> Result<()> {
+        // The waypoints should already be corrected to the exact snapped positions
+        let prefer_major = false;
+        let (orig_roads, _) = self.waypoints_to_path(&orig_route.waypoints, prefer_major);
+
         // If we're editing an existing route, first delete it
         if let Some(id) = edit_id {
             if self.routes.remove(&id).is_none() {
@@ -94,7 +130,7 @@ impl MapModel {
         };
 
         let mut new_routes = Vec::new();
-        for roads in orig_route.roads.chunk_by(|a, b| case(*a) == case(*b)) {
+        for roads in orig_roads.chunk_by(|a, b| case(*a) == case(*b)) {
             let (infra_type, tier) = match case(roads[0]) {
                 Case::AlreadyExists => {
                     // TODO Should we modify that route and add to its notes or description? What
@@ -150,13 +186,24 @@ impl MapModel {
         self.recalculate_after_edits();
     }
 
-    pub fn get_all_routes(&self) -> GeoJson {
-        GeoJson::from(
-            self.routes
+    /// This is the format used for savefiles
+    pub fn get_all_routes(&self) -> FeatureCollection {
+        FeatureCollection {
+            features: self
+                .routes
                 .iter()
                 .map(|(id, r)| r.to_gj(*id))
                 .collect::<Vec<_>>(),
-        )
+            bbox: None,
+            foreign_members: Some(
+                serde_json::json!({
+                    "id_counter": self.id_counter,
+                })
+                .as_object()
+                .unwrap()
+                .clone(),
+            ),
+        }
     }
 
     pub fn get_route(&self, id: usize) -> Result<Feature> {
@@ -477,24 +524,52 @@ pub fn end_pos((road, dir): (RoadID, Dir), graph: &Graph) -> Position {
     start_pos((road, opposite), graph)
 }
 
-// TODO Instead, do this as a struct with auto-geojson magic
 impl InMemoryRoute {
     fn to_gj(&self, id: usize) -> Feature {
-        let mut f = Feature::from(Geometry::from(&self.linestring_wgs84));
-        f.set_property("id", id);
-        f.set_property(
-            "waypoints",
-            serde_json::to_value(&self.waypoints_wgs84).unwrap(),
-        );
-        f.set_property("name", self.name.clone());
-        f.set_property("notes", self.notes.clone());
-        f.set_property(
-            "infra_type",
-            serde_json::to_value(&self.infra_type).unwrap(),
-        );
-        f.set_property("override_infra_type", self.override_infra_type);
-        f.set_property("tier", serde_json::to_value(&self.tier).unwrap());
-        f
+        geojson::ser::to_feature(SavedRoute {
+            geometry: self.linestring_wgs84.clone(),
+            id,
+            waypoints: self.waypoints_wgs84.clone(),
+
+            name: self.name.clone(),
+            notes: self.notes.clone(),
+            infra_type: self.infra_type,
+            override_infra_type: self.override_infra_type,
+            tier: self.tier,
+        })
+        .unwrap()
+    }
+}
+
+impl SavedRoute {
+    // This assumes the one saved route will wind up being one InMemoryRoute. If the underlying OSM
+    // MapModel changes over time, maybe one saved route needs to get split.
+    pub fn to_in_memory(self, model: &MapModel) -> InMemoryRoute {
+        let waypoints = self
+            .waypoints
+            .iter()
+            .map(|w| Waypoint {
+                snapped: w.snapped,
+                point: model.graph.mercator.pt_to_mercator(w.point.into()).into(),
+            })
+            .collect();
+
+        // The waypoints should already be corrected to the exact snapped positions
+        let prefer_major = false;
+        let (roads, _) = model.waypoints_to_path(&waypoints, prefer_major);
+        InMemoryRoute {
+            waypoints_wgs84: self.waypoints,
+
+            linestring_wgs84: self.geometry,
+
+            roads,
+
+            name: self.name,
+            notes: self.notes,
+            infra_type: self.infra_type,
+            override_infra_type: self.override_infra_type,
+            tier: self.tier,
+        }
     }
 }
 

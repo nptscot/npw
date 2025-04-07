@@ -118,7 +118,7 @@
         $currentPOI.kind,
         $currentPOI.idx,
       );
-      await $backend!.setRoute(null, input);
+      await $backend!.setRoute(null, input.properties);
       await autosave();
 
       // TODO This assumes the fix succeeded. Can we easily check?

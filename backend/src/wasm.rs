@@ -1,13 +1,14 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::sync::Once;
 
 use geo::{Coord, LineString, MultiPolygon, Polygon};
 use geojson::{Feature, FeatureCollection, Geometry};
 use graph::{RoadID, Timer};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde_json::Value;
 use wasm_bindgen::prelude::*;
 
-use crate::{evaluate::Breakdown, InMemoryRoute, InfraType, MapModel, Tier, Waypoint};
+use crate::{evaluate::Breakdown, InfraType, MapModel, SavedRoute, SetRouteInput, Tier, Waypoint};
 
 static START: Once = Once::new();
 
@@ -120,10 +121,14 @@ impl MapModel {
         vec![b.min().x, b.min().y, b.max().x, b.max().y]
     }
 
-    /// Create or edit a route. Returns the ID
+    /// Create or edit a route
     #[wasm_bindgen(js_name = setRoute)]
     pub fn set_route_wasm(&mut self, id: Option<usize>, input: JsValue) -> Result<(), JsValue> {
-        let route: InMemoryRoute = serde_wasm_bindgen::from_value(input)?;
+        let mut route: SetRouteInput = serde_wasm_bindgen::from_value(input)?;
+        for w in &mut route.waypoints {
+            self.to_mercator(&mut w.point);
+        }
+
         self.set_route(id, route).map_err(err_to_js)
     }
 
@@ -284,34 +289,21 @@ impl MapModel {
         result
     }
 
-    #[wasm_bindgen(js_name = toSavefile)]
-    pub fn to_savefile(&self) -> Result<String, JsValue> {
-        serde_json::to_string(&Savefile {
-            routes: self.routes.clone(),
-            id_counter: self.id_counter,
-        })
-        .map_err(err_to_js)
-    }
-
     #[wasm_bindgen(js_name = loadSavefile)]
     pub fn load_savefile(&mut self, input: String) -> Result<(), JsValue> {
-        let savefile: Savefile = serde_json::from_str(&input).map_err(err_to_js)?;
+        let savefile: FeatureCollection = serde_json::from_str(&input).map_err(err_to_js)?;
 
-        // Detect if the savefile is incompatible with the current model
-        // bail cleanly
-        let n = self.graph.roads.len();
-        for route in savefile.routes.values() {
-            for (r, _) in &route.roads {
-                if r.0 >= n {
-                    return Err(JsValue::from_str(
-                        "This savefile was created with an old version of NPW and can't be used",
-                    ));
-                }
+        self.id_counter = match savefile.foreign_members.unwrap().get("id_counter") {
+            Some(Value::Number(num)) => num.as_u64().expect("id_counter isn't u64") as usize,
+            _ => {
+                return Err(JsValue::from_str("Savefile is missing id_counter"));
             }
+        };
+        for feature in savefile.features {
+            let route: SavedRoute = geojson::de::from_feature(feature).map_err(err_to_js)?;
+            self.routes.insert(route.id, route.to_in_memory(self));
         }
 
-        self.routes = savefile.routes;
-        self.id_counter = savefile.id_counter;
         self.recalculate_after_edits();
         Ok(())
     }
@@ -436,20 +428,6 @@ impl MapModel {
         serde_json::to_string(&self.get_connected_components()).map_err(err_to_js)
     }
 
-    /// For the route snapper, return a Feature with the full geometry and properties.
-    #[wasm_bindgen(js_name = snapRoute)]
-    pub fn snap_route_wasm(
-        &self,
-        raw_waypoints: JsValue,
-        prefer_major: bool,
-    ) -> Result<String, JsValue> {
-        let mut waypoints: Vec<Waypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
-        for w in &mut waypoints {
-            self.to_mercator(&mut w.point);
-        }
-        self.snap_route(waypoints, prefer_major).map_err(err_to_js)
-    }
-
     /// From exactly two waypoints, return a list of extra intermediate nodes and a boolean to
     /// indicate if they're snappable or not.
     #[wasm_bindgen(js_name = getExtraNodes)]
@@ -510,13 +488,6 @@ struct EvaluateRouteRequest {
     x2: f64,
     y2: f64,
     breakdown: String,
-}
-
-// TODO This is an odd, repetitive format. Redesign later.
-#[derive(Serialize, Deserialize)]
-struct Savefile {
-    routes: HashMap<usize, InMemoryRoute>,
-    id_counter: usize,
 }
 
 fn err_to_js<E: std::fmt::Display>(err: E) -> JsValue {
