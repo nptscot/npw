@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 use enum_map::Enum;
 use geo::{Area, MultiPolygon, Point};
-use geojson::{Feature, GeoJson};
+use geojson::GeoJson;
 use graph::{Graph, Intersection, IntersectionID, RoadID, Timer};
 use rstar::{primitives::GeomWithData, RTree};
 use serde::{Deserialize, Serialize};
@@ -15,7 +15,7 @@ use wasm_bindgen::prelude::*;
 
 pub use crate::existing::Highway;
 use crate::level_of_service::LevelOfService;
-use crate::route_snapper::Waypoint;
+use crate::routes::{Dir, InMemoryRoute, Waypoint};
 
 mod costs;
 mod disconnected;
@@ -42,7 +42,7 @@ pub struct MapModel {
     closest_intersection_major: RTree<GeomWithData<Point, IntersectionID>>,
 
     #[serde(skip_serializing, skip_deserializing, default)]
-    routes: HashMap<usize, Route>,
+    routes: HashMap<usize, InMemoryRoute>,
     #[serde(skip_serializing, skip_deserializing, default)]
     id_counter: usize,
 
@@ -93,26 +93,6 @@ pub struct MapModel {
     los: Vec<LevelOfService>,
     #[serde(skip_serializing, skip_deserializing, default)]
     quiet_router_ok: bool,
-}
-
-#[derive(Clone, Serialize, Deserialize)]
-pub struct Route {
-    /// The unedited GeoJSON feature returned from route-snapper
-    feature: Feature,
-    // The direction is only plumbed along for rendering/splitting purposes
-    roads: Vec<(RoadID, Dir)>,
-
-    name: String,
-    notes: String,
-    infra_type: InfraType,
-    override_infra_type: bool,
-    tier: Tier,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub enum Dir {
-    Forwards,
-    Backwards,
 }
 
 #[derive(

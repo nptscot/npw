@@ -7,7 +7,7 @@ use utils::PriorityQueueItem;
 
 use crate::route_snapper::make_route_snapper_feature;
 use crate::routes::glue_route;
-use crate::{Dir, InfraType, LevelOfService, MapModel, Route, Tier};
+use crate::{Dir, InMemoryRoute, InfraType, LevelOfService, MapModel, Tier};
 
 pub struct Reachability {
     pub network: HashSet<RoadID>,
@@ -204,7 +204,7 @@ impl MapModel {
                 let steps = roads_to_steps(&self.graph, roads_in_order)?;
                 let linestring = glue_route(&self.graph, &steps).linestring(&self.graph);
 
-                return Ok(serde_json::to_string(&Route {
+                return Ok(serde_json::to_string(&InMemoryRoute {
                     feature: make_route_snapper_feature(&self.graph, &steps, &linestring),
                     name: "connection to local POI".to_string(),
                     notes: String::new(),

@@ -4,16 +4,42 @@ use anyhow::Result;
 use geo::{Euclidean, Length};
 use geojson::{Feature, GeoJson};
 use graph::{Graph, PathStep, Position, RoadID};
+use serde::{Deserialize, Serialize};
 
 use crate::join_lines::KeyedLineString;
 use crate::route_snapper::make_route_snapper_feature;
 use crate::{
-    level_of_service::get_level_of_service, Dir, Highway, InfraType, LevelOfService, MapModel,
-    Route, Tier, Waypoint,
+    level_of_service::get_level_of_service, Highway, InfraType, LevelOfService, MapModel, Tier,
 };
 
+#[derive(Clone, Serialize, Deserialize)]
+pub struct InMemoryRoute {
+    /// The unedited GeoJSON feature returned from route-snapper
+    pub feature: Feature,
+    // The direction is only plumbed along for rendering/splitting purposes
+    pub roads: Vec<(RoadID, Dir)>,
+
+    pub name: String,
+    pub notes: String,
+    pub infra_type: InfraType,
+    pub override_infra_type: bool,
+    pub tier: Tier,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Waypoint {
+    pub point: [f64; 2],
+    pub snapped: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub enum Dir {
+    Forwards,
+    Backwards,
+}
+
 impl MapModel {
-    pub fn set_route(&mut self, edit_id: Option<usize>, orig_route: Route) -> Result<()> {
+    pub fn set_route(&mut self, edit_id: Option<usize>, orig_route: InMemoryRoute) -> Result<()> {
         // If we're editing an existing route, first delete it
         if let Some(id) = edit_id {
             if self.routes.remove(&id).is_none() {
@@ -76,7 +102,7 @@ impl MapModel {
 
             let linestring = glue_route(&self.graph, roads).linestring(&self.graph);
 
-            new_routes.push(Route {
+            new_routes.push(InMemoryRoute {
                 feature: make_route_snapper_feature(&self.graph, roads, &linestring),
                 name: orig_route.name.clone(),
                 notes: orig_route.notes.clone(),
@@ -354,7 +380,7 @@ impl MapModel {
 
         for line in pieces {
             let (infra_type, tier) = line.key;
-            let route = Route {
+            let route = InMemoryRoute {
                 feature: make_route_snapper_feature(&self.graph, &line.ids, &line.linestring),
                 // Pick the first name
                 // TODO Does this short-circuit?
@@ -429,7 +455,7 @@ pub fn end_pos((road, dir): (RoadID, Dir), graph: &Graph) -> Position {
     start_pos((road, opposite), graph)
 }
 
-impl Route {
+impl InMemoryRoute {
     fn to_gj(&self, id: usize) -> Feature {
         let mut f = self.feature.clone();
         f.set_property("id", id);

@@ -3,9 +3,9 @@ use anyhow::Result;
 use geo::{Coord, LineString, Point};
 use geojson::Feature;
 use graph::{Graph, IntersectionID, PathStep, RoadID};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use crate::{Dir, MapModel};
+use crate::{Dir, MapModel, Waypoint};
 
 impl MapModel {
     pub fn snap_route(&self, waypoints: Vec<Waypoint>, prefer_major: bool) -> Result<String> {
@@ -227,12 +227,6 @@ fn find_minimal_waypoints(
 
     // Give up and just include them all
     intersections.iter().cloned().collect()
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Waypoint {
-    pub point: [f64; 2],
-    snapped: bool,
 }
 
 // Per https://datatracker.ietf.org/doc/html/rfc7946#section-11.2, 6 decimal places (10cm) is

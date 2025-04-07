@@ -7,7 +7,7 @@ use graph::{RoadID, Timer};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-use crate::{evaluate::Breakdown, InfraType, MapModel, Route, Tier, Waypoint};
+use crate::{evaluate::Breakdown, InMemoryRoute, InfraType, MapModel, Tier, Waypoint};
 
 static START: Once = Once::new();
 
@@ -123,7 +123,7 @@ impl MapModel {
     /// Create or edit a route. Returns the ID
     #[wasm_bindgen(js_name = setRoute)]
     pub fn set_route_wasm(&mut self, id: Option<usize>, input: JsValue) -> Result<(), JsValue> {
-        let route: Route = serde_wasm_bindgen::from_value(input)?;
+        let route: InMemoryRoute = serde_wasm_bindgen::from_value(input)?;
         self.set_route(id, route).map_err(err_to_js)
     }
 
@@ -515,7 +515,7 @@ struct EvaluateRouteRequest {
 // TODO This is an odd, repetitive format. Redesign later.
 #[derive(Serialize, Deserialize)]
 struct Savefile {
-    routes: HashMap<usize, Route>,
+    routes: HashMap<usize, InMemoryRoute>,
     id_counter: usize,
 }
 
