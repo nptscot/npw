@@ -2,7 +2,13 @@
   import type { FeatureCollection } from "geojson";
   import type { Map, MapMouseEvent } from "maplibre-gl";
   import { onDestroy } from "svelte";
-  import { GeoJSON, LineLayer, MapEvents, Marker } from "svelte-maplibre";
+  import {
+    CircleLayer,
+    GeoJSON,
+    LineLayer,
+    MapEvents,
+    Marker,
+  } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
   import { stageColors, tierLabels } from "../colors";
   import { layerId } from "../common";
@@ -34,7 +40,8 @@
   let extraNodes: ExtraNode[] = [];
   $: updateExtraNodes($waypoints, draggingExtraNode);
 
-  let cursor: Waypoint | null = null;
+  let rawCursor: Waypoint | null = null;
+  let previewSnappedCursor: FeatureCollection = emptyGeojson();
   let hoveringOnWaypoint = false;
   let hoveringOnExtraNode = false;
   let draggingWaypoint = false;
@@ -43,17 +50,17 @@
   let previewGj: FeatureCollection = emptyGeojson();
   $: updatePreview(
     $waypoints,
-    cursor,
+    rawCursor,
     hoveringOnWaypoint ||
       hoveringOnExtraNode ||
       draggingWaypoint ||
       draggingExtraNode,
   );
 
-  $: updateCursor($waypoints);
-  function updateCursor(waypoints: Waypoint[]) {
-    let cursor = waypoints.length == 0 ? "crosshair" : "inherit";
-    map.getCanvas().style.cursor = cursor;
+  $: updateCursorStyle($waypoints);
+  function updateCursorStyle(waypoints: Waypoint[]) {
+    let cursorStyle = waypoints.length == 0 ? "crosshair" : "inherit";
+    map.getCanvas().style.cursor = cursorStyle;
   }
 
   function undo() {
@@ -86,11 +93,30 @@
     });
   }
 
-  function onMouseMove(e: CustomEvent<MapMouseEvent>) {
-    cursor = {
+  async function onMouseMove(e: CustomEvent<MapMouseEvent>) {
+    rawCursor = {
       point: e.detail.lngLat.toArray(),
       snapped: true,
     };
+    // Only preview where the cursor is snapping when waypoints is empty;
+    // otherwise the previewed route makes the current snap point clear
+    if ($waypoints.length == 0) {
+      previewSnappedCursor.features = [
+        {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "Point",
+            coordinates: await $backend!.snapPoint(
+              rawCursor.point,
+              $majorJunctions,
+            ),
+          },
+        },
+      ];
+    } else {
+      previewSnappedCursor.features = [];
+    }
   }
 
   // @ts-expect-error Unused, but eventually will be implemented
@@ -113,7 +139,7 @@
 
   async function updatePreview(
     waypoints: Waypoint[],
-    cursor: Waypoint | null,
+    rawCursor: Waypoint | null,
     suppress: boolean,
   ) {
     if (suppress) {
@@ -122,7 +148,7 @@
     }
 
     try {
-      if (waypoints.length > 0 && cursor) {
+      if (waypoints.length > 0 && rawCursor) {
         // Immediately show a straight line
         previewGj = {
           type: "FeatureCollection",
@@ -134,7 +160,7 @@
                 type: "LineString",
                 coordinates: [
                   waypoints[waypoints.length - 1].point,
-                  cursor.point,
+                  rawCursor.point,
                 ],
               },
             },
@@ -144,7 +170,7 @@
         // Asynchronously update to the real route (if it exists)
         previewGj = await $backend!.autosplitRoute(
           null,
-          [waypoints[waypoints.length - 1], cursor],
+          [waypoints[waypoints.length - 1], rawCursor],
           null,
           tier,
           $majorJunctions,
@@ -382,6 +408,16 @@
           "line-color": "blue",
           "line-width": 3,
           "line-dasharray": [3, 2],
+        }}
+      />
+    </GeoJSON>
+
+    <GeoJSON data={previewSnappedCursor}>
+      <CircleLayer
+        {...layerId("snapper-current-snapped-waypoint")}
+        paint={{
+          "circle-color": "blue",
+          "circle-radius": 6,
         }}
       />
     </GeoJSON>

@@ -196,7 +196,7 @@
             gj.straight_line_length,
           )}. Direct cycling route is
           <b>{(gj.direct_bike_length / gj.straight_line_length).toFixed(1)}x</b>
-           longer than the straight line.
+          longer than the straight line.
         </p>
 
         <div>
