@@ -111,4 +111,22 @@
   .ds_site-navigation .ds_site-navigation__link.LongDistance:not(:focus):after {
     border-bottom-color: var(--longdistance-tier-colour);
   }
+
+  /* Apply tier accent colour to hover/selected states in menu */
+  .ds_site-navigation .ds_site-navigation__link.Primary:hover,
+  .ds_site-navigation .ds_site-navigation__link.Primary.ds_current {
+    background-color: rgb(from var(--primary-tier-colour) r g b / 0.15);
+  }
+  .ds_site-navigation .ds_site-navigation__link.Secondary:hover,
+  .ds_site-navigation .ds_site-navigation__link.Secondary.ds_current {
+    background-color: rgb(from var(--secondary-tier-colour) r g b / 0.15);
+  }
+  .ds_site-navigation .ds_site-navigation__link.LocalAccess:hover,
+  .ds_site-navigation .ds_site-navigation__link.LocalAccess.ds_current {
+    background-color: rgb(from var(--localaccess-tier-colour) r g b / 0.15);
+  }
+  .ds_site-navigation .ds_site-navigation__link.LongDistance:hover,
+  .ds_site-navigation .ds_site-navigation__link.LongDistance.ds_current {
+    background-color: rgb(from var(--longdistance-tier-colour) r g b / 0.15);
+  }
 </style>
