@@ -68,7 +68,7 @@ export function listAllFiles(): Map<string, [string, string][]> {
 }
 
 function describe(state: any): string {
-  let numRoutes = Object.keys(state.routes).length;
+  let numRoutes = state.features.length;
   return `${numRoutes} routes`;
 }
 

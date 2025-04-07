@@ -111,8 +111,8 @@ export async function autosave() {
 
   // TODO Temporary debugging
   /*let total = 0;
-  for (let route of Object.values(JSON.parse(state).routes)) {
-    total += (route as any).feature.properties.waypoints.length;
+  for (let route of Object.values(state.features)) {
+    total += (route as any).properties.waypoints.length;
   }
   console.log(`Autosaving. ${total} waypoints in all routes`);*/
 }
