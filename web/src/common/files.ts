@@ -68,8 +68,12 @@ export function listAllFiles(): Map<string, [string, string][]> {
 }
 
 function describe(state: any): string {
-  let numRoutes = state.features.length;
-  return `${numRoutes} routes`;
+  try {
+    let numRoutes = state.features.length;
+    return `${numRoutes} routes`;
+  } catch (err) {
+    return "outdated file";
+  }
 }
 
 // Returns all local storage items, sorted by size (in bytes) descending.

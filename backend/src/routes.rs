@@ -67,6 +67,7 @@ pub struct SavedRoute {
 /// actually create routes.
 #[derive(Serialize, Deserialize)]
 pub struct SetRouteInput {
+    // WGS84 when deserialized, then transformed to Mercator in the WASM layer
     pub waypoints: Vec<Waypoint>,
 
     pub name: String,
@@ -186,7 +187,7 @@ impl MapModel {
         self.recalculate_after_edits();
     }
 
-    /// This is the format used for savefiles
+    /// This is also the format used for savefiles
     pub fn get_all_routes(&self) -> FeatureCollection {
         FeatureCollection {
             features: self
@@ -198,6 +199,7 @@ impl MapModel {
             foreign_members: Some(
                 serde_json::json!({
                     "id_counter": self.id_counter,
+                    "version": 1,
                 })
                 .as_object()
                 .unwrap()

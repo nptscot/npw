@@ -293,12 +293,28 @@ impl MapModel {
     pub fn load_savefile(&mut self, input: String) -> Result<(), JsValue> {
         let savefile: FeatureCollection = serde_json::from_str(&input).map_err(err_to_js)?;
 
+        let mut ok = false;
+        if let Some(Value::Number(num)) = savefile
+            .foreign_members
+            .as_ref()
+            .expect("no foreign members")
+            .get("version")
+        {
+            if let Some(version) = num.as_u64() {
+                ok = version == 1;
+            }
+        }
+        if !ok {
+            return Err(JsValue::from_str("Savefile is out-of-date"));
+        }
+
         self.id_counter = match savefile.foreign_members.unwrap().get("id_counter") {
             Some(Value::Number(num)) => num.as_u64().expect("id_counter isn't u64") as usize,
             _ => {
                 return Err(JsValue::from_str("Savefile is missing id_counter"));
             }
         };
+
         for feature in savefile.features {
             let route: SavedRoute = geojson::de::from_feature(feature).map_err(err_to_js)?;
             self.routes.insert(route.id, route.to_in_memory(self));

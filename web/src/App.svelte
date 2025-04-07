@@ -123,7 +123,7 @@
           $currentFilename = openFile;
           $mode = { kind: "overview" };
         } catch (err) {
-          window.alert(`Couldn't restore saved file ${openFile}: ${err}`);
+          window.alert(`Couldn't open project ${openFile}. Error: ${err}`);
           // Continue with the initial setup mode
         }
       } else {

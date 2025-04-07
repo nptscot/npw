@@ -39,7 +39,7 @@
         await $backend!.loadSavefile(value);
         setCurrentFile(filename);
       } catch (err) {
-        window.alert(`Couldn't restore saved state: ${err}`);
+        window.alert(`Couldn't open project ${filename}. Error: ${err}`);
       }
     }
   }
