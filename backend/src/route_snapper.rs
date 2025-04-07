@@ -1,7 +1,6 @@
 use anyhow::Result;
 
 use geo::{Coord, LineString, Point};
-use geojson::Feature;
 use graph::{Graph, IntersectionID, PathStep, RoadID};
 use serde::Serialize;
 
@@ -152,15 +151,10 @@ fn roads_to_intersections(graph: &Graph, roads: &[(RoadID, Dir)]) -> Vec<Interse
     intersections
 }
 
-// Mimic the same output as snap_route, generating it from a different description.
-pub fn make_route_snapper_feature(
-    graph: &Graph,
-    roads: &[(RoadID, Dir)],
-    linestring: &LineString,
-) -> Feature {
+/// Returns waypoints in WGS84
+pub fn roads_to_waypoints(graph: &Graph, roads: &[(RoadID, Dir)]) -> Vec<Waypoint> {
     let intersections = roads_to_intersections(graph, roads);
-
-    let waypoints = find_minimal_waypoints(graph, roads, &intersections)
+    find_minimal_waypoints(graph, roads, &intersections)
         .into_iter()
         .map(|i| {
             let pt = graph.mercator.to_wgs84(&graph.intersections[i.0].point);
@@ -169,22 +163,7 @@ pub fn make_route_snapper_feature(
                 snapped: true,
             }
         })
-        .collect();
-
-    let mut f = graph.mercator.to_wgs84_gj(linestring);
-    let props = SerializeRouteProps {
-        roads: roads.to_vec(),
-        waypoints,
-    };
-    f.properties = Some(
-        serde_json::to_value(&props)
-            .unwrap()
-            .as_object()
-            .unwrap()
-            .clone(),
-    );
-
-    f
+        .collect()
 }
 
 // From the full sequence of intersections in a route, find the snapped waypoints that will

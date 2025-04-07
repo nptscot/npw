@@ -27,8 +27,7 @@ impl MapModel {
 
         // Clip every drawn linestring to the grid
         for route in self.routes.values() {
-            let mut ls: LineString = route.feature.clone().try_into()?;
-            self.graph.mercator.to_mercator_in_place(&mut ls);
+            let ls = self.graph.mercator.to_mercator(&route.linestring_wgs84);
 
             visit_grid(
                 &mut grid,

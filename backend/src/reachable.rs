@@ -5,8 +5,8 @@ use geojson::FeatureCollection;
 use graph::{Graph, RoadID};
 use utils::PriorityQueueItem;
 
-use crate::route_snapper::make_route_snapper_feature;
-use crate::routes::glue_route;
+use crate::route_snapper::roads_to_waypoints;
+use crate::routes::glue_route_wgs84;
 use crate::{Dir, InMemoryRoute, InfraType, LevelOfService, MapModel, Tier};
 
 pub struct Reachability {
@@ -201,14 +201,19 @@ impl MapModel {
                     current = *next;
                 }
 
-                let steps = roads_to_steps(&self.graph, roads_in_order)?;
-                let linestring = glue_route(&self.graph, &steps).linestring(&self.graph);
+                let roads = roads_to_steps(&self.graph, roads_in_order)?;
+                let waypoints_wgs84 = roads_to_waypoints(&self.graph, &roads);
+                let linestring_wgs84 = glue_route_wgs84(&self.graph, &roads);
 
                 return Ok(serde_json::to_string(&InMemoryRoute {
-                    feature: make_route_snapper_feature(&self.graph, &steps, &linestring),
+                    waypoints_wgs84,
+
+                    linestring_wgs84,
+
+                    roads,
+
                     name: "connection to local POI".to_string(),
                     notes: String::new(),
-                    roads: steps.clone(),
                     // Doesn't matter
                     infra_type: InfraType::MixedTraffic,
                     override_infra_type: false,

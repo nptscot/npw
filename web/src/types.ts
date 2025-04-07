@@ -166,7 +166,6 @@ export interface Waypoint {
 }
 
 // TODO Reconcile these two
-
 export interface SetRouteInput {
   feature: Feature<LineString, RouteProps>;
   roads: [number, "Forwards" | "Backwards"][];
@@ -179,9 +178,8 @@ export interface SetRouteInput {
 }
 
 export interface RouteProps {
-  waypoints: Waypoint[];
   id: number;
-  roads: [number, "Forwards" | "Backwards"][];
+  waypoints: Waypoint[];
 
   name: string;
   notes: string;
