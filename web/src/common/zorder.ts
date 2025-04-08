@@ -116,6 +116,7 @@ const layerZorder = [
   "edit-route-sections",
   "snapper-preview",
   "snapper-current-snapped-waypoint",
+  "snapper-debug-cursor",
 
   // Eval route mode
   "eval-route-breakdown",

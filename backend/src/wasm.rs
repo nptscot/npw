@@ -169,7 +169,7 @@ impl MapModel {
         raw_waypoints: JsValue,
         override_infra_type: JsValue,
         default_tier: String,
-        prefer_major: bool,
+        major_snap_threshold: Option<f64>,
     ) -> Result<String, JsValue> {
         let mut waypoints: Vec<Waypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
         for w in &mut waypoints {
@@ -184,15 +184,15 @@ impl MapModel {
             waypoints,
             override_infra_type,
             default_tier,
-            prefer_major,
+            major_snap_threshold,
         )
         .map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = snapPoint)]
-    pub fn snap_point(&self, lon: f64, lat: f64, prefer_major: bool) -> Vec<f64> {
+    pub fn snap_point(&self, lon: f64, lat: f64, major_snap_threshold: Option<f64>) -> Vec<f64> {
         let pt = self.graph.mercator.pt_to_mercator(Coord { x: lon, y: lat });
-        let i = self.snap_to_intersection(pt.into(), prefer_major);
+        let i = self.snap_to_intersection(pt.into(), major_snap_threshold);
         let snapped = self
             .graph
             .mercator
@@ -451,13 +451,13 @@ impl MapModel {
         &self,
         raw_waypt1: JsValue,
         raw_waypt2: JsValue,
-        prefer_major: bool,
+        major_snap_threshold: Option<f64>,
     ) -> Result<String, JsValue> {
         let mut waypt1: Waypoint = serde_wasm_bindgen::from_value(raw_waypt1)?;
         let mut waypt2: Waypoint = serde_wasm_bindgen::from_value(raw_waypt2)?;
         self.to_mercator(&mut waypt1.point);
         self.to_mercator(&mut waypt2.point);
-        self.get_extra_nodes(waypt1, waypt2, prefer_major)
+        self.get_extra_nodes(waypt1, waypt2, major_snap_threshold)
             .map_err(err_to_js)
     }
 

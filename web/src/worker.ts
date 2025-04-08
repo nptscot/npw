@@ -123,7 +123,7 @@ export class Backend {
     waypoints: Waypoint[],
     overrideInfraType: string | null,
     defaultTier: Tier,
-    preferMajor: boolean,
+    majorSnapThreshold: number | null,
   ): AutosplitRoute {
     this.checkReady();
     return JSON.parse(
@@ -132,7 +132,7 @@ export class Backend {
         waypoints,
         overrideInfraType,
         `"${defaultTier}"`,
-        preferMajor,
+        majorSnapThreshold,
       ),
     );
   }
@@ -255,19 +255,21 @@ export class Backend {
     return JSON.parse(this.inner!.getConnectedComponents());
   }
 
-  snapPoint(pt: number[], preferMajor: boolean): [number, number] {
+  snapPoint(pt: number[], majorSnapThreshold: number | null): [number, number] {
     this.checkReady();
-    let snapped = this.inner!.snapPoint(pt[0], pt[1], preferMajor);
+    let snapped = this.inner!.snapPoint(pt[0], pt[1], majorSnapThreshold);
     return [snapped[0], snapped[1]];
   }
 
   getExtraNodes(
     waypt1: Waypoint,
     waypt2: Waypoint,
-    preferMajor: boolean,
+    majorSnapThreshold: number | null,
   ): [number, number, boolean][] {
     this.checkReady();
-    return JSON.parse(this.inner!.getExtraNodes(waypt1, waypt2, preferMajor));
+    return JSON.parse(
+      this.inner!.getExtraNodes(waypt1, waypt2, majorSnapThreshold),
+    );
   }
 
   getMajorJunctions(): FeatureCollection {

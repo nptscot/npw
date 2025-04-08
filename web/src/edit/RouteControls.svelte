@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { FeatureCollection } from "geojson";
-  import type { Map, MapMouseEvent } from "maplibre-gl";
+  import { LngLat, Point, type Map, type MapMouseEvent } from "maplibre-gl";
   import { onDestroy } from "svelte";
   import {
     CircleLayer,
@@ -40,7 +40,12 @@
   let extraNodes: ExtraNode[] = [];
   $: updateExtraNodes($waypoints, draggingExtraNode);
 
-  let rawCursor: Waypoint | null = null;
+  interface RawCursor {
+    screenPt: [number, number];
+    mapPt: [number, number];
+  }
+
+  let rawCursor: RawCursor | null = null;
   let previewSnappedCursor: FeatureCollection = emptyGeojson();
   let hoveringOnWaypoint = false;
   let hoveringOnExtraNode = false;
@@ -82,7 +87,7 @@
     captureUndoState();
     let point = await $backend!.snapPoint(
       e.detail.lngLat.toArray(),
-      $majorJunctions,
+      majorSnapThreshold(),
     );
     waypoints.update((w) => {
       w.push({
@@ -95,8 +100,8 @@
 
   async function onMouseMove(e: CustomEvent<MapMouseEvent>) {
     rawCursor = {
-      point: e.detail.lngLat.toArray(),
-      snapped: true,
+      screenPt: [e.detail.point.x, e.detail.point.y],
+      mapPt: e.detail.lngLat.toArray(),
     };
     // Only preview where the cursor is snapping when waypoints is empty;
     // otherwise the previewed route makes the current snap point clear
@@ -108,8 +113,8 @@
           geometry: {
             type: "Point",
             coordinates: await $backend!.snapPoint(
-              rawCursor.point,
-              $majorJunctions,
+              rawCursor!.mapPt,
+              majorSnapThreshold(),
             ),
           },
         },
@@ -139,7 +144,7 @@
 
   async function updatePreview(
     waypoints: Waypoint[],
-    rawCursor: Waypoint | null,
+    rawCursor: RawCursor | null,
     suppress: boolean,
   ) {
     if (suppress) {
@@ -160,7 +165,7 @@
                 type: "LineString",
                 coordinates: [
                   waypoints[waypoints.length - 1].point,
-                  rawCursor.point,
+                  rawCursor.mapPt,
                 ],
               },
             },
@@ -170,10 +175,13 @@
         // Asynchronously update to the real route (if it exists)
         previewGj = await $backend!.autosplitRoute(
           null,
-          [waypoints[waypoints.length - 1], rawCursor],
+          [
+            waypoints[waypoints.length - 1],
+            { point: rawCursor.mapPt, snapped: true },
+          ],
           null,
           tier,
-          $majorJunctions,
+          majorSnapThreshold(),
         );
       }
     } catch (err) {}
@@ -194,7 +202,7 @@
       let extra = await $backend!.getExtraNodes(
         waypoints[i],
         waypoints[i + 1],
-        $majorJunctions,
+        majorSnapThreshold(),
       );
       for (let [x, y, snapped] of extra) {
         nodes.push({ point: [x, y], snapped, insertIdx });
@@ -231,7 +239,7 @@
   async function finalizeDrag(node: ExtraNode) {
     draggingExtraNode = false;
 
-    let point = await $backend!.snapPoint(node.point, $majorJunctions);
+    let point = await $backend!.snapPoint(node.point, majorSnapThreshold());
     waypoints.update((w) => {
       w[node.insertIdx].point = point;
       return w;
@@ -266,7 +274,7 @@
 
     let point = await $backend!.snapPoint(
       $waypoints[idx].point,
-      $majorJunctions,
+      majorSnapThreshold(),
     );
     waypoints.update((w) => {
       w[idx].point = point;
@@ -282,6 +290,35 @@
     if (idx == $waypoints.length - 1) {
       finish();
     }
+  }
+
+  let snapDistancePixels = 50.0;
+  export function majorSnapThreshold(): number | null {
+    if (!$majorJunctions || !rawCursor) {
+      return null;
+    }
+
+    let [x, y] = rawCursor.screenPt;
+    // TODO Is it a problem to only modify x?
+    let nearbyPoint = new Point(x - snapDistancePixels, y);
+    return map
+      .unproject(nearbyPoint)
+      .distanceTo(new LngLat(rawCursor.mapPt[0], rawCursor.mapPt[1]));
+  }
+
+  function debugCursor(rawCursor: RawCursor | null): FeatureCollection {
+    let gj = emptyGeojson();
+    if (rawCursor) {
+      gj.features.push({
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "Point",
+          coordinates: rawCursor.mapPt,
+        },
+      });
+    }
+    return gj;
   }
 
   // @ts-expect-error Need to write a proper type for this
@@ -418,6 +455,20 @@
         paint={{
           "circle-color": "blue",
           "circle-radius": 6,
+        }}
+      />
+    </GeoJSON>
+
+    <GeoJSON data={debugCursor(rawCursor)}>
+      <CircleLayer
+        {...layerId("snapper-debug-cursor")}
+        layout={{
+          visibility: $majorJunctions && false ? "visible" : "none",
+        }}
+        paint={{
+          "circle-color": "yellow",
+          "circle-opacity": 0.5,
+          "circle-radius": snapDistancePixels,
         }}
       />
     </GeoJSON>

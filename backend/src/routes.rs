@@ -80,8 +80,8 @@ pub struct SetRouteInput {
 impl MapModel {
     pub fn set_route(&mut self, edit_id: Option<usize>, orig_route: SetRouteInput) -> Result<()> {
         // The waypoints should already be corrected to the exact snapped positions
-        let prefer_major = false;
-        let (orig_roads, _) = self.waypoints_to_path(&orig_route.waypoints, prefer_major);
+        let major_snap_threshold = None;
+        let (orig_roads, _) = self.waypoints_to_path(&orig_route.waypoints, major_snap_threshold);
 
         // If we're editing an existing route, first delete it
         if let Some(id) = edit_id {
@@ -289,7 +289,7 @@ impl MapModel {
         waypoints: Vec<Waypoint>,
         override_infra_type: Option<InfraType>,
         default_tier: Tier,
-        prefer_major: bool,
+        major_snap_threshold: Option<f64>,
     ) -> Result<String> {
         let mut used_roads = self.used_roads();
         if let Some(id) = editing_route_id {
@@ -298,7 +298,7 @@ impl MapModel {
             }
         }
 
-        let (route_roads, _) = self.waypoints_to_path(&waypoints, prefer_major);
+        let (route_roads, _) = self.waypoints_to_path(&waypoints, major_snap_threshold);
 
         // Split when:
         // - the auto-recommended or manual infrastructure type changes
@@ -557,8 +557,8 @@ impl SavedRoute {
             .collect();
 
         // The waypoints should already be corrected to the exact snapped positions
-        let prefer_major = false;
-        let (roads, _) = model.waypoints_to_path(&waypoints, prefer_major);
+        let major_snap_threshold = None;
+        let (roads, _) = model.waypoints_to_path(&waypoints, major_snap_threshold);
         InMemoryRoute {
             waypoints_wgs84: self.waypoints,
 

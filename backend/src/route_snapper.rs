@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use geo::{Coord, LineString, Point};
+use geo::{Coord, Distance, Euclidean, LineString, Point};
 use graph::{Graph, IntersectionID, PathStep, RoadID};
 
 use crate::{Dir, MapModel, Waypoint};
@@ -10,13 +10,13 @@ impl MapModel {
         &self,
         waypt1: Waypoint,
         waypt2: Waypoint,
-        prefer_major: bool,
+        major_snap_threshold: Option<f64>,
     ) -> Result<String> {
         // TODO If both waypoints aren't snapped, just return one extra node in the middle
         assert!(waypt1.snapped);
         assert!(waypt2.snapped);
 
-        let (roads, _) = self.waypoints_to_path(&vec![waypt1, waypt2], prefer_major);
+        let (roads, _) = self.waypoints_to_path(&vec![waypt1, waypt2], major_snap_threshold);
         let intersections = roads_to_intersections(&self.graph, &roads);
 
         let mut extra_nodes: Vec<(f64, f64, bool)> = Vec::new();
@@ -40,7 +40,7 @@ impl MapModel {
     pub fn waypoints_to_path(
         &self,
         waypts: &Vec<Waypoint>,
-        prefer_major: bool,
+        major_snap_threshold: Option<f64>,
     ) -> (Vec<(RoadID, Dir)>, LineString) {
         let profile = self.graph.profile_names["bicycle_direct"];
         let mut roads = Vec::new();
@@ -51,8 +51,8 @@ impl MapModel {
             pts.push(pair[0].point.into());
 
             if pair[0].snapped && pair[1].snapped {
-                let start = self.snap_to_intersection(pair[0].point.into(), prefer_major);
-                let end = self.snap_to_intersection(pair[1].point.into(), prefer_major);
+                let start = self.snap_to_intersection(pair[0].point.into(), major_snap_threshold);
+                let end = self.snap_to_intersection(pair[1].point.into(), major_snap_threshold);
 
                 if let Ok(route) = self.graph.routers[profile.0].route_between_intersections(
                     &self.graph,
@@ -94,15 +94,24 @@ impl MapModel {
         (roads, LineString::new(pts))
     }
 
-    pub fn snap_to_intersection(&self, pt: Point, prefer_major: bool) -> IntersectionID {
-        if prefer_major {
+    /// When `major_snap_threshold` is specified, then major intersections should be used, as long
+    /// as they are within this many meters of the pt.
+    pub fn snap_to_intersection(
+        &self,
+        pt: Point,
+        major_snap_threshold: Option<f64>,
+    ) -> IntersectionID {
+        if let Some(threshold) = major_snap_threshold {
             let i = self
                 .closest_intersection_major
                 .nearest_neighbor(&pt)
                 .unwrap()
                 .data;
-            // TODO Check distance
-            return i;
+
+            let dist = Euclidean.distance(pt, self.graph.intersections[i.0].point);
+            if dist <= threshold {
+                return i;
+            }
         }
 
         self.closest_intersection_all

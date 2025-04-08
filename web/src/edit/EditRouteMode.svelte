@@ -12,7 +12,6 @@
   } from "../colors";
   import { layerId, Modal, percent } from "../common";
   import RelevantLayers from "../layers/RelevantLayers.svelte";
-  import { majorJunctions } from "../layers/stores";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
     autosave,
@@ -29,6 +28,8 @@
 
   export let map: Map;
   export let id: number | null;
+
+  let routeControls: RouteControls | null = null;
 
   let name = "";
   let notes = "";
@@ -93,7 +94,7 @@
         waypts,
         overrideInfraType ? infraType : null,
         tier,
-        $majorJunctions,
+        routeControls!.majorSnapThreshold(),
       );
     } catch (err) {}
   }
@@ -161,6 +162,7 @@
 </script>
 
 <RouteControls
+  bind:this={routeControls}
   {map}
   {finish}
   {cancel}

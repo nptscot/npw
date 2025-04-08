@@ -27,9 +27,8 @@ export let severances = writable(false);
 export let debugOriginalData = writable(false);
 
 export let enableLayersPerStage = {
-  // TODO majorJunctions removed here for now
-  Primary: [],
-  Secondary: [townCentres],
+  Primary: [majorJunctions],
+  Secondary: [townCentres, majorJunctions],
   LocalAccess: [localPOIs],
   LongDistance: [settlements],
   assessment: [],
