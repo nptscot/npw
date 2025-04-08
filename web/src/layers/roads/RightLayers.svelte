@@ -32,16 +32,16 @@
       icon="fa-road"
     />
     <Toggle name="Estimated traffic volume" style="traffic" icon="fa-car" />
+    <Toggle
+      name="Estimated speed limit"
+      style="speed"
+      icon="fa-gauge-simple-high"
+    />
     <Toggle name="Gradient" style="gradient" icon="fa-mound" />
     <Toggle
       name="Street space"
       style="street_space"
       icon="fa-ruler-horizontal"
-    />
-    <Toggle
-      name="Estimated speed limit"
-      style="speed"
-      icon="fa-gauge-simple-high"
     />
     <Toggle name="Attractive streets" style="attractive" icon="fa-tree" />
     <Toggle
