@@ -309,7 +309,8 @@ mod tests {
                 Some(InfraType::OffRoad),
             ),
         ] {
-            let actual = classify(&tags(&input));
+            let is_offroad = false;
+            let actual = classify_existing_osm_infra(is_offroad, &tags(&input));
             if actual != expected {
                 println!("For {input:?}, expected {expected:?} but got {actual:?}\n");
                 ok = false;

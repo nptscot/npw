@@ -138,6 +138,7 @@ dependencies = [
  "geojson",
  "graph",
  "hilbert_2d",
+ "itertools 0.14.0",
  "js-sys",
  "log",
  "nanorand",
@@ -604,7 +605,7 @@ dependencies = [
 [[package]]
 name = "graph"
 version = "0.1.0"
-source = "git+https://github.com/a-b-street/15m#569b1e2b734010cbe349a37fb22c759c4a749c4a"
+source = "git+https://github.com/a-b-street/15m#6c312eec3038383e7690551854b47ad9e9229b4f"
 dependencies = [
  "anyhow",
  "chrono",
@@ -777,6 +778,15 @@ name = "itertools"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "413ee7dfc52ee1a4949ceeb7dbc8a33f2d6c088194d9f922fb8318faf1f01186"
+dependencies = [
+ "either",
+]
+
+[[package]]
+name = "itertools"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
 dependencies = [
  "either",
 ]

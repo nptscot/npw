@@ -151,8 +151,6 @@ fn find_minimal_waypoints(
     steps: &[(RoadID, Dir)],
     intersections: &Vec<IntersectionID>,
 ) -> Vec<IntersectionID> {
-    use crate::routes::{end_pos, start_pos};
-
     // TODO Really rethink the route snapper backend now, because the translation back and
     // forth is getting silly
     let path_steps: Vec<PathStep> = steps
@@ -167,23 +165,33 @@ fn find_minimal_waypoints(
     let profile = graph.profile_names["bicycle_direct"];
 
     // Try the optimistic, simple approach first -- just the first and last point
-    let i1 = intersections[0];
-    let i2 = *intersections.last().unwrap();
-    let start = start_pos(steps[0], graph);
-    let end = end_pos(*steps.last().unwrap(), graph);
-    assert_eq!(i1, start.intersection);
-    assert_eq!(i2, end.intersection);
-
-    if let Ok(route) = graph.routers[profile.0].route(graph, start, end) {
+    let simple = vec![intersections[0], *intersections.last().unwrap()];
+    if let Ok(route) =
+        graph.routers[profile.0].route_between_many_intersections(graph, simple.clone())
+    {
         if path_steps == route.steps {
-            return vec![i1, i2];
+            return simple;
         }
     }
 
-    // TODO Try some kind of iterative / binary search approach to pruning
-
-    // Give up and just include them all
-    intersections.iter().cloned().collect()
+    let mut current: Vec<IntersectionID> = intersections.iter().cloned().collect();
+    let mut idx = 1;
+    // Try removing one middle waypoint at a time
+    while idx < current.len() - 1 {
+        let removed = current.remove(idx);
+        if let Ok(route) =
+            graph.routers[profile.0].route_between_many_intersections(graph, current.clone())
+        {
+            if path_steps == route.steps {
+                // Keep the same idx
+                continue;
+            }
+        }
+        // Put it back and move on
+        current.insert(idx, removed);
+        idx += 1;
+    }
+    current
 }
 
 // Per https://datatracker.ietf.org/doc/html/rfc7946#section-11.2, 6 decimal places (10cm) is
