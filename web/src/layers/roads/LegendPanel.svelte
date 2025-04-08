@@ -5,8 +5,8 @@
     deprived,
     gradient,
     gradientColors,
-    infraTypeColors,
-    levelOfServiceColors,
+    infraTypeColorLegend,
+    levelOfServiceLabels,
     meshDensity,
     nptStreetSpaceColors,
     population,
@@ -69,7 +69,7 @@
       </label>
     {/if}
   {:else if $backgroundLayer == "existing_infra"}
-    <QualitativeLegend colors={infraTypeColors} />
+    <QualitativeLegend colors={infraTypeColorLegend} />
 
     {#if $devMode}
       <br />
@@ -96,14 +96,6 @@
       limits={gradient.limits}
     />
   {:else if $backgroundLayer == "street_space"}
-    {#if $debugOriginalData}
-      <QualitativeLegend colors={nptStreetSpaceColors} />
-    {:else}
-      <QualitativeLegend colors={streetSpaceColors} />
-    {/if}
-
-    <br />
-
     <p>
       What fits within the carriageway, verges, and footways?
       <HelpButton>
@@ -135,7 +127,15 @@
       </HelpButton>
     </p>
 
+    {#if $debugOriginalData}
+      <QualitativeLegend colors={nptStreetSpaceColors} />
+    {:else}
+      <QualitativeLegend colors={streetSpaceColors} />
+    {/if}
+
     {#if $devMode}
+      <br />
+
       <label>
         <input type="checkbox" bind:checked={$debugOriginalData} />
         Show original data
@@ -153,7 +153,7 @@
       </label>
     {/if}
   {:else if $backgroundLayer == "los"}
-    <QualitativeLegend colors={levelOfServiceColors} />
+    <QualitativeLegend colors={levelOfServiceLabels} />
 
     {#if $devMode}
       <br />
@@ -196,11 +196,11 @@
 
   {#if $mode.kind == "edit-route"}
     {#if $editModeBreakdown == "infra_type"}
-      <QualitativeLegend colors={infraTypeColors} />
+      <QualitativeLegend colors={infraTypeColorLegend} />
     {:else if $editModeBreakdown == "gradient"}
       <QualitativeLegend colors={gradientColors} />
     {:else if $editModeBreakdown == "los"}
-      <QualitativeLegend colors={levelOfServiceColors} />
+      <QualitativeLegend colors={levelOfServiceLabels} />
     {:else if $editModeBreakdown == "tier"}
       <QualitativeLegend colors={tierColors} />
     {/if}

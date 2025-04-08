@@ -8,6 +8,10 @@ export let infraTypeLabels = Object.fromEntries(
   infraTypes.map((x) => [x[0], x[1]]),
 );
 
+export let infraTypeColorLegend = Object.fromEntries(
+  infraTypes.map((x) => [x[1], x[2]]),
+);
+
 // TODO Making types less precise here for convenience elsewhere.
 // Alternatively, improve ODStats types.
 
@@ -41,6 +45,13 @@ export let levelOfServiceColors: { [name: string]: string } = {
   Medium: "orange",
   Low: "red",
   ShouldNotBeUsed: "brown",
+};
+
+export let levelOfServiceLabels: { [name: string]: string } = {
+  High: levelOfServiceColors.High,
+  Medium: levelOfServiceColors.Medium,
+  Low: levelOfServiceColors.Low,
+  "Should not be used": levelOfServiceColors.ShouldNotBeUsed,
 };
 
 export let gradientColors = {
