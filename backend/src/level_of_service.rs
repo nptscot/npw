@@ -121,6 +121,7 @@ pub fn get_level_of_service(
 
         // By definition, high
         InfraType::SegregatedWithSpeedVolume => LevelOfService::High,
+        InfraType::MixedTrafficWithSpeedVolume => LevelOfService::High,
 
         // "Detached or Remote Cycle Track"
         InfraType::OffRoad => LevelOfService::High,

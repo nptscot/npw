@@ -105,6 +105,7 @@ pub enum InfraType {
     SharedFootway,
     CycleLane,
     MixedTraffic,
+    MixedTrafficWithSpeedVolume,
 }
 
 #[derive(

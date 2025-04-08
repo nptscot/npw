@@ -56,6 +56,7 @@ export let showNetworkInfraTypes = writable({
   SharedFootway: true,
   CycleLane: true,
   MixedTraffic: true,
+  MixedTrafficWithSpeedVolume: true,
 });
 
 // Remember the last reference style enabled. "off" means none.

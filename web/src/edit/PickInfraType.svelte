@@ -34,6 +34,7 @@
       "https://www.cyclestreets.net/location/81341/",
     ],
     ["MixedTraffic", mixedTrafficIcon, ""],
+    ["MixedTrafficWithSpeedVolume", mixedTrafficIcon, ""],
   ];
 </script>
 

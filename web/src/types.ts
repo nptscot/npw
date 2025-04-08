@@ -14,7 +14,8 @@ export type InfraType =
   | "OffRoad"
   | "SharedFootway"
   | "CycleLane"
-  | "MixedTraffic";
+  | "MixedTraffic"
+  | "MixedTrafficWithSpeedVolume";
 export let infraTypes: [string, string, string][] = [
   ["Segregated", "Segregated track", "#054d05"],
   ["SegregatedWithSpeedVolume", "Segregated + traffic measures", "#469237"],
@@ -22,6 +23,11 @@ export let infraTypes: [string, string, string][] = [
   ["SharedFootway", "Shared footway", "#ffbf00"],
   ["CycleLane", "Painted lane", "#7faedd"],
   ["MixedTraffic", "Mixed traffic", "#FF00FF"],
+  [
+    "MixedTrafficWithSpeedVolume",
+    "Mixed traffic + traffic measures",
+    "#781f57",
+  ],
 ];
 
 // Map the name to [label, color]

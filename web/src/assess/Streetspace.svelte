@@ -27,6 +27,13 @@
     </p>
 
     <ol>
+      <li>
+        Reduce traffic speed and volume so that a segregated track is not
+        necessary for high Level of Service. Switch to the <i>
+          Mixed traffic with traffic measures
+        </i>
+         infrastructure type to indicate this.
+      </li>
       <li>Realign the route</li>
       <li>
         Pick an infrastructure type aside from segregated track, accepting a
