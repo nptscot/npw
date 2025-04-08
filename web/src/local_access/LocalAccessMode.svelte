@@ -79,6 +79,14 @@
     lastUpdate = $mutationCounter;
 
     refilterPOIs();
+
+    // While a POI is focused, data changed. Re-fetch it; maybe its reachability has changed.
+    if ($currentPOI) {
+      let kind = $currentPOI.kind;
+      let idx = $currentPOI.idx;
+      $currentPOI =
+        allPOIs.find((poi) => poi.kind == kind && poi.idx == idx) || null;
+    }
   }
   $: if ($currentStage == "LocalAccess" && $mutationCounter > 0) {
     recalc();
@@ -121,8 +129,7 @@
       await $backend!.setRoute(null, input.properties);
       await autosave();
 
-      // TODO This assumes the fix succeeded. Can we easily check?
-      $currentPOI.reachable = true;
+      // Let recalc happen to see if the fix succeeded
     }
   }
 
