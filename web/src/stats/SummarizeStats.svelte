@@ -15,10 +15,10 @@
   }
 </script>
 
-<p>The network you have designed performs as follows:</p>
-
 {#if $stats}
   {#await notNull($backend).getBaselineStats() then baseline}
+    <h2>Network metrics</h2>
+
     <table class="ds_table">
       <thead>
         <tr>
@@ -28,8 +28,6 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Network -->
-
         <tr>
           <th scope="row">Safety</th>
           <td>
@@ -106,7 +104,20 @@
             )}
           </td>
         </tr>
+      </tbody>
+    </table>
 
+    <h2>Per-tier metrics</h2>
+
+    <table class="ds_table">
+      <thead>
+        <tr>
+          <th scope="col">Metric</th>
+          <th scope="col">Baseline score</th>
+          <th scope="col">Score with proposed network</th>
+        </tr>
+      </thead>
+      <tbody>
         <!-- Primary -->
 
         <tr>
