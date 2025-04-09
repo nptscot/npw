@@ -86,8 +86,8 @@
 
   function attractiveness(s: Stats): string {
     let pct = percent3(s.total_attractive_length, s.total_network_length);
-    // TODO Check first threshold
-    let rating = stepLessThanOrEqual(pct, [10, 25, 50, 75]);
+    // First threshold will almost never happen; this is a deliberate choice
+    let rating = stepLessThanOrEqual(pct, [0, 25, 50, 75]);
     return `${pct}% (${rating})`;
   }
 
