@@ -1,9 +1,18 @@
 <script lang="ts">
+  import { Loading } from "svelte-utils";
   import { Modal } from "../common";
-  import { changeStage, stats } from "../stores";
+  import {
+    backend,
+    changeStage,
+    lastUpdateOD,
+    mutationCounter,
+    odStats,
+    stats,
+  } from "../stores";
   import SummarizeStats from "./SummarizeStats.svelte";
 
   let showStats = false;
+  let loading = "";
 
   function gotoAssess() {
     changeStage("assessment");
@@ -17,7 +26,36 @@
     }
     return (100 * x) / total;
   }
+
+  async function recalculateDirectness() {
+    if ($lastUpdateOD == $mutationCounter) {
+      return;
+    }
+
+    loading = "Recalculating directness";
+    $odStats = await $backend!.recalculateODStats();
+    $lastUpdateOD = $mutationCounter;
+    loading = "";
+  }
+
+  function directnessScore(average_weighted_directness: number): number {
+    if (average_weighted_directness > 1.5) {
+      return 1;
+    }
+    if (average_weighted_directness > 1.4) {
+      return 2;
+    }
+    if (average_weighted_directness > 1.3) {
+      return 3;
+    }
+    if (average_weighted_directness > 1.2) {
+      return 4;
+    }
+    return 5;
+  }
 </script>
+
+<Loading {loading} />
 
 {#if $stats}
   <Modal bind:show={showStats}>
@@ -33,7 +71,7 @@
 
   <div class="progress-summary">
     <!-- svelte-ignore a11y-invalid-attribute -->
-    <a href="#" on:click|preventDefault={() => (showStats = true)}>
+    <a href="#" on:click|stopPropagation={() => (showStats = true)}>
       <ul>
         <li title="What percent of your network has high Level of Service?">
           Safety
@@ -47,10 +85,19 @@
           />
         </li>
 
-        <li title="TODO: Placeholder score">
+        <li title="Average weighted directness">
           Directness
-          <br />
-          <progress value="0" max="100" />
+          {#if $odStats && $lastUpdateOD == $mutationCounter}
+            <br />
+            <progress
+              value={directnessScore($odStats.average_weighted_directness)}
+              max="5"
+            />
+          {:else}
+            <a href="#" on:click|stopPropagation={recalculateDirectness}>
+              <i class="fa-solid fa-calculator"></i>
+            </a>
+          {/if}
         </li>
 
         <li title="Percent of main roads covered by network">

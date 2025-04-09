@@ -32,7 +32,7 @@
         necessary for high Level of Service. Switch to the <i>
           Mixed traffic with traffic measures
         </i>
-         infrastructure type to indicate this.
+        infrastructure type to indicate this.
       </li>
       <li>Realign the route</li>
       <li>
