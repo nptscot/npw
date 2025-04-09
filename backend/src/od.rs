@@ -99,8 +99,10 @@ impl CountsOD {
 
 impl MapModel {
     pub fn od_counts(&self, fast_sample: bool) -> Result<CountsOD> {
+        assert!(self.quiet_router_ok);
+
         let keep_directness_routes = 10;
-        let direct_profile = self.graph.profile_names["bicycle_direct"];
+        let quiet_profile = self.graph.profile_names["bicycle_quiet"];
 
         let mut rng = WyRand::new_seed(42);
 
@@ -125,9 +127,9 @@ impl MapModel {
                 let input_pt1 = self.od_zones[zone1].random_point(&mut rng);
                 let input_pt2 = self.od_zones[zone2].random_point(&mut rng);
 
-                let start = self.graph.snap_to_road(input_pt1, direct_profile);
-                let end = self.graph.snap_to_road(input_pt2, direct_profile);
-                let Ok(route) = self.graph.routers[direct_profile.0].route(&self.graph, start, end)
+                let start = self.graph.snap_to_road(input_pt1, quiet_profile);
+                let end = self.graph.snap_to_road(input_pt2, quiet_profile);
+                let Ok(route) = self.graph.routers[quiet_profile.0].route(&self.graph, start, end)
                 else {
                     failed += 1;
                     continue;

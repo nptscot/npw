@@ -218,7 +218,6 @@ impl MapModel {
         if !self.quiet_router_ok {
             let mut timer = Timer::new("recalculate bicycle_quiet", None);
             self.recalculate_quiet_router(&mut timer);
-            self.quiet_router_ok = true;
         }
 
         let req: EvaluateRouteRequest = serde_wasm_bindgen::from_value(input)?;
@@ -264,7 +263,12 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = evaluateOD)]
-    pub fn evaluate_od_wasm(&self, fast_sample: bool) -> Result<String, JsValue> {
+    pub fn evaluate_od_wasm(&mut self, fast_sample: bool) -> Result<String, JsValue> {
+        if !self.quiet_router_ok {
+            let mut timer = Timer::new("recalculate bicycle_quiet", None);
+            self.recalculate_quiet_router(&mut timer);
+        }
+
         self.evaluate_od(fast_sample).map_err(err_to_js)
     }
 

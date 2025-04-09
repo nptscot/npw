@@ -201,6 +201,8 @@ impl MapModel {
 
     /// Returns JSON. This is slow and user-triggered.
     pub fn recalculate_od_stats(&mut self, timer: &mut Timer) -> Result<String> {
+        self.recalculate_quiet_router(timer);
+
         timer.step("calculate OD routes and stats");
         let fast_sample = true;
         let od = self.od_counts(fast_sample)?;
