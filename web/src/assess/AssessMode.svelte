@@ -1,6 +1,11 @@
 <script lang="ts">
   import { SplitComponent } from "../common/layout";
-  import { exitCurrentStage, mode } from "../stores";
+  import {
+    lastUpdateSlowStats,
+    mode,
+    mutationCounter,
+    slowStats,
+  } from "../stores";
   import Disconnections from "./Disconnections.svelte";
   import FinalReport from "./FinalReport.svelte";
   import { changePage, subpage } from "./index";
@@ -8,11 +13,6 @@
   import ODBreakdowns from "./ODBreakdowns.svelte";
   import Population from "./Population.svelte";
   import Streetspace from "./Streetspace.svelte";
-
-  function gotoOverview() {
-    exitCurrentStage();
-    $mode = { kind: "overview" };
-  }
 </script>
 
 <SplitComponent>
@@ -24,7 +24,11 @@
         </header>
 
         <div>
-          <button type="button" class="ds_link" on:click={gotoOverview}>
+          <button
+            type="button"
+            class="ds_link"
+            on:click={() => ($mode = { kind: "overview" })}
+          >
             <i class="fa-solid fa-chevron-left"></i>
             Back to project overview
           </button>
@@ -88,6 +92,19 @@
         >
           Evaluate a journey
         </button>
+
+        {#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
+          <button
+            class="ds_button"
+            on:click={() =>
+              ($mode = {
+                kind: "evaluate-journey",
+                browse: $slowStats.worst_directness_routes,
+              })}
+          >
+            Check journeys used to calculate directness
+          </button>
+        {/if}
       {:else if $subpage == "report"}
         <FinalReport />
       {:else if $subpage == "disconnected"}
