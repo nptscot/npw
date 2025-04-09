@@ -43,6 +43,7 @@
     loading = "";
   }
 
+  // TODO Refactor with SummarizeStats
   function directnessScore(average_weighted_directness: number): number {
     if (average_weighted_directness > 1.5) {
       return 1;

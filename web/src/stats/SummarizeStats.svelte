@@ -9,9 +9,94 @@
     odStats,
     stats,
   } from "../stores";
+  import type { ODStats, Stats } from "../types";
 
   function percent(pct: number): string {
     return `${Math.round(pct * 100)}%`;
+  }
+
+  function percent3(x: number, total: number): number {
+    if (total == 0) {
+      return 0;
+    }
+
+    return Math.round((x / total) * 100);
+  }
+
+  function stepLessThanOrEqual(pct: number, steps: number[]): string {
+    if (pct <= steps[0]) {
+      return "very poor";
+    }
+    if (pct <= steps[1]) {
+      return "poor";
+    }
+    if (pct <= steps[2]) {
+      return "medium";
+    }
+    if (pct <= steps[3]) {
+      return "good";
+    }
+    return "very good";
+  }
+
+  function stepGreaterThan(pct: number, steps: number[]): string {
+    if (pct > steps[0]) {
+      return "very poor";
+    }
+    if (pct > steps[1]) {
+      return "poor";
+    }
+    if (pct > steps[2]) {
+      return "medium";
+    }
+    if (pct > steps[3]) {
+      return "good";
+    }
+    return "very good";
+  }
+
+  function safety(s: Stats): string {
+    let pct = percent3(s.total_high_los_length, s.total_network_length);
+    let rating = stepLessThanOrEqual(pct, [20, 40, 60, 80]);
+    return `${pct}% (${rating})`;
+  }
+
+  function coherentDensity(s: Stats): string {
+    if (!s.density_network_in_settlements) {
+      return "no routes";
+    }
+    let rating = stepGreaterThan(
+      s.density_network_in_settlements,
+      [1000, 500, 400, 250],
+    );
+    return `${Math.round(s.density_network_in_settlements)}m (${rating})`;
+  }
+
+  function coherentMainRoads(s: Stats): string {
+    let pct = percent3(s.covered_main_road_length, s.total_main_road_length);
+    let rating = stepLessThanOrEqual(pct, [20, 40, 60, 80]);
+    return `${pct}% (${rating})`;
+  }
+
+  function comfort(s: Stats): string {
+    let pct = percent3(s.total_low_gradient_length, s.total_network_length);
+    let rating = stepLessThanOrEqual(pct, [10, 20, 40, 60]);
+    return `${pct}% (${rating})`;
+  }
+
+  function attractiveness(s: Stats): string {
+    let pct = percent3(s.total_attractive_length, s.total_network_length);
+    // TODO Check first threshold
+    let rating = stepLessThanOrEqual(pct, [10, 25, 50, 75]);
+    return `${pct}% (${rating})`;
+  }
+
+  function directness(s: ODStats): string {
+    let rating = stepGreaterThan(
+      s.average_weighted_directness,
+      [1.5, 1.4, 1.3, 1.2],
+    );
+    return `${s.average_weighted_directness.toFixed(1)}x (${rating})`;
   }
 </script>
 
@@ -30,79 +115,42 @@
       <tbody>
         <tr>
           <th scope="row">Safety</th>
-          <td>
-            {percent2(
-              baseline.total_high_los_length,
-              baseline.total_network_length,
-            )}
-          </td>
-          <td>
-            {percent2(
-              $stats.total_high_los_length,
-              $stats.total_network_length,
-            )}
-          </td>
+          <td>{safety(baseline)}</td>
+          <td>{safety($stats)}</td>
         </tr>
 
         <tr>
           <th scope="row">Directness</th>
           <td>TODO</td>
           {#if $odStats && $lastUpdateOD == $mutationCounter}
-            <td>{$odStats.average_weighted_directness.toFixed(1)}x</td>
+            <td>{directness($odStats)}</td>
           {:else}
             <td>Need to recalculate</td>
           {/if}
         </tr>
 
-        <!-- TODO Don't repeat coherence (main road coverage), because it's in primary? -->
         <tr>
           <th scope="row">Coherence (density)</th>
-          <td>
-            {#if baseline.density_network_in_settlements}
-              {Math.round(baseline.density_network_in_settlements)}m
-            {:else}
-              no routes
-            {/if}
-          </td>
-          <td>
-            {#if $stats.density_network_in_settlements}
-              {Math.round($stats.density_network_in_settlements)}m
-            {:else}
-              no routes
-            {/if}
-          </td>
+          <td>{coherentDensity(baseline)}</td>
+          <td>{coherentDensity($stats)}</td>
+        </tr>
+
+        <tr>
+          <th scope="row">Coherence (main road coverage)</th>
+          <td>{coherentMainRoads(baseline)}</td>
+          <td>{coherentMainRoads($stats)}</td>
         </tr>
 
         <tr>
           <th scope="row">Comfort</th>
-          <td>
-            {percent2(
-              baseline.total_low_gradient_length,
-              baseline.total_network_length,
-            )}
-          </td>
-          <td>
-            {percent2(
-              $stats.total_low_gradient_length,
-              $stats.total_network_length,
-            )}
-          </td>
+          <td>{comfort(baseline)}</td>
+          <td>{comfort($stats)}</td>
         </tr>
 
         <tr>
           <th scope="row">Attractiveness</th>
-          <td>
-            {percent2(
-              baseline.total_attractive_length,
-              baseline.total_network_length,
-            )}
-          </td>
-          <td>
-            {percent2(
-              $stats.total_attractive_length,
-              $stats.total_network_length,
-            )}
-          </td>
+          <td>{attractiveness(baseline)}</td>
+          <td>{attractiveness($stats)}</td>
         </tr>
       </tbody>
     </table>
