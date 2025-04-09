@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SummarizeStats from "../stats/SummarizeStats.svelte";
+  import SummarizeStatsWrapper from "../stats/SummarizeStatsWrapper.svelte";
   import { changePage } from "./index";
 </script>
 
@@ -14,4 +14,4 @@
   </button>
 </div>
 
-<SummarizeStats />
+<SummarizeStatsWrapper />

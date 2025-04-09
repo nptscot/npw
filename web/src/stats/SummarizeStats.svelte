@@ -2,7 +2,13 @@
   import { notNull } from "svelte-utils";
   import { tierColors } from "../colors";
   import { percent as percent2 } from "../common";
-  import { backend, stats } from "../stores";
+  import {
+    backend,
+    lastUpdateOD,
+    mutationCounter,
+    odStats,
+    stats,
+  } from "../stores";
 
   function percent(pct: number): string {
     return `${Math.round(pct * 100)}%`;
@@ -43,7 +49,11 @@
         <tr>
           <th scope="row">Directness</th>
           <td>TODO</td>
-          <td>TODO</td>
+          {#if $odStats && $lastUpdateOD == $mutationCounter}
+            <td>{$odStats.average_weighted_directness.toFixed(1)}x</td>
+          {:else}
+            <td>Need to recalculate</td>
+          {/if}
         </tr>
 
         <!-- TODO Don't repeat coherence (main road coverage), because it's in primary? -->

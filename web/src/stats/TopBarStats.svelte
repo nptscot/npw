@@ -27,6 +27,11 @@
     return (100 * x) / total;
   }
 
+  async function openStats() {
+    await recalculateDirectness();
+    showStats = true;
+  }
+
   async function recalculateDirectness() {
     if ($lastUpdateOD == $mutationCounter) {
       return;
@@ -71,7 +76,7 @@
 
   <div class="progress-summary">
     <!-- svelte-ignore a11y-invalid-attribute -->
-    <a href="#" on:click|stopPropagation={() => (showStats = true)}>
+    <a href="#" on:click|stopPropagation={openStats}>
       <ul>
         <li title="What percent of your network has high Level of Service?">
           Safety
