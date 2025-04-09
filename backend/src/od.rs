@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use enum_map::EnumMap;
-use geo::{BoundingRect, Contains, Coord, Distance, Euclidean, Intersects, MultiPolygon};
+use geo::{BoundingRect, Centroid, Contains, Coord, Distance, Euclidean, Intersects, MultiPolygon};
 use geojson::{FeatureCollection, Value};
-use graph::{PathStep, RoadID};
+use graph::{PathStep, RoadID, Timer};
 use itertools::Itertools;
 use nanorand::{Rng, WyRand};
 use serde::{Deserialize, Serialize};
@@ -16,14 +16,16 @@ pub struct CountsOD {
     pub counts: HashMap<RoadID, usize>,
     pub succeeded: usize,
     pub failed: usize,
-    pub average_weighted_directness: f64,
+}
 
+#[derive(Serialize, Deserialize)]
+pub struct SlowStats {
+    pub average_weighted_directness: f64,
     pub worst_directness_routes: Vec<(Coord, Coord)>,
 }
 
 impl CountsOD {
-    /// Populate `out` with `od_percents_los`, `od_percents_infra_type`, `od_percents_tier`,
-    /// `average_weighted_directness`, and `worst_directness_routes`
+    /// Populate `out` with `od_percents_los`, `od_percents_infra_type`, and `od_percents_tier`
     pub fn describe(
         self,
         map: &MapModel,
@@ -84,14 +86,6 @@ impl CountsOD {
             "od_percents_los".to_string(),
             serde_json::Value::Object(od_percents_los),
         );
-        out.insert(
-            "average_weighted_directness".to_string(),
-            self.average_weighted_directness.into(),
-        );
-        out.insert(
-            "worst_directness_routes".to_string(),
-            serde_json::to_value(&self.worst_directness_routes)?,
-        );
 
         Ok(())
     }
@@ -99,9 +93,8 @@ impl CountsOD {
 
 impl MapModel {
     pub fn od_counts(&self, fast_sample: bool) -> Result<CountsOD> {
+        // TODO Use quiet or direct for this?
         assert!(self.quiet_router_ok);
-
-        let keep_directness_routes = 10;
         let quiet_profile = self.graph.profile_names["bicycle_quiet"];
 
         let mut rng = WyRand::new_seed(42);
@@ -109,10 +102,6 @@ impl MapModel {
         let mut counts = HashMap::new();
         let mut succeeded = 0;
         let mut failed = 0;
-        let mut sum_directness = 0.0;
-        let mut sum_count = 0.0;
-
-        let mut worst_directness_routes = Vec::new();
 
         info!("Evaluating {} desire lines", self.desire_lines.len());
 
@@ -136,73 +125,18 @@ impl MapModel {
                 };
                 succeeded += 1;
 
-                // route.linestring() is more accurate, but slower
                 let mut route_length = 0.0;
-                let mut snapped_pt1 = None;
-                let mut snapped_pt2 = None;
-                for (pos, step) in route.steps.iter().with_position() {
-                    if let PathStep::Road { road, forwards } = step {
-                        let road = &self.graph.roads[road.0];
-                        route_length += road.length_meters;
-
-                        match pos {
-                            itertools::Position::First => {
-                                snapped_pt1 = Some(if *forwards {
-                                    road.linestring.0[0]
-                                } else {
-                                    *road.linestring.0.last().unwrap()
-                                });
-                            }
-                            itertools::Position::Last => {
-                                snapped_pt2 = Some(if !*forwards {
-                                    road.linestring.0[0]
-                                } else {
-                                    *road.linestring.0.last().unwrap()
-                                });
-                            }
-                            itertools::Position::Only => {
-                                snapped_pt1 = Some(if *forwards {
-                                    road.linestring.0[0]
-                                } else {
-                                    *road.linestring.0.last().unwrap()
-                                });
-                                snapped_pt2 = Some(if !*forwards {
-                                    road.linestring.0[0]
-                                } else {
-                                    *road.linestring.0.last().unwrap()
-                                });
-                            }
-                            itertools::Position::Middle => {}
-                        }
+                for step in &route.steps {
+                    if let PathStep::Road { road, .. } = step {
+                        route_length += self.graph.roads[road.0].length_meters;
                     }
                 }
 
-                let straight_line_length =
-                    Euclidean.distance(snapped_pt1.unwrap(), snapped_pt2.unwrap());
-                if straight_line_length == 0.0 {
-                    // This should never happen in practice; this was a degenerately empty route
-                    continue;
-                }
-
                 let count = uptake::pct_godutch_2020(route_length) * uptake_multiplier;
-
                 for step in route.steps {
                     if let PathStep::Road { road, .. } = step {
                         *counts.entry(road).or_insert(0.0) += count;
                     }
-                }
-
-                let directness = route_length / straight_line_length;
-                sum_directness += count * directness;
-                sum_count += count;
-
-                if worst_directness_routes.len() < keep_directness_routes {
-                    worst_directness_routes.push((input_pt1, input_pt2, directness));
-                    worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
-                } else if worst_directness_routes.last().as_ref().unwrap().2 < directness {
-                    worst_directness_routes.pop();
-                    worst_directness_routes.push((input_pt1, input_pt2, directness));
-                    worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
                 }
             }
         }
@@ -215,16 +149,6 @@ impl MapModel {
                 .collect(),
             succeeded,
             failed,
-            average_weighted_directness: sum_directness / (sum_count as f64),
-            worst_directness_routes: worst_directness_routes
-                .into_iter()
-                .map(|(start, end, _)| {
-                    (
-                        self.graph.mercator.pt_to_wgs84(start),
-                        self.graph.mercator.pt_to_wgs84(end),
-                    )
-                })
-                .collect(),
         })
     }
 
@@ -262,6 +186,128 @@ impl MapModel {
             bbox: None,
             foreign_members: Some(foreign_members),
         })?)
+    }
+
+    pub fn get_slow_stats(&self, timer: &mut Timer) -> SlowStats {
+        assert!(self.quiet_router_ok);
+
+        timer.step("generate OD pairs");
+        let requests = self.get_town_centre_od();
+
+        timer.step(format!("calculate {} routes", requests.len()));
+        let keep_directness_routes = 10;
+        let quiet_profile = self.graph.profile_names["bicycle_quiet"];
+
+        let mut sum_directness = 0.0;
+        let mut sum_count = 0;
+        let mut worst_directness_routes = Vec::new();
+
+        for (input_pt1, input_pt2) in requests {
+            let start = self.graph.snap_to_road(input_pt1, quiet_profile);
+            let end = self.graph.snap_to_road(input_pt2, quiet_profile);
+            let Ok(route) = self.graph.routers[quiet_profile.0].route(&self.graph, start, end)
+            else {
+                continue;
+            };
+
+            // route.linestring() is more accurate, but slower
+            let mut route_length = 0.0;
+            let mut snapped_pt1 = None;
+            let mut snapped_pt2 = None;
+            for (pos, step) in route.steps.iter().with_position() {
+                if let PathStep::Road { road, forwards } = step {
+                    let road = &self.graph.roads[road.0];
+                    route_length += road.length_meters;
+
+                    match pos {
+                        itertools::Position::First => {
+                            snapped_pt1 = Some(if *forwards {
+                                road.linestring.0[0]
+                            } else {
+                                *road.linestring.0.last().unwrap()
+                            });
+                        }
+                        itertools::Position::Last => {
+                            snapped_pt2 = Some(if !*forwards {
+                                road.linestring.0[0]
+                            } else {
+                                *road.linestring.0.last().unwrap()
+                            });
+                        }
+                        itertools::Position::Only => {
+                            snapped_pt1 = Some(if *forwards {
+                                road.linestring.0[0]
+                            } else {
+                                *road.linestring.0.last().unwrap()
+                            });
+                            snapped_pt2 = Some(if !*forwards {
+                                road.linestring.0[0]
+                            } else {
+                                *road.linestring.0.last().unwrap()
+                            });
+                        }
+                        itertools::Position::Middle => {}
+                    }
+                }
+            }
+
+            let straight_line_length =
+                Euclidean.distance(snapped_pt1.unwrap(), snapped_pt2.unwrap());
+            if straight_line_length == 0.0 {
+                // This should never happen in practice; this was a degenerately empty route
+                continue;
+            }
+
+            let directness = route_length / straight_line_length;
+            sum_directness += directness;
+            sum_count += 1;
+
+            if worst_directness_routes.len() < keep_directness_routes {
+                worst_directness_routes.push((input_pt1, input_pt2, directness));
+                worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
+            } else if worst_directness_routes.last().as_ref().unwrap().2 < directness {
+                worst_directness_routes.pop();
+                worst_directness_routes.push((input_pt1, input_pt2, directness));
+                worst_directness_routes.sort_by_key(|(_, _, d)| (*d * -100.0) as isize);
+            }
+        }
+
+        SlowStats {
+            average_weighted_directness: sum_directness / (sum_count as f64),
+            worst_directness_routes: worst_directness_routes
+                .into_iter()
+                .map(|(start, end, _)| {
+                    (
+                        self.graph.mercator.pt_to_wgs84(start),
+                        self.graph.mercator.pt_to_wgs84(end),
+                    )
+                })
+                .collect(),
+        }
+    }
+
+    /// Get straight lines between all pairs of town centres less than 5km
+    fn get_town_centre_od(&self) -> Vec<(Coord, Coord)> {
+        let mut requests = Vec::new();
+        for (idx1, tc1) in self.town_centres.iter().enumerate() {
+            for (idx2, tc2) in self.town_centres.iter().enumerate() {
+                // Routes are bidirectional, so just check one direction
+                if idx1 >= idx2 {
+                    continue;
+                }
+
+                let centroid1 = tc1.polygon.centroid().unwrap();
+                let centroid2 = tc2.polygon.centroid().unwrap();
+                let dist = Euclidean.distance(centroid1, centroid2);
+
+                if dist > 5000.0 {
+                    continue;
+                }
+
+                requests.push((centroid1.into(), centroid2.into()));
+            }
+        }
+        requests
     }
 }
 

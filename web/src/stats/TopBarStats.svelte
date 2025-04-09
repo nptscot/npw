@@ -4,9 +4,9 @@
   import {
     backend,
     changeStage,
-    lastUpdateOD,
+    lastUpdateSlowStats,
     mutationCounter,
-    odStats,
+    slowStats,
     stats,
   } from "../stores";
   import SummarizeStats from "./SummarizeStats.svelte";
@@ -33,13 +33,13 @@
   }
 
   async function recalculateDirectness() {
-    if ($lastUpdateOD == $mutationCounter) {
+    if ($lastUpdateSlowStats == $mutationCounter) {
       return;
     }
 
     loading = "Recalculating directness";
-    $odStats = await $backend!.recalculateODStats();
-    $lastUpdateOD = $mutationCounter;
+    $slowStats = await $backend!.recalculateSlowStats();
+    $lastUpdateSlowStats = $mutationCounter;
     loading = "";
   }
 
@@ -93,10 +93,10 @@
 
         <li title="Average weighted directness">
           Directness
-          {#if $odStats && $lastUpdateOD == $mutationCounter}
+          {#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
             <br />
             <progress
-              value={directnessScore($odStats.average_weighted_directness)}
+              value={directnessScore($slowStats.average_weighted_directness)}
               max="5"
             />
           {:else}

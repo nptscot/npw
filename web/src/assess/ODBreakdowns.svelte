@@ -9,15 +9,8 @@
   } from "chart.js";
   import { onMount } from "svelte";
   import { Pie } from "svelte-chartjs";
-  import { notNull } from "svelte-utils";
   import { infraTypeColors, levelOfServiceColors, tierColors } from "../colors";
-  import {
-    backend,
-    lastUpdateOD,
-    mode,
-    mutationCounter,
-    odStats,
-  } from "../stores";
+  import { backend, lastUpdateOD, mutationCounter, odStats } from "../stores";
   import { changePage } from "./index";
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
@@ -42,21 +35,6 @@
 </div>
 
 {#if $odStats && $lastUpdateOD == $mutationCounter}
-  <p>
-    <!-- svelte-ignore a11y-invalid-attribute -->
-    <a
-      href="#"
-      on:click|preventDefault={() =>
-        ($mode = {
-          kind: "evaluate-journey",
-          browse: notNull($odStats).worst_directness_routes,
-        })}
-    >
-      Average weighted directness
-    </a>
-    : {$odStats.average_weighted_directness.toFixed(1)}x
-  </p>
-
   <h4>Percent of demand by level of service</h4>
   <div style:height="300px">
     <Pie

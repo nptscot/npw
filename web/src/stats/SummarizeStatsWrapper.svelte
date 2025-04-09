@@ -1,16 +1,21 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { Loading } from "svelte-utils";
-  import { backend, lastUpdateOD, mutationCounter, odStats } from "../stores";
+  import {
+    backend,
+    lastUpdateSlowStats,
+    mutationCounter,
+    slowStats,
+  } from "../stores";
   import SummarizeStats from "./SummarizeStats.svelte";
 
   let loading = "";
 
   onMount(async () => {
-    if ($lastUpdateOD != $mutationCounter) {
+    if ($lastUpdateSlowStats != $mutationCounter) {
       loading = "Recalculating directness";
-      $odStats = await $backend!.recalculateODStats();
-      $lastUpdateOD = $mutationCounter;
+      $slowStats = await $backend!.recalculateSlowStats();
+      $lastUpdateSlowStats = $mutationCounter;
       loading = "";
     }
   });
@@ -18,6 +23,6 @@
 
 <Loading {loading} />
 
-{#if $odStats && $lastUpdateOD == $mutationCounter}
+{#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
   <SummarizeStats />
 {/if}

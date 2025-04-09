@@ -280,6 +280,18 @@ impl MapModel {
         result
     }
 
+    #[wasm_bindgen(js_name = recalculateSlowStats)]
+    pub fn recalculate_slow_stats_wasm(&mut self) -> Result<String, JsValue> {
+        let mut timer = Timer::new("recalculate slow stats", None);
+        if !self.quiet_router_ok {
+            self.recalculate_quiet_router(&mut timer);
+        }
+
+        let result = serde_json::to_string(&self.get_slow_stats(&mut timer)).map_err(err_to_js);
+        timer.done();
+        result
+    }
+
     #[wasm_bindgen(js_name = getBaselineStats)]
     pub fn get_baseline_stats_wasm(&self) -> Result<String, JsValue> {
         serde_json::to_string(&self.baseline_stats).map_err(err_to_js)

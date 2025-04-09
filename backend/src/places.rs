@@ -206,7 +206,7 @@ impl Greenspace {
 
 #[derive(Serialize, Deserialize)]
 pub struct TownCentre {
-    polygon: Polygon,
+    pub polygon: Polygon,
     name: Option<String>,
     pub roads: HashSet<RoadID>,
 }

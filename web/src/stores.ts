@@ -7,6 +7,7 @@ import { currentPOI } from "./local_access/stores";
 import type {
   ConnectedComponents,
   ODStats,
+  SlowStats,
   Stats,
   Tier,
   WorstRoutes,
@@ -80,6 +81,9 @@ export let remoteStorage = writable(true);
 export let devMode = writable(import.meta.env.MODE == "development");
 
 export let stats: Writable<Stats | null> = writable(null);
+export let slowStats: Writable<SlowStats | null> = writable(null);
+export let lastUpdateSlowStats = writable(0);
+
 export let odStats: Writable<ODStats | null> = writable(null);
 export let lastUpdateOD = writable(0);
 

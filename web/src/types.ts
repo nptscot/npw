@@ -61,17 +61,10 @@ export type EvaluateODOut = FeatureCollection<
   max_count: number;
 } & ODStats;
 
-export type WorstRoutes = [
-  { x: number; y: number },
-  { x: number; y: number },
-][];
-
 export interface ODStats {
   od_percents_infra_type: { [name: string]: number };
   od_percents_tier: { [name: string]: number };
   od_percents_los: { [name: string]: number };
-  average_weighted_directness: number;
-  worst_directness_routes: WorstRoutes;
 }
 
 export interface Stats {
@@ -99,6 +92,16 @@ export interface Stats {
 
   density_network_in_settlements: number | null;
 }
+
+export interface SlowStats {
+  average_weighted_directness: number;
+  worst_directness_routes: WorstRoutes;
+}
+
+export type WorstRoutes = [
+  { x: number; y: number },
+  { x: number; y: number },
+][];
 
 export type POIs = FeatureCollection<
   Point,

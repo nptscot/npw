@@ -21,6 +21,7 @@ import type {
   RouteProps,
   SetRouteInput,
   Settlements,
+  SlowStats,
   StaticRoad,
   Stats,
   Tier,
@@ -165,6 +166,11 @@ export class Backend {
   recalculateStats(): Stats {
     this.checkReady();
     return JSON.parse(this.inner!.recalculateStats());
+  }
+
+  recalculateSlowStats(): SlowStats {
+    this.checkReady();
+    return JSON.parse(this.inner!.recalculateSlowStats());
   }
 
   getBaselineStats(): Stats {
