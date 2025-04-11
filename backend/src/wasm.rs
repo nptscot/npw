@@ -308,14 +308,14 @@ impl MapModel {
     #[wasm_bindgen(js_name = loadSavefile)]
     pub fn load_savefile(&mut self, input: String) -> Result<(), JsValue> {
         let savefile: FeatureCollection = serde_json::from_str(&input).map_err(err_to_js)?;
+        let Some(foreign_members) = savefile.foreign_members.as_ref() else {
+            return Err(JsValue::from_str(
+                "GeoJSON is missing foreign members section",
+            ));
+        };
 
         let mut ok = false;
-        if let Some(Value::Number(num)) = savefile
-            .foreign_members
-            .as_ref()
-            .expect("no foreign members")
-            .get("version")
-        {
+        if let Some(Value::Number(num)) = foreign_members.get("version") {
             if let Some(version) = num.as_u64() {
                 ok = version == 1;
             }
@@ -324,8 +324,13 @@ impl MapModel {
             return Err(JsValue::from_str("Savefile is out-of-date"));
         }
 
-        self.id_counter = match savefile.foreign_members.unwrap().get("id_counter") {
-            Some(Value::Number(num)) => num.as_u64().expect("id_counter isn't u64") as usize,
+        self.id_counter = match foreign_members.get("id_counter") {
+            Some(Value::Number(num)) => match num.as_u64() {
+                Some(num) => num as usize,
+                None => {
+                    return Err(JsValue::from_str("Savefile has bad id_counter"));
+                }
+            },
             _ => {
                 return Err(JsValue::from_str("Savefile is missing id_counter"));
             }

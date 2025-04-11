@@ -60,7 +60,7 @@
     try {
       await $backend!.loadSavefile(value);
     } catch (err) {
-      window.alert(`This file doesn't seem to be valid: ${err}`);
+      window.alert(`This is not a valid NPW file: ${err}`);
       return;
     }
 
