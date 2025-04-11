@@ -169,8 +169,8 @@ fn create(
 
     let gradients = read_gradients("../data_prep/tmp/UK-dem-50m-4326.tif", &graph, timer)?;
 
+    timer.step("Finalizing (calculating demand thresholds)");
     Ok(MapModel::create(
-        study_area_name,
         graph,
         boundary_wgs84,
         od_zones,
