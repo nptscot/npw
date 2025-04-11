@@ -78,13 +78,16 @@
 <div class="ds_field-group">
   <div class="ds_checkbox">
     <input
-      bind:checked={useCN}
+      bind:checked={useExistingHighLoS}
       class="ds_checkbox__input"
-      id="useCN"
-      name="useCN"
+      id="useExistingHighLoS"
+      name="useExistingHighLoS"
       type="checkbox"
     />
-    <label class="ds_checkbox__label" for="useCN">Core network</label>
+    <label class="ds_checkbox__label" for="useExistingHighLoS">
+      All existing infrastructure from OpenStreetMap, if it achieves high Level
+      of Service
+    </label>
   </div>
 
   <div class="ds_checkbox">
@@ -102,20 +105,19 @@
 
   <div class="ds_checkbox">
     <input
-      bind:checked={useExistingHighLoS}
+      bind:checked={useCN}
       class="ds_checkbox__input"
-      id="useExistingHighLoS"
-      name="useExistingHighLoS"
+      id="useCN"
+      name="useCN"
       type="checkbox"
     />
-    <label class="ds_checkbox__label" for="useExistingHighLoS">
-      All existing infrastructure from OpenStreetMap, if it achieves high Level
-      of Service
-    </label>
+    <label class="ds_checkbox__label" for="useCN">Core network</label>
   </div>
 </div>
 
 <!--<p>Or clone from your existing projects</p>-->
+
+<br />
 
 <p>Enter a title for the network.</p>
 
