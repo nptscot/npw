@@ -1,6 +1,6 @@
 import { writable, type Writable } from "svelte/store";
 import { gridMeshDensity, uncoveredPopulation } from "../layers/stores";
-import { backgroundLayer } from "../stores";
+import { backgroundLayer, editsRoadStyle } from "../stores";
 
 type Subpage =
   | "overview"
@@ -26,7 +26,7 @@ export function changePage(page: Subpage) {
   } else if (page == "population") {
     uncoveredPopulation.set(true);
   } else if (page == "streetspace") {
-    backgroundLayer.set("deliverability");
+    editsRoadStyle.set("edits_deliverability");
   } else if (page == "calculated-routes") {
     backgroundLayer.set("calculated_rnet");
   }

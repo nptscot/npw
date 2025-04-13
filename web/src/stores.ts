@@ -47,8 +47,11 @@ export let routeA: Writable<{ lng: number; lat: number } | null> =
 export let routeB: Writable<{ lng: number; lat: number } | null> =
   writable(null);
 
-// TODO Move disconnections here?
-export type EditsRoadStyle = "off" | "edits_infra" | "edits_tier";
+export type EditsRoadStyle =
+  | "off"
+  | "edits_infra"
+  | "edits_tier"
+  | "edits_deliverability";
 
 export type BackgroundLayer =
   | "off"
@@ -64,7 +67,6 @@ export type BackgroundLayer =
   | "disconnections"
   | "precalculated_rnet"
   | "calculated_rnet"
-  | "deliverability"
   | "population"
   | "deprived";
 

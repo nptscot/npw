@@ -8,30 +8,38 @@
   } from "../../colors";
   import { LegendWithToggles } from "../../common";
   import { editsRoadStyle } from "../../stores";
-  import { showNetworkInfraTypes, showNetworkTiers } from "../stores";
+  import {
+    showNetworkDeliverability,
+    showNetworkInfraTypes,
+    showNetworkTiers,
+  } from "../stores";
 </script>
 
 <div class="network-style">
   <div style="display: flex">
-    <span style:margin-right="8px">Show network as:</span>
-
     <ul style:flex-grow="1">
-      <li class="tier" class:selected={$editsRoadStyle == "edits_tier"}>
+      <li class:selected={$editsRoadStyle == "off"}>
+        <button on:click={() => ($editsRoadStyle = "off")}>
+          &#10680;&nbsp; Hidden
+        </button>
+      </li>
+
+      <li class:selected={$editsRoadStyle == "edits_tier"}>
         <button on:click={() => ($editsRoadStyle = "edits_tier")}>
           ‖‖&nbsp; Tier
         </button>
       </li>
-      <li
-        class="infrastructure"
-        class:selected={$editsRoadStyle == "edits_infra"}
-      >
+
+      <li class:selected={$editsRoadStyle == "edits_infra"}>
         <button on:click={() => ($editsRoadStyle = "edits_infra")}>
           ☰&nbsp; Infrastructure type
         </button>
       </li>
-      <li class="hidden" class:selected={$editsRoadStyle == "off"}>
-        <button on:click={() => ($editsRoadStyle = "off")}>
-          &#10680;&nbsp; Hidden
+
+      <li class:selected={$editsRoadStyle == "edits_deliverability"}>
+        <button on:click={() => ($editsRoadStyle = "edits_deliverability")}>
+          <i class="fa-solid fa-person-digging"></i>
+          Deliverability
         </button>
       </li>
     </ul>
@@ -48,6 +56,12 @@
       labels={tierLabels}
       colors={tierColors}
       show={showNetworkTiers}
+    />
+  {:else if $editsRoadStyle == "edits_deliverability"}
+    <LegendWithToggles
+      labels={{ deliverable: "Deliverable", not: "Not enough space" }}
+      colors={{ deliverable: "green", not: "red" }}
+      show={showNetworkDeliverability}
     />
   {:else if $editsRoadStyle == "off"}
     <!-- Just maintain the vertical space -->

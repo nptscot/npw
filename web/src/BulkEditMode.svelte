@@ -126,6 +126,12 @@
           tierColors,
           "black",
         ),
+        edits_deliverability: [
+          "case",
+          ["feature-state", "current_infra_fits"],
+          "green",
+          "red",
+        ],
       }[colorBy] as ExpressionSpecification,
     ];
   }

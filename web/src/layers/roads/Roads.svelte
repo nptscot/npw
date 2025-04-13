@@ -23,7 +23,11 @@
     type Mode,
   } from "../../stores";
   import { type DynamicRoad } from "../../types";
-  import { showNetworkInfraTypes, showNetworkTiers } from "../stores";
+  import {
+    showNetworkDeliverability,
+    showNetworkInfraTypes,
+    showNetworkTiers,
+  } from "../stores";
   import CyclingDemandCoverage from "./CyclingDemandCoverage.svelte";
   import MainRoadCoverage from "./MainRoadCoverage.svelte";
   import ReferenceRoads from "./ReferenceRoads.svelte";
@@ -72,6 +76,7 @@
     style: EditsRoadStyle,
     showTiers: { [name: string]: boolean },
     showInfraTypes: { [name: string]: boolean },
+    showDeliverable: { [name: string]: boolean },
     hovered: Feature | null,
   ): DataDrivenPropertyValueSpecification<number> {
     // Moot point, invisibile anyway
@@ -98,6 +103,19 @@
         "in",
         ["feature-state", "current_tier"],
         ["literal", include],
+      ];
+    } else if (style == "edits_deliverability") {
+      let include = [];
+      if (showDeliverable.deliverable) {
+        include.push(true);
+      }
+      if (showDeliverable.not) {
+        include.push(false);
+      }
+      showLayer = [
+        "all",
+        ["to-boolean", ["feature-state", "current_infra"]],
+        ["in", ["feature-state", "current_infra_fits"], ["literal", include]],
       ];
     }
 
@@ -150,6 +168,12 @@
         tierColors,
         "black",
       ),
+      edits_deliverability: [
+        "case",
+        ["feature-state", "current_infra_fits"],
+        "green",
+        "red",
+      ] as DataDrivenPropertyValueSpecification<string>,
     }[style];
   }
 
@@ -176,6 +200,7 @@
             $editsRoadStyle,
             $showNetworkTiers,
             $showNetworkInfraTypes,
+            $showNetworkDeliverability,
             hovered,
           ),
           "line-width": roadLineWidth(1),

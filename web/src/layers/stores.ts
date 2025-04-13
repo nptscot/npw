@@ -59,5 +59,10 @@ export let showNetworkInfraTypes = writable({
   MixedTrafficWithSpeedVolume: true,
 });
 
+export let showNetworkDeliverability = writable({
+  deliverable: true,
+  not: true,
+});
+
 // Remember the last reference style enabled. "off" means none.
 export let lastBackgroundLayer: Writable<BackgroundLayer> = writable("off");

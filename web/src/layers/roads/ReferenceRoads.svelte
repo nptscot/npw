@@ -69,13 +69,6 @@
         0.0,
         show,
       ];
-    } else if (style == "deliverability") {
-      return [
-        "case",
-        ["to-boolean", ["feature-state", "current_infra"]],
-        show,
-        0.0,
-      ];
     }
 
     return show;
@@ -123,12 +116,6 @@
       disconnections: invisibile,
       precalculated_rnet: invisibile,
       calculated_rnet: invisibile,
-      deliverability: [
-        "case",
-        ["feature-state", "current_infra_fits"],
-        "green",
-        "red",
-      ] as DataDrivenPropertyValueSpecification<string>,
       population: invisibile,
       deprived: invisibile,
     }[style];
@@ -169,7 +156,6 @@
       disconnections: false,
       precalculated_rnet: false,
       calculated_rnet: false,
-      deliverability: true,
       population: false,
       deprived: false,
     }[style];

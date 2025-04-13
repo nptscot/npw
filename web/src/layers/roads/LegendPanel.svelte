@@ -47,9 +47,7 @@
   ];
 
   $: anyEnabled =
-    !["off", "attractive", "disconnections", "deliverability"].includes(
-      $backgroundLayer,
-    ) ||
+    !["off", "attractive", "disconnections"].includes($backgroundLayer) ||
     $cyclingDemandHigh ||
     $cyclingDemandMedium ||
     $mode.kind == "edit-route" ||
