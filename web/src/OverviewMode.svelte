@@ -12,7 +12,7 @@
 </script>
 
 <SplitComponent>
-  <div slot="controls">
+  <svelte:fragment slot="controls">
     <div class="main-controls">
       <header class="ds_page-header">
         <h2 class="ds_page-header__title">Plan my network</h2>
@@ -67,11 +67,12 @@
         Export project
       </button>
     </div>
-  </div>
+  </svelte:fragment>
 </SplitComponent>
 
 <style>
   .main-controls {
+    height: 100%;
     overflow-y: auto;
     padding: 20px;
   }

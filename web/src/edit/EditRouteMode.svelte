@@ -170,7 +170,7 @@
   editingExisting={id != null}
   {tier}
 >
-  <div slot="extra-controls" class="main-controls">
+  <div slot="extra-controls">
     {#if $waypoints.length >= 2}
       {@const pctFits = percentFits(sectionsGj)}
       {@const pctHighLoS = percentHighLoS(sectionsGj)}
@@ -335,8 +335,6 @@
 
     <RelevantLayers />
 
-    <LeftSidebarStats />
-
     <Modal bind:show={showOverrideModal}>
       <PickInfraType
         onFinish={(value) => {
@@ -346,6 +344,10 @@
       />
     </Modal>
   </div>
+
+  <svelte:fragment slot="sticky-bottom-controls">
+    <LeftSidebarStats />
+  </svelte:fragment>
 
   <span slot="extra-map">
     <GeoJSON data={sectionsGj}>
@@ -361,12 +363,6 @@
 </RouteControls>
 
 <style>
-  /** TODO These get nested in a strange way**/
-  .main-controls {
-    overflow-y: auto;
-    padding: 20px;
-  }
-
   .focused {
     text-decoration: underline;
   }

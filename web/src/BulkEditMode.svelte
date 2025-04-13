@@ -211,7 +211,7 @@
 </script>
 
 <SplitComponent>
-  <div slot="controls">
+  <svelte:fragment slot="controls">
     <div class="main-controls">
       <header class="ds_page-header">
         <h2 class="ds_page-header__title">Bulk edit</h2>
@@ -316,7 +316,7 @@
 
       <PickInfraType onFinish={changeInfraType} />
     </Modal>
-  </div>
+  </svelte:fragment>
 
   <div slot="map">
     <GeoJSON data={allRoutes} generateId>
@@ -345,6 +345,7 @@
 
 <style>
   .main-controls {
+    height: 100%;
     overflow-y: auto;
     padding: 20px;
   }

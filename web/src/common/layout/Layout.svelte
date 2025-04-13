@@ -27,15 +27,8 @@
   }
 
   .controls {
-    width: 25%; /* padding: 10px; */
+    width: 25%;
     min-width: 350px;
-
-    /* TODO no effect? */
-    display: flex;
-    flex-direction: column;
-    justify-content: space between;
-    /* TODO hack, only want some parts to scroll */
-    overflow: auto;
   }
 
   .map {

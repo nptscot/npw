@@ -16,7 +16,7 @@
 </script>
 
 <SplitComponent>
-  <div slot="controls">
+  <svelte:fragment slot="controls">
     <div class="main-controls">
       {#if $subpage == "overview"}
         <header class="ds_page-header">
@@ -119,11 +119,12 @@
         <ODBreakdowns />
       {/if}
     </div>
-  </div>
+  </svelte:fragment>
 </SplitComponent>
 
 <style>
   .main-controls {
+    height: 100%;
     overflow-y: auto;
     padding: 20px;
   }

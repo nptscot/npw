@@ -220,7 +220,7 @@
     <TopBar />
   </header>
   <main slot="controls">
-    <div bind:this={controlsDiv} />
+    <div class="controlsDiv" bind:this={controlsDiv} />
   </main>
 
   <main slot="map" class="map-container">
@@ -335,6 +335,14 @@
 <style>
   :global(body) {
     margin: 0;
+  }
+
+  main[slot="controls"] {
+    height: 100%;
+  }
+
+  .controlsDiv {
+    height: 100%;
   }
 
   .map-container {

@@ -24,7 +24,7 @@
 </script>
 
 <SplitComponent>
-  <div slot="controls">
+  <svelte:fragment slot="controls">
     <div class="main-controls">
       <header class="ds_page-header">
         <h2 class="ds_page-header__title">Export project</h2>
@@ -53,7 +53,7 @@
         </button>
       </div>
     </div>
-  </div>
+  </svelte:fragment>
 </SplitComponent>
 
 <!-- Render an invisible component to steal its HTML -->
@@ -63,6 +63,7 @@
 
 <style>
   .main-controls {
+    height: 100%;
     overflow-y: auto;
     padding: 20px;
   }

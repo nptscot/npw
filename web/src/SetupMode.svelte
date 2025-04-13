@@ -93,92 +93,96 @@
 </script>
 
 <SplitComponent>
-  <div slot="controls" class="main-controls">
-    {#if subpage == "explore"}
-      <header class="ds_page-header">
-        <h2 class="ds_page-header__title">Explore {prettyprintBoundary()}</h2>
-      </header>
+  <svelte:fragment slot="controls">
+    <div class="main-controls">
+      {#if subpage == "explore"}
+        <header class="ds_page-header">
+          <h2 class="ds_page-header__title">Explore {prettyprintBoundary()}</h2>
+        </header>
 
-      <div>
-        <button
-          type="button"
-          class="ds_link"
-          on:click={() => (window.location.href = "./")}
-        >
-          <i class="fa-solid fa-chevron-left"></i>
-          Work in a different area
+        <div>
+          <button
+            type="button"
+            class="ds_link"
+            on:click={() => (window.location.href = "./")}
+          >
+            <i class="fa-solid fa-chevron-left"></i>
+            Work in a different area
+          </button>
+        </div>
+
+        <p>Explore the map and layers, or begin a new network project.</p>
+        <p>
+          You should familiarise yourself with current infrastructure, via the
+          layers on the right, before starting your new cycle network.
+        </p>
+
+        <div>
+          <button
+            class="ds_button"
+            on:click={() =>
+              ($mode = { kind: "setup", subpage: "project-list" })}
+          >
+            Design my network
+          </button>
+        </div>
+      {:else if subpage == "project-list"}
+        <header class="ds_page-header">
+          <h2 class="ds_page-header__title">Design my network</h2>
+        </header>
+
+        <div>
+          <button
+            type="button"
+            class="ds_link"
+            on:click={() => ($mode = { kind: "setup", subpage: "explore" })}
+          >
+            <i class="fa-solid fa-chevron-left"></i>
+            Back
+          </button>
+        </div>
+
+        <h4>Start a new project for this area</h4>
+
+        <button class="ds_button" on:click={() => (subpage = "new-project")}>
+          New project
         </button>
-      </div>
 
-      <p>Explore the map and layers, or begin a new network project.</p>
-      <p>
-        You should familiarise yourself with current infrastructure, via the
-        layers on the right, before starting your new cycle network.
-      </p>
+        {#if fileList.length > 0}
+          <h4>Or choose an existing project</h4>
 
-      <div>
-        <button
-          class="ds_button"
-          on:click={() => ($mode = { kind: "setup", subpage: "project-list" })}
-        >
-          Design my network
-        </button>
-      </div>
-    {:else if subpage == "project-list"}
-      <header class="ds_page-header">
-        <h2 class="ds_page-header__title">Design my network</h2>
-      </header>
+          {#each fileList as [filename, description]}
+            <div style="display: flex; justify-content: space-between;">
+              <button class="ds_button" on:click={() => openFile(filename)}>
+                {filename} ({description})
+              </button>
 
-      <div>
-        <button
-          type="button"
-          class="ds_link"
-          on:click={() => ($mode = { kind: "setup", subpage: "explore" })}
-        >
-          <i class="fa-solid fa-chevron-left"></i>
-          Back
-        </button>
-      </div>
+              <button
+                class="ds_button ds_button--secondary"
+                on:click={() => deleteFile(filename)}
+              >
+                Delete
+              </button>
+            </div>
+          {/each}
+        {/if}
 
-      <h4>Start a new project for this area</h4>
+        <h4>Load from a file</h4>
 
-      <button class="ds_button" on:click={() => (subpage = "new-project")}>
-        New project
-      </button>
-
-      {#if fileList.length > 0}
-        <h4>Or choose an existing project</h4>
-
-        {#each fileList as [filename, description]}
-          <div style="display: flex; justify-content: space-between;">
-            <button class="ds_button" on:click={() => openFile(filename)}>
-              {filename} ({description})
-            </button>
-
-            <button
-              class="ds_button ds_button--secondary"
-              on:click={() => deleteFile(filename)}
-            >
-              Delete
-            </button>
-          </div>
-        {/each}
+        <label style:display="block">
+          Load from an exported file
+          <input bind:this={fileInput} on:change={importFile} type="file" />
+        </label>
+      {:else if subpage == "new-project"}
+        <NewProject bind:subpage />
       {/if}
-
-      <h4>Load from a file</h4>
-
-      <label style:display="block">
-        Load from an exported file
-        <input bind:this={fileInput} on:change={importFile} type="file" />
-      </label>
-    {:else if subpage == "new-project"}
-      <NewProject bind:subpage />
-    {/if}
-  </div>
+    </div>
+  </svelte:fragment>
 </SplitComponent>
 
 <style>
   .main-controls {
+    height: 100%;
     overflow-y: auto;
     padding: 20px;
   }

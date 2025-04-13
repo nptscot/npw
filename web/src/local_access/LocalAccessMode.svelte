@@ -162,7 +162,7 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <SplitComponent>
-  <div slot="controls">
+  <svelte:fragment slot="controls">
     <div class="main-controls">
       {#if !$currentPOI}
         <header
@@ -297,7 +297,7 @@
     </div>
 
     <LeftSidebarStats />
-  </div>
+  </svelte:fragment>
 
   <div slot="map">
     <MapEvents on:click={() => ($currentPOI = null)} />
@@ -312,6 +312,7 @@
 
 <style>
   .main-controls {
+    height: 100%;
     overflow-y: auto;
     padding: 20px;
   }

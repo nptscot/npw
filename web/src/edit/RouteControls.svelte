@@ -331,7 +331,7 @@
 <svelte:window on:keydown={keyDown} />
 
 <SplitComponent>
-  <div slot="controls">
+  <div slot="controls" class="left">
     <div class="main-controls">
       <header class="ds_page-header">
         <span
@@ -400,6 +400,8 @@
 
       <slot name="extra-controls" />
     </div>
+
+    <slot name="sticky-bottom-controls" />
   </div>
 
   <div slot="map">
@@ -530,6 +532,13 @@
   }
 
   /** Controls **/
+  .left {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
   .main-controls {
     overflow-y: auto;
     padding: 20px;

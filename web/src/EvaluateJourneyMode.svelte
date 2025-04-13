@@ -116,7 +116,7 @@
 <svelte:window on:keydown={keyDown} />
 
 <SplitComponent>
-  <div slot="controls">
+  <svelte:fragment slot="controls">
     <div class="main-controls">
       <header class="ds_page-header">
         <h2 class="ds_page-header__title">Evaluate a journey</h2>
@@ -234,7 +234,7 @@
 
       <RelevantLayers />
     </div>
-  </div>
+  </svelte:fragment>
 
   <div slot="map">
     <MapEvents on:contextmenu={onRightClick} />
@@ -325,6 +325,7 @@
   }
 
   .main-controls {
+    height: 100%;
     overflow-y: auto;
     padding: 20px;
   }

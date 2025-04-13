@@ -28,7 +28,7 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <SplitComponent>
-  <div slot="controls">
+  <div slot="controls" class="left">
     <div class="main-controls">
       <header
         class="ds_page-header"
@@ -116,6 +116,13 @@
 </SplitComponent>
 
 <style>
+  .left {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
   .main-controls {
     overflow-y: auto;
     padding: 20px;
