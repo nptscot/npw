@@ -22,12 +22,7 @@
   </label>
 
   {#if !empty}
-    <div
-      style:display={show ? "block" : "none"}
-      style:border="1px solid black"
-      style:padding="4px"
-      style:background="#fffff2"
-    >
+    <div style:display={show ? "block" : "none"} style:margin-left="20px">
       <slot />
     </div>
   {/if}

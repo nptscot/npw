@@ -5,7 +5,7 @@
 
 <LayerControls name="Main road coverage" bind:show={$mainRoadCoverage}>
   <label>
-    <input type="checkbox" bind:checked={$showUncovered} role="switch" />
+    <input type="checkbox" bind:checked={$showUncovered} />
     Show all demand, even if covered
   </label>
 </LayerControls>
