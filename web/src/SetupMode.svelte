@@ -16,6 +16,10 @@
   export let subpage: "explore" | "project-list" | "new-project";
 
   let fileList = listFilesInBoundary($boundaryName);
+  // When first starting the app, if the user has been here before, skip the splash screen.
+  if (fileList.length > 0 && subpage == "explore") {
+    subpage = "project-list";
+  }
 
   // When entering this mode, clear out any state
   onMount(async () => {
@@ -131,18 +135,18 @@
           <h2 class="ds_page-header__title">Design my network</h2>
         </header>
 
+        <h4>Start a new project for this area</h4>
+
         <div>
           <button
             type="button"
             class="ds_link"
-            on:click={() => ($mode = { kind: "setup", subpage: "explore" })}
+            on:click={() => (window.location.href = "./")}
           >
             <i class="fa-solid fa-chevron-left"></i>
-            Back
+            Work in a different area
           </button>
         </div>
-
-        <h4>Start a new project for this area</h4>
 
         <button class="ds_button" on:click={() => (subpage = "new-project")}>
           New project
