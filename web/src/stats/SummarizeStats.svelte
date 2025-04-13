@@ -102,8 +102,6 @@
 
 {#if $stats}
   {#await notNull($backend).getBaselineStats() then baseline}
-    <h2>Network metrics</h2>
-
     <table class="ds_table">
       <thead>
         <tr>
@@ -155,7 +153,7 @@
       </tbody>
     </table>
 
-    <h2>Per-tier metrics</h2>
+    <h3>Per-tier metrics</h3>
 
     <table class="ds_table">
       <thead>

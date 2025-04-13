@@ -65,13 +65,13 @@
 
 {#if $stats}
   <Modal bind:show={showStats}>
-    <button
-      class="ds_button ds_button--secondary"
-      on:click={gotoAssess}
-      style="float: right"
-    >
-      See full assessment
-    </button>
+    <div style="display: flex; justify-content: space-between">
+      <h2>Network metrics</h2>
+      <button class="ds_button ds_button--secondary" on:click={gotoAssess}>
+        See full assessment
+      </button>
+    </div>
+
     <SummarizeStats />
   </Modal>
 
