@@ -48,13 +48,13 @@
       />
     {:else if $currentStage == "Secondary"}
       <Metric
-        label="Medium cycling demand coverage"
-        pct={percent($stats.covered_medium_demand, $stats.total_medium_demand)}
+        label="Town centres"
+        pct={$stats.percent_reachable_town_centres}
       />
 
       <Metric
-        label="Town centres"
-        pct={$stats.percent_reachable_town_centres}
+        label="Medium cycling demand coverage"
+        pct={percent($stats.covered_medium_demand, $stats.total_medium_demand)}
       />
     {:else if $currentStage == "LocalAccess"}
       <Metric label="Schools" pct={$stats.percent_reachable_schools} />
