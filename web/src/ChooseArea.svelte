@@ -15,6 +15,7 @@
   import { Popup } from "svelte-utils/map";
   import boundariesUrl from "../assets/boundaries.geojson?url";
   import logo from "../assets/npt_logo.png?url";
+  import { stripPrefix } from "./common";
   import { listAllFiles } from "./common/files";
   import { maptilerApiKey } from "./stores";
 
@@ -24,6 +25,8 @@
   };
   let lad = "";
   let ladNames: string[] = [];
+  let previousBoundaries = [...listAllFiles().keys()];
+  previousBoundaries.sort();
 
   onMount(async () => {
     // @ts-expect-error This really exists for the SG design system, but TS doesn't know about it
@@ -84,25 +87,19 @@
       Start
     </button>
 
-    <hr />
+    {#if previousBoundaries.length > 0}
+      <h3>Recently used areas</h3>
 
-    <h3>Or continue with a previously opened file</h3>
-
-    <div style="columns: 2">
-      {#each listAllFiles() as [boundary, list]}
-        <div class="file-group">
-          <h4>{boundary}</h4>
-          {#each list as [filename, description]}
-            <p>
-              <a href={`npw.html?boundary=${boundary}&file=${filename}`}>
-                {filename}
-              </a>
-              ({description})
-            </p>
-          {/each}
-        </div>
-      {/each}
-    </div>
+      <ul>
+        {#each previousBoundaries as boundary}
+          <li>
+            <a href={`npw.html?boundary=${boundary}`}>
+              {stripPrefix(boundary, "LAD_")}
+            </a>
+          </li>
+        {/each}
+      </ul>
+    {/if}
   </div>
 
   <div class="map">
@@ -167,13 +164,5 @@
   .map {
     height: 100%;
     width: 100%;
-  }
-
-  /* TODO: Temporarily, controls for grouping previous files */
-  .file-group {
-    border: 1px solid black;
-    padding: 4px;
-    margin-bottom: 8px;
-    break-inside: avoid-column;
   }
 </style>
