@@ -1,6 +1,6 @@
 <script lang="ts">
   import SummarizeStatsWrapper from "../stats/SummarizeStatsWrapper.svelte";
-  import { changePage } from "./index";
+  import { subpage } from "./index";
 </script>
 
 <header class="ds_page-header">
@@ -8,7 +8,11 @@
 </header>
 
 <div>
-  <button type="button" class="ds_link" on:click={() => changePage("overview")}>
+  <button
+    type="button"
+    class="ds_link"
+    on:click={() => ($subpage = "overview")}
+  >
     <i class="fa-solid fa-chevron-left"></i>
     Back to network assessment
   </button>

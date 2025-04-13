@@ -1,5 +1,14 @@
 <script lang="ts">
-  import { changePage } from "./index";
+  import { onDestroy, onMount } from "svelte";
+  import { gridMeshDensity } from "../layers/stores";
+  import { subpage } from "./index";
+
+  onMount(() => {
+    $gridMeshDensity = true;
+  });
+  onDestroy(() => {
+    $gridMeshDensity = false;
+  });
 </script>
 
 <header class="ds_page-header">
@@ -7,7 +16,11 @@
 </header>
 
 <div>
-  <button type="button" class="ds_link" on:click={() => changePage("overview")}>
+  <button
+    type="button"
+    class="ds_link"
+    on:click={() => ($subpage = "overview")}
+  >
     <i class="fa-solid fa-chevron-left"></i>
     Back to network assessment
   </button>

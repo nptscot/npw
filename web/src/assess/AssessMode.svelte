@@ -8,7 +8,7 @@
   } from "../stores";
   import Disconnections from "./Disconnections.svelte";
   import FinalReport from "./FinalReport.svelte";
-  import { changePage, subpage } from "./index";
+  import { subpage } from "./index";
   import MeshDensity from "./MeshDensity.svelte";
   import ODBreakdowns from "./ODBreakdowns.svelte";
   import Population from "./Population.svelte";
@@ -41,23 +41,23 @@
 
         <h4>Disconnections</h4>
 
-        <button class="ds_button" on:click={() => changePage("disconnected")}>
+        <button class="ds_button" on:click={() => ($subpage = "disconnected")}>
           Identify network splits
         </button>
 
         <h4>Coverage</h4>
 
-        <button class="ds_button" on:click={() => changePage("mesh-density")}>
+        <button class="ds_button" on:click={() => ($subpage = "mesh-density")}>
           Analyse mesh density
         </button>
 
-        <button class="ds_button" on:click={() => changePage("population")}>
+        <button class="ds_button" on:click={() => ($subpage = "population")}>
           Identify population zones without coverage
         </button>
 
         <h4>Deliverability</h4>
 
-        <button class="ds_button" on:click={() => changePage("streetspace")}>
+        <button class="ds_button" on:click={() => ($subpage = "streetspace")}>
           Check routes that do not fit in available streetspace
         </button>
 
@@ -66,7 +66,7 @@
         <h4>Metrics</h4>
 
         <div>
-          <button class="ds_button" on:click={() => changePage("report")}>
+          <button class="ds_button" on:click={() => ($subpage = "report")}>
             Show network metrics
           </button>
         </div>
@@ -75,7 +75,7 @@
 
         <button
           class="ds_button"
-          on:click={() => changePage("calculated-routes")}
+          on:click={() => ($subpage = "calculated-routes")}
         >
           See how the demand uses the network
         </button>

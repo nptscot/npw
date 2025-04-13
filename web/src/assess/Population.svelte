@@ -1,7 +1,16 @@
 <script lang="ts">
+  import { onDestroy, onMount } from "svelte";
   import { downloadGeneratedFile } from "svelte-utils";
+  import { uncoveredPopulation } from "../layers/stores";
   import { backend, devMode } from "../stores";
-  import { changePage } from "./index";
+  import { subpage } from "./index";
+
+  onMount(() => {
+    $uncoveredPopulation = true;
+  });
+  onDestroy(() => {
+    $uncoveredPopulation = false;
+  });
 
   async function downloadDataZones() {
     let gj = await $backend!.getDataZones();
@@ -14,7 +23,11 @@
 </header>
 
 <div>
-  <button type="button" class="ds_link" on:click={() => changePage("overview")}>
+  <button
+    type="button"
+    class="ds_link"
+    on:click={() => ($subpage = "overview")}
+  >
     <i class="fa-solid fa-chevron-left"></i>
     Back to network assessment
   </button>

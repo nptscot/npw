@@ -1,8 +1,16 @@
 <script lang="ts">
+  import { onDestroy, onMount } from "svelte";
   import { componentColors } from "../colors";
   import { prettyPrintDistance } from "../common";
-  import { connectedComponents, map } from "../stores";
-  import { changePage } from "./index";
+  import { backgroundLayer, connectedComponents, map } from "../stores";
+  import { subpage } from "./index";
+
+  onMount(() => {
+    $backgroundLayer = "disconnections";
+  });
+  onDestroy(() => {
+    $backgroundLayer = "off";
+  });
 </script>
 
 <header class="ds_page-header">
@@ -10,7 +18,11 @@
 </header>
 
 <div>
-  <button type="button" class="ds_link" on:click={() => changePage("overview")}>
+  <button
+    type="button"
+    class="ds_link"
+    on:click={() => ($subpage = "overview")}
+  >
     <i class="fa-solid fa-chevron-left"></i>
     Back to network assessment
   </button>

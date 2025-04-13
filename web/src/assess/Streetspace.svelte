@@ -1,7 +1,15 @@
 <script lang="ts">
+  import { onDestroy, onMount } from "svelte";
   import { percent, prettyPrintDistance } from "../common";
-  import { stats } from "../stores";
-  import { changePage } from "./index";
+  import { editsRoadStyle, stats } from "../stores";
+  import { subpage } from "./index";
+
+  onMount(() => {
+    $editsRoadStyle = "edits_deliverability";
+  });
+  onDestroy(() => {
+    $editsRoadStyle = "edits_tier";
+  });
 </script>
 
 <header class="ds_page-header">
@@ -9,7 +17,11 @@
 </header>
 
 <div>
-  <button type="button" class="ds_link" on:click={() => changePage("overview")}>
+  <button
+    type="button"
+    class="ds_link"
+    on:click={() => ($subpage = "overview")}
+  >
     <i class="fa-solid fa-chevron-left"></i>
     Back to network assessment
   </button>

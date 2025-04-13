@@ -7,19 +7,30 @@
     Title,
     Tooltip,
   } from "chart.js";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { Pie } from "svelte-chartjs";
   import { infraTypeColors, levelOfServiceColors, tierColors } from "../colors";
-  import { backend, lastUpdateOD, mutationCounter, odStats } from "../stores";
-  import { changePage } from "./index";
+  import {
+    backend,
+    backgroundLayer,
+    lastUpdateOD,
+    mutationCounter,
+    odStats,
+  } from "../stores";
+  import { subpage } from "./index";
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
 
   onMount(async () => {
+    $backgroundLayer = "calculated_rnet";
+
     if ($lastUpdateOD != $mutationCounter) {
       $odStats = await $backend!.recalculateODStats();
       $lastUpdateOD = $mutationCounter;
     }
+  });
+  onDestroy(() => {
+    $backgroundLayer = "off";
   });
 </script>
 
@@ -28,7 +39,11 @@
 </header>
 
 <div>
-  <button type="button" class="ds_link" on:click={() => changePage("overview")}>
+  <button
+    type="button"
+    class="ds_link"
+    on:click={() => ($subpage = "overview")}
+  >
     <i class="fa-solid fa-chevron-left"></i>
     Back to network assessment
   </button>
