@@ -12,7 +12,11 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { constructMatchExpression } from "svelte-utils/map";
-  import { infraTypeColors, tierColors } from "../../colors";
+  import {
+    infraTypeColors,
+    levelOfServiceColors,
+    tierColors,
+  } from "../../colors";
   import { layerId, roadLineWidth } from "../../common";
   import {
     backend,
@@ -26,6 +30,7 @@
   import {
     showNetworkDeliverability,
     showNetworkInfraTypes,
+    showNetworkLoS,
     showNetworkTiers,
   } from "../stores";
   import CyclingDemandCoverage from "./CyclingDemandCoverage.svelte";
@@ -77,6 +82,7 @@
     showTiers: { [name: string]: boolean },
     showInfraTypes: { [name: string]: boolean },
     showDeliverable: { [name: string]: boolean },
+    showNetworkLoS: { [name: string]: boolean },
     hovered: Feature | null,
   ): DataDrivenPropertyValueSpecification<number> {
     // Moot point, invisibile anyway
@@ -117,6 +123,11 @@
         ["to-boolean", ["feature-state", "current_infra"]],
         ["in", ["feature-state", "current_infra_fits"], ["literal", include]],
       ];
+    } else if (style == "edits_los") {
+      let include = Object.keys(showNetworkLoS).filter(
+        (k) => showNetworkLoS[k],
+      );
+      showLayer = ["in", ["feature-state", "los"], ["literal", include]];
     }
 
     // While editing an existing route, hide it
@@ -174,6 +185,11 @@
         "green",
         "red",
       ] as DataDrivenPropertyValueSpecification<string>,
+      edits_los: constructMatchExpression(
+        ["feature-state", "los"],
+        levelOfServiceColors,
+        "black",
+      ),
     }[style];
   }
 
@@ -201,6 +217,7 @@
             $showNetworkTiers,
             $showNetworkInfraTypes,
             $showNetworkDeliverability,
+            $showNetworkLoS,
             hovered,
           ),
           "line-width": roadLineWidth(1),

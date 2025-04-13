@@ -51,7 +51,8 @@ export type EditsRoadStyle =
   | "off"
   | "edits_infra"
   | "edits_tier"
-  | "edits_deliverability";
+  | "edits_deliverability"
+  | "edits_los";
 
 export type BackgroundLayer =
   | "off"
@@ -62,7 +63,6 @@ export type BackgroundLayer =
   | "street_space"
   | "speed"
   | "attractive"
-  | "los"
   | "reachability"
   | "disconnections"
   | "precalculated_rnet"

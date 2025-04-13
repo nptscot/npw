@@ -3,6 +3,8 @@
   import {
     infraTypeColors,
     infraTypeLabels,
+    levelOfServiceColors,
+    levelOfServiceLabels,
     tierColors,
     tierLabels,
   } from "../../colors";
@@ -11,6 +13,7 @@
   import {
     showNetworkDeliverability,
     showNetworkInfraTypes,
+    showNetworkLoS,
     showNetworkTiers,
   } from "../stores";
 </script>
@@ -42,6 +45,13 @@
           Deliverability
         </button>
       </li>
+
+      <li class:selected={$editsRoadStyle == "edits_los"}>
+        <button on:click={() => ($editsRoadStyle = "edits_los")}>
+          <i class="fa-solid fa-face-smile"></i>
+          Level of Service
+        </button>
+      </li>
     </ul>
   </div>
 
@@ -62,6 +72,12 @@
       labels={{ deliverable: "Deliverable", not: "Not enough space" }}
       colors={{ deliverable: "green", not: "red" }}
       show={showNetworkDeliverability}
+    />
+  {:else if $editsRoadStyle == "edits_los"}
+    <LegendWithToggles
+      labels={levelOfServiceLabels}
+      colors={levelOfServiceColors}
+      show={showNetworkLoS}
     />
   {:else if $editsRoadStyle == "off"}
     <!-- Just maintain the vertical space -->

@@ -64,5 +64,12 @@ export let showNetworkDeliverability = writable({
   not: true,
 });
 
+export let showNetworkLoS = writable({
+  High: true,
+  Medium: true,
+  Low: true,
+  ShouldNotBeUsed: true,
+});
+
 // Remember the last reference style enabled. "off" means none.
 export let lastBackgroundLayer: Writable<BackgroundLayer> = writable("off");

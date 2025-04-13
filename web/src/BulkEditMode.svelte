@@ -18,7 +18,7 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
-  import { infraTypeColors, tierColors } from "./colors";
+  import { infraTypeColors, levelOfServiceColors, tierColors } from "./colors";
   import { DrawRectangle, Modal } from "./common";
   import { SplitComponent } from "./common/layout";
   import PickInfraType from "./edit/PickInfraType.svelte";
@@ -132,6 +132,11 @@
           "green",
           "red",
         ],
+        edits_los: constructMatchExpression(
+          ["get", "los"],
+          levelOfServiceColors,
+          "black",
+        ),
       }[colorBy] as ExpressionSpecification,
     ];
   }

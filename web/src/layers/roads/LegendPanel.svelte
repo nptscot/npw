@@ -6,7 +6,7 @@
     gradient,
     gradientColors,
     infraTypeColorLegend,
-    levelOfServiceLabels,
+    levelOfServiceColors,
     meshDensity,
     nptStreetSpaceColors,
     population,
@@ -150,17 +150,6 @@
         Show original data
       </label>
     {/if}
-  {:else if $backgroundLayer == "los"}
-    <QualitativeLegend colors={levelOfServiceLabels} />
-
-    {#if $devMode}
-      <br />
-
-      <label>
-        <input type="checkbox" bind:checked={$debugOriginalData} />
-        Show original data
-      </label>
-    {/if}
   {:else if $backgroundLayer == "reachability"}
     <QualitativeLegend colors={reachabilityColors} />
   {:else if $backgroundLayer == "deprived"}
@@ -198,7 +187,7 @@
     {:else if $editModeBreakdown == "gradient"}
       <QualitativeLegend colors={gradientColors} />
     {:else if $editModeBreakdown == "los"}
-      <QualitativeLegend colors={levelOfServiceLabels} />
+      <QualitativeLegend colors={levelOfServiceColors} />
     {:else if $editModeBreakdown == "tier"}
       <QualitativeLegend colors={tierColors} />
     {/if}

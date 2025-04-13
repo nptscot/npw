@@ -48,10 +48,10 @@ export let levelOfServiceColors: { [name: string]: string } = {
 };
 
 export let levelOfServiceLabels: { [name: string]: string } = {
-  High: levelOfServiceColors.High,
-  Medium: levelOfServiceColors.Medium,
-  Low: levelOfServiceColors.Low,
-  "Should not be used": levelOfServiceColors.ShouldNotBeUsed,
+  High: "High",
+  Medium: "Medium",
+  Low: "Low",
+  ShouldNotBeUsed: "Should not be used",
 };
 
 export let gradientColors = {

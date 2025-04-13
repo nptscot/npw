@@ -106,7 +106,6 @@ const layerZorder = [
   "street_space-debug",
   "traffic-debug",
   "speed_limit-debug",
-  "los-debug",
   "calculated-rnet",
   "network-disconnections",
 
