@@ -42,7 +42,7 @@
         <h4>Disconnections</h4>
 
         <button class="ds_button" on:click={() => changePage("disconnected")}>
-          Identify disconnected areas
+          Identify network splits
         </button>
 
         <h4>Coverage</h4>

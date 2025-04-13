@@ -22,7 +22,7 @@
 
 <p>
   Zones with a red outline are not connected by the current network. To connect
-  a zone, return to the appropriate tier and draw a route.
+  a zone, return to the Local Access tier and draw a route.
 </p>
 
 {#if $devMode}
