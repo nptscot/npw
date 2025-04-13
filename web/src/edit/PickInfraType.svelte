@@ -56,6 +56,12 @@
     <div class="card" on:click={() => onFinish(value)}>
       <img src={img} alt={label} style:height="150px" />
       <h5 style:color>{label}</h5>
+      {#if value == "MixedTrafficWithSpeedVolume" || value == "SegregatedWithSpeedVolume"}
+        <i>
+          Measures to reduce traffic speed and volume include speed limits, bus
+          gates, turn restrictions, and so on.
+        </i>
+      {/if}
     </div>
   {/each}
 </div>
