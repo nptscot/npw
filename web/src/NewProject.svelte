@@ -75,6 +75,34 @@
   from a blank map.
 </p>
 
+<p>Enter a title for the network.</p>
+
+<input
+  class="ds_input ds_input--fixed-20"
+  placeholder="Name"
+  bind:value={name}
+/>
+{#if usedFiles.has(name)}
+  <p class="ds_question__error-message">
+    <span class="visually-hidden">Error:</span>
+    There's already a project with this name; choose another
+  </p>
+{/if}
+
+<button
+  class="ds_button"
+  disabled={name.length == 0 ||
+    usedFiles.has(name) ||
+    useExistingHighLoS ||
+    useExistingSomeTypes ||
+    useCN}
+  on:click={newFile}
+>
+  Start designing from blank map
+</button>
+
+<h4>Use existing layers</h4>
+
 <div class="ds_field-group">
   <div class="ds_checkbox">
     <input
@@ -119,24 +147,12 @@
 
 <br />
 
-<p>Enter a title for the network.</p>
-
-<input
-  class="ds_input ds_input--fixed-20"
-  placeholder="Name"
-  bind:value={name}
-/>
-{#if usedFiles.has(name)}
-  <p class="ds_question__error-message">
-    <span class="visually-hidden">Error:</span>
-    There's already a project with this name; choose another
-  </p>
-{/if}
-
 <button
   class="ds_button"
-  disabled={name.length == 0 && !usedFiles.has(name)}
+  disabled={name.length == 0 ||
+    usedFiles.has(name) ||
+    !(useExistingSomeTypes || useExistingHighLoS || useCN)}
   on:click={newFile}
 >
-  Start designing
+  Start designing from existing layers
 </button>

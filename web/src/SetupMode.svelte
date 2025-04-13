@@ -143,7 +143,7 @@
       <h4>Start a new project for this area</h4>
 
       <button class="ds_button" on:click={() => (subpage = "new-project")}>
-        New blank project
+        New project
       </button>
 
       {#if fileList.length > 0}
