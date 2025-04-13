@@ -5,6 +5,7 @@ extern crate log;
 
 use std::collections::HashMap;
 
+use anyhow::Result;
 use enum_map::Enum;
 use geo::{Area, MultiPolygon, Point};
 use geojson::GeoJson;
@@ -191,7 +192,7 @@ impl MapModel {
             .collect();
 
         let (high_demand_threshold, medium_demand_threshold) =
-            find_cycling_demand_thresholds(&precalculated_demands);
+            find_cycling_demand_thresholds(&precalculated_demands).unwrap();
 
         let mut model = Self {
             graph,
@@ -409,20 +410,16 @@ pub struct DynamicRoad {
     current_infra_fits: bool,
 }
 
-fn find_cycling_demand_thresholds(demands: &Vec<usize>) -> (usize, usize) {
-    let mut sorted: Vec<f64> = demands.iter().map(|x| *x as f64).collect();
-    sorted.sort_by_key(|x| *x as usize);
-    // TODO deduping changes results dramatically and also speeds things up
-    info!("Calculating Jenks breaks for {} values", sorted.len());
-    let breaks = classif::get_jenks_breaks(&sorted, 10);
-    assert_eq!(breaks.len(), 11);
-    // 4th highest break for high, 6th highest break for medium
-    let (high, medium) = (breaks[11 - 4] as usize, breaks[11 - 6] as usize);
-    info!(
-        "Max demand is {}, natural breaks are {breaks:?}. high_demand_threshold is {high}, medium_demand_threshold is {medium}",
-        sorted.last().unwrap()
-    );
-    (high, medium)
+fn find_cycling_demand_thresholds(demands: &Vec<usize>) -> Result<(usize, usize)> {
+    info!("Calculating ckmeans for {} values", demands.len());
+    let num_classes = 10;
+    let results = ckmeans::ckmeans(demands, num_classes)?;
+    let maxes: Vec<usize> = results.into_iter().map(|group| *group.last().unwrap()).collect();
+    // 5th highest break for high, 7th highest break for medium
+    let high = maxes[10 - 5];
+    let medium = maxes[10 - 7];
+    info!("ckmeans classes are {maxes:?}. high_demand_threshold is {high}, medium_demand_threshold is {medium}");
+    Ok((high, medium))
 }
 
 fn is_offroad(highway: Highway, tags: &::utils::Tags) -> bool {
