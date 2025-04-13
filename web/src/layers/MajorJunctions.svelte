@@ -13,7 +13,7 @@
         {...layerId("major-junctions")}
         paint={{
           "circle-color": "black",
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 3, 18, 5],
+          "circle-radius": ["step", ["zoom"], 0, 12, 1, 14, 3, 15, 5],
           "circle-opacity": 0.5,
           "circle-blur": 0.5,
         }}
