@@ -35,29 +35,43 @@
         </div>
 
         <p>
-          Having designed your network, you can now assess its performance and
-          fix any problems.
+          Having designed your network, you can now fix any problems and assess
+          its performance.
         </p>
 
-        <h4>Problems</h4>
+        <h3>Problems</h3>
 
-        <button class="ds_button" on:click={() => ($subpage = "disconnected")}>
-          Fix network splits
-        </button>
+        <div>
+          <button
+            class="ds_button"
+            on:click={() => ($subpage = "disconnected")}
+          >
+            Fix network splits
+          </button>
+        </div>
 
-        <button class="ds_button" on:click={() => ($subpage = "mesh-density")}>
-          Check mesh density
-        </button>
+        <div>
+          <button
+            class="ds_button"
+            on:click={() => ($subpage = "mesh-density")}
+          >
+            Check mesh density
+          </button>
+        </div>
 
-        <button class="ds_button" on:click={() => ($subpage = "population")}>
-          Fix unreachable population zones
-        </button>
+        <div>
+          <button class="ds_button" on:click={() => ($subpage = "population")}>
+            Fix unreachable population zones
+          </button>
+        </div>
 
-        <button class="ds_button" on:click={() => ($subpage = "streetspace")}>
-          Fix routes that do not fit
-        </button>
+        <div>
+          <button class="ds_button" on:click={() => ($subpage = "streetspace")}>
+            Fix infrastructure that does not fit
+          </button>
+        </div>
 
-        <h4>Check overall performance</h4>
+        <h3>Check overall performance</h3>
 
         <div>
           <button class="ds_button" on:click={() => ($subpage = "report")}>
@@ -65,35 +79,41 @@
           </button>
         </div>
 
-        <button
-          class="ds_button"
-          on:click={() => ($subpage = "calculated-routes")}
-        >
-          See network impacts on demand
-        </button>
+        <div>
+          <button
+            class="ds_button"
+            on:click={() => ($subpage = "calculated-routes")}
+          >
+            See network impacts on demand
+          </button>
+        </div>
 
-        <button
-          class="ds_button"
-          on:click={() =>
-            ($mode = {
-              kind: "evaluate-journey",
-              browse: [],
-            })}
-        >
-          Evaluate a journey
-        </button>
-
-        {#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
+        <div>
           <button
             class="ds_button"
             on:click={() =>
               ($mode = {
                 kind: "evaluate-journey",
-                browse: $slowStats.worst_directness_routes,
+                browse: [],
               })}
           >
-            Check journeys used to calculate directness
+            Evaluate a journey
           </button>
+        </div>
+
+        {#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
+          <div>
+            <button
+              class="ds_button"
+              on:click={() =>
+                ($mode = {
+                  kind: "evaluate-journey",
+                  browse: $slowStats.worst_directness_routes,
+                })}
+            >
+              Check journeys used to calculate directness
+            </button>
+          </div>
         {/if}
       {:else if $subpage == "report"}
         <FinalReport />
