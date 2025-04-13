@@ -39,31 +39,25 @@
           fix any problems.
         </p>
 
-        <h4>Disconnections</h4>
+        <h4>Problems</h4>
 
         <button class="ds_button" on:click={() => ($subpage = "disconnected")}>
-          Identify network splits
+          Fix network splits
         </button>
 
-        <h4>Coverage</h4>
-
         <button class="ds_button" on:click={() => ($subpage = "mesh-density")}>
-          Analyse mesh density
+          Check mesh density
         </button>
 
         <button class="ds_button" on:click={() => ($subpage = "population")}>
-          Identify population zones without coverage
+          Fix unreachable population zones
         </button>
-
-        <h4>Deliverability</h4>
 
         <button class="ds_button" on:click={() => ($subpage = "streetspace")}>
-          Check routes that do not fit in available streetspace
+          Fix routes that do not fit
         </button>
 
-        <hr />
-
-        <h4>Metrics</h4>
+        <h4>Check overall performance</h4>
 
         <div>
           <button class="ds_button" on:click={() => ($subpage = "report")}>
@@ -71,16 +65,12 @@
           </button>
         </div>
 
-        <h4>Effects on demand</h4>
-
         <button
           class="ds_button"
           on:click={() => ($subpage = "calculated-routes")}
         >
-          See how the demand uses the network
+          See network impacts on demand
         </button>
-
-        <h4>Evaluate a journey</h4>
 
         <button
           class="ds_button"
