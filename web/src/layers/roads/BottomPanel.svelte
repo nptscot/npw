@@ -91,7 +91,7 @@
   .network-style {
     position: absolute;
     bottom: 10px;
-    width: 610px;
+    width: 650px;
     left: 0;
     right: 0;
     margin-inline: auto;
@@ -117,6 +117,7 @@
   }
   .network-style ul li button {
     width: 100%;
+    height: 100%;
     border-radius: 0;
     border: 1px solid gray;
     background-color: #eee;
