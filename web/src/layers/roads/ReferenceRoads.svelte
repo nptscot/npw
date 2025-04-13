@@ -10,6 +10,7 @@
     cnTierColors,
     gradient,
     infraTypeColors,
+    levelOfServiceColors,
     reachabilityColors,
     speed,
     streetSpaceColors,
@@ -102,6 +103,11 @@
       ),
       speed: makeRamp(["get", "speed"], speed.limits, speed.colorScale),
       attractive: "green",
+      los: constructMatchExpression(
+        ["feature-state", "los"],
+        levelOfServiceColors,
+        "black",
+      ),
       reachability: constructMatchExpression(
         ["feature-state", "reachable"],
         reachabilityColors,
@@ -125,9 +131,14 @@
     }
     if (
       debugOriginalData &&
-      ["traffic", "existing_infra", "speed", "cn", "street_space"].includes(
-        style,
-      )
+      [
+        "traffic",
+        "los",
+        "existing_infra",
+        "speed",
+        "cn",
+        "street_space",
+      ].includes(style)
     ) {
       return false;
     }
@@ -140,6 +151,7 @@
       street_space: true,
       speed: true,
       attractive: true,
+      los: true,
       reachability: true,
       disconnections: false,
       precalculated_rnet: false,

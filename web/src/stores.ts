@@ -63,6 +63,7 @@ export type BackgroundLayer =
   | "street_space"
   | "speed"
   | "attractive"
+  | "los"
   | "reachability"
   | "disconnections"
   | "precalculated_rnet"

@@ -33,6 +33,28 @@
   />
 
   <LineLayer
+    {...layerId("los-debug")}
+    sourceLayer="cbd_layer"
+    paint={{
+      "line-color": constructMatchExpression(
+        ["get", "Level of Service"],
+        {
+          High: "mediumseagreen",
+          Medium: "orange",
+          Low: "red",
+          "Should not be used": "brown",
+        },
+        "cyan",
+      ),
+      "line-width": roadLineWidth(1),
+    }}
+    layout={{
+      visibility:
+        $backgroundLayer == "los" && $debugOriginalData ? "visible" : "none",
+    }}
+  />
+
+  <LineLayer
     {...layerId("existing-infra-debug")}
     sourceLayer="cbd_layer"
     filter={["!=", ["get", "Infrastructure type"], "Mixed Traffic Street"]}

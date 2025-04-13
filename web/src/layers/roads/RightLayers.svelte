@@ -67,6 +67,7 @@
   {#if $mode.kind != "setup"}
     <h3>Evaluation layers</h3>
     <ul>
+      <Toggle name="Level of Service" style="los" icon="fa-face-smile" />
       <Toggle
         name="Reachability"
         style="reachability"

@@ -127,7 +127,11 @@
       let include = Object.keys(showNetworkLoS).filter(
         (k) => showNetworkLoS[k],
       );
-      showLayer = ["in", ["feature-state", "los"], ["literal", include]];
+      showLayer = [
+        "all",
+        ["to-boolean", ["feature-state", "current_infra"]],
+        ["in", ["feature-state", "los"], ["literal", include]],
+      ];
     }
 
     // While editing an existing route, hide it

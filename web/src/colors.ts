@@ -54,6 +54,13 @@ export let levelOfServiceLabels: { [name: string]: string } = {
   ShouldNotBeUsed: "Should not be used",
 };
 
+export let levelOfServiceLegend: { [name: string]: string } = {
+  High: levelOfServiceColors.High,
+  Medium: levelOfServiceColors.Medium,
+  Low: levelOfServiceColors.Low,
+  "Should not be used": levelOfServiceColors.ShouldNotBeUsed,
+};
+
 export let gradientColors = {
   "<= 3%": "#59ee19",
   "3 - 5%": "#37a009",
