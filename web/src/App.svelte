@@ -228,6 +228,7 @@
       <MapLibre
         {style}
         maxZoom={19}
+        bounds={[-8.943, 54.631, -0.901, 59.489]}
         bind:map
         bind:zoom={$zoom}
         on:error={(e) => {
