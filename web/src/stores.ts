@@ -137,8 +137,12 @@ export function setCurrentFile(name: string) {
 }
 
 export function assetUrl(path: string): string {
-  let dir =
-    import.meta.env.BASE_URL == "/npw/demo" ? "demo_npw" : "tmp_npt_editor";
+  let dir = "tmp_npt_editor";
+  if (import.meta.env.BASE_URL == "/npw/demo") {
+    dir = "demo_npw";
+  } else if (import.meta.env.BASE_URL == "/npw/nptless_demo") {
+    dir = "nptless_demo";
+  }
   return get(remoteStorage) ? `https://assets.od2net.org/${dir}/${path}` : path;
 }
 
