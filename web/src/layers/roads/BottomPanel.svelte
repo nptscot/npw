@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { QualitativeLegend } from "svelte-utils";
   import {
     infraTypeColors,
     infraTypeLabels,
@@ -103,20 +102,21 @@
     font-size: 14px;
   }
 
+  /* Apply to both the button row and the legend toggles */
   .network-style :global(ul) {
     display: flex;
     flex-direction: row;
     margin: 0;
   }
-  .network-style :global(ul li) {
-    flex-grow: 1;
-    flex-basis: 0;
-    list-style: none;
-  }
   .network-style :global(ul li:last-child) {
     margin-bottom: auto;
   }
 
+  /* The buttons should always fit on one line; they can be different widths */
+  li {
+    flex: 1 0 auto;
+    list-style: none;
+  }
   button {
     width: 100%;
     height: 100%;

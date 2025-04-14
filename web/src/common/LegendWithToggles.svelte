@@ -25,6 +25,12 @@
     text-align: left;
   }
 
+  li {
+    flex-grow: 1;
+    flex-basis: 0;
+    list-style: none;
+  }
+
   li:hover {
     opacity: 0.9;
   }
