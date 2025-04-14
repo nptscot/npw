@@ -19,41 +19,40 @@
 </script>
 
 <div class="network-style">
-  <div style="display: flex">
-    <ul style:flex-grow="1">
-      <li class:selected={$editsRoadStyle == "off"}>
-        <button on:click={() => ($editsRoadStyle = "off")}>
-          &#10680;&nbsp; Hidden
-        </button>
-      </li>
+  <span>Show network</span>
+  <ul>
+    <li class:selected={$editsRoadStyle == "off"}>
+      <button on:click={() => ($editsRoadStyle = "off")}>
+        &#10680;&nbsp; Hidden
+      </button>
+    </li>
 
-      <li class:selected={$editsRoadStyle == "edits_tier"}>
-        <button on:click={() => ($editsRoadStyle = "edits_tier")}>
-          ‖‖&nbsp; Tier
-        </button>
-      </li>
+    <li class:selected={$editsRoadStyle == "edits_tier"}>
+      <button on:click={() => ($editsRoadStyle = "edits_tier")}>
+        ‖‖&nbsp; Tier
+      </button>
+    </li>
 
-      <li class:selected={$editsRoadStyle == "edits_infra"}>
-        <button on:click={() => ($editsRoadStyle = "edits_infra")}>
-          ☰&nbsp; Infrastructure type
-        </button>
-      </li>
+    <li class:selected={$editsRoadStyle == "edits_infra"}>
+      <button on:click={() => ($editsRoadStyle = "edits_infra")}>
+        ☰&nbsp; Infrastructure type
+      </button>
+    </li>
 
-      <li class:selected={$editsRoadStyle == "edits_deliverability"}>
-        <button on:click={() => ($editsRoadStyle = "edits_deliverability")}>
-          <i class="fa-solid fa-person-digging"></i>
-          Deliverability
-        </button>
-      </li>
+    <li class:selected={$editsRoadStyle == "edits_deliverability"}>
+      <button on:click={() => ($editsRoadStyle = "edits_deliverability")}>
+        <i class="fa-solid fa-person-digging"></i>
+        Deliverability
+      </button>
+    </li>
 
-      <li class:selected={$editsRoadStyle == "edits_los"}>
-        <button on:click={() => ($editsRoadStyle = "edits_los")}>
-          <i class="fa-solid fa-face-smile"></i>
-          Level of Service
-        </button>
-      </li>
-    </ul>
-  </div>
+    <li class:selected={$editsRoadStyle == "edits_los"}>
+      <button on:click={() => ($editsRoadStyle = "edits_los")}>
+        <i class="fa-solid fa-face-smile"></i>
+        Level of Service
+      </button>
+    </li>
+  </ul>
 
   {#if $editsRoadStyle == "edits_infra"}
     <LegendWithToggles
@@ -80,9 +79,13 @@
       show={showNetworkLoS}
     />
   {:else if $editsRoadStyle == "off"}
-    <!-- Just maintain the vertical space -->
+    <!-- Just maintain the vertical space; use labels that fit on one line -->
     <span style:visibility="hidden">
-      <QualitativeLegend colors={{ hidden: "black" }} horiz />
+      <LegendWithToggles
+        labels={levelOfServiceLabels}
+        colors={levelOfServiceColors}
+        show={showNetworkLoS}
+      />
     </span>
   {/if}
 </div>
@@ -99,9 +102,7 @@
     padding: 10px;
     font-size: 14px;
   }
-  .network-style :global(ul) {
-    margin: 0;
-  }
+
   .network-style :global(ul) {
     display: flex;
     flex-direction: row;
@@ -115,7 +116,8 @@
   .network-style :global(ul li:last-child) {
     margin-bottom: auto;
   }
-  .network-style ul li button {
+
+  button {
     width: 100%;
     height: 100%;
     border-radius: 0;
@@ -123,18 +125,11 @@
     background-color: #eee;
     text-align: left;
   }
-  .network-style ul li.selected button {
+  button:hover {
+    opacity: 0.8;
+  }
+  li.selected button {
     font-weight: bold;
     background-color: #ccc;
-  }
-  .network-style :global(ul li label) {
-    display: block;
-    border-radius: 0;
-    padding: 2px 6px;
-    text-align: left;
-  }
-  .network-style :global(ul li:hover) {
-    color: black;
-    opacity: 0.9;
   }
 </style>

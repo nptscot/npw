@@ -18,4 +18,14 @@
 </ul>
 
 <style>
+  label {
+    display: block;
+    border-radius: 0;
+    padding: 2px 6px;
+    text-align: left;
+  }
+
+  li:hover {
+    opacity: 0.9;
+  }
 </style>
