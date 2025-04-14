@@ -1,7 +1,7 @@
 <script lang="ts">
   import { MapEvents } from "svelte-maplibre";
   import { tierColors } from "../colors";
-  import { Checkbox, HelpButton } from "../common";
+  import { Checkbox, HelpButton, Radio } from "../common";
   import { SplitComponent } from "../common/layout";
   import { localPOIs, uncoveredPopulation } from "../layers/stores";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
@@ -309,23 +309,17 @@
           </button>
         </div>
 
-        <label class="ds_label" for="populationLayer">
-          Show population zones
-        </label>
-        <div class="ds_select-wrapper ds_input--fluid-two-thirds">
-          <select
-            class="ds_select"
-            bind:value={populationLayer}
-            on:change={changePopulationLayer}
-            id="populationLayer"
-            name="populationLayer"
-          >
-            <option value="off">None</option>
-            <option value="population">Dense zones</option>
-            <option value="deprived">Deprived (SIMD) zones</option>
-          </select>
-          <span class="ds_select-arrow" aria-hidden="true"></span>
-        </div>
+        <Radio
+          legend="Show population zones"
+          small
+          bind:value={populationLayer}
+          on:change={changePopulationLayer}
+          options={[
+            ["off", "None"],
+            ["population", "Dense zones"],
+            ["deprived", "Deprived (SIMD) zones"],
+          ]}
+        />
       {:else if $currentPOI}
         <header class="ds_page-header">
           <span
