@@ -227,12 +227,8 @@
 
         <p>
           Your network needs to provide connectivity to key points of interest,
-          such as schools, hospitals and green spaces.
-        </p>
-
-        <p>
-          These places are shown on the map. POIs with severed connectivity are
-          shown in red and need to be fixed.
+          such as schools, hospitals and green spaces. POIs with severed
+          connectivity are shown in red and need to be fixed.
         </p>
 
         <div class="ds_select-wrapper ds_input--fluid-two-thirds">

@@ -2,7 +2,8 @@
   import { onDestroy, onMount } from "svelte";
   import { downloadGeneratedFile } from "svelte-utils";
   import { uncoveredPopulation } from "../layers/stores";
-  import { backend, devMode } from "../stores";
+  import { fixPopulation } from "../local_access/stores";
+  import { backend, changeStage, devMode } from "../stores";
   import { subpage } from "./index";
 
   onMount(() => {
@@ -15,6 +16,11 @@
   async function downloadDataZones() {
     let gj = await $backend!.getDataZones();
     downloadGeneratedFile("data_zones.geojson", JSON.stringify(gj));
+  }
+
+  function fix() {
+    $fixPopulation = true;
+    changeStage("LocalAccess");
   }
 </script>
 
@@ -33,13 +39,16 @@
   </button>
 </div>
 
-<p>
-  Zones with a red outline are not connected by the current network. To connect
-  a zone, return to the Local Access tier and draw a route.
-</p>
+<p>Zones with a red outline are not connected by the current network.</p>
+
+<div>
+  <button class="ds_button" on:click={fix}>Fix unconnected zones</button>
+</div>
 
 {#if $devMode}
-  <button class="ds_button ds_button--secondary" on:click={downloadDataZones}>
-    Download data zones
-  </button>
+  <div>
+    <button class="ds_button ds_button--secondary" on:click={downloadDataZones}>
+      Download data zones
+    </button>
+  </div>
 {/if}
