@@ -8,15 +8,7 @@
   let id = uuidv4();
 </script>
 
-<div class:ds_checkbox={true} class:ds_checkbox--small={small}>
-  <input
-    bind:checked
-    class="ds_checkbox__input"
-    {id}
-    name={id}
-    type="checkbox"
-  />
-  <label class="ds_checkbox__label" for={id}>
-    <slot />
-  </label>
-</div>
+<label>
+  <input bind:checked type="checkbox" />
+  <slot />
+</label>
