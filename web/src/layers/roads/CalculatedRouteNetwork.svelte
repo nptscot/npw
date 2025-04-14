@@ -4,6 +4,7 @@
   import { constructMatchExpression, Popup } from "svelte-utils/map";
   import { infraTypeColors, levelOfServiceColors } from "../../colors";
   import {
+    Checkbox,
     layerId,
     lineColorForDemand,
     lineWidthForDemand,
@@ -50,12 +51,9 @@
 
   <br />
 
-  <div>
-    <label>
-      <input type="checkbox" bind:checked={fastSample} />
-      Just sample desire lines (fast)
-    </label>
-  </div>
+  <Checkbox small bind:checked={fastSample}>
+    Just sample desire lines (fast)
+  </Checkbox>
 
   <br />
 

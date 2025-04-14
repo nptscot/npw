@@ -11,7 +11,7 @@
   } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
   import { stageColors, tierLabels } from "../colors";
-  import { layerId } from "../common";
+  import { Checkbox, layerId } from "../common";
   import { SplitComponent } from "../common/layout";
   import { majorJunctions } from "../layers/stores";
   import { backend, currentStage } from "../stores";
@@ -349,10 +349,9 @@
       </header>
 
       {#if $currentStage == "Primary" || $currentStage == "Secondary"}
-        <label>
-          <input type="checkbox" bind:checked={$majorJunctions} />
+        <Checkbox bind:checked={$majorJunctions} small>
           Snap to main roads
-        </label>
+        </Checkbox>
       {/if}
 
       {#if $waypoints.length == 0}

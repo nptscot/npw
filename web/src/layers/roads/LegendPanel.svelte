@@ -16,7 +16,7 @@
     tierColors,
     traffic,
   } from "../../colors";
-  import { HelpButton } from "../../common";
+  import { Checkbox, HelpButton } from "../../common";
   import {
     backgroundLayer,
     devMode,
@@ -59,34 +59,25 @@
     <QualitativeLegend colors={cnTierColors} />
 
     {#if $devMode}
-      <br />
-
-      <label>
-        <input type="checkbox" bind:checked={$debugOriginalData} />
+      <Checkbox small bind:checked={$debugOriginalData}>
         Show original data
-      </label>
+      </Checkbox>
     {/if}
   {:else if $backgroundLayer == "existing_infra"}
     <QualitativeLegend colors={infraTypeColorLegend} />
 
     {#if $devMode}
-      <br />
-
-      <label>
-        <input type="checkbox" bind:checked={$debugOriginalData} />
+      <Checkbox small bind:checked={$debugOriginalData}>
         Show osmactive data
-      </label>
+      </Checkbox>
     {/if}
   {:else if $backgroundLayer == "traffic"}
     <SequentialLegend colorScale={traffic.colorScale} limits={traffic.limits} />
 
     {#if $devMode}
-      <br />
-
-      <label>
-        <input type="checkbox" bind:checked={$debugOriginalData} />
+      <Checkbox small bind:checked={$debugOriginalData}>
         Show original data
-      </label>
+      </Checkbox>
     {/if}
   {:else if $backgroundLayer == "gradient"}
     <SequentialLegend
@@ -132,34 +123,25 @@
     {/if}
 
     {#if $devMode}
-      <br />
-
-      <label>
-        <input type="checkbox" bind:checked={$debugOriginalData} />
+      <Checkbox small bind:checked={$debugOriginalData}>
         Show original data
-      </label>
+      </Checkbox>
     {/if}
   {:else if $backgroundLayer == "speed"}
     <SequentialLegend colorScale={speed.colorScale} limits={speed.limits} />
 
     {#if $devMode}
-      <br />
-
-      <label>
-        <input type="checkbox" bind:checked={$debugOriginalData} />
+      <Checkbox small bind:checked={$debugOriginalData}>
         Show original data
-      </label>
+      </Checkbox>
     {/if}
   {:else if $backgroundLayer == "los"}
     <QualitativeLegend colors={levelOfServiceLegend} />
 
     {#if $devMode}
-      <br />
-
-      <label>
-        <input type="checkbox" bind:checked={$debugOriginalData} />
+      <Checkbox small bind:checked={$debugOriginalData}>
         Show original data
-      </label>
+      </Checkbox>
     {/if}
   {:else if $backgroundLayer == "reachability"}
     <QualitativeLegend colors={reachabilityColors} />

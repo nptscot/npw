@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Checkbox } from "../common";
   import { allControls } from "./stores";
 
   export let name: string;
@@ -16,10 +17,7 @@
 </script>
 
 <div bind:this={contents}>
-  <label>
-    <input type="checkbox" bind:checked={show} />
-    {name}
-  </label>
+  <Checkbox small bind:checked={show}>{name}</Checkbox>
 
   {#if !empty}
     <div style:display={show ? "block" : "none"} style:margin-left="20px">

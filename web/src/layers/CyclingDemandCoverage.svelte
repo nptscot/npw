@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Checkbox } from "../common";
   import { devMode } from "../stores";
   import LayerControls from "./LayerControls.svelte";
   import {
@@ -12,18 +13,14 @@
 </script>
 
 <LayerControls name={label + " cycling demand"} bind:show>
-  <label>
-    <input type="checkbox" bind:checked={$showUncovered} />
+  <Checkbox small bind:checked={$showUncovered}>
     Show all demand, even if covered
-  </label>
+  </Checkbox>
 
   {#if $devMode}
-    <div>
-      <label>
-        <input type="checkbox" bind:checked={$debugAllCyclingDemand} />
-        Debug all demand
-      </label>
-    </div>
+    <Checkbox small bind:checked={$debugAllCyclingDemand}>
+      Debug all demand
+    </Checkbox>
 
     {#if $debugAllCyclingDemand}
       <label>

@@ -14,7 +14,7 @@
     infraTypeColors,
     levelOfServiceColors,
   } from "./colors";
-  import { layerId, prettyPrintDistance } from "./common";
+  import { Checkbox, layerId, prettyPrintDistance } from "./common";
   import { SplitComponent } from "./common/layout";
   import RelevantLayers from "./layers/RelevantLayers.svelte";
   import { backend, mode, routeA, routeB } from "./stores";
@@ -199,25 +199,19 @@
           longer than the straight line.
         </p>
 
-        <div>
-          <label>
-            <input type="checkbox" bind:checked={showQuietBikeRoute} />
-            <span style:color="blue">Quiet cycling route</span>
-            : {prettyPrintDistance(gj.quiet_bike_length)} is
-            <b>{(gj.quiet_bike_length / gj.direct_bike_length).toFixed(1)}x</b>
-            longer than the direct cycling route
-          </label>
-        </div>
+        <Checkbox bind:checked={showQuietBikeRoute} small>
+          <span style:color="blue">Quiet cycling route</span>
+          : {prettyPrintDistance(gj.quiet_bike_length)} is
+          <b>{(gj.quiet_bike_length / gj.direct_bike_length).toFixed(1)}x</b>
+          longer than the direct cycling route
+        </Checkbox>
 
-        <div>
-          <label>
-            <input type="checkbox" bind:checked={showCarRoute} />
-            <span style:color="purple">Driving route</span>
-            : {prettyPrintDistance(gj.car_length)} is
-            <b>{(gj.car_length / gj.direct_bike_length).toFixed(1)}x</b>
-            longer than the direct cycling route
-          </label>
-        </div>
+        <Checkbox bind:checked={showCarRoute} small>
+          <span style:color="purple">Driving route</span>
+          : {prettyPrintDistance(gj.car_length)} is
+          <b>{(gj.car_length / gj.direct_bike_length).toFixed(1)}x</b>
+          longer than the direct cycling route
+        </Checkbox>
 
         <h3>Stats</h3>
 

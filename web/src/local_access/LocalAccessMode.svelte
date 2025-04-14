@@ -1,7 +1,7 @@
 <script lang="ts">
   import { MapEvents } from "svelte-maplibre";
   import { tierColors } from "../colors";
-  import { HelpButton } from "../common";
+  import { Checkbox, HelpButton } from "../common";
   import { SplitComponent } from "../common/layout";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
@@ -178,10 +178,7 @@
               populated ones).
             </p>
 
-            <label>
-              <input type="checkbox" bind:checked={$devMode} />
-              Dev mode
-            </label>
+            <Checkbox bind:checked={$devMode}>Dev mode</Checkbox>
           </HelpButton>
         </header>
 

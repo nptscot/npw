@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Loading } from "svelte-utils";
+  import { Checkbox } from "./common";
   import { listFilesInBoundary } from "./common/files";
   import {
     autosave,
@@ -104,43 +105,16 @@
 <h4>Use existing layers</h4>
 
 <div class="ds_field-group">
-  <div class="ds_checkbox">
-    <input
-      bind:checked={useExistingHighLoS}
-      class="ds_checkbox__input"
-      id="useExistingHighLoS"
-      name="useExistingHighLoS"
-      type="checkbox"
-    />
-    <label class="ds_checkbox__label" for="useExistingHighLoS">
-      All existing infrastructure from OpenStreetMap, if it achieves high Level
-      of Service
-    </label>
-  </div>
+  <Checkbox bind:checked={useExistingHighLoS}>
+    All existing infrastructure from OpenStreetMap, if it achieves high Level of
+    Service
+  </Checkbox>
 
-  <div class="ds_checkbox">
-    <input
-      bind:checked={useExistingSomeTypes}
-      class="ds_checkbox__input"
-      id="useExistingSomeTypes"
-      name="useExistingSomeTypes"
-      type="checkbox"
-    />
-    <label class="ds_checkbox__label" for="useExistingSomeTypes">
-      Existing segregated tracks and off-road cycleways from OpenStreetMap
-    </label>
-  </div>
+  <Checkbox bind:checked={useExistingSomeTypes}>
+    Existing segregated tracks and off-road cycleways from OpenStreetMap
+  </Checkbox>
 
-  <div class="ds_checkbox">
-    <input
-      bind:checked={useCN}
-      class="ds_checkbox__input"
-      id="useCN"
-      name="useCN"
-      type="checkbox"
-    />
-    <label class="ds_checkbox__label" for="useCN">Core network</label>
-  </div>
+  <Checkbox bind:checked={useCN}>Core network</Checkbox>
 </div>
 
 <!--<p>Or clone from your existing projects</p>-->

@@ -35,6 +35,7 @@
     "comlink": "^4.4.2",
     "svelte-chartjs": "^3.1.5",
     "svelte-maplibre": "github:dabreegster/svelte-maplibre#svelte4_popups",
-    "svelte-utils": "github:a-b-street/svelte-utils"
+    "svelte-utils": "github:a-b-street/svelte-utils",
+    "uuid": "^11.1.0"
   }
 }

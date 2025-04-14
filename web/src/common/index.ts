@@ -3,6 +3,7 @@ import type {
   ExpressionSpecification,
 } from "maplibre-gl";
 
+export { default as Checkbox } from "./Checkbox.svelte";
 export { default as DrawRectangle } from "./DrawRectangle.svelte";
 export { default as HelpButton } from "./HelpButton.svelte";
 export { default as LegendWithToggles } from "./LegendWithToggles.svelte";

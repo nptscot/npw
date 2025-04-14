@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { HelpButton } from "./common";
+  import { Checkbox, HelpButton } from "./common";
   import { SplitComponent } from "./common/layout";
   import RelevantLayers from "./layers/RelevantLayers.svelte";
   import LeftSidebarStats from "./stats/LeftSidebarStats.svelte";
@@ -71,10 +71,7 @@
             </ul>
           {/if}
 
-          <label>
-            <input type="checkbox" bind:checked={$devMode} />
-            Dev mode
-          </label>
+          <Checkbox bind:checked={$devMode}>Dev mode</Checkbox>
         </HelpButton>
       </header>
 
