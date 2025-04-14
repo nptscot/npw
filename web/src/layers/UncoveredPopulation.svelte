@@ -29,7 +29,7 @@
     filter={["!", ["get", "reachable"]]}
     paint={{
       "line-color": "red",
-      "line-width": 3,
+      "line-width": 1,
     }}
     layout={{
       visibility: $show ? "visible" : "none",
