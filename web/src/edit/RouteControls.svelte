@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { FeatureCollection } from "geojson";
   import { LngLat, Point, type Map, type MapMouseEvent } from "maplibre-gl";
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import {
     CircleLayer,
     GeoJSON,
@@ -25,8 +25,14 @@
   export let editingExisting: boolean;
   export let tier: Tier;
 
+  // TODO Fix svelte-maplibre -- this isn't just a layer event
+  onMount(() => {
+    map.on("mouseout", onMouseOut);
+  });
+
   onDestroy(() => {
     $waypoints = [];
+    map.off("mouseout", onMouseOut);
     map.getCanvas().style.cursor = "inherit";
   });
 
@@ -122,6 +128,11 @@
     } else {
       previewSnappedCursor.features = [];
     }
+  }
+
+  function onMouseOut() {
+    rawCursor = null;
+    previewGj = emptyGeojson();
   }
 
   // @ts-expect-error Unused, but eventually will be implemented
