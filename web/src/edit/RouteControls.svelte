@@ -166,22 +166,24 @@
     try {
       if (waypoints.length > 0 && rawCursor) {
         // Immediately show a straight line
-        previewGj = {
-          type: "FeatureCollection",
-          features: [
-            {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "LineString",
-                coordinates: [
-                  waypoints[waypoints.length - 1].point,
-                  rawCursor.mapPt,
-                ],
+        if (false) {
+          previewGj = {
+            type: "FeatureCollection",
+            features: [
+              {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                  type: "LineString",
+                  coordinates: [
+                    waypoints[waypoints.length - 1].point,
+                    rawCursor!.mapPt,
+                  ],
+                },
               },
-            },
-          ],
-        };
+            ],
+          };
+        }
 
         // Asynchronously update to the real route (if it exists)
         previewGj = await $backend!.autosplitRoute(
