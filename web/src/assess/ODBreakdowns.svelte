@@ -49,6 +49,11 @@
   </button>
 </div>
 
+<p>
+  This shows how journeys from census demand data would pick quiet routes using
+  the network you have drawn.
+</p>
+
 {#if $odStats && $lastUpdateOD == $mutationCounter}
   <h4>Percent of demand by level of service</h4>
   <div style:height="300px">

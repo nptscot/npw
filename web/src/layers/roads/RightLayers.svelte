@@ -45,12 +45,6 @@
     />
     <Toggle name="Attractive streets" style="attractive" icon="fa-tree" />
     <Toggle
-      name="NPT full network"
-      style="precalculated_rnet"
-      icon="fa-diagram-project"
-      relevant={$currentStage == "Primary" || $currentStage == "Secondary"}
-    />
-    <Toggle
       name="Population"
       style="population"
       icon="fa-person"

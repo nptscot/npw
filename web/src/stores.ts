@@ -66,7 +66,6 @@ export type BackgroundLayer =
   | "los"
   | "reachability"
   | "disconnections"
-  | "precalculated_rnet"
   | "calculated_rnet"
   | "population"
   | "deprived";

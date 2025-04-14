@@ -31,7 +31,6 @@
     styleCyclingDemand,
   } from "../stores";
   import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
-  import NptFullNetwork from "./NptFullNetwork.svelte";
 
   // common has functions ForDemand, duplicating values here
   // TODO Center on the buckets instad
@@ -165,7 +164,6 @@
     </p>
   {/if}
 
-  <NptFullNetwork />
   <CalculatedRouteNetwork />
 
   <!-- TODO: There could be a legend for reference layers, per-tier layers, and
