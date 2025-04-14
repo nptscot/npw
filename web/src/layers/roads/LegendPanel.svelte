@@ -28,6 +28,7 @@
     cyclingDemandMedium,
     debugOriginalData,
     gridMeshDensity,
+    styleCyclingDemand,
   } from "../stores";
   import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
   import NptFullNetwork from "./NptFullNetwork.svelte";
@@ -171,7 +172,13 @@
   edit mode all at the same time... -->
 
   {#if $cyclingDemandHigh || $cyclingDemandMedium}
-    <SequentialLegend colorScale={demandColors} limits={demandLimits} />
+    <Checkbox small bind:checked={$styleCyclingDemand}>
+      Style based on demand
+    </Checkbox>
+
+    {#if $styleCyclingDemand}
+      <SequentialLegend colorScale={demandColors} limits={demandLimits} />
+    {/if}
   {/if}
 
   {#if $mode.kind == "edit-route"}

@@ -9,6 +9,7 @@
     layerId,
     lineColorForDemand,
     lineWidthForDemand,
+    roadLineWidth,
   } from "../../common";
   import {
     cyclingDemandHigh,
@@ -16,6 +17,7 @@
     debugAllCyclingDemand,
     debugCyclingDemandMin,
     showUncovered,
+    styleCyclingDemand,
   } from "../stores";
 
   $: filter = $debugAllCyclingDemand
@@ -56,9 +58,13 @@
     visibility: $cyclingDemandHigh || $cyclingDemandMedium ? "visible" : "none",
   }}
   paint={{
-    "line-color": lineColorForDemand(["get", "precalculated_demand"]),
+    "line-color": $styleCyclingDemand
+      ? lineColorForDemand(["get", "precalculated_demand"])
+      : "grey",
     "line-opacity": opacity,
-    "line-width": lineWidthForDemand(["get", "precalculated_demand"]),
+    "line-width": $styleCyclingDemand
+      ? lineWidthForDemand(["get", "precalculated_demand"])
+      : roadLineWidth(4),
   }}
 >
   {#if $debugAllCyclingDemand}

@@ -7,7 +7,9 @@
   }
 </script>
 
-<label>
-  <input bind:checked type="checkbox" />
-  <slot />
-</label>
+<div>
+  <label>
+    <input bind:checked type="checkbox" />
+    <slot />
+  </label>
+</div>

@@ -8,6 +8,7 @@ export let allControls: Writable<Map<string, HTMLDivElement>> = writable(
 // Only layers that need to be controlled remotely need to be here
 export let debugAllCyclingDemand = writable(false);
 export let debugCyclingDemandMin = writable(0);
+export let styleCyclingDemand = writable(true);
 export let cyclingDemandHigh = writable(false);
 export let mainRoadCoverage = writable(false);
 export let showUncovered = writable(false);
