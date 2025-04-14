@@ -205,7 +205,7 @@ impl MapModel {
 
         timer.step("calculate OD routes and stats");
         let fast_sample = true;
-        let od = self.od_counts(fast_sample)?;
+        let od = self.od_counts(fast_sample, "bicycle_quiet")?;
         let mut out = serde_json::Map::new();
         od.describe(self, &mut out)?;
         Ok(serde_json::to_string(&out)?)

@@ -11,16 +11,6 @@ function core_net {
   wget https://github.com/nptscot/outputdata/releases/download/v2025-03-01/combined_CN_4_2025-03-01_OS.pmtiles -O ../web/public/core_network.pmtiles
 }
 
-function rnet {
-  # From https://github.com/nptscot/outputdata/releases
-
-  # For visualization
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-03-01/rnet_2025-03-01.pmtiles -O ../web/public/route_network.pmtiles
-
-  # For analysis
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-03-01/combined_network.gpkg -O tmp/combined_network.gpkg
-}
-
 function streetspace {
   # For visualization
   wget https://github.com/nptscot/outputdata/releases/download/v2025-03-01/os_networks_categorized_street_space_with_widths.pmtiles -O ../web/public/streetspace.pmtiles
@@ -149,7 +139,6 @@ function greenspace {
 }
 
 #core_net
-#rnet
 #streetspace
 #schools
 #town_centres ~/Downloads/Town_Centres_-_Scotland.json

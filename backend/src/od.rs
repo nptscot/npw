@@ -92,10 +92,11 @@ impl CountsOD {
 }
 
 impl MapModel {
-    pub fn od_counts(&self, fast_sample: bool) -> Result<CountsOD> {
-        // TODO Use quiet or direct for this?
-        assert!(self.quiet_router_ok);
-        let quiet_profile = self.graph.profile_names["bicycle_quiet"];
+    pub fn od_counts(&self, fast_sample: bool, profile_name: &str) -> Result<CountsOD> {
+        if profile_name == "bicycle_quiet" {
+            assert!(self.quiet_router_ok);
+        }
+        let profile = self.graph.profile_names[profile_name];
 
         let mut rng = WyRand::new_seed(42);
 
@@ -116,10 +117,9 @@ impl MapModel {
                 let input_pt1 = self.od_zones[zone1].random_point(&mut rng);
                 let input_pt2 = self.od_zones[zone2].random_point(&mut rng);
 
-                let start = self.graph.snap_to_road(input_pt1, quiet_profile);
-                let end = self.graph.snap_to_road(input_pt2, quiet_profile);
-                let Ok(route) = self.graph.routers[quiet_profile.0].route(&self.graph, start, end)
-                else {
+                let start = self.graph.snap_to_road(input_pt1, profile);
+                let end = self.graph.snap_to_road(input_pt2, profile);
+                let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) else {
                     failed += 1;
                     continue;
                 };
@@ -154,7 +154,7 @@ impl MapModel {
 
     /// Returns detailed GJ with per-road counts
     pub fn evaluate_od(&self, fast_sample: bool) -> Result<String> {
-        let od = self.od_counts(fast_sample)?;
+        let od = self.od_counts(fast_sample, "bicycle_quiet")?;
 
         let mut max_count = 0;
         let mut features = Vec::new();
@@ -309,6 +309,23 @@ impl MapModel {
         }
         requests
     }
+
+    pub fn precalculate_demands(&mut self) -> Result<()> {
+        assert!(self.precalculated_demands.is_empty());
+
+        let fast_sample = false;
+        let counts = self.od_counts(fast_sample, "bicycle_direct")?;
+        for idx in 0..self.graph.roads.len() {
+            self.precalculated_demands
+                .push(counts.counts.get(&RoadID(idx)).cloned().unwrap_or(0));
+        }
+
+        let (high_demand_threshold, medium_demand_threshold) =
+            find_cycling_demand_thresholds(&self.precalculated_demands)?;
+        self.high_demand_threshold = high_demand_threshold;
+        self.medium_demand_threshold = medium_demand_threshold;
+        Ok(())
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -375,4 +392,19 @@ impl Zone {
         info!("Matched to {} zones", zones.len());
         Ok(zones)
     }
+}
+
+fn find_cycling_demand_thresholds(demands: &Vec<usize>) -> Result<(usize, usize)> {
+    info!("Calculating ckmeans for {} values", demands.len());
+    let num_classes = 10;
+    let results = ckmeans::ckmeans(demands, num_classes)?;
+    let maxes: Vec<usize> = results
+        .into_iter()
+        .map(|group| *group.last().unwrap())
+        .collect();
+    // 5th highest break for high, 7th highest break for medium
+    let high = maxes[10 - 5];
+    let medium = maxes[10 - 7];
+    info!("ckmeans classes are {maxes:?}. high_demand_threshold is {high}, medium_demand_threshold is {medium}");
+    Ok((high, medium))
 }
