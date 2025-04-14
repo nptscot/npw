@@ -10,3 +10,5 @@ export interface POI {
 }
 
 export let currentPOI: Writable<POI | null> = writable(null);
+
+export let fixPopulation = writable(false);

@@ -39,5 +39,7 @@
 </p>
 
 {#if $devMode}
-  <button on:click={downloadDataZones}>Download data zones</button>
+  <button class="ds_button ds_button--secondary" on:click={downloadDataZones}>
+    Download data zones
+  </button>
 {/if}

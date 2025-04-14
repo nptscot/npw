@@ -29,7 +29,7 @@ export let debugOriginalData = writable(false);
 export let enableLayersPerStage = {
   Primary: [cyclingDemandHigh, majorJunctions],
   Secondary: [cyclingDemandMedium, townCentres, majorJunctions],
-  LocalAccess: [localPOIs],
+  LocalAccess: [localPOIs, uncoveredPopulation],
   LongDistance: [settlements],
   assessment: [],
 };
@@ -37,7 +37,7 @@ export let enableLayersPerStage = {
 export let disableLayersPerStage = {
   Primary: [cyclingDemandHigh, mainRoadCoverage, majorJunctions],
   Secondary: [cyclingDemandMedium, townCentres, severances, majorJunctions],
-  LocalAccess: [localPOIs, severances],
+  LocalAccess: [localPOIs, severances, uncoveredPopulation],
   LongDistance: [settlements, severances],
   assessment: [gridMeshDensity, uncoveredPopulation],
 };
