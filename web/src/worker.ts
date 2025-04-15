@@ -29,7 +29,7 @@ import type {
   Waypoint,
 } from "./types";
 
-export class Backend {
+export class InnerBackend {
   inner: MapModel | null;
 
   constructor() {
@@ -285,9 +285,9 @@ export class Backend {
 
   private checkReady() {
     if (!this.inner) {
-      throw new Error("Backend used without a file loaded");
+      throw new Error("InnerBackend used without a file loaded");
     }
   }
 }
 
-Comlink.expose(Backend);
+Comlink.expose(InnerBackend);

@@ -58,7 +58,8 @@
   } from "./stores";
   import TopBar from "./TopBar.svelte";
   import type { Tier } from "./types";
-  import type { Backend } from "./worker";
+  import type { InnerBackend } from "./worker";
+  import { Backend } from "./worker_wrapper";
   import workerWrapper from "./worker?worker";
 
   let loading = "";
@@ -81,7 +82,7 @@
     loading = `Loading ${$boundaryName}`;
 
     interface WorkerConstructor {
-      new (): Backend;
+      new (): InnerBackend;
     }
 
     let MyWorker: Comlink.Remote<WorkerConstructor> = Comlink.wrap(
@@ -113,13 +114,15 @@
       window.alert(`Couldn't load: ${err}`);
     }
 
+    let wrappedBackend = new Backend(backendWorker);
+
     // Load saved state?
     let openFile = params.get("file");
     if (openFile) {
       let item = window.localStorage.getItem(getKey($boundaryName, openFile));
       if (item) {
         try {
-          await backendWorker.loadSavefile(item);
+          await wrappedBackend.loadSavefile(item);
           $currentFilename = openFile;
           $mode = { kind: "overview" };
         } catch (err) {
@@ -133,7 +136,7 @@
 
     loading = "";
 
-    let bbox = await backendWorker.getBounds();
+    let bbox = await wrappedBackend.getBounds();
     $routeA = {
       lng: lerp(0.4, bbox[0], bbox[2]),
       lat: lerp(0.4, bbox[1], bbox[3]),
@@ -143,7 +146,7 @@
       lat: lerp(0.6, bbox[1], bbox[3]),
     };
 
-    backend.set(backendWorker);
+    backend.set(wrappedBackend);
     await zoomToFit();
   });
 

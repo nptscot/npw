@@ -1,4 +1,3 @@
-import * as Comlink from "comlink";
 import type { Map } from "maplibre-gl";
 import { get, writable, type Writable } from "svelte/store";
 import { getKey, setLocalStorage } from "./common/files";
@@ -12,7 +11,7 @@ import type {
   Tier,
   WorstRoutes,
 } from "./types";
-import type { Backend } from "./worker";
+import type { Backend } from "./worker_wrapper";
 
 export let maptilerApiKey = "MZEJTanw3WpxRvt7qDfo";
 
@@ -40,7 +39,7 @@ export let zoom: Writable<number | undefined> = writable(undefined);
 export let mutationCounter = writable(1);
 
 // TODO Does this need to be a store?
-export let backend: Writable<Comlink.Remote<Backend> | null> = writable(null);
+export let backend: Writable<Backend | null> = writable(null);
 
 export let routeA: Writable<{ lng: number; lat: number } | null> =
   writable(null);
