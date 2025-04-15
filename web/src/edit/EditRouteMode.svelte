@@ -2,15 +2,20 @@
   import type { DataDrivenPropertyValueSpecification, Map } from "maplibre-gl";
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import { notNull } from "svelte-utils";
   import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
   import {
     gradientColors,
     infraTypeColors,
     levelOfServiceColors,
+    stageColors,
     tierColors,
+    tierLabels,
   } from "../colors";
-  import { layerId } from "../common";
+  import { Checkbox, layerId } from "../common";
+  import { SplitComponent } from "../common/layout";
   import RelevantLayers from "../layers/RelevantLayers.svelte";
+  import { majorJunctions } from "../layers/stores";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
     autosave,
@@ -28,6 +33,7 @@
   export let id: number | null;
 
   let routeControls: RouteControls | null = null;
+  let cannotUndo = true;
 
   let name = "";
   let notes = "";
@@ -38,6 +44,12 @@
 
   let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
   $: recalculateSections($waypoints, overrideInfraType, infraType);
+
+  // @ts-expect-error Need to write a proper type for this
+  $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
+
+  // @ts-expect-error TS doesn't understand the ... syntax?
+  $: labelColor = stageColors[$currentStage];
 
   onMount(async () => {
     $waypoints = [];
@@ -121,55 +133,125 @@
   };
 </script>
 
-<RouteControls
-  bind:this={routeControls}
-  {map}
-  {finish}
-  {cancel}
-  {deleteRoute}
-  editingExisting={id != null}
-  {tier}
->
-  <div slot="extra-controls">
-    {#if $waypoints.length >= 2}
-      <AllSections {sectionsGj} bind:infraType bind:overrideInfraType {tier} />
+<SplitComponent>
+  <div slot="controls" class="left">
+    <div class="main-controls">
+      <header class="ds_page-header">
+        <span
+          class="ds_page-header__label ds_content-label"
+          style:color={labelColor}
+        >
+          {headerLabel}
+        </span>
 
-      <h4>Route properties</h4>
+        {#if id != null}
+          <h2 class="ds_page-header__title">Edit a route</h2>
+        {:else}
+          <h2 class="ds_page-header__title">Draw a new route</h2>
+        {/if}
+      </header>
 
-      <input
-        class="ds_input ds_input--fixed-20"
-        placeholder="Name"
-        bind:value={name}
-      />
+      {#if $currentStage == "Primary" || $currentStage == "Secondary"}
+        <Checkbox bind:checked={$majorJunctions} small>
+          Snap to main roads
+        </Checkbox>
+      {/if}
 
-      <textarea
-        class="ds_input"
-        rows="2"
-        placeholder="Notes"
-        bind:value={notes}
-      />
+      {#if $waypoints.length == 0}
+        <p>Click to set the start of the route.</p>
+      {:else if $waypoints.length == 1}
+        <p>Click to set the end of the route.</p>
 
-      <div>
-        <label>
-          Tier:
-          <select bind:value={tier}>
-            <option value="Primary">Primary routes</option>
-            <option value="Secondary">Secondary routes</option>
-            <option value="LocalAccess">Local access routes</option>
-            <option value="LongDistance">Long distance routes</option>
-          </select>
-        </label>
-      </div>
-    {/if}
+        <button type="button" class="ds_link" on:click={cancel}>Cancel</button>
+      {:else}
+        <p>
+          Click to extend the route, drag points to adjust, or change the route
+          properties.
+        </p>
 
-    <RelevantLayers />
+        <div class="ds_button-group">
+          <button class="ds_button" on:click={finish}>Finish</button>
+          <span>or</span>
+          <button class="ds_button ds_button--cancel" on:click={cancel}>
+            Cancel
+          </button>
+        </div>
+
+        {#if id != null}
+          <div>
+            <button
+              class="ds_button ds_button--secondary"
+              on:click={deleteRoute}
+            >
+              Delete
+            </button>
+          </div>
+        {/if}
+
+        <div>
+          <button
+            class="ds_button ds_button--secondary"
+            disabled={cannotUndo}
+            on:click={notNull(routeControls).undo}
+            title="Undo last change on the map"
+          >
+            Undo
+          </button>
+        </div>
+      {/if}
+
+      {#if $waypoints.length >= 2}
+        <AllSections
+          {sectionsGj}
+          bind:infraType
+          bind:overrideInfraType
+          {tier}
+        />
+
+        <h4>Route properties</h4>
+
+        <input
+          class="ds_input ds_input--fixed-20"
+          placeholder="Name"
+          bind:value={name}
+        />
+
+        <textarea
+          class="ds_input"
+          rows="2"
+          placeholder="Notes"
+          bind:value={notes}
+        />
+
+        <div>
+          <label>
+            Tier:
+            <select bind:value={tier}>
+              <option value="Primary">Primary routes</option>
+              <option value="Secondary">Secondary routes</option>
+              <option value="LocalAccess">Local access routes</option>
+              <option value="LongDistance">Long distance routes</option>
+            </select>
+          </label>
+        </div>
+      {/if}
+
+      <RelevantLayers />
+    </div>
+
+    <LeftSidebarStats />
   </div>
 
-  <svelte:fragment slot="sticky-bottom-controls">
-    <LeftSidebarStats />
-  </svelte:fragment>
+  <div slot="map">
+    <RouteControls
+      bind:this={routeControls}
+      bind:cannotUndo
+      {map}
+      {finish}
+      {cancel}
+      {tier}
+    />
 
-  <span slot="extra-map">
     <GeoJSON data={sectionsGj}>
       <LineLayer
         {...layerId("edit-route-sections")}
@@ -179,5 +261,20 @@
         }}
       />
     </GeoJSON>
-  </span>
-</RouteControls>
+  </div>
+</SplitComponent>
+
+<style>
+  /** Controls **/
+  .left {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .main-controls {
+    overflow-y: auto;
+    padding: 20px;
+  }
+</style>

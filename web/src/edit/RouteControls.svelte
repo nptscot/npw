@@ -10,20 +10,17 @@
     Marker,
   } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
-  import { stageColors, tierLabels } from "../colors";
-  import { Checkbox, layerId } from "../common";
-  import { SplitComponent } from "../common/layout";
+  import { layerId } from "../common";
   import { majorJunctions } from "../layers/stores";
-  import { backend, currentStage } from "../stores";
+  import { backend } from "../stores";
   import type { Tier, Waypoint } from "../types";
   import { waypoints } from "./stores";
 
   export let map: Map;
   export let finish: () => void;
   export let cancel: () => void;
-  export let deleteRoute: () => void;
-  export let editingExisting: boolean;
   export let tier: Tier;
+  export let cannotUndo: boolean;
 
   // TODO Fix svelte-maplibre -- this isn't just a layer event
   onMount(() => {
@@ -37,6 +34,11 @@
   });
 
   let undoStates: Waypoint[][] = [];
+  $: if (undoStates.length == 0) {
+    cannotUndo = true;
+  } else {
+    cannotUndo = false;
+  }
 
   interface ExtraNode {
     point: [number, number];
@@ -74,7 +76,7 @@
     map.getCanvas().style.cursor = cursorStyle;
   }
 
-  function undo() {
+  export function undo() {
     let state = undoStates.pop();
     undoStates = undoStates;
     if (state) {
@@ -333,163 +335,79 @@
     }
     return gj;
   }
-
-  // @ts-expect-error Need to write a proper type for this
-  $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
-
-  // @ts-expect-error TS doesn't understand the ... syntax?
-  $: labelColor = stageColors[$currentStage];
 </script>
 
 <svelte:window on:keydown={keyDown} />
 
-<SplitComponent>
-  <div slot="controls" class="left">
-    <div class="main-controls">
-      <header class="ds_page-header">
-        <span
-          class="ds_page-header__label ds_content-label"
-          style:color={labelColor}
-        >
-          {headerLabel}
-        </span>
+<MapEvents on:click={onMapClick} on:mousemove={onMouseMove} />
 
-        {#if editingExisting}
-          <h2 class="ds_page-header__title">Edit a route</h2>
-        {:else}
-          <h2 class="ds_page-header__title">Draw a new route</h2>
-        {/if}
-      </header>
+{#each extraNodes as node}
+  <Marker
+    draggable
+    bind:lngLat={node.point}
+    on:mouseenter={() => (hoveringOnExtraNode = true)}
+    on:mouseleave={() => (hoveringOnExtraNode = false)}
+    on:dragstart={() => addNode(node)}
+    on:drag={() => updateDrag(node)}
+    on:dragend={() => finalizeDrag(node)}
+    zIndex={0}
+  >
+    <span class="extra-node-clickable" class:hide={draggingExtraNode}>
+      <span class="extra-node-display" class:hide={draggingExtraNode} />
+    </span>
+  </Marker>
+{/each}
 
-      {#if $currentStage == "Primary" || $currentStage == "Secondary"}
-        <Checkbox bind:checked={$majorJunctions} small>
-          Snap to main roads
-        </Checkbox>
-      {/if}
+{#each $waypoints as waypt, idx}
+  <Marker
+    draggable
+    bind:lngLat={waypt.point}
+    on:click={() => onClickWaypoint(idx)}
+    on:contextmenu={() => removeWaypoint(idx)}
+    on:mouseenter={() => (hoveringOnWaypoint = true)}
+    on:mouseleave={() => (hoveringOnWaypoint = false)}
+    on:dragstart={startDraggingWaypoint}
+    on:dragend={() => stopDraggingWaypoint(idx)}
+    zIndex={1}
+  >
+    <span class="waypoint">{idx + 1}</span>
+  </Marker>
+{/each}
 
-      {#if $waypoints.length == 0}
-        <p>Click to set the start of the route.</p>
-      {:else if $waypoints.length == 1}
-        <p>Click to set the end of the route.</p>
+<GeoJSON data={previewGj}>
+  <LineLayer
+    {...layerId("snapper-preview")}
+    paint={{
+      "line-color": "blue",
+      "line-width": 3,
+      "line-dasharray": [3, 2],
+    }}
+  />
+</GeoJSON>
 
-        <button type="button" class="ds_link" on:click={cancel}>Cancel</button>
-      {:else}
-        <p>
-          Click to extend the route, drag points to adjust, or change the route
-          properties.
-        </p>
+<GeoJSON data={previewSnappedCursor}>
+  <CircleLayer
+    {...layerId("snapper-current-snapped-waypoint")}
+    paint={{
+      "circle-color": "blue",
+      "circle-radius": 6,
+    }}
+  />
+</GeoJSON>
 
-        <div class="ds_button-group">
-          <button class="ds_button" on:click={finish}>Finish</button>
-          <span>or</span>
-          <button class="ds_button ds_button--cancel" on:click={cancel}>
-            Cancel
-          </button>
-        </div>
-
-        {#if editingExisting}
-          <div>
-            <button
-              class="ds_button ds_button--secondary"
-              on:click={deleteRoute}
-            >
-              Delete
-            </button>
-          </div>
-        {/if}
-
-        <div>
-          <button
-            class="ds_button ds_button--secondary"
-            disabled={undoStates.length == 0}
-            on:click={undo}
-            title="Undo last change on the map"
-          >
-            Undo
-          </button>
-        </div>
-      {/if}
-
-      <slot name="extra-controls" />
-    </div>
-
-    <slot name="sticky-bottom-controls" />
-  </div>
-
-  <div slot="map">
-    <MapEvents on:click={onMapClick} on:mousemove={onMouseMove} />
-
-    {#each extraNodes as node}
-      <Marker
-        draggable
-        bind:lngLat={node.point}
-        on:mouseenter={() => (hoveringOnExtraNode = true)}
-        on:mouseleave={() => (hoveringOnExtraNode = false)}
-        on:dragstart={() => addNode(node)}
-        on:drag={() => updateDrag(node)}
-        on:dragend={() => finalizeDrag(node)}
-        zIndex={0}
-      >
-        <span class="extra-node-clickable" class:hide={draggingExtraNode}>
-          <span class="extra-node-display" class:hide={draggingExtraNode} />
-        </span>
-      </Marker>
-    {/each}
-
-    {#each $waypoints as waypt, idx}
-      <Marker
-        draggable
-        bind:lngLat={waypt.point}
-        on:click={() => onClickWaypoint(idx)}
-        on:contextmenu={() => removeWaypoint(idx)}
-        on:mouseenter={() => (hoveringOnWaypoint = true)}
-        on:mouseleave={() => (hoveringOnWaypoint = false)}
-        on:dragstart={startDraggingWaypoint}
-        on:dragend={() => stopDraggingWaypoint(idx)}
-        zIndex={1}
-      >
-        <span class="waypoint">{idx + 1}</span>
-      </Marker>
-    {/each}
-
-    <GeoJSON data={previewGj}>
-      <LineLayer
-        {...layerId("snapper-preview")}
-        paint={{
-          "line-color": "blue",
-          "line-width": 3,
-          "line-dasharray": [3, 2],
-        }}
-      />
-    </GeoJSON>
-
-    <GeoJSON data={previewSnappedCursor}>
-      <CircleLayer
-        {...layerId("snapper-current-snapped-waypoint")}
-        paint={{
-          "circle-color": "blue",
-          "circle-radius": 6,
-        }}
-      />
-    </GeoJSON>
-
-    <GeoJSON data={debugCursor(rawCursor)}>
-      <CircleLayer
-        {...layerId("snapper-debug-cursor")}
-        layout={{
-          visibility: $majorJunctions && false ? "visible" : "none",
-        }}
-        paint={{
-          "circle-color": "yellow",
-          "circle-opacity": 0.5,
-          "circle-radius": snapDistancePixels,
-        }}
-      />
-    </GeoJSON>
-
-    <slot name="extra-map" />
-  </div>
-</SplitComponent>
+<GeoJSON data={debugCursor(rawCursor)}>
+  <CircleLayer
+    {...layerId("snapper-debug-cursor")}
+    layout={{
+      visibility: $majorJunctions && false ? "visible" : "none",
+    }}
+    paint={{
+      "circle-color": "yellow",
+      "circle-opacity": 0.5,
+      "circle-radius": snapDistancePixels,
+    }}
+  />
+</GeoJSON>
 
 <style>
   /** Styling on the map **/
@@ -541,18 +459,5 @@
 
   .hide {
     visibility: hidden;
-  }
-
-  /** Controls **/
-  .left {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .main-controls {
-    overflow-y: auto;
-    padding: 20px;
   }
 </style>
