@@ -186,6 +186,7 @@
 
   function changePopulationLayer() {
     $backgroundLayer = populationLayer;
+    $uncoveredPopulation = populationLayer == "off";
   }
 </script>
 
@@ -311,7 +312,7 @@
           bind:value={populationLayer}
           on:change={changePopulationLayer}
           options={[
-            ["off", "None"],
+            ["off", "Not connected to the network"],
             ["population", "Dense zones"],
             ["deprived", "Deprived (SIMD) zones"],
           ]}
