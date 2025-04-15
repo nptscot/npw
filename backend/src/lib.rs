@@ -414,7 +414,10 @@ fn find_cycling_demand_thresholds(demands: &Vec<usize>) -> Result<(usize, usize)
     info!("Calculating ckmeans for {} values", demands.len());
     let num_classes = 10;
     let results = ckmeans::ckmeans(demands, num_classes)?;
-    let maxes: Vec<usize> = results.into_iter().map(|group| *group.last().unwrap()).collect();
+    let maxes: Vec<usize> = results
+        .into_iter()
+        .map(|group| *group.last().unwrap())
+        .collect();
     // 5th highest break for high, 7th highest break for medium
     let high = maxes[10 - 5];
     let medium = maxes[10 - 7];

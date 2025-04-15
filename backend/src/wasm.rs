@@ -51,9 +51,7 @@ impl MapModel {
         ]);
         let mut holes = Vec::new();
         for s in &self.settlements {
-            for polygon in self.graph.mercator.to_wgs84(&s.polygon) {
-                holes.push(polygon.exterior().clone());
-            }
+            holes.push(self.graph.mercator.to_wgs84(&s.polygon).exterior().clone());
         }
         let polygon = Polygon::new(the_world, holes);
         let f = Feature::from(Geometry::from(&polygon));
@@ -83,7 +81,7 @@ impl MapModel {
 
         // Also fade out all of the settlements, leaving just the rural space in between
         for s in &self.settlements {
-            polygons.extend(self.graph.mercator.to_wgs84(&s.polygon));
+            polygons.push(self.graph.mercator.to_wgs84(&s.polygon));
         }
         let f = Feature::from(Geometry::from(&MultiPolygon(polygons)));
         let out = serde_json::to_string(&f).map_err(err_to_js)?;

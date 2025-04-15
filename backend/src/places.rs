@@ -266,7 +266,7 @@ struct TownCentreGJ {
 
 #[derive(Serialize, Deserialize)]
 pub struct Settlement {
-    pub polygon: MultiPolygon,
+    pub polygon: Polygon,
     name: Option<String>,
     population: usize,
     pub roads: HashSet<RoadID>,
@@ -298,35 +298,40 @@ impl Settlement {
         let mut settlements = Vec::new();
         for x in geojson::de::deserialize_feature_collection_str_to_vec::<SettlementGJ>(gj)? {
             if boundary_wgs84.intersects(&x.geometry) {
-                let polygon = graph.mercator.to_mercator(&x.geometry);
-                // How much of the settlement intersects the study area?
-                let overlap = boundary_mercator.intersection(&polygon);
-                let ratio_in_boundary = overlap.unsigned_area() / polygon.unsigned_area();
+                let settlement_mercator = graph.mercator.to_mercator(&x.geometry);
+                // Clip the settlement to the study area
+                let settlement_pieces = boundary_mercator.intersection(&settlement_mercator);
 
-                if ratio_in_boundary < 0.1 {
-                    info!(
-                        "Skipping settlement {:?} because only {}% of it overlaps the boundary",
-                        x.name,
-                        ratio_in_boundary * 100.0
-                    );
-                    continue;
-                }
-
-                // All intersecting roads
-                // TODO Could rtree to speed up
-                let mut roads: HashSet<RoadID> = HashSet::new();
-                for (idx, road) in graph.roads.iter().enumerate() {
-                    if polygon.intersects(&road.linestring) {
-                        roads.insert(RoadID(idx));
+                for polygon in settlement_pieces {
+                    // Settlement polygons are more precise than the simplified local authority
+                    // boundaries. Rather than switch to the precise LA boundaries (from
+                    // https://data.spatialhub.scot/dataset/local_authority_boundaries-is/resource/d24c5735-0f1c-4819-a6bd-dbfeb93bd8e4)
+                    // and incur a file size hit, just check for a minimum area of the clipped settlements. By manual inspection, this threshold is reasonable.
+                    let area = polygon.unsigned_area();
+                    if area < 10_000.0 {
+                        info!(
+                            "Skipping settlement {:?} because it's tiny after being clipped",
+                            x.name
+                        );
+                        continue;
                     }
-                }
 
-                settlements.push(Settlement {
-                    polygon,
-                    name: x.name,
-                    population: x.population as usize,
-                    roads,
-                });
+                    // All intersecting roads
+                    // TODO Could rtree to speed up
+                    let mut roads: HashSet<RoadID> = HashSet::new();
+                    for (idx, road) in graph.roads.iter().enumerate() {
+                        if polygon.intersects(&road.linestring) {
+                            roads.insert(RoadID(idx));
+                        }
+                    }
+
+                    settlements.push(Settlement {
+                        polygon,
+                        name: x.name.clone(),
+                        population: x.population as usize,
+                        roads,
+                    });
+                }
             }
         }
         info!("Matched {} settlements", settlements.len());
