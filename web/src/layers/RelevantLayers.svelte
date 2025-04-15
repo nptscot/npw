@@ -1,50 +1,87 @@
 <script lang="ts">
-  import { currentStage } from "../stores";
-  import { allControls } from "./stores";
-
-  // TODO This way of doing things is on its way out
-
-  let primary: HTMLDivElement | null = null;
-  let secondary: HTMLDivElement | null = null;
-  let longDistance: HTMLDivElement | null = null;
-
-  $: update(primary, $allControls, [
-    "High cycling demand",
-    "Main road coverage",
-  ]);
-
-  $: update(secondary, $allControls, ["Medium cycling demand", "Town centres"]);
-
-  $: update(longDistance, $allControls, ["Settlements"]);
-
-  function update(
-    container: HTMLDivElement | null,
-    allControls: Map<string, HTMLDivElement>,
-    order: string[],
-  ) {
-    if (container) {
-      container.innerHTML = "";
-      for (let name of order) {
-        let obj = allControls.get(name);
-        if (obj) {
-          container.appendChild(obj);
-        }
-      }
-    }
-  }
+  import { Checkbox } from "../common";
+  import { currentStage, devMode } from "../stores";
+  import {
+    cyclingDemandHigh,
+    cyclingDemandMedium,
+    debugAllCyclingDemand,
+    debugCyclingDemandMin,
+    mainRoadCoverage,
+    settlements,
+    showUncovered,
+    townCentres,
+  } from "./stores";
 </script>
 
 {#if $currentStage == "Primary"}
   <h3>Relevant layers</h3>
-  <div bind:this={primary} />
+
+  <Checkbox small bind:checked={$cyclingDemandHigh}>
+    High cycling demand
+  </Checkbox>
+  {#if $cyclingDemandHigh}
+    <div style:margin-left="20px">
+      <Checkbox small bind:checked={$showUncovered}>
+        Show all demand, even if covered
+      </Checkbox>
+
+      {#if $devMode}
+        <Checkbox small bind:checked={$debugAllCyclingDemand}>
+          Debug all demand
+        </Checkbox>
+
+        {#if $debugAllCyclingDemand}
+          <label>
+            Show demand above:
+            <input type="number" bind:value={$debugCyclingDemandMin} />
+          </label>
+        {/if}
+      {/if}
+    </div>
+  {/if}
+
+  <Checkbox small bind:checked={$mainRoadCoverage}>Main road coverage</Checkbox>
+  {#if $mainRoadCoverage}
+    <div style:margin-left="20px">
+      <Checkbox small bind:checked={$showUncovered}>
+        Show all demand, even if covered
+      </Checkbox>
+    </div>
+  {/if}
 {/if}
 
 {#if $currentStage == "Secondary"}
   <h3>Relevant layers</h3>
-  <div bind:this={secondary} />
+
+  <Checkbox small bind:checked={$cyclingDemandMedium}>
+    Medium cycling demand
+  </Checkbox>
+  {#if $cyclingDemandMedium}
+    <div style:margin-left="20px">
+      <Checkbox small bind:checked={$showUncovered}>
+        Show all demand, even if covered
+      </Checkbox>
+
+      {#if $devMode}
+        <Checkbox small bind:checked={$debugAllCyclingDemand}>
+          Debug all demand
+        </Checkbox>
+
+        {#if $debugAllCyclingDemand}
+          <label>
+            Show demand above:
+            <input type="number" bind:value={$debugCyclingDemandMin} />
+          </label>
+        {/if}
+      {/if}
+    </div>
+  {/if}
+
+  <Checkbox small bind:checked={$townCentres}>Town centres</Checkbox>
 {/if}
 
 {#if $currentStage == "LongDistance"}
   <h3>Relevant layers</h3>
-  <div bind:this={longDistance} />
+
+  <Checkbox small bind:checked={$settlements}>Settlements</Checkbox>
 {/if}

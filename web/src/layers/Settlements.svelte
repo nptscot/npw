@@ -11,7 +11,6 @@
   import DebugReachability from "../local_access/DebugReachability.svelte";
   import { backend, mutationCounter } from "../stores";
   import type { PoiKind, Settlements } from "../types";
-  import LayerControls from "./LayerControls.svelte";
   import { settlements as show } from "./stores";
 
   let lastUpdate = 0;
@@ -43,8 +42,6 @@
     recalc();
   }
 </script>
-
-<LayerControls name="Settlements" bind:show={$show} empty />
 
 <GeoJSON {data} generateId>
   <FillLayer

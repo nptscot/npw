@@ -1,11 +1,6 @@
 import { writable, type Writable } from "svelte/store";
 import type { BackgroundLayer } from "../stores";
 
-export let allControls: Writable<Map<string, HTMLDivElement>> = writable(
-  new Map(),
-);
-
-// Only layers that need to be controlled remotely need to be here
 export let debugAllCyclingDemand = writable(false);
 export let debugCyclingDemandMin = writable(0);
 export let cyclingDemandHigh = writable(false);
