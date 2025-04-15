@@ -3,6 +3,7 @@ import type { BackgroundLayer } from "../stores";
 
 export let debugAllCyclingDemand = writable(false);
 export let debugCyclingDemandMin = writable(0);
+export let styleCyclingDemand = writable(true);
 export let cyclingDemandHigh = writable(false);
 export let mainRoadCoverage = writable(false);
 export let showUncovered = writable(false);
