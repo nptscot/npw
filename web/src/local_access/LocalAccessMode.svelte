@@ -176,6 +176,9 @@
 
   $: showLayers($fixPopulation, $currentPOI);
   function showLayers(fixPopulation: boolean, currentPOI: POI | null) {
+    if ($currentStage != "LocalAccess") {
+      return;
+    }
     $uncoveredPopulation = currentPOI == null;
     $localPOIs = !fixPopulation;
     if (!fixPopulation) {

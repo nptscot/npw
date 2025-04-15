@@ -143,6 +143,7 @@ export function assetUrl(path: string): string {
   return get(remoteStorage) ? `https://assets.od2net.org/${dir}/${path}` : path;
 }
 
+// TODO Might work better as onDestroy of the components?
 export function exitCurrentStage() {
   let oldStage = get(currentStage);
 
