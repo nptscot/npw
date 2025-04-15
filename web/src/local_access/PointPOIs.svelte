@@ -145,4 +145,4 @@
   />
 </GeoJSON>
 
-<DebugReachability layerName="pois" current={$currentPOI} show={$show} />
+<DebugReachability current={$currentPOI} show={$show} />

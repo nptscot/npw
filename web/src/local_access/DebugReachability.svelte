@@ -5,24 +5,17 @@
   import { tierColors } from "../colors";
   import { layerId } from "../common";
   import { backend } from "../stores";
-  import type { PoiKind, SetRouteInput } from "../types";
+  import type { SetRouteInput } from "../types";
+  import type { POI } from "./stores";
 
-  // For town centres and settlements and POIs
-  interface SimplePOI {
-    kind: PoiKind;
-    idx: number;
-    reachable: boolean;
-  }
-
-  export let layerName: string;
-  export let current: SimplePOI | null;
+  export let current: POI | null;
   export let show: boolean;
 
   let debug = emptyGeojson();
   let fixUnreachable: Feature<LineString, SetRouteInput> | null = null;
   $: updateDebug(current);
 
-  async function updateDebug(current: SimplePOI | null) {
+  async function updateDebug(current: POI | null) {
     if ($backend && current) {
       if (current.reachable) {
         debug = await $backend.debugReachablePath(current.kind, current.idx);
@@ -43,7 +36,7 @@
 
 <GeoJSON data={debug}>
   <LineLayer
-    {...layerId("debug-reachability-" + layerName)}
+    {...layerId("debug-reachability-pois")}
     interactive={false}
     layout={{
       visibility: show ? "visible" : "none",
@@ -57,7 +50,7 @@
 
 <GeoJSON data={fixUnreachable || emptyGeojson()}>
   <LineLayer
-    {...layerId("fix-reachability-" + layerName)}
+    {...layerId("fix-reachability-pois")}
     interactive={false}
     layout={{
       visibility: show ? "visible" : "none",

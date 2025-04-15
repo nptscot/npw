@@ -87,12 +87,7 @@ const layerZorder = [
 
   // Draw these on top of the respective objects, in case the path goes through
   // the middle of a polygon
-  "debug-reachability-settlements",
-  "debug-reachability-town_centres",
   "debug-reachability-pois",
-
-  "fix-reachability-settlements",
-  "fix-reachability-town_centres",
   "fix-reachability-pois",
 
   // Roads
