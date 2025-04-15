@@ -6,6 +6,7 @@ import type {
   Polygon,
   Position,
 } from "geojson";
+import { loadingSpinners } from "./stores";
 import type {
   AutosplitRoute,
   ConnectedComponents,
@@ -344,10 +345,14 @@ export class Backend {
   }
 
   private start() {
-    console.log("Starting a call");
+    loadingSpinners.update((x) => {
+      return x + 1;
+    });
   }
 
   private stop() {
-    console.log("Done with a call");
+    loadingSpinners.update((x) => {
+      return x - 1;
+    });
   }
 }

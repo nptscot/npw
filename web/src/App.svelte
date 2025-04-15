@@ -23,7 +23,7 @@
   import school2Icon from "../assets/school_unreachable.png";
   import AssessMode from "./assess/AssessMode.svelte";
   import BulkEditMode from "./BulkEditMode.svelte";
-  import { layerId } from "./common";
+  import { layerId, LoadingSpinner } from "./common";
   import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";
   import { getKey } from "./common/files";
   import { controlsContents, Layout, mapContents } from "./common/layout";
@@ -251,6 +251,7 @@
         <NavigationControl showCompass={false} />
         <ScaleControl />
         <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
+        <LoadingSpinner />
         <DisableInteractiveLayers />
         {#if $currentStage != "LocalAccess"}
           <StreetView />

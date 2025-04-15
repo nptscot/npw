@@ -40,6 +40,7 @@ export let mutationCounter = writable(1);
 
 // TODO Does this need to be a store?
 export let backend: Writable<Backend | null> = writable(null);
+export let loadingSpinners = writable(0);
 
 export let routeA: Writable<{ lng: number; lat: number } | null> =
   writable(null);
