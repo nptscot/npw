@@ -150,7 +150,7 @@
 
         <p>
           You should familiarise yourself with current infrastructure, via the
-          layers on the right, before starting your new cycle network.
+          layers on the right, before editing your new cycle network.
         </p>
 
         <button class="ds_button" on:click={() => (subpage = "new-project")}>
