@@ -16,7 +16,12 @@
     streetSpaceColors,
     traffic,
   } from "../../colors";
-  import { layerId, roadLineWidth } from "../../common";
+  import {
+    layerId,
+    lineColorForDemand,
+    lineWidthForDemand,
+    roadLineWidth,
+  } from "../../common";
   import {
     backgroundLayer,
     mode,
@@ -24,12 +29,18 @@
     type Mode,
   } from "../../stores";
   import { infraTypeMapping, type DynamicRoad } from "../../types";
-  import { debugOriginalData, severances } from "../stores";
+  import {
+    debugCyclingDemandMin,
+    debugOriginalData,
+    severances,
+    styleCyclingDemand,
+  } from "../stores";
 
   export let dynamicData: DynamicRoad[];
 
   function makeFilter(
     severances: boolean,
+    debugCyclingDemandMin: number,
     style: BackgroundLayer,
   ): ExpressionSpecification | undefined {
     if (severances) {
@@ -43,6 +54,8 @@
       return ["to-boolean", ["get", "street_space"]];
     } else if (style == "attractive") {
       return ["get", "is_attractive"];
+    } else if (style == "precalculated_rnet") {
+      return [">=", ["get", "precalculated_demand"], debugCyclingDemandMin];
     }
     return undefined;
   }
@@ -76,6 +89,7 @@
 
   function lineColor(
     severances: boolean,
+    styleCyclingDemand: boolean,
     style: BackgroundLayer,
   ): DataDrivenPropertyValueSpecification<string> {
     if (severances) {
@@ -114,11 +128,25 @@
         "black",
       ),
       disconnections: invisibile,
-      precalculated_rnet: invisibile,
+      precalculated_rnet: styleCyclingDemand
+        ? lineColorForDemand(["get", "precalculated_demand"])
+        : "grey",
       calculated_rnet: invisibile,
       population: invisibile,
       deprived: invisibile,
     }[style];
+  }
+
+  function lineWidth(
+    styleCyclingDemand: boolean,
+    style: BackgroundLayer,
+  ): DataDrivenPropertyValueSpecification<number> {
+    if (style == "precalculated_rnet") {
+      return styleCyclingDemand
+        ? lineWidthForDemand(["get", "precalculated_demand"])
+        : roadLineWidth(4);
+    }
+    return roadLineWidth(0);
   }
 
   function showLayer(
@@ -154,7 +182,7 @@
       los: true,
       reachability: true,
       disconnections: false,
-      precalculated_rnet: false,
+      precalculated_rnet: true,
       calculated_rnet: false,
       population: false,
       deprived: false,
@@ -164,11 +192,11 @@
 
 <LineLayer
   {...layerId("reference-roads")}
-  filter={makeFilter($severances, $backgroundLayer)}
+  filter={makeFilter($severances, $debugCyclingDemandMin, $backgroundLayer)}
   paint={{
-    "line-color": lineColor($severances, $backgroundLayer),
+    "line-color": lineColor($severances, $styleCyclingDemand, $backgroundLayer),
     "line-opacity": lineOpacity($mode, $severances, $backgroundLayer),
-    "line-width": roadLineWidth(0),
+    "line-width": lineWidth($styleCyclingDemand, $backgroundLayer),
   }}
   layout={{
     visibility: showLayer($severances, $debugOriginalData, $backgroundLayer)
