@@ -4,6 +4,7 @@ import type {
   Feature,
   FeatureCollection,
   LineString,
+  MultiPolygon,
   Polygon,
   Position,
 } from "geojson";
@@ -64,9 +65,14 @@ export class InnerBackend {
     return JSON.parse(this.inner!.getInvertedBoundaryInsideSettlements());
   }
 
-  getInvertedBoundaryOutsideSettlements(): Feature<Polygon> {
+  getInvertedBoundaryOutsideSettlements(): Feature<MultiPolygon> {
     this.checkReady();
     return JSON.parse(this.inner!.getInvertedBoundaryOutsideSettlements());
+  }
+
+  getStudyAreaBoundary(): Feature<Polygon> {
+    this.checkReady();
+    return JSON.parse(this.inner!.getStudyAreaBoundary());
   }
 
   renderStaticRoads(): FeatureCollection<LineString, StaticRoad> {

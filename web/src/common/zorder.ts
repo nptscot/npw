@@ -126,5 +126,6 @@ const layerZorder = [
   "fade-study-area-inside",
   "fade-study-area-outside",
   "fade-study-area-entire",
+  "study-area-outline",
   "block-everything",
 ];

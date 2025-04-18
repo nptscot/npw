@@ -3,6 +3,7 @@ import type {
   Feature,
   FeatureCollection,
   LineString,
+  MultiPolygon,
   Polygon,
   Position,
 } from "geojson";
@@ -62,9 +63,18 @@ export class Backend {
     return result;
   }
 
-  async getInvertedBoundaryOutsideSettlements(): Promise<Feature<Polygon>> {
+  async getInvertedBoundaryOutsideSettlements(): Promise<
+    Feature<MultiPolygon>
+  > {
     this.start();
     let result = await this.inner.getInvertedBoundaryOutsideSettlements();
+    this.stop();
+    return result;
+  }
+
+  async getStudyAreaBoundary(): Promise<Feature<Polygon>> {
+    this.start();
+    let result = await this.inner.getStudyAreaBoundary();
     this.stop();
     return result;
   }

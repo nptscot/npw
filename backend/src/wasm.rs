@@ -98,16 +98,23 @@ impl MapModel {
             (180.0, 90.0),
         ]);
         // Fade out everything except the study area
-        let polygons = vec![Polygon::new(
+        let polygon = Polygon::new(
             the_world,
             self.boundary_wgs84
                 .0
                 .iter()
                 .map(|p| p.exterior().clone())
                 .collect(),
-        )];
+        );
 
-        let f = Feature::from(Geometry::from(&MultiPolygon(polygons)));
+        let f = Feature::from(Geometry::from(&polygon));
+        let out = serde_json::to_string(&f).map_err(err_to_js)?;
+        Ok(out)
+    }
+
+    #[wasm_bindgen(js_name = getStudyAreaBoundary)]
+    pub fn get_study_area_boundary(&self) -> Result<String, JsValue> {
+        let f = Feature::from(Geometry::from(&self.boundary_wgs84));
         let out = serde_json::to_string(&f).map_err(err_to_js)?;
         Ok(out)
     }

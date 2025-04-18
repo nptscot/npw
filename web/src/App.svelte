@@ -9,6 +9,7 @@
   import {
     FillLayer,
     GeoJSON,
+    LineLayer,
     MapLibre,
     NavigationControl,
     ScaleControl,
@@ -298,6 +299,18 @@
                     invertLayer($mode, $currentStage) == "all"
                       ? "visible"
                       : "none",
+                }}
+              />
+            </GeoJSON>
+          {/await}
+          {#await $backend.getStudyAreaBoundary() then data}
+            <GeoJSON {data}>
+              <LineLayer
+                {...layerId("study-area-outline")}
+                paint={{
+                  "line-color": "black",
+                  "line-width": 2,
+                  "line-dasharray": [2, 1],
                 }}
               />
             </GeoJSON>
