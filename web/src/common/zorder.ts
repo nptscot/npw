@@ -91,7 +91,7 @@ const layerZorder = [
   "fix-reachability-pois",
 
   // Roads
-  "precalculated-rnet",
+  "precalculated-rnet-debug",
   "uncovered-cycling-demands",
   "uncovered-main-roads",
   "edits-roads",

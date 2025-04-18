@@ -26,12 +26,12 @@
   import {
     cyclingDemandHigh,
     cyclingDemandMedium,
+    debugCyclingDemandMin,
     debugOriginalData,
     gridMeshDensity,
     styleCyclingDemand,
   } from "../stores";
   import CalculatedRouteNetwork from "./CalculatedRouteNetwork.svelte";
-  import NptFullNetwork from "./NptFullNetwork.svelte";
 
   // common has functions ForDemand, duplicating values here
   // TODO Center on the buckets instad
@@ -163,9 +163,29 @@
     <p>
       Darker colours are denser. Only the top 3 densest quintiles are shown.
     </p>
+  {:else if $backgroundLayer == "precalculated_rnet"}
+    <div>
+      <label>
+        Show demand above:
+        <input type="number" bind:value={$debugCyclingDemandMin} />
+      </label>
+    </div>
+
+    <Checkbox small bind:checked={$styleCyclingDemand}>
+      Style based on demand
+    </Checkbox>
+
+    {#if $styleCyclingDemand}
+      <SequentialLegend colorScale={demandColors} limits={demandLimits} />
+    {/if}
+
+    {#if $devMode}
+      <Checkbox small bind:checked={$debugOriginalData}>
+        Show original data
+      </Checkbox>
+    {/if}
   {/if}
 
-  <NptFullNetwork />
   <CalculatedRouteNetwork />
 
   <!-- TODO: There could be a legend for reference layers, per-tier layers, and

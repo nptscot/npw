@@ -2,9 +2,20 @@
   import { LineLayer, VectorTileSource } from "svelte-maplibre";
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
   import { nptStreetSpaceColors, speed, tierColors } from "../../colors";
-  import { layerId, roadLineWidth } from "../../common";
+  import {
+    layerId,
+    lineColorForDemand,
+    lineWidthForDemand,
+    roadLineWidth,
+  } from "../../common";
   import { assetUrl, backgroundLayer } from "../../stores";
-  import { debugOriginalData } from "../stores";
+  import {
+    debugCyclingDemandMin,
+    debugOriginalData,
+    styleCyclingDemand,
+  } from "../stores";
+
+  let rnetKey = "all_fastest_bicycle_go_dutch";
 </script>
 
 <VectorTileSource url={`pmtiles://${assetUrl("cbd.pmtiles")}`}>
@@ -140,6 +151,28 @@
     layout={{
       visibility:
         $backgroundLayer == "street_space" && $debugOriginalData
+          ? "visible"
+          : "none",
+    }}
+  />
+</VectorTileSource>
+
+<VectorTileSource url={`pmtiles://${assetUrl("route_network.pmtiles")}`}>
+  <LineLayer
+    {...layerId("precalculated-rnet-debug")}
+    sourceLayer="rnet"
+    filter={[">=", ["get", rnetKey], $debugCyclingDemandMin]}
+    paint={{
+      "line-color": $styleCyclingDemand
+        ? lineColorForDemand(["get", rnetKey])
+        : "grey",
+      "line-width": $styleCyclingDemand
+        ? lineWidthForDemand(["get", rnetKey])
+        : roadLineWidth(4),
+    }}
+    layout={{
+      visibility:
+        $backgroundLayer == "precalculated_rnet" && $debugOriginalData
           ? "visible"
           : "none",
     }}
