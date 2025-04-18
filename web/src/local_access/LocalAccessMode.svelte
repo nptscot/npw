@@ -1,29 +1,24 @@
 <script lang="ts">
   import { MapEvents } from "svelte-maplibre";
   import { tierColors } from "../colors";
-  import { Checkbox, HelpButton, Radio } from "../common";
+  import { Checkbox, HelpButton } from "../common";
   import { SplitComponent } from "../common/layout";
-  import { localPOIs, uncoveredPopulation } from "../layers/stores";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
     autosave,
     backend,
-    backgroundLayer,
     currentStage,
     devMode,
     map,
     mode,
     mutationCounter,
     zoom,
-    type BackgroundLayer,
   } from "../stores";
   import type { PoiKind } from "../types";
   import Greenspaces from "./Greenspaces.svelte";
   import PointPOIs from "./PointPOIs.svelte";
-  import { currentPOI, fixPopulation, type POI } from "./stores";
+  import { currentPOI, type POI } from "./stores";
   import StreetViewPOI from "./StreetViewPOI.svelte";
-
-  let populationLayer: BackgroundLayer = "off";
 
   let lastUpdate = 0;
 
@@ -139,17 +134,6 @@
   }
 
   async function onKeyDown(e: KeyboardEvent) {
-    if ($fixPopulation) {
-      if (e.key == "r") {
-        let tag = (e.target as HTMLElement).tagName;
-        if (tag != "INPUT") {
-          e.preventDefault();
-          $mode = { kind: "edit-route", id: null };
-        }
-      }
-      return;
-    }
-
     if (e.key == "a" && $currentPOI && !$currentPOI.reachable) {
       let tag = (e.target as HTMLElement).tagName;
       if (tag != "INPUT") {
@@ -173,24 +157,6 @@
     }
     findAnother();
   }
-
-  $: showLayers($fixPopulation, $currentPOI);
-  function showLayers(fixPopulation: boolean, currentPOI: POI | null) {
-    if ($currentStage != "LocalAccess") {
-      return;
-    }
-    $uncoveredPopulation = currentPOI == null;
-    $localPOIs = !fixPopulation;
-    if (!fixPopulation) {
-      populationLayer = "off";
-      $backgroundLayer = "off";
-    }
-  }
-
-  function changePopulationLayer() {
-    $backgroundLayer = populationLayer;
-    $uncoveredPopulation = populationLayer == "off";
-  }
 </script>
 
 <svelte:window on:keydown={onKeyDown} />
@@ -198,7 +164,7 @@
 <SplitComponent>
   <div slot="controls" class="left">
     <div class="main-controls">
-      {#if !$currentPOI && !$fixPopulation}
+      {#if !$currentPOI}
         <header
           class="ds_page-header"
           style="display: flex; justify-content: space-between;"
@@ -226,8 +192,6 @@
             Back to project overview
           </button>
         </div>
-
-        <h3>POIs</h3>
 
         <p>
           Your network needs to provide connectivity to key points of interest,
@@ -258,68 +222,6 @@
             Fix connectivity for remaining POIs
           </button>
         </div>
-
-        <h3>Population coverage</h3>
-
-        <p>
-          Your network needs to provide connectivity to high-density and
-          deprived population zone. Zones with severed connectivity are shown in
-          red and need to be fixed.
-        </p>
-
-        <div>
-          <button class="ds_button" on:click={() => ($fixPopulation = true)}>
-            Fix connectivity for population zones
-          </button>
-        </div>
-      {:else if $fixPopulation}
-        <header class="ds_page-header">
-          <span
-            class="ds_page-header__label ds_content-label"
-            style:color={tierColors.LocalAccess}
-          >
-            Local access
-          </span>
-          <h2 class="ds_page-header__title">
-            Fix unconnected population zones
-          </h2>
-        </header>
-
-        <div>
-          <button
-            type="button"
-            class="ds_link"
-            on:click={() => ($fixPopulation = false)}
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-            Back to local access overview
-          </button>
-        </div>
-
-        <p>Fix connectivity for red zones.</p>
-
-        <div>
-          <button
-            class="ds_button"
-            on:click={() => ($mode = { kind: "edit-route", id: null })}
-          >
-            Draw new route line (
-            <kbd>r</kbd>
-            )
-          </button>
-        </div>
-
-        <Radio
-          legend="Show population zones"
-          small
-          bind:value={populationLayer}
-          on:change={changePopulationLayer}
-          options={[
-            ["off", "Not connected to the network"],
-            ["population", "Dense zones"],
-            ["deprived", "Deprived (SIMD) zones"],
-          ]}
-        />
       {:else if $currentPOI}
         <header class="ds_page-header">
           <span

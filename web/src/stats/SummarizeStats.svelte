@@ -221,6 +221,22 @@
           <td>{percent($stats.percent_reachable_town_centres)}</td>
         </tr>
 
+        <tr>
+          <th scope="row" style:background={tierColors.Secondary}>
+            Deprived population coverage
+          </th>
+          <td>{percent(baseline.percent_reachable_imd_population)}</td>
+          <td>{percent($stats.percent_reachable_imd_population)}</td>
+        </tr>
+
+        <tr>
+          <th scope="row" style:background={tierColors.Secondary}>
+            Population coverage
+          </th>
+          <td>{percent(baseline.percent_reachable_population)}</td>
+          <td>{percent($stats.percent_reachable_population)}</td>
+        </tr>
+
         <!-- Local access -->
 
         <tr>
@@ -243,22 +259,6 @@
           </th>
           <td>{percent(baseline.percent_reachable_greenspaces)}</td>
           <td>{percent($stats.percent_reachable_greenspaces)}</td>
-        </tr>
-
-        <tr>
-          <th scope="row" style:background={tierColors.LocalAccess}>
-            Deprived population coverage
-          </th>
-          <td>{percent(baseline.percent_reachable_imd_population)}</td>
-          <td>{percent($stats.percent_reachable_imd_population)}</td>
-        </tr>
-
-        <tr>
-          <th scope="row" style:background={tierColors.LocalAccess}>
-            Population coverage
-          </th>
-          <td>{percent(baseline.percent_reachable_population)}</td>
-          <td>{percent($stats.percent_reachable_population)}</td>
         </tr>
 
         <!-- Long distance -->

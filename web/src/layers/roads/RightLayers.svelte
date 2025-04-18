@@ -54,13 +54,13 @@
       name="Population"
       style="population"
       icon="fa-person"
-      relevant={$currentStage == "LocalAccess"}
+      relevant={$currentStage == "Secondary"}
     />
     <Toggle
       name="Deprived population (SIMD)"
       style="deprived"
       icon="fa-house-user"
-      relevant={$currentStage == "LocalAccess"}
+      relevant={$currentStage == "Secondary"}
     />
   </ul>
 

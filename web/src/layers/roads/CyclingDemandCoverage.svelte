@@ -16,7 +16,7 @@
     cyclingDemandMedium,
     debugAllCyclingDemand,
     debugCyclingDemandMin,
-    showUncovered,
+    showUncoveredDemand,
     styleCyclingDemand,
   } from "../stores";
 
@@ -41,7 +41,7 @@
         : undefined;
 
   // Filter to only show uncovered roads?
-  $: opacity = $showUncovered
+  $: opacity = $showUncoveredDemand
     ? 1.0
     : ([
         "case",

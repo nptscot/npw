@@ -8,8 +8,9 @@
     debugCyclingDemandMin,
     mainRoadCoverage,
     settlements,
-    showUncovered,
+    showUncoveredDemand,
     townCentres,
+    uncoveredPopulation,
   } from "./stores";
 </script>
 
@@ -21,7 +22,7 @@
   </Checkbox>
   {#if $cyclingDemandHigh}
     <div style:margin-left="20px">
-      <Checkbox small bind:checked={$showUncovered}>
+      <Checkbox small bind:checked={$showUncoveredDemand}>
         Show all demand, even if covered
       </Checkbox>
 
@@ -43,7 +44,7 @@
   <Checkbox small bind:checked={$mainRoadCoverage}>Main road coverage</Checkbox>
   {#if $mainRoadCoverage}
     <div style:margin-left="20px">
-      <Checkbox small bind:checked={$showUncovered}>
+      <Checkbox small bind:checked={$showUncoveredDemand}>
         Show all demand, even if covered
       </Checkbox>
     </div>
@@ -58,7 +59,7 @@
   </Checkbox>
   {#if $cyclingDemandMedium}
     <div style:margin-left="20px">
-      <Checkbox small bind:checked={$showUncovered}>
+      <Checkbox small bind:checked={$showUncoveredDemand}>
         Show all demand, even if covered
       </Checkbox>
 
@@ -76,6 +77,10 @@
       {/if}
     </div>
   {/if}
+
+  <Checkbox small bind:checked={$uncoveredPopulation}>
+    Unreachable population zones
+  </Checkbox>
 
   <Checkbox small bind:checked={$townCentres}>Town centres</Checkbox>
 {/if}

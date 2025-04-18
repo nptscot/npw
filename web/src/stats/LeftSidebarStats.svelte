@@ -48,23 +48,14 @@
       />
     {:else if $currentStage == "Secondary"}
       <Metric
-        label="Town centres"
-        pct={$stats.percent_reachable_town_centres}
-      />
-
-      <Metric
         label="Medium cycling demand coverage"
         pct={percent($stats.covered_medium_demand, $stats.total_medium_demand)}
       />
-    {:else if $currentStage == "LocalAccess"}
-      <Metric label="Schools" pct={$stats.percent_reachable_schools} />
 
       <Metric
-        label="GPs and hospitals"
-        pct={$stats.percent_reachable_gp_hospitals}
+        label="Town centres"
+        pct={$stats.percent_reachable_town_centres}
       />
-
-      <Metric label="Greenspaces" pct={$stats.percent_reachable_greenspaces} />
 
       <Metric
         label="Deprived population coverage"
@@ -75,6 +66,15 @@
         label="Population coverage"
         pct={$stats.percent_reachable_population}
       />
+    {:else if $currentStage == "LocalAccess"}
+      <Metric label="Schools" pct={$stats.percent_reachable_schools} />
+
+      <Metric
+        label="GPs and hospitals"
+        pct={$stats.percent_reachable_gp_hospitals}
+      />
+
+      <Metric label="Greenspaces" pct={$stats.percent_reachable_greenspaces} />
     {:else if $currentStage == "LongDistance"}
       <Metric label="Settlements" pct={$stats.percent_reachable_settlements} />
     {/if}

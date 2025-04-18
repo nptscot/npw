@@ -2,10 +2,10 @@
   import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
   import { LineLayer } from "svelte-maplibre";
   import { layerId, roadLineWidth } from "../../common";
-  import { mainRoadCoverage, showUncovered } from "../stores";
+  import { mainRoadCoverage, showUncoveredDemand } from "../stores";
 
   // Filter to only show uncovered roads?
-  $: opacity = $showUncovered
+  $: opacity = $showUncoveredDemand
     ? 1.0
     : ([
         "case",
