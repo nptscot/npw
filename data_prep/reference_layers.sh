@@ -6,16 +6,16 @@ mkdir -p tmp
 
 function core_net {
   # From https://github.com/nptscot/outputdata/releases
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-03-01/combined_CN_4_2025-03-01_OS.gpkg -O tmp/core_network.gpkg
+  wget https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.gpkg -O tmp/core_network.gpkg
   # While we're still comparing map-matched results, include this too
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-03-01/combined_CN_4_2025-03-01_OS.pmtiles -O ../web/public/core_network.pmtiles
+  wget https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.pmtiles -O ../web/public/core_network.pmtiles
 }
 
 function rnet {
   # From https://github.com/nptscot/outputdata/releases
 
   # For visualization
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-03-01/rnet_2025-03-01.pmtiles -O ../web/public/route_network.pmtiles
+  wget https://github.com/nptscot/outputdata/releases/download/v2025-04-01/rnet_2025-04-01.pmtiles -O ../web/public/route_network.pmtiles
 }
 
 function streetspace {
