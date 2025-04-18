@@ -5,7 +5,6 @@ extern crate log;
 
 use std::collections::HashMap;
 
-use anyhow::Result;
 use enum_map::Enum;
 use geo::{Area, MultiPolygon, Point};
 use geojson::GeoJson;
@@ -140,11 +139,12 @@ impl MapModel {
         greenspaces: Vec<places::Greenspace>,
         traffic_volumes: Vec<usize>,
         core_network: Vec<Option<Tier>>,
-        precalculated_demands: Vec<usize>,
         street_space: Vec<Option<Streetspace>>,
         is_attractive: Vec<bool>,
         gradients: Vec<f64>,
-    ) -> Self {
+        timer: &mut Timer,
+    ) -> anyhow::Result<Self> {
+        timer.step("Finalizing misc fields");
         let highways: Vec<_> = graph
             .roads
             .iter()
@@ -191,9 +191,6 @@ impl MapModel {
             .take(graph.roads.len())
             .collect();
 
-        let (high_demand_threshold, medium_demand_threshold) =
-            find_cycling_demand_thresholds(&precalculated_demands).unwrap();
-
         let mut model = Self {
             graph,
             closest_intersection_all,
@@ -215,15 +212,16 @@ impl MapModel {
             is_offroad,
             traffic_volumes,
             core_network,
-            precalculated_demands,
+            // Calculated below
+            precalculated_demands: Vec::new(),
             street_space,
             is_attractive,
             speeds,
             gradients,
             // Calculated below
             baseline_stats: stats::Stats::default(),
-            high_demand_threshold,
-            medium_demand_threshold,
+            high_demand_threshold: 0,
+            medium_demand_threshold: 0,
             infra_types,
             override_infra_type,
             tiers,
@@ -234,11 +232,15 @@ impl MapModel {
         // Calculate baseline stats, relative to existing infrastructure
         let only_some_infra_types = true;
         model.import_existing_routes(only_some_infra_types);
-        model.baseline_stats = model.get_stats(&mut Timer::new("calculate baseline stats", None));
+        model.baseline_stats = model.get_stats(timer);
         // Clear those edits
         model.clear_all_routes();
 
-        model
+        // Calculate precalculated_demands
+        timer.step("precalculate demands");
+        model.precalculate_demands()?;
+
+        Ok(model)
     }
 
     pub fn get_baseline_stats(&self) -> &stats::Stats {
@@ -408,21 +410,6 @@ pub struct DynamicRoad {
     current_infra: Option<InfraType>,
     current_tier: Option<Tier>,
     current_infra_fits: bool,
-}
-
-fn find_cycling_demand_thresholds(demands: &Vec<usize>) -> Result<(usize, usize)> {
-    info!("Calculating ckmeans for {} values", demands.len());
-    let num_classes = 10;
-    let results = ckmeans::ckmeans(demands, num_classes)?;
-    let maxes: Vec<usize> = results
-        .into_iter()
-        .map(|group| *group.last().unwrap())
-        .collect();
-    // 5th highest break for high, 7th highest break for medium
-    let high = maxes[10 - 5];
-    let medium = maxes[10 - 7];
-    info!("ckmeans classes are {maxes:?}. high_demand_threshold is {high}, medium_demand_threshold is {medium}");
-    Ok((high, medium))
 }
 
 fn is_offroad(highway: Highway, tags: &::utils::Tags) -> bool {

@@ -155,9 +155,6 @@ fn create(
 
     let core_network = read_core_network("../data_prep/tmp/core_network.gpkg", &graph, timer)?;
 
-    let precalculated_flows =
-        read_precalculated_flows("../data_prep/tmp/combined_network.gpkg", &graph, timer)?;
-
     let street_space = read_street_space("../data_prep/tmp/streetspace.gpkg", &graph, timer)?;
 
     let is_attractive = find_streets_by_greenspace(
@@ -169,7 +166,6 @@ fn create(
 
     let gradients = read_gradients("../data_prep/tmp/UK-dem-50m-4326.tif", &graph, timer)?;
 
-    timer.step("Finalizing (calculating demand thresholds)");
     Ok(MapModel::create(
         graph,
         boundary_wgs84,
@@ -183,11 +179,11 @@ fn create(
         greenspaces,
         traffic_volumes,
         core_network,
-        precalculated_flows,
         street_space,
         is_attractive,
         gradients,
-    ))
+        timer,
+    )?)
 }
 
 fn read_multipolygon(gj_string: &str) -> Result<MultiPolygon> {
@@ -278,49 +274,6 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
             results.push(0);
             continue;
         }
-        results.push(get_anime_match(&matches, &source_data, idx).unwrap_or(0));
-    }
-    Ok(results)
-}
-
-// The output is the Go Dutch totals for all purpose
-fn read_precalculated_flows(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<usize>> {
-    // Read all relevant lines
-    timer.step("read precalculated flows");
-    let dataset = Dataset::open(path)?;
-    let mut layer = dataset.layer(0)?;
-    let b = &graph.mercator.wgs84_bounds;
-    layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
-    let all_fastest_bicycle_go_dutch_idx =
-        layer.defn().field_index("all_fastest_bicycle_go_dutch")?;
-
-    let mut source_geometry = Vec::new();
-    let mut source_data = Vec::new();
-    for input in layer.features() {
-        let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
-        graph.mercator.to_mercator_in_place(&mut geom);
-        let Some(flow) = input.field_as_integer(all_fastest_bicycle_go_dutch_idx)? else {
-            bail!("combined_network is missing all_fastest_bicycle_go_dutch");
-        };
-        source_geometry.push(geom);
-        source_data.push(flow as usize);
-    }
-
-    timer.step("match roads to precalculated flows");
-    let distance_tolerance = 15.0;
-    let angle_tolerance = 10.0;
-    let matches = Anime::new(
-        source_geometry.into_iter(),
-        graph.roads.iter().map(|r| r.linestring.clone()),
-        distance_tolerance,
-        angle_tolerance,
-    )
-    .matches
-    .take()
-    .unwrap();
-
-    let mut results = Vec::new();
-    for idx in 0..graph.roads.len() {
         results.push(get_anime_match(&matches, &source_data, idx).unwrap_or(0));
     }
     Ok(results)
