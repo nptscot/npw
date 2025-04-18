@@ -75,12 +75,6 @@
     return `${Math.round(s.density_network_in_settlements)}m (${rating})`;
   }
 
-  function coherentMainRoads(s: Stats): string {
-    let pct = percent3(s.covered_main_road_length, s.total_main_road_length);
-    let rating = stepLessThanOrEqual(pct, [20, 40, 60, 80]);
-    return `${pct}% (${rating})`;
-  }
-
   function comfort(s: Stats): string {
     let pct = percent3(s.total_low_gradient_length, s.total_network_length);
     let rating = stepLessThanOrEqual(pct, [10, 20, 40, 60]);
@@ -134,12 +128,6 @@
           <th scope="row">Coherence (density)</th>
           <td>{coherentDensity(baseline)}</td>
           <td>{coherentDensity($stats)}</td>
-        </tr>
-
-        <tr>
-          <th scope="row">Coherence (main road coverage)</th>
-          <td>{coherentMainRoads(baseline)}</td>
-          <td>{coherentMainRoads($stats)}</td>
         </tr>
 
         <tr>
@@ -250,7 +238,7 @@
 
         <tr>
           <th scope="row" style:background={tierColors.LocalAccess}>
-            GPs and hosptials
+            GPs and hospitals
           </th>
           <td>{percent(baseline.percent_reachable_gp_hospitals)}</td>
           <td>{percent($stats.percent_reachable_gp_hospitals)}</td>

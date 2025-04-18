@@ -9,6 +9,7 @@
     slowStats,
     stats,
   } from "../stores";
+  import type { Stats } from "../types";
   import SummarizeStats from "./SummarizeStats.svelte";
 
   let showStats = false;
@@ -55,6 +56,26 @@
       return 3;
     }
     if (average_weighted_directness > 1.2) {
+      return 4;
+    }
+    return 5;
+  }
+
+  // TODO Refactor with SummarizeStats
+  function coherentDensityScore(s: Stats): number {
+    if (
+      !s.density_network_in_settlements ||
+      s.density_network_in_settlements > 1000
+    ) {
+      return 1;
+    }
+    if (s.density_network_in_settlements > 500) {
+      return 2;
+    }
+    if (s.density_network_in_settlements > 400) {
+      return 3;
+    }
+    if (s.density_network_in_settlements > 250) {
       return 4;
     }
     return 5;
@@ -108,27 +129,11 @@
           {/if}
         </li>
 
-        <li title="Percent of main roads covered by network">
+        <li title="Density of primary/secondary network within settlements">
           Coherence
           <br />
-          <progress
-            value={percent(
-              $stats.covered_main_road_length,
-              $stats.total_main_road_length,
-            )}
-            max="100"
-          />
+          <progress value={coherentDensityScore($stats)} max="5" />
         </li>
-
-        <!--<li title="Density of primary/secondary network within settlements">
-        Coherence (density)
-        <br />
-        {#if $stats.density_network_in_settlements}
-          {Math.round($stats.density_network_in_settlements)}m
-        {:else}
-          no routes yet
-        {/if}
-      </li>-->
 
         <li title="What percent of your network is on low gradient (&le; 3%)?">
           Comfort
