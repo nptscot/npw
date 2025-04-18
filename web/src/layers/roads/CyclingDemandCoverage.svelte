@@ -4,7 +4,6 @@
     ExpressionSpecification,
   } from "maplibre-gl";
   import { LineLayer } from "svelte-maplibre";
-  import { Popup } from "svelte-utils/map";
   import {
     layerId,
     lineColorForDemand,
@@ -14,31 +13,23 @@
   import {
     cyclingDemandHigh,
     cyclingDemandMedium,
-    debugAllCyclingDemand,
-    debugCyclingDemandMin,
     showUncoveredDemand,
     styleCyclingDemand,
   } from "../stores";
 
-  $: filter = $debugAllCyclingDemand
+  $: filter = $cyclingDemandHigh
     ? ([
-        ">=",
-        ["get", "precalculated_demand"],
-        $debugCyclingDemandMin,
+        "==",
+        ["get", "precalculated_demand_group"],
+        "high",
       ] as ExpressionSpecification)
-    : $cyclingDemandHigh
+    : $cyclingDemandMedium
       ? ([
-          "==",
+          "!=",
           ["get", "precalculated_demand_group"],
-          "high",
+          "",
         ] as ExpressionSpecification)
-      : $cyclingDemandMedium
-        ? ([
-            "!=",
-            ["get", "precalculated_demand_group"],
-            "",
-          ] as ExpressionSpecification)
-        : undefined;
+      : undefined;
 
   // Filter to only show uncovered roads?
   $: opacity = $showUncoveredDemand
@@ -66,12 +57,4 @@
       ? lineWidthForDemand(["get", "precalculated_demand"])
       : roadLineWidth(4),
   }}
->
-  {#if $debugAllCyclingDemand}
-    <Popup openOn="hover" let:props>
-      <p>
-        Demand {props.precalculated_demand.toLocaleString()}, group {props.precalculated_demand_group}
-      </p>
-    </Popup>
-  {/if}
-</LineLayer>
+/>

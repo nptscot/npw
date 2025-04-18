@@ -1,11 +1,9 @@
 <script lang="ts">
   import { Checkbox } from "../common";
-  import { currentStage, devMode } from "../stores";
+  import { currentStage } from "../stores";
   import {
     cyclingDemandHigh,
     cyclingDemandMedium,
-    debugAllCyclingDemand,
-    debugCyclingDemandMin,
     mainRoadCoverage,
     settlements,
     showUncoveredDemand,
@@ -25,19 +23,6 @@
       <Checkbox small bind:checked={$showUncoveredDemand}>
         Show all demand, even if covered
       </Checkbox>
-
-      {#if $devMode}
-        <Checkbox small bind:checked={$debugAllCyclingDemand}>
-          Debug all demand
-        </Checkbox>
-
-        {#if $debugAllCyclingDemand}
-          <label>
-            Show demand above:
-            <input type="number" bind:value={$debugCyclingDemandMin} />
-          </label>
-        {/if}
-      {/if}
     </div>
   {/if}
 
@@ -62,19 +47,6 @@
       <Checkbox small bind:checked={$showUncoveredDemand}>
         Show all demand, even if covered
       </Checkbox>
-
-      {#if $devMode}
-        <Checkbox small bind:checked={$debugAllCyclingDemand}>
-          Debug all demand
-        </Checkbox>
-
-        {#if $debugAllCyclingDemand}
-          <label>
-            Show demand above:
-            <input type="number" bind:value={$debugCyclingDemandMin} />
-          </label>
-        {/if}
-      {/if}
     </div>
   {/if}
 
