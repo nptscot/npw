@@ -57,6 +57,7 @@
 
 <div class="panel" class:hidden={!anyEnabled}>
   {#if $backgroundLayer == "cn"}
+    <b>Core network</b>
     <QualitativeLegend colors={cnTierColors} />
 
     {#if $devMode}
@@ -65,6 +66,7 @@
       </Checkbox>
     {/if}
   {:else if $backgroundLayer == "existing_infra"}
+    <b>Existing infrastructure</b>
     <QualitativeLegend colors={infraTypeColorLegend} />
 
     {#if $devMode}
@@ -73,6 +75,7 @@
       </Checkbox>
     {/if}
   {:else if $backgroundLayer == "traffic"}
+    <b>Estimated traffic volume</b>
     <SequentialLegend colorScale={traffic.colorScale} limits={traffic.limits} />
 
     {#if $devMode}
@@ -80,12 +83,23 @@
         Show original data
       </Checkbox>
     {/if}
+  {:else if $backgroundLayer == "speed"}
+    <b>Estimated speed limit</b>
+    <SequentialLegend colorScale={speed.colorScale} limits={speed.limits} />
+
+    {#if $devMode}
+      <Checkbox small bind:checked={$debugOriginalData}>
+        Show original data
+      </Checkbox>
+    {/if}
   {:else if $backgroundLayer == "gradient"}
+    <b>Gradient</b>
     <SequentialLegend
       colorScale={gradient.colorScale}
       limits={gradient.limits}
     />
   {:else if $backgroundLayer == "street_space"}
+    <b>Street space</b>
     <p>
       What fits within the carriageway, verges, and footways?
       <HelpButton>
@@ -128,42 +142,8 @@
         Show original data
       </Checkbox>
     {/if}
-  {:else if $backgroundLayer == "speed"}
-    <SequentialLegend colorScale={speed.colorScale} limits={speed.limits} />
-
-    {#if $devMode}
-      <Checkbox small bind:checked={$debugOriginalData}>
-        Show original data
-      </Checkbox>
-    {/if}
-  {:else if $backgroundLayer == "los"}
-    <QualitativeLegend colors={levelOfServiceLegend} />
-
-    {#if $devMode}
-      <Checkbox small bind:checked={$debugOriginalData}>
-        Show original data
-      </Checkbox>
-    {/if}
-  {:else if $backgroundLayer == "reachability"}
-    <QualitativeLegend colors={reachabilityColors} />
-  {:else if $backgroundLayer == "deprived"}
-    <SequentialLegend
-      colorScale={deprived.colorScale}
-      limits={deprived.limits}
-    />
-    <p>
-      Darker colours are more deprived. Only the top 20%ile most deprived zones
-      are shown.
-    </p>
-  {:else if $backgroundLayer == "population"}
-    <SequentialLegend
-      colorScale={population.colorScale}
-      limits={population.limits}
-    />
-    <p>
-      Darker colours are denser. Only the top 3 densest quintiles are shown.
-    </p>
   {:else if $backgroundLayer == "precalculated_rnet"}
+    <b>NPT full network</b>
     <div>
       <label>
         Show demand above:
@@ -184,6 +164,37 @@
         Show original data
       </Checkbox>
     {/if}
+  {:else if $backgroundLayer == "population"}
+    <b>Population</b>
+    <SequentialLegend
+      colorScale={population.colorScale}
+      limits={population.limits}
+    />
+    <p>
+      Darker colours are denser. Only the top 3 densest quintiles are shown.
+    </p>
+  {:else if $backgroundLayer == "deprived"}
+    <b>Deprived population (SIMD)</b>
+    <SequentialLegend
+      colorScale={deprived.colorScale}
+      limits={deprived.limits}
+    />
+    <p>
+      Darker colours are more deprived. Only the top 20%ile most deprived zones
+      are shown.
+    </p>
+  {:else if $backgroundLayer == "los"}
+    <b>Level of Service</b>
+    <QualitativeLegend colors={levelOfServiceLegend} />
+
+    {#if $devMode}
+      <Checkbox small bind:checked={$debugOriginalData}>
+        Show original data
+      </Checkbox>
+    {/if}
+  {:else if $backgroundLayer == "reachability"}
+    <b>Reachability</b>
+    <QualitativeLegend colors={reachabilityColors} />
   {/if}
 
   <CalculatedRouteNetwork />
@@ -192,6 +203,8 @@
   edit mode all at the same time... -->
 
   {#if $cyclingDemandHigh || $cyclingDemandMedium}
+    <b>Cycling demand</b>
+
     <Checkbox small bind:checked={$styleCyclingDemand}>
       Style based on demand
     </Checkbox>
@@ -203,17 +216,22 @@
 
   {#if $mode.kind == "edit-route"}
     {#if $editModeBreakdown == "infra_type"}
+      <b>Route: Infrastructure type</b>
       <QualitativeLegend colors={infraTypeColorLegend} />
     {:else if $editModeBreakdown == "gradient"}
+      <b>Route: Gradient</b>
       <QualitativeLegend colors={gradientColors} />
     {:else if $editModeBreakdown == "los"}
+      <b>Route: Level of Service</b>
       <QualitativeLegend colors={levelOfServiceLegend} />
     {:else if $editModeBreakdown == "tier"}
+      <b>Route: Tier</b>
       <QualitativeLegend colors={tierColors} />
     {/if}
   {/if}
 
   {#if $gridMeshDensity}
+    <b>Mesh density</b>
     <SequentialLegend
       colorScale={meshDensity.colorScale}
       limits={meshDensity.legendLimits}

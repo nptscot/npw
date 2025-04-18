@@ -40,6 +40,7 @@
 <Loading {loading} />
 
 {#if show}
+  <b>Network impacts on demand</b>
   <div>
     <button
       on:click={recalc}

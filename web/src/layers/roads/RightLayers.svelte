@@ -27,7 +27,7 @@
   <ul>
     <Toggle name="Core network" style="cn" icon="fa-person-biking" />
     <Toggle
-      name="Existing infrastructure type"
+      name="Existing infrastructure"
       style="existing_infra"
       icon="fa-road"
     />
