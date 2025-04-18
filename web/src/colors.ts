@@ -116,15 +116,14 @@ export let nptStreetSpaceColors = {
 };
 
 export let deprived = {
-  // Color ramp from https://www.ons.gov.uk/census/maps/choropleth. Lowest value is the worst (darkest).
-  colorScale: ["#080C54", "#186290", "#1F9EB7", "#80C6A3", "#CDE594"],
-
-  // The percentiles are [1, 20]. The 5 colors cover 4 each.
-  limits: [0, 4, 8, 12, 16, 20],
+  // Color ramp from https://simd.scot. Only show the two most deprived deciles.
+  colorScale: ["#b30000", "#e34a33"],
+  limits: [0, 10, 20],
 };
 
 export let population = {
-  colorScale: deprived.colorScale,
+  // Color ramp from https://www.ons.gov.uk/census/maps/choropleth
+  colorScale: ["#080C54", "#186290", "#1F9EB7", "#80C6A3", "#CDE594"],
 
   // For density_quintile
   limits: [0, 1, 2, 3, 4, 5],
