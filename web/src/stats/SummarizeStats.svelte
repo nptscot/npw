@@ -56,7 +56,10 @@
   }
 
   function safety(s: Stats): string {
-    let pct = percent3(s.total_high_los_length, s.total_network_length);
+    let pct = percent3(
+      s.total_high_los_main_roads_length,
+      s.total_main_road_length,
+    );
     let rating = stepLessThanOrEqual(pct, [20, 40, 60, 80]);
     return `${pct}% (${rating})`;
   }

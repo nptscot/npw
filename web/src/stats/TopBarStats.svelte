@@ -79,13 +79,15 @@
     <!-- svelte-ignore a11y-invalid-attribute -->
     <a href="#" on:click|stopPropagation={openStats}>
       <ul>
-        <li title="What percent of your network has high Level of Service?">
+        <li
+          title="What percent of main roads within settlements has high Level of Service?"
+        >
           Safety
           <br />
           <progress
             value={percent(
-              $stats.total_high_los_length,
-              $stats.total_network_length,
+              $stats.total_high_los_main_roads_length,
+              $stats.total_main_road_length,
             )}
             max="100"
           />

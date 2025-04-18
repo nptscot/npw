@@ -24,7 +24,7 @@ pub struct Stats {
     covered_main_road_length: f64,
 
     total_network_length: f64,
-    total_high_los_length: f64,
+    total_high_los_main_roads_length: f64,
     total_low_gradient_length: f64,
     total_undeliverable_length: f64,
     total_attractive_length: f64,
@@ -122,7 +122,7 @@ impl MapModel {
         }
 
         let mut total_network_length = 0.0;
-        let mut total_high_los_length = 0.0;
+        let mut total_high_los_main_roads_length = 0.0;
         let mut total_low_gradient_length = 0.0;
         let mut total_undeliverable_length = 0.0;
         let mut total_attractive_length = 0.0;
@@ -137,10 +137,6 @@ impl MapModel {
 
                 if self.gradients[idx].abs() <= 3.0 {
                     total_low_gradient_length += road.length_meters;
-                }
-
-                if self.los[idx] == LevelOfService::High {
-                    total_high_los_length += road.length_meters;
                 }
 
                 if matches!(self.tiers[idx], Some(Tier::Primary | Tier::Secondary))
@@ -162,6 +158,10 @@ impl MapModel {
                 total_main_road_length += road.length_meters;
                 if part_of_network {
                     covered_main_road_length += road.length_meters;
+                }
+
+                if self.los[idx] == LevelOfService::High {
+                    total_high_los_main_roads_length += road.length_meters;
                 }
             }
         }
@@ -187,7 +187,7 @@ impl MapModel {
             total_medium_demand,
 
             total_network_length,
-            total_high_los_length,
+            total_high_los_main_roads_length,
             total_low_gradient_length,
             total_undeliverable_length,
             total_attractive_length,
