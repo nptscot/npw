@@ -13,18 +13,19 @@ use crate::{Dir, InfraType, Tier};
 pub struct KeyedLineString {
     pub linestring: LineString,
     pub ids: Vec<(RoadID, Dir)>,
-    pub key: (InfraType, Tier),
+    /// The bool is whether the InfraType fits
+    pub key: (InfraType, Tier, bool),
 }
 
 // Also contains the key. Linestrings with different keys are effectively disconnected.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-struct HashedPoint(isize, isize, (InfraType, Tier));
+struct HashedPoint(isize, isize, (InfraType, Tier, bool));
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 struct EdgeIdx(usize);
 
 impl HashedPoint {
-    fn new(pt: Coord, key: (InfraType, Tier)) -> Self {
+    fn new(pt: Coord, key: (InfraType, Tier, bool)) -> Self {
         // cm precision
         Self((pt.x * 100.0) as isize, (pt.y * 100.0) as isize, key)
     }

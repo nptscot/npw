@@ -422,13 +422,21 @@ impl MapModel {
     }
 
     fn import_roads(&mut self, imports: Vec<(RoadID, InfraType, Tier)>) -> usize {
+        let used_roads = self.used_roads();
+
         // Create individual segments to import
         let mut pieces = Vec::new();
-        for (id, infra_type, tier) in imports {
+        for (r, infra_type, tier) in imports {
+            // Don't overwrite anything existing (relevant when importing multiple layers)
+            if used_roads.contains(&r) {
+                continue;
+            }
+
+            let fits = self.does_infra_type_fit(r, infra_type);
             pieces.push(KeyedLineString {
-                linestring: self.graph.roads[id.0].linestring.clone(),
-                ids: vec![(id, Dir::Forwards)],
-                key: (infra_type, tier),
+                linestring: self.graph.roads[r.0].linestring.clone(),
+                ids: vec![(r, Dir::Forwards)],
+                key: (infra_type, tier, fits),
             });
         }
 
@@ -439,7 +447,7 @@ impl MapModel {
         let changes = pieces.len();
 
         for line in pieces {
-            let (infra_type, tier) = line.key;
+            let (infra_type, tier, _) = line.key;
 
             let linestring_wgs84 = self.graph.mercator.to_wgs84(&line.linestring);
             let waypoints_wgs84 = roads_to_waypoints(&self.graph, &line.ids);
