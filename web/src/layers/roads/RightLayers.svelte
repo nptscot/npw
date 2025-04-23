@@ -3,6 +3,8 @@
   import { lastBackgroundLayer } from "../stores";
   import Toggle from "./Toggle.svelte";
 
+  $: showRelevant = $mode.kind == "main" || $mode.kind == "edit-route";
+
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "s") {
       let tag = (e.target as HTMLElement).tagName;
@@ -48,19 +50,20 @@
       name="NPT full network"
       style="precalculated_rnet"
       icon="fa-diagram-project"
-      relevant={$currentStage == "Primary" || $currentStage == "Secondary"}
+      relevant={showRelevant &&
+        ($currentStage == "Primary" || $currentStage == "Secondary")}
     />
     <Toggle
       name="Population"
       style="population"
       icon="fa-person"
-      relevant={$currentStage == "Secondary"}
+      relevant={showRelevant && $currentStage == "Secondary"}
     />
     <Toggle
       name="Deprived population (SIMD)"
       style="deprived"
       icon="fa-house-user"
-      relevant={$currentStage == "Secondary"}
+      relevant={showRelevant && $currentStage == "Secondary"}
     />
   </ul>
 
@@ -72,7 +75,7 @@
         name="Reachability"
         style="reachability"
         icon="fa-link"
-        relevant={$currentStage == "LocalAccess"}
+        relevant={showRelevant && $currentStage == "LocalAccess"}
       />
     </ul>
   {/if}
