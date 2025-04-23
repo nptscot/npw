@@ -9,6 +9,7 @@
     backend,
     currentStage,
     devMode,
+    exitCurrentStage,
     map,
     mode,
     mutationCounter,
@@ -186,7 +187,10 @@
           <button
             type="button"
             class="ds_link"
-            on:click={() => ($mode = { kind: "overview" })}
+            on:click={() => {
+              exitCurrentStage();
+              $mode = { kind: "overview" };
+            }}
           >
             <i class="fa-solid fa-chevron-left"></i>
             Back to project overview

@@ -3,7 +3,7 @@
   import { SplitComponent } from "./common/layout";
   import RelevantLayers from "./layers/RelevantLayers.svelte";
   import LeftSidebarStats from "./stats/LeftSidebarStats.svelte";
-  import { currentStage, devMode, mode } from "./stores";
+  import { currentStage, devMode, exitCurrentStage, mode } from "./stores";
 
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "r") {
@@ -79,7 +79,10 @@
         <button
           type="button"
           class="ds_link"
-          on:click={() => ($mode = { kind: "overview" })}
+          on:click={() => {
+            exitCurrentStage();
+            $mode = { kind: "overview" };
+          }}
         >
           <i class="fa-solid fa-chevron-left"></i>
           Back to project overview
