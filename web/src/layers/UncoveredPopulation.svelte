@@ -2,18 +2,18 @@
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
-  import type { DataZones } from "../types";
+  import type { PopulationZones } from "../types";
   import { uncoveredPopulation as show } from "./stores";
 
   let lastUpdate = 0;
-  let data: DataZones = {
+  let data: PopulationZones = {
     type: "FeatureCollection",
     features: [],
   };
 
   async function recalc() {
     if ($backend && lastUpdate != $mutationCounter) {
-      data = await $backend.getDataZones();
+      data = await $backend.getPopulationZones();
       lastUpdate = $mutationCounter;
     }
   }

@@ -37,7 +37,7 @@
 </script>
 
 {#if $backend}
-  {#await $backend.getDataZones() then data}
+  {#await $backend.getPopulationZones() then data}
     <GeoJSON {data} generateId>
       <FillLayer
         {...layerId("population")}

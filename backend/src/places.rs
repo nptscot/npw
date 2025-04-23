@@ -350,9 +350,9 @@ struct SettlementGJ {
 
 ////
 
-// TODO Misnomer; these are intermediate zones
+// These are data zones from the 2020 SIMD
 #[derive(Serialize, Deserialize)]
-pub struct DataZone {
+pub struct PopulationZone {
     polygon: MultiPolygon,
     id: String,
     imd_rank: usize,
@@ -364,7 +364,7 @@ pub struct DataZone {
     density_quintile: usize,
 }
 
-impl DataZone {
+impl PopulationZone {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.polygon);
         f.set_property("id", self.id.clone());
@@ -383,7 +383,7 @@ impl DataZone {
 
         let mut zones = Vec::new();
         let mut densities = Vec::new();
-        for x in geojson::de::deserialize_feature_collection_str_to_vec::<DataZoneGJ>(gj)? {
+        for x in geojson::de::deserialize_feature_collection_str_to_vec::<PopulationZoneGj>(gj)? {
             if boundary_wgs84.intersects(&x.geometry) {
                 let polygon = graph.mercator.to_mercator(&x.geometry);
 
@@ -392,7 +392,7 @@ impl DataZone {
                 let ratio_in_boundary = overlap.unsigned_area() / polygon.unsigned_area();
                 if ratio_in_boundary < 0.1 {
                     info!(
-                        "Skipping data zone {} because only {}% of it overlaps the boundary",
+                        "Skipping population zone {} because only {}% of it overlaps the boundary",
                         x.id,
                         ratio_in_boundary * 100.0
                     );
@@ -414,7 +414,7 @@ impl DataZone {
                     .collect();
 
                 let area_km2 = x.area / 10.0e6;
-                zones.push(DataZone {
+                zones.push(PopulationZone {
                     polygon,
                     id: x.id,
                     imd_rank: x.rank,
@@ -435,13 +435,13 @@ impl DataZone {
                 stats.quintile(((zone.population as f64) / zone.area_km2) as usize);
         }
 
-        info!("Matched {} data zones", zones.len());
+        info!("Matched {} population zones", zones.len());
         Ok(zones)
     }
 }
 
 #[derive(Deserialize)]
-struct DataZoneGJ {
+struct PopulationZoneGj {
     #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
     geometry: MultiPolygon,
     #[serde(rename = "DataZone")]

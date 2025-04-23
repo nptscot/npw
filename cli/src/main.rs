@@ -99,7 +99,7 @@ fn create(
 
     timer.step("loading OD zones");
     let od_zones = backend::od::Zone::parse_zones(
-        std::fs::read_to_string("../data_prep/tmp/zones.geojson")?,
+        std::fs::read_to_string("../data_prep/tmp/intermediate_zones.geojson")?,
         &boundary_wgs84,
         &graph.mercator,
     )?;
@@ -136,8 +136,8 @@ fn create(
         &graph,
     )?;
 
-    timer.step("loading data zones");
-    let data_zones = backend::places::DataZone::from_gj(
+    timer.step("loading population zones");
+    let population_zones = backend::places::PopulationZone::from_gj(
         &std::fs::read_to_string("../data_prep/tmp/population.geojson")?,
         &boundary_wgs84,
         &graph,
@@ -175,7 +175,7 @@ fn create(
         gp_hospitals,
         town_centres,
         settlements,
-        data_zones,
+        population_zones,
         greenspaces,
         traffic_volumes,
         core_network,

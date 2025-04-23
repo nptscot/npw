@@ -142,7 +142,7 @@ export type Greenspaces = FeatureCollection<
   }
 >;
 
-export type DataZones = FeatureCollection<
+export type PopulationZones = FeatureCollection<
   MultiPolygon,
   {
     id: string;

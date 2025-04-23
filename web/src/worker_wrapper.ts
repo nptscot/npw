@@ -11,13 +11,13 @@ import { loadingSpinners } from "./stores";
 import type {
   AutosplitRoute,
   ConnectedComponents,
-  DataZones,
   DynamicRoad,
   EvaluateODOut,
   Greenspaces,
   GridMeshDensity,
   ODStats,
   POIs,
+  PopulationZones,
   RouteGJ,
   RouteProps,
   SetRouteInput,
@@ -277,9 +277,9 @@ export class Backend {
     return result;
   }
 
-  async getDataZones(): Promise<DataZones> {
+  async getPopulationZones(): Promise<PopulationZones> {
     this.start();
-    let result = await this.inner.getDataZones();
+    let result = await this.inner.getPopulationZones();
     this.stop();
     return result;
   }

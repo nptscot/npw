@@ -79,7 +79,7 @@ impl MapModel {
         let mut deprived_total = 0;
         let mut population_sum = 0;
         let mut population_total = 0;
-        for zone in &self.data_zones {
+        for zone in &self.population_zones {
             // Only the first quintile
             if zone.imd_percentile <= 20 {
                 deprived_total += zone.population;

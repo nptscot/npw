@@ -12,7 +12,7 @@ db213f56926dfb50c29147126d171a0e  tmp/greenspace_access_points.gpkg
 e7dba76f0660df9990751d73d99d2fd2  tmp/streetspace.gpkg
 61c8f501bab8b1e48b81f26574ac64bc  tmp/town_centres.geojson
 b6fcc689053e880b4727c19a7d17af80  tmp/traffic.gpkg
-98692c9a5c5bfa16a49a9c472f8ebc1d  tmp/zones.geojson
+98692c9a5c5bfa16a49a9c472f8ebc1d  tmp/intermediate_zones.geojson
 2157f16e8449d6b13c2ae810ccc4fd7c  ../web/public/cbd.pmtiles
 aec585c27d83fed8189130f381b9a6d8  ../web/public/core_network.pmtiles
 2d59aefc2c0e9f60f99b5d4775b3a1b8  ../web/public/route_network.pmtiles

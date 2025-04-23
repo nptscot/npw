@@ -12,9 +12,9 @@
     $uncoveredPopulation = false;
   });
 
-  async function downloadDataZones() {
-    let gj = await $backend!.getDataZones();
-    downloadGeneratedFile("data_zones.geojson", JSON.stringify(gj));
+  async function downloadZones() {
+    let gj = await $backend!.getPopulationZones();
+    downloadGeneratedFile("population_zones.geojson", JSON.stringify(gj));
   }
 </script>
 
@@ -43,8 +43,8 @@
 
 {#if $devMode}
   <div>
-    <button class="ds_button ds_button--secondary" on:click={downloadDataZones}>
-      Download data zones
+    <button class="ds_button ds_button--secondary" on:click={downloadZones}>
+      Download zones
     </button>
   </div>
 {/if}

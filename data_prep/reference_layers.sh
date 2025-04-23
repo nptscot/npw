@@ -80,7 +80,7 @@ function od_and_zones {
   # From https://spatialdata.gov.scot/geonetwork/srv/api/records/389787c0-697d-4824-9ca9-9ce8cb79d6f5
   wget https://maps.gov.scot/ATOM/shapefiles/SG_IntermediateZoneBdry_2011.zip
   unzip SG_IntermediateZoneBdry_2011.zip
-  ogr2ogr tmp/zones.geojson -t_srs EPSG:4326 SG_IntermediateZone_Bdry_2011.shp -sql 'SELECT InterZone FROM SG_IntermediateZone_Bdry_2011'
+  ogr2ogr tmp/intermediate_zones.geojson -t_srs EPSG:4326 SG_IntermediateZone_Bdry_2011.shp -sql 'SELECT InterZone FROM SG_IntermediateZone_Bdry_2011'
   rm -f SG_IntermediateZone_Bdry_2011*
 }
 

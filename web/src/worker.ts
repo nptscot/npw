@@ -11,13 +11,13 @@ import type {
 import type {
   AutosplitRoute,
   ConnectedComponents,
-  DataZones,
   DynamicRoad,
   EvaluateODOut,
   Greenspaces,
   GridMeshDensity,
   ODStats,
   POIs,
+  PopulationZones,
   RouteGJ,
   RouteProps,
   SetRouteInput,
@@ -238,9 +238,9 @@ export class InnerBackend {
     return JSON.parse(this.inner!.getGreenspaces());
   }
 
-  getDataZones(): DataZones {
+  getPopulationZones(): PopulationZones {
     this.checkReady();
-    return JSON.parse(this.inner!.getDataZones());
+    return JSON.parse(this.inner!.getPopulationZones());
   }
 
   debugReachablePath(kind: string, idx: number): FeatureCollection {
