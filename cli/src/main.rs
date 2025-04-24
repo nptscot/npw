@@ -231,14 +231,27 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
     let mut source_geometry = Vec::new();
     let mut source_data = Vec::new();
     for input in layer.features() {
-        let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
-        graph.mercator.to_mercator_in_place(&mut geom);
         let Some(flows) = input.field_as_integer(pred_flows_idx)? else {
             // TODO Why missing?
             continue;
         };
-        source_geometry.push(geom);
-        source_data.push(flows as usize);
+
+        let geo = input.geometry().unwrap().to_geo()?;
+        match geo {
+            Geometry::LineString(mut ls) => {
+                graph.mercator.to_mercator_in_place(&mut ls);
+                source_geometry.push(ls);
+                source_data.push(flows as usize);
+            }
+            Geometry::MultiLineString(mls) => {
+                for mut ls in mls {
+                    graph.mercator.to_mercator_in_place(&mut ls);
+                    source_geometry.push(ls);
+                    source_data.push(flows as usize);
+                }
+            }
+            _ => bail!("read_traffic_volumes found something besides a LS or MLS"),
+        }
     }
     if source_geometry.is_empty() {
         bail!("No traffic volumes detected; input is broken");

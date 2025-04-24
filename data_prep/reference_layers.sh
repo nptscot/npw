@@ -85,11 +85,11 @@ function od_and_zones {
 }
 
 function traffic {
-  # Manually download https://github.com/nptscot/scottraffic/releases/download/v7/final_estimates_Scotland_20241202_crs4326.gpkg from internal GH repo
-  cp $1 tmp/traffic.gpkg
+  # Manually download https://github.com/nptscot/scottraffic/releases/download/v14/final_estimates_Scotland_2025-04-15_correct.gpkg
+  ogr2ogr tmp/traffic.gpkg -t_srs EPSG:4326 $1
 
   # While we're still comparing map-matched results, include this too
-  wget https://nptscot.blob.core.windows.net/pmtiles/cbd_layer_2024-12-01.pmtiles -O ../web/public/cbd.pmtiles
+  wget https://nptscot.blob.core.windows.net/pmtiles/cbd_layer_2025-04-01.pmtiles -O ../web/public/cbd.pmtiles
 }
 
 function population {
@@ -152,7 +152,7 @@ function greenspace {
 #town_centres ~/Downloads/Town_Centres_-_Scotland.json
 #gp_and_hospitals ~/Downloads/GP_Practices_-_Scotland.json ~/Downloads/NHS_Hospitals_-_Scotland.json
 #od_and_zones ~/Downloads/desire_lines_scotland.csv
-#traffic ~/Downloads/final_estimates_Scotland.gpkg
+#traffic ~/Downloads/final_estimates_Scotland_2025-04-15_correct.gpkg
 #population
 #elevation
 #settlements
