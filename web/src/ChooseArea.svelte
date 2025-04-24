@@ -60,7 +60,9 @@
       local places are properly connected without severance.
     </p>
 
-    <a href="credits.html">Credits</a>
+    <div><a href="credits.html">Credits</a></div>
+
+    <div><a href="manual.html">Manual</a></div>
 
     <h3><label class="ds_label" for="component">Select an area</label></h3>
 
