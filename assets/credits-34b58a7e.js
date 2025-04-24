@@ -1,4 +1,4 @@
-import{S as y,i as v,s as S,e as l,a as o,g as a,w as k,o as n,u as C}from"./index-36380ea8.js";import"./design-system-57630050.js";/* empty css                */function T(_){let i,w,s,h,r,f,p,g,u,b,c,m,d;return{c(){i=l("h1"),i.textContent="Network Planning Workspace",w=o(),s=l("div"),s.innerHTML=`<a href="./"><i class="fa-solid fa-chevron-left"></i>
+import{S as y,i as v,s as S,e as l,a as o,g as a,w as k,o as n,u as C}from"./index-39859ba5.js";import"./design-system-57630050.js";/* empty css                */function T(_){let i,w,s,h,r,f,p,g,u,b,c,m,d;return{c(){i=l("h1"),i.textContent="Network Planning Workspace",w=o(),s=l("div"),s.innerHTML=`<a href="./"><i class="fa-solid fa-chevron-left"></i>
     Back to NPW</a>`,h=o(),r=l("p"),r.textContent=`The NPW is designed to enable local authorities to plan a cycle network for
   the area, using segregated infrastructure on key routes and ensuring local
   places are properly connected without severance.`,f=o(),p=l("p"),p.innerHTML=`The NPW is an <a href="https://nptscot.github.io/npw/" target="_blank">open source project</a>
