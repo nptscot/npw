@@ -49,7 +49,7 @@
     hoverCursor="pointer"
   >
     <Popup openOn="click" let:props>
-      {props.description}
+      Town centre {props.description}
       {props.reachable ? "is" : "is not"} reachable.
     </Popup>
   </FillLayer>

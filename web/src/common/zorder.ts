@@ -68,7 +68,8 @@ const layerZorder = [
 
   // Reference layers (areas)
   "population",
-  "uncovered-population",
+  "uncovered-population-fill",
+  "uncovered-population-outline",
   "mesh-density-grid",
   "mesh-density-grid-outline",
 

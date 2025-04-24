@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { GeoJSON, LineLayer } from "svelte-maplibre";
+  import {
+    FillLayer,
+    GeoJSON,
+    hoverStateFilter,
+    LineLayer,
+  } from "svelte-maplibre";
+  import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
   import type { PopulationZones } from "../types";
@@ -23,9 +29,28 @@
   }
 </script>
 
-<GeoJSON {data}>
+<GeoJSON {data} generateId>
+  <FillLayer
+    {...layerId("uncovered-population-fill")}
+    filter={["!", ["get", "reachable"]]}
+    manageHoverState
+    paint={{
+      "fill-color": "red",
+      "fill-opacity": hoverStateFilter(0.1, 0.5),
+    }}
+    layout={{
+      visibility: $show ? "visible" : "none",
+    }}
+    hoverCursor="pointer"
+  >
+    <Popup openOn="click" let:props>
+      Zone {props.id} with a population of {props.population.toLocaleString()}
+      is not reachable.
+    </Popup>
+  </FillLayer>
+
   <LineLayer
-    {...layerId("uncovered-population")}
+    {...layerId("uncovered-population-outline")}
     filter={["!", ["get", "reachable"]]}
     paint={{
       "line-color": "red",
