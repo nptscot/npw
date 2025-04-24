@@ -207,48 +207,76 @@
   hoverCursor="pointer"
 >
   <Popup openOn="click" let:props>
-    <p>Main road? {props.is_main_road ? "yes" : "no"}</p>
-    <p>Within a settlement? {props.within_settlement ? "yes" : "no"}</p>
-    <p>Is next to greenspace? {props.is_attractive ? "yes" : "no"}</p>
-    <p>Traffic: {props.traffic.toLocaleString()}</p>
-    <p>Gradient: {props.gradient.toFixed(1)}%</p>
-    <p>Speed: {props.speed} mph</p>
-    {#if props.cn}
-      <p>Core network tier: {props.cn}</p>
-    {/if}
-    {#if props.existing_infra}
-      <p>{infraTypeMapping[props.existing_infra][0]}</p>
-    {/if}
-    <p>
-      Precalculated cycling demand: {props.precalculated_demand.toLocaleString()}
-      (group
-      {props.precalculated_demand_group})
-    </p>
-    {#if props.street_space}
+    <div style="max-width: 30vw; max-height: 60vh; overflow: auto;">
       <p>
-        What fits within the carriageway, verges, and footways? {props.street_space}
+        Main road? <b>{props.is_main_road ? "yes" : "no"}</b>
       </p>
-    {/if}
-    <a href={props.way} target="_blank">Open OSM</a>
-
-    <hr />
-
-    {#if dynamicData[props.id].current_route_id != null}
       <p>
-        Part of {dynamicData[props.id].current_route_name}: {infraTypeMapping[
-          notNull(dynamicData[props.id].current_infra)
-        ][0]}
-        ({dynamicData[props.id].current_tier} tier)
+        Within a settlement? <b>{props.within_settlement ? "yes" : "no"}</b>
       </p>
+      <p>
+        Is next to greenspace? <b>{props.is_attractive ? "yes" : "no"}</b>
+      </p>
+      <p>
+        Traffic: <b>{props.traffic.toLocaleString()}</b>
+      </p>
+      <p>
+        Gradient: <b>{props.gradient.toFixed(1)}%</b>
+      </p>
+      <p>
+        Speed: <b>{props.speed} mph</b>
+      </p>
+      {#if props.cn}
+        <p>
+          Core network tier: <b>{props.cn}</b>
+        </p>
+      {/if}
+      {#if props.existing_infra}
+        <p>
+          Existing infrastructure: <b>
+            {infraTypeMapping[props.existing_infra][0]}
+          </b>
+        </p>
+      {/if}
+      <p>
+        Precalculated cycling demand: <b>
+          {props.precalculated_demand.toLocaleString()}
+          (group
+          {props.precalculated_demand_group})
+        </b>
+      </p>
+      {#if props.street_space}
+        <p>
+          What fits within the carriageway, verges, and footways? <b>
+            {props.street_space}
+          </b>
+        </p>
+      {/if}
+      <a href={props.way} target="_blank">Open OSM</a>
+
+      <hr />
+
+      {#if dynamicData[props.id].current_route_id != null}
+        <p>
+          Part of route <b>{dynamicData[props.id].current_route_name}</b>
+          : {infraTypeMapping[notNull(dynamicData[props.id].current_infra)][0]}
+          ({dynamicData[props.id].current_tier} tier)
+        </p>
+
+        <p>
+          This infrastructure type <b>
+            {dynamicData[props.id].current_infra_fits ? "does" : "does not"}
+          </b>
+           fit the available streetspace
+        </p>
+      {/if}
 
       <p>
-        This infrastructure type {dynamicData[props.id].current_infra_fits
-          ? "does"
-          : "does not"} fit the available streetspace
+        Level of service: <b>{dynamicData[props.id].los}</b>
       </p>
-    {/if}
-
-    <p>Level of service: {dynamicData[props.id].los}</p>
-    <p>Reachability: {dynamicData[props.id].reachable}</p>
+      <p>
+        Reachability: <b>{dynamicData[props.id].reachable}</b>
+      </p>
+    </div>
   </Popup>
 </LineLayer>
