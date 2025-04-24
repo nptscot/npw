@@ -309,9 +309,7 @@
       </p>
       <p>
         You can override the infrastructure type for these routes, instead of
-        automatically picking the most appropriate type. If you do this, you're
-        making the promise that this type is appropriate to achieve high Level
-        of Service.
+        automatically picking the most appropriate type.
       </p>
 
       <PickInfraType onFinish={changeInfraType} />

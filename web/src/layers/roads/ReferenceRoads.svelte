@@ -267,7 +267,7 @@
           This infrastructure type <b>
             {dynamicData[props.id].current_infra_fits ? "does" : "does not"}
           </b>
-           fit the available streetspace
+          fit the available streetspace
         </p>
       {/if}
 

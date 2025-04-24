@@ -70,8 +70,7 @@
 
   {#if overrideInfraType}
     <p>
-      You've forced this route to always use {infraType}, assuming high Level of
-      Service.
+      You've forced this route to always use {infraType}.
     </p>
 
     <button

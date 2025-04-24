@@ -15,10 +15,6 @@ pub enum LevelOfService {
 
 impl MapModel {
     pub fn calculate_level_of_service(&self, r: RoadID) -> LevelOfService {
-        if self.override_infra_type[r.0] {
-            return LevelOfService::High;
-        }
-
         get_level_of_service(
             self.get_infra_type(r),
             self.speeds[r.0],

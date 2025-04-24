@@ -40,8 +40,7 @@
 
 <p>
   You can use one infrastructure type for this route, instead of automatically
-  picking the most appropriate type. If you do this, you're making the promise
-  that this type is appropriate to achieve high Level of Service.
+  picking the most appropriate type.
 </p>
 <p>
   Note if this route overlaps another one, this override won't apply there. You
