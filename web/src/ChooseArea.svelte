@@ -60,6 +60,8 @@
       local places are properly connected without severance.
     </p>
 
+    <a href="credits.html">Credits</a>
+
     <h3><label class="ds_label" for="component">Select an area</label></h3>
 
     <p>Select your area from this list, or click on the map, to start.</p>

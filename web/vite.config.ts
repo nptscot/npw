@@ -10,6 +10,7 @@ export default defineConfig({
         index: resolve(__dirname, "index.html"),
         npw: resolve(__dirname, "npw.html"),
         local_storage: resolve(__dirname, "local_storage.html"),
+        credits: resolve(__dirname, "credits.html"),
       },
     },
   },
