@@ -2,7 +2,7 @@
   import { tierLabels } from "../colors";
   import { Modal, percent } from "../common";
   import { editModeBreakdown } from "../stores";
-  import type { AutosplitRoute, Tier } from "../types";
+  import { infraTypeMapping, type AutosplitRoute, type Tier } from "../types";
   import PickInfraType from "./PickInfraType.svelte";
   import SectionDiagram from "./SectionDiagram.svelte";
 
@@ -70,7 +70,7 @@
 
   {#if overrideInfraType}
     <p>
-      You've forced this route to always use {infraType}.
+      You've forced this route to always use {infraTypeMapping[infraType][0]}.
     </p>
 
     <button
