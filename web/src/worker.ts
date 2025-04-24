@@ -15,6 +15,7 @@ import type {
   EvaluateODOut,
   Greenspaces,
   GridMeshDensity,
+  InfraType,
   ODStats,
   POIs,
   PopulationZones,
@@ -114,7 +115,7 @@ export class InnerBackend {
     this.inner!.changeTier(new Uint32Array(routeIds), `"${tier}"`);
   }
 
-  changeInfraType(routeIds: number[], infraType: string) {
+  changeInfraType(routeIds: number[], infraType: InfraType) {
     this.checkReady();
     // Wrap in quotes for JSON parsing
     this.inner!.changeInfraType(new Uint32Array(routeIds), `"${infraType}"`);
@@ -128,7 +129,7 @@ export class InnerBackend {
   autosplitRoute(
     editingRouteId: number | null,
     waypoints: Waypoint[],
-    overrideInfraType: string | null,
+    overrideInfraType: InfraType | null,
     defaultTier: Tier,
     majorSnapThreshold: number | null,
   ): AutosplitRoute {

@@ -26,7 +26,7 @@
     type EditsRoadStyle,
     type Mode,
   } from "../../stores";
-  import { type DynamicRoad } from "../../types";
+  import type { DynamicRoad } from "../../types";
   import {
     showNetworkDeliverability,
     showNetworkInfraTypes,
@@ -80,7 +80,7 @@
     mode: Mode,
     style: EditsRoadStyle,
     showTiers: { [name: string]: boolean },
-    showInfraTypes: { [name: string]: boolean },
+    showInfraTypes: { [InfraType: string]: boolean },
     showDeliverable: { [name: string]: boolean },
     showNetworkLoS: { [name: string]: boolean },
     hovered: Feature | null,

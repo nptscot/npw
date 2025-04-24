@@ -16,7 +16,7 @@ export type InfraType =
   | "CycleLane"
   | "MixedTraffic"
   | "MixedTrafficWithSpeedVolume";
-export let infraTypes: [string, string, string][] = [
+export let infraTypes: [InfraType, string, string][] = [
   ["Segregated", "Segregated track", "#054d05"],
   ["SegregatedWithSpeedVolume", "Segregated + traffic measures", "#469237"],
   ["OffRoad", "Off-road cycleway", "#87d668"],
@@ -31,10 +31,9 @@ export let infraTypes: [string, string, string][] = [
 ];
 
 // Map the name to [label, color]
-export let infraTypeMapping: { [name: string]: [string, string] } =
-  Object.fromEntries(
-    infraTypes.map(([name, label, color]) => [name, [label, color]]),
-  );
+export let infraTypeMapping = Object.fromEntries(
+  infraTypes.map(([name, label, color]) => [name, [label, color]]),
+) as { [name in InfraType]: [string, string] };
 
 export interface RouteGJ extends FeatureCollection {
   car_length: number;
@@ -48,13 +47,13 @@ export interface Step {
   name?: string;
   length: number;
   way: string;
-  infra_type: string;
+  infra_type: InfraType;
   los: string;
 }
 
 export type EvaluateODOut = FeatureCollection<
   LineString,
-  { count: number; infra_type: string; los: string }
+  { count: number; infra_type: InfraType; los: string }
 > & {
   succeeded: number;
   failed: number;
@@ -62,7 +61,7 @@ export type EvaluateODOut = FeatureCollection<
 } & ODStats;
 
 export interface ODStats {
-  od_percents_infra_type: { [name: string]: number };
+  od_percents_infra_type: { [InfraType: string]: number };
   od_percents_tier: { [name: string]: number };
   od_percents_los: { [name: string]: number };
 }
@@ -206,8 +205,7 @@ export type AutosplitRoute = FeatureCollection<
   LineString,
   {
     length: number;
-    // or "overlap"
-    infra_type: string;
+    infra_type: InfraType | "overlap";
     fits: boolean;
     gradient_group: "<= 3%" | "3 - 5%" | "5 - 7%" | "7 - 10%" | "> 10%";
     los: string;
@@ -232,7 +230,7 @@ export interface StaticRoad {
   cn: Tier | null;
   speed: number;
   gradient: number;
-  existing_infra: string | null;
+  existing_infra: InfraType | null;
   precalculated_demand: number;
   precalculated_demand_group: "high" | "medium" | "";
   street_space: "Segregated" | "nothing" | null;
@@ -246,7 +244,7 @@ export interface DynamicRoad {
   // All or nothing
   current_route_id: number | null;
   current_route_name: string | null;
-  current_infra: string | null;
+  current_infra: InfraType | null;
   current_tier: Tier | null;
   current_infra_fits: boolean;
 }

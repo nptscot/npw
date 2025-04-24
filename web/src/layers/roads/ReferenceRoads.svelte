@@ -28,7 +28,11 @@
     type BackgroundLayer,
     type Mode,
   } from "../../stores";
-  import { infraTypeMapping, type DynamicRoad } from "../../types";
+  import {
+    infraTypeMapping,
+    type DynamicRoad,
+    type InfraType,
+  } from "../../types";
   import {
     debugCyclingDemandMin,
     debugOriginalData,
@@ -188,6 +192,10 @@
       deprived: false,
     }[style];
   }
+
+  function castInfraType(x: string): InfraType {
+    return x as InfraType;
+  }
 </script>
 
 <LineLayer
@@ -234,7 +242,7 @@
       {#if props.existing_infra}
         <p>
           Existing infrastructure: <b>
-            {infraTypeMapping[props.existing_infra][0]}
+            {infraTypeMapping[castInfraType(props.existing_infra)][0]}
           </b>
         </p>
       {/if}

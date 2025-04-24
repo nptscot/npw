@@ -32,7 +32,7 @@
     mode,
     type EditsRoadStyle,
   } from "./stores";
-  import { infraTypeMapping, type RouteProps } from "./types";
+  import { infraTypeMapping, type InfraType, type RouteProps } from "./types";
 
   let allRoutes = emptyGeojson() as FeatureCollection<LineString, RouteProps>;
   onMount(async () => {
@@ -167,7 +167,7 @@
     showTierModal = false;
   }
 
-  async function changeInfraType(infraType: string) {
+  async function changeInfraType(infraType: InfraType) {
     await $backend!.changeInfraType([...selectedIds], infraType);
     window.alert("Infrastructure type changed");
     await autosave();

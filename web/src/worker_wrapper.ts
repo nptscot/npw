@@ -15,6 +15,7 @@ import type {
   EvaluateODOut,
   Greenspaces,
   GridMeshDensity,
+  InfraType,
   ODStats,
   POIs,
   PopulationZones,
@@ -131,7 +132,7 @@ export class Backend {
     this.stop();
   }
 
-  async changeInfraType(routeIds: number[], infraType: string) {
+  async changeInfraType(routeIds: number[], infraType: InfraType) {
     this.start();
     await this.inner.changeInfraType(routeIds, infraType);
     this.stop();
@@ -146,7 +147,7 @@ export class Backend {
   async autosplitRoute(
     editingRouteId: number | null,
     waypoints: Waypoint[],
-    overrideInfraType: string | null,
+    overrideInfraType: InfraType | null,
     defaultTier: Tier,
     majorSnapThreshold: number | null,
   ): Promise<AutosplitRoute> {

@@ -5,13 +5,13 @@
   import segregatedIcon from "../../assets/Segregated.jpg";
   import segregatedWithSpeedVolumeIcon from "../../assets/SegregatedWithSpeedVolume.jpg";
   import sharedFootwayIcon from "../../assets/SharedFootway.jpg";
-  import { infraTypeMapping } from "../types";
+  import { infraTypeMapping, type InfraType } from "../types";
 
-  export let onFinish: (infraType: string) => void;
+  export let onFinish: (infraType: InfraType) => void;
 
   // TODO URL isn't used right now
 
-  let cases = [
+  let cases: [InfraType, string, string][] = [
     [
       "Segregated",
       segregatedIcon,

@@ -2,12 +2,17 @@
   import { tierLabels } from "../colors";
   import { Modal, percent } from "../common";
   import { editModeBreakdown } from "../stores";
-  import { infraTypeMapping, type AutosplitRoute, type Tier } from "../types";
+  import {
+    infraTypeMapping,
+    type AutosplitRoute,
+    type InfraType,
+    type Tier,
+  } from "../types";
   import PickInfraType from "./PickInfraType.svelte";
   import SectionDiagram from "./SectionDiagram.svelte";
 
   export let sectionsGj: AutosplitRoute;
-  export let infraType: string;
+  export let infraType: InfraType;
   export let overrideInfraType: boolean;
   export let tier: Tier;
 

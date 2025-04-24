@@ -38,7 +38,7 @@
   let name = "";
   let notes = "";
   // This is not meaningful when overrideInfraType is false
-  let infraType = "MixedTraffic";
+  let infraType: InfraType = "MixedTraffic";
   let overrideInfraType = false;
   let tier = $currentStage == "assessment" ? "Primary" : $currentStage;
 
@@ -79,7 +79,7 @@
 
       name,
       notes,
-      infra_type: infraType as InfraType,
+      infra_type: infraType,
       override_infra_type: overrideInfraType,
       tier,
     });
@@ -94,7 +94,7 @@
   async function recalculateSections(
     waypts: Waypoint[],
     overrideInfraType: boolean,
-    infraType: string,
+    infraType: InfraType,
   ) {
     try {
       sectionsGj = await $backend!.autosplitRoute(
