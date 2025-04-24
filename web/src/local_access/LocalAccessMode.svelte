@@ -1,14 +1,12 @@
 <script lang="ts">
   import { MapEvents } from "svelte-maplibre";
   import { tierColors } from "../colors";
-  import { Checkbox, HelpButton } from "../common";
   import { SplitComponent } from "../common/layout";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
     autosave,
     backend,
     currentStage,
-    devMode,
     exitCurrentStage,
     map,
     mode,
@@ -171,16 +169,6 @@
           style="display: flex; justify-content: space-between;"
         >
           <h2 class="ds_page-header__title">Design local access network</h2>
-
-          <HelpButton>
-            <p>
-              To draw the local access route, connect schools, GPs, hospitals,
-              green spaces, and neighbourhoods (especially deprived and densely
-              populated ones).
-            </p>
-
-            <Checkbox bind:checked={$devMode}>Dev mode</Checkbox>
-          </HelpButton>
         </header>
 
         <div>

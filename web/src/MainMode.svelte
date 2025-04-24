@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { Checkbox, HelpButton } from "./common";
   import { SplitComponent } from "./common/layout";
   import RelevantLayers from "./layers/RelevantLayers.svelte";
   import LeftSidebarStats from "./stats/LeftSidebarStats.svelte";
-  import { currentStage, devMode, exitCurrentStage, mode } from "./stores";
+  import { currentStage, exitCurrentStage, mode } from "./stores";
 
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "r") {
@@ -35,44 +34,6 @@
         style="display: flex; justify-content: space-between;"
       >
         <h2 class="ds_page-header__title">{titles[$currentStage]}</h2>
-
-        <HelpButton>
-          {#if $currentStage == "Primary"}
-            <p>
-              The primary route should be direct, coherent, meet high demand,
-              and potentially connect settlements. Key primary routes will form
-              Active Freeways. To draw the primary route, connect the high
-              cycling demand routes on the base map.
-            </p>
-          {:else if $currentStage == "Secondary"}
-            <p>
-              To draw the secondary route, please connect town centres and cover
-              medium cycling demand routes on the base map.
-            </p>
-          {:else if $currentStage == "LongDistance"}
-            <ul>
-              <li>
-                Long distance routes connect EDJ reachable settlements out with
-                main urban areas.
-              </li>
-              <li>
-                Settlements should be connected by high demand routes forming a
-                direct connection in most cases.
-              </li>
-              <li>
-                Long distance routes should connect directly to primary routes
-                within each settlement.
-              </li>
-              <li>Consider SIMD/transport poverty</li>
-              <li>
-                In limited circumstances, settlement can be connected by less
-                direct/more scenic routes (NCN)
-              </li>
-            </ul>
-          {/if}
-
-          <Checkbox bind:checked={$devMode}>Dev mode</Checkbox>
-        </HelpButton>
       </header>
 
       <div>
@@ -88,6 +49,23 @@
           Back to project overview
         </button>
       </div>
+
+      {#if $currentStage == "Primary"}
+        <p>
+          Primary routes should be direct, coherent, meet high demand, and
+          potentially connect settlements.
+        </p>
+      {:else if $currentStage == "Secondary"}
+        <p>
+          Secondary routes should connect town centres and cover medium cycling
+          demand.
+        </p>
+      {:else if $currentStage == "LongDistance"}
+        <p>
+          Long distance routes should connect EDJ reachable settlements out with
+          main urban areas.
+        </p>
+      {/if}
 
       <div>
         <button
