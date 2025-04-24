@@ -26,7 +26,7 @@
     type EditsRoadStyle,
     type Mode,
   } from "../../stores";
-  import type { DynamicRoad } from "../../types";
+  import type { DynamicRoad, InfraType, Tier } from "../../types";
   import {
     showNetworkDeliverability,
     showNetworkInfraTypes,
@@ -79,8 +79,8 @@
   function lineOpacity(
     mode: Mode,
     style: EditsRoadStyle,
-    showTiers: { [name: string]: boolean },
-    showInfraTypes: { [InfraType: string]: boolean },
+    showTiers: { [name in Tier]: boolean },
+    showInfraTypes: { [name in InfraType]: boolean },
     showDeliverable: { [name: string]: boolean },
     showNetworkLoS: { [name: string]: boolean },
     hovered: Feature | null,
@@ -96,7 +96,7 @@
     let showLayer: ExpressionSpecification = null;
     if (style == "edits_infra") {
       let include = Object.keys(showInfraTypes).filter(
-        (k) => showInfraTypes[k],
+        (k) => showInfraTypes[k as InfraType],
       );
       showLayer = [
         "in",
@@ -104,7 +104,7 @@
         ["literal", include],
       ];
     } else if (style == "edits_tier") {
-      let include = Object.keys(showTiers).filter((k) => showTiers[k]);
+      let include = Object.keys(showTiers).filter((k) => showTiers[k as Tier]);
       showLayer = [
         "in",
         ["feature-state", "current_tier"],

@@ -45,10 +45,8 @@
   let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
   $: recalculateSections($waypoints, overrideInfraType, infraType);
 
-  // @ts-expect-error Need to write a proper type for this
   $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
 
-  // @ts-expect-error TS doesn't understand the ... syntax?
   $: labelColor = stageColors[$currentStage];
 
   onMount(async () => {

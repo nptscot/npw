@@ -17,6 +17,7 @@
     mutationCounter,
     odStats,
   } from "../stores";
+  import type { Tier } from "../types";
   import { subpage } from "./index";
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
@@ -32,6 +33,10 @@
   onDestroy(() => {
     $backgroundLayer = "off";
   });
+
+  function castTier(x: string): Tier {
+    return x as Tier;
+  }
 </script>
 
 <header class="ds_page-header">
@@ -102,7 +107,7 @@
           {
             data: Object.values($odStats.od_percents_tier).map((p) => p * 100),
             backgroundColor: Object.keys($odStats.od_percents_tier).map(
-              (key) => tierColors[key] || "grey",
+              (key) => tierColors[castTier(key)] || "grey",
             ),
           },
         ],

@@ -109,7 +109,7 @@ export class InnerBackend {
     this.inner!.deleteRoutes(new Uint32Array(ids));
   }
 
-  changeTier(routeIds: number[], tier: string) {
+  changeTier(routeIds: number[], tier: Tier) {
     this.checkReady();
     // Wrap in quotes for JSON parsing
     this.inner!.changeTier(new Uint32Array(routeIds), `"${tier}"`);

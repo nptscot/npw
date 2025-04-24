@@ -12,10 +12,7 @@ export let infraTypeColorLegend = Object.fromEntries(
   infraTypes.map((x) => [x[1], x[2]]),
 );
 
-// TODO Making types less precise here for convenience elsewhere.
-// Alternatively, improve ODStats types.
-
-export let tierColors: { [name: string]: string } = {
+export let tierColors = {
   Primary: "#970f52",
   Secondary: "#ff978c",
   LocalAccess: "#feae01",
@@ -27,7 +24,7 @@ export let stageColors = {
   assessment: "#1b1464",
 };
 
-export let tierLabels: { [name: string]: string } = {
+export let tierLabels = {
   Primary: "Primary",
   Secondary: "Secondary",
   LocalAccess: "Local access",
@@ -35,7 +32,7 @@ export let tierLabels: { [name: string]: string } = {
 };
 
 // Only Primary and Secondary
-export let cnTierColors: { [name: string]: string } = {
+export let cnTierColors = {
   Primary: tierColors.Primary,
   Secondary: tierColors.Secondary,
 };

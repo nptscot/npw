@@ -6,7 +6,6 @@
   export let pct: number;
   export let tooltip: string | undefined = undefined;
 
-  // @ts-expect-error TS doesn't understand the ... syntax?
   $: color = stageColors[$currentStage];
 </script>
 

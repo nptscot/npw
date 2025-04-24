@@ -126,7 +126,7 @@ export class Backend {
     this.stop();
   }
 
-  async changeTier(routeIds: number[], tier: string) {
+  async changeTier(routeIds: number[], tier: Tier) {
     this.start();
     await this.inner.changeTier(routeIds, tier);
     this.stop();

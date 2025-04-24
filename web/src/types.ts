@@ -61,8 +61,8 @@ export type EvaluateODOut = FeatureCollection<
 } & ODStats;
 
 export interface ODStats {
-  od_percents_infra_type: { [InfraType: string]: number };
-  od_percents_tier: { [name: string]: number };
+  od_percents_infra_type: { [name in InfraType]: number };
+  od_percents_tier: { [name in Tier]: number };
   od_percents_los: { [name: string]: number };
 }
 

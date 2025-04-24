@@ -32,7 +32,12 @@
     mode,
     type EditsRoadStyle,
   } from "./stores";
-  import { infraTypeMapping, type InfraType, type RouteProps } from "./types";
+  import {
+    infraTypeMapping,
+    type InfraType,
+    type RouteProps,
+    type Tier,
+  } from "./types";
 
   let allRoutes = emptyGeojson() as FeatureCollection<LineString, RouteProps>;
   onMount(async () => {
@@ -46,7 +51,7 @@
   });
 
   let showTierModal = false;
-  let overrideTier = "Primary";
+  let overrideTier: Tier = "Primary";
   let showInfraTypeModal = false;
 
   let selectedIds: Set<number> = new Set();

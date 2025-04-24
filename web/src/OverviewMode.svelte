@@ -2,13 +2,19 @@
   import { tierColors } from "./colors";
   import { SplitComponent } from "./common/layout";
   import { changeStage, currentFilename, currentStage, mode } from "./stores";
+  import type { Tier } from "./types";
 
   let tiers = {
     Primary: "Design primary routes",
     Secondary: "Design secondary routes",
     LocalAccess: "Design local access to POIs",
     LongDistance: "Design long distance routes",
-  };
+  } as { [name in Tier]: string };
+
+  // TODO Get TS for Object.entries better
+  function castTier(x: string): Tier {
+    return x as Tier;
+  }
 </script>
 
 <SplitComponent>
@@ -36,7 +42,7 @@
 
       {#each Object.entries(tiers) as [stage, label]}
         <div
-          style:border-left="5px solid {tierColors[stage]}"
+          style:border-left="5px solid {tierColors[castTier(stage)]}"
           style:padding-left="8px"
         >
           <button
