@@ -12,4 +12,6 @@
   Back to network assessment
 </BackLink>
 
+<p>Here you can understand the overall performance of your network.</p>
+
 <SummarizeStatsWrapper />

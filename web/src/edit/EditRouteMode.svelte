@@ -162,12 +162,6 @@
 
       <BackLink on:click={maybeCancel}>Stop drawing</BackLink>
 
-      {#if $currentStage == "Primary" || $currentStage == "Secondary"}
-        <Checkbox bind:checked={$majorJunctions} small>
-          Snap to main roads
-        </Checkbox>
-      {/if}
-
       {#if $waypoints.length == 0}
         <p>Click to set the start of the route.</p>
       {:else if $waypoints.length == 1}
@@ -177,7 +171,15 @@
           Click to extend the route, drag points to adjust, or change the route
           properties.
         </p>
+      {/if}
 
+      {#if $currentStage == "Primary" || $currentStage == "Secondary"}
+        <Checkbox bind:checked={$majorJunctions} small>
+          Snap to main roads
+        </Checkbox>
+      {/if}
+
+      {#if $waypoints.length >= 2}
         <button class="ds_button" on:click={finish}>Finish</button>
 
         {#if id != null}
@@ -201,9 +203,7 @@
             Undo
           </button>
         </div>
-      {/if}
 
-      {#if $waypoints.length >= 2}
         <AllSections
           {sectionsGj}
           bind:infraType
