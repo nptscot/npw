@@ -65,13 +65,6 @@
   }
   $: updateBrowse(currentBrowse);
 
-  function keyDown(e: KeyboardEvent) {
-    if (e.key === "Escape") {
-      e.stopPropagation();
-      $mode = { kind: "main" };
-    }
-  }
-
   let byInfraType = (step: Step) => step.infra_type;
   let byLos = (step: Step) => step.los;
 
@@ -112,8 +105,6 @@
     return results.join(", ");
   }
 </script>
-
-<svelte:window on:keydown={keyDown} />
 
 <SplitComponent>
   <svelte:fragment slot="controls">
