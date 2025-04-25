@@ -57,7 +57,6 @@
               <a
                 class="ds_site-navigation__link {stage}"
                 class:ds_current={$mode.kind != "overview" &&
-                  $mode.kind != "evaluate-journey" &&
                   $mode.kind != "export" &&
                   $currentStage == stage}
                 href="#"
