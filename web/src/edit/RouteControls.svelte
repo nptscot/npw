@@ -14,7 +14,7 @@
   import { majorJunctions } from "../layers/stores";
   import { backend } from "../stores";
   import type { Tier, Waypoint } from "../types";
-  import { waypoints } from "./stores";
+  import { canStopDrawing, waypoints } from "./stores";
 
   export let map: Map;
   export let finish: () => void;
@@ -272,7 +272,9 @@
       }
     } else if (e.key === "Escape") {
       e.stopPropagation();
-      cancel();
+      if (canStopDrawing()) {
+        cancel();
+      }
     } else if (e.key == "z" && e.ctrlKey) {
       e.stopPropagation();
       undo();

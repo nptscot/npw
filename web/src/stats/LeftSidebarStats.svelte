@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { canStopDrawing } from "../edit/stores";
   import { currentStage, mode, stats } from "../stores";
   import Metric from "./Metric.svelte";
 
@@ -9,6 +10,15 @@
     }
     return x / total;
   }
+
+  function evaluateJourney() {
+    if (canStopDrawing()) {
+      $mode = {
+        kind: "evaluate-journey",
+        browse: [],
+      };
+    }
+  }
 </script>
 
 {#if $stats}
@@ -18,15 +28,7 @@
     >
       <h3>Assess this tier</h3>
       <!-- svelte-ignore a11y-invalid-attribute -->
-      <button
-        type="button"
-        class="ds_link"
-        on:click={() =>
-          ($mode = {
-            kind: "evaluate-journey",
-            browse: [],
-          })}
-      >
+      <button type="button" class="ds_link" on:click={evaluateJourney}>
         Evaluate a
         <br />
         journey

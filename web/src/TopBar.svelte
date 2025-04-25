@@ -1,19 +1,30 @@
 <script lang="ts">
   import logo from "../assets/npt_logo.png?url";
   import { tierLabels } from "./colors";
+  import { canStopDrawing } from "./edit/stores";
   import TopBarStats from "./stats/TopBarStats.svelte";
   import { changeStage, currentStage, exitCurrentStage, mode } from "./stores";
 
   let stages = { ...tierLabels, assessment: "Assess" };
 
   function gotoOverview() {
-    exitCurrentStage();
-    $mode = { kind: "overview" };
+    if (canStopDrawing()) {
+      exitCurrentStage();
+      $mode = { kind: "overview" };
+    }
   }
 
   function gotoExport() {
-    exitCurrentStage();
-    $mode = { kind: "export" };
+    if (canStopDrawing()) {
+      exitCurrentStage();
+      $mode = { kind: "export" };
+    }
+  }
+
+  function switchStage(stage: string) {
+    if (canStopDrawing()) {
+      changeStage(stage);
+    }
   }
 </script>
 
@@ -50,7 +61,7 @@
                   $mode.kind != "export" &&
                   $currentStage == stage}
                 href="#"
-                on:click|preventDefault={() => changeStage(stage)}
+                on:click|preventDefault={() => switchStage(stage)}
               >
                 {label}
                 <i class="fa-solid fa-chevron-right"></i>
