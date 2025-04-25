@@ -12,7 +12,7 @@
     tierColors,
     tierLabels,
   } from "../colors";
-  import { Checkbox, layerId } from "../common";
+  import { BackLink, Checkbox, layerId } from "../common";
   import { SplitComponent } from "../common/layout";
   import RelevantLayers from "../layers/RelevantLayers.svelte";
   import { majorJunctions } from "../layers/stores";
@@ -27,7 +27,7 @@
   import type { AutosplitRoute, InfraType, Waypoint } from "../types";
   import AllSections from "./AllSections.svelte";
   import RouteControls from "./RouteControls.svelte";
-  import { waypoints } from "./stores";
+  import { canStopDrawing, waypoints } from "./stores";
 
   export let map: Map;
   export let id: number | null;
@@ -64,6 +64,9 @@
   });
 
   async function deleteRoute() {
+    if (!window.confirm("Are you sure you want to delete this route?")) {
+      return;
+    }
     if (id != null) {
       await $backend!.deleteRoutes([id]);
       await autosave();
@@ -87,6 +90,12 @@
 
   function cancel() {
     $mode = { kind: "main" };
+  }
+
+  function maybeCancel() {
+    if (canStopDrawing()) {
+      cancel();
+    }
   }
 
   async function recalculateSections(
@@ -149,6 +158,8 @@
         {/if}
       </header>
 
+      <BackLink on:click={maybeCancel}>Stop drawing</BackLink>
+
       {#if $currentStage == "Primary" || $currentStage == "Secondary"}
         <Checkbox bind:checked={$majorJunctions} small>
           Snap to main roads
@@ -159,21 +170,13 @@
         <p>Click to set the start of the route.</p>
       {:else if $waypoints.length == 1}
         <p>Click to set the end of the route.</p>
-
-        <button type="button" class="ds_link" on:click={cancel}>Cancel</button>
       {:else}
         <p>
           Click to extend the route, drag points to adjust, or change the route
           properties.
         </p>
 
-        <div class="ds_button-group">
-          <button class="ds_button" on:click={finish}>Finish</button>
-          <span>or</span>
-          <button class="ds_button ds_button--cancel" on:click={cancel}>
-            Cancel
-          </button>
-        </div>
+        <button class="ds_button" on:click={finish}>Finish</button>
 
         {#if id != null}
           <div>
