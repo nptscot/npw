@@ -3,6 +3,7 @@
   import "@scottish-government/design-system/dist/scripts/design-system.js";
   import "@fortawesome/fontawesome-free/css/all.min.css";
   import { onMount } from "svelte";
+  import { BackLink } from "../common";
 
   onMount(async () => {
     // @ts-expect-error This really exists for the SG design system, but TS doesn't know about it
@@ -12,11 +13,6 @@
 
 <h1>Network Planning Workspace User Manual</h1>
 
-<div>
-  <a href="./">
-    <i class="fa-solid fa-chevron-left"></i>
-    Back to NPW
-  </a>
-</div>
+<BackLink on:click={() => (window.location.href = "./")}>Back to NPW</BackLink>
 
 <p>Coming soon</p>

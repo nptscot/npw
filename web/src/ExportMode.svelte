@@ -1,6 +1,7 @@
 <script lang="ts">
   import { downloadGeneratedFile } from "svelte-utils";
   import PrintableReport from "./assess/PrintableReport.svelte";
+  import { BackLink } from "./common";
   import { SplitComponent } from "./common/layout";
   import { backend, boundaryName, currentFilename, mode } from "./stores";
 
@@ -30,16 +31,9 @@
         <h2 class="ds_page-header__title">Export project</h2>
       </header>
 
-      <div>
-        <button
-          type="button"
-          class="ds_link"
-          on:click={() => ($mode = { kind: "overview" })}
-        >
-          <i class="fa-solid fa-chevron-left"></i>
-          Back to project overview
-        </button>
-      </div>
+      <BackLink on:click={() => ($mode = { kind: "overview" })}>
+        Back to project overview
+      </BackLink>
 
       <p>Export the project to share with stakeholders.</p>
 

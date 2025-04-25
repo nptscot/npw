@@ -1,5 +1,6 @@
 <script lang="ts">
   import { tierColors } from "./colors";
+  import { BackLink } from "./common";
   import { SplitComponent } from "./common/layout";
   import { changeStage, currentFilename, currentStage, mode } from "./stores";
   import type { Tier } from "./types";
@@ -24,16 +25,11 @@
         <h2 class="ds_page-header__title">Plan my network</h2>
       </header>
 
-      <div>
-        <button
-          type="button"
-          class="ds_link"
-          on:click={() => ($mode = { kind: "setup", subpage: "project-list" })}
-        >
-          <i class="fa-solid fa-chevron-left"></i>
-          Close project ({$currentFilename})
-        </button>
-      </div>
+      <BackLink
+        on:click={() => ($mode = { kind: "setup", subpage: "project-list" })}
+      >
+        Close project ({$currentFilename})
+      </BackLink>
 
       <p>
         Start by planning the primary and secondary tiers, before adding access

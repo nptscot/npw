@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Loading } from "svelte-utils";
-  import { Checkbox } from "./common";
+  import { BackLink, Checkbox } from "./common";
   import { listFilesInBoundary } from "./common/files";
   import {
     autosave,
@@ -60,16 +60,7 @@
   <h2 class="ds_page-header__title">New network design</h2>
 </header>
 
-<div>
-  <button
-    type="button"
-    class="ds_link"
-    on:click={() => (subpage = "project-list")}
-  >
-    <i class="fa-solid fa-chevron-left"></i>
-    Back
-  </button>
-</div>
+<BackLink on:click={() => (subpage = "project-list")}>Back</BackLink>
 
 <p>
   The NPT provides a set of starting points for the network, or you can start

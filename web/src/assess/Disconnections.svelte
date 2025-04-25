@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   import { componentColors } from "../colors";
-  import { prettyPrintDistance } from "../common";
+  import { BackLink, prettyPrintDistance } from "../common";
   import { backgroundLayer, connectedComponents, map } from "../stores";
   import { subpage } from "./index";
 
@@ -17,16 +17,9 @@
   <h2 class="ds_page-header__title">Network disconnections</h2>
 </header>
 
-<div>
-  <button
-    type="button"
-    class="ds_link"
-    on:click={() => ($subpage = "overview")}
-  >
-    <i class="fa-solid fa-chevron-left"></i>
-    Back to network assessment
-  </button>
-</div>
+<BackLink on:click={() => ($subpage = "overview")}>
+  Back to network assessment
+</BackLink>
 
 <p>
   The network you create should usually all be connected as one piece. If there

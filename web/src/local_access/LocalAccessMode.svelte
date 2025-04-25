@@ -1,7 +1,7 @@
 <script lang="ts">
   import { MapEvents } from "svelte-maplibre";
   import { tierColors } from "../colors";
-  import { prettyPrintDistance } from "../common";
+  import { BackLink, prettyPrintDistance } from "../common";
   import { SplitComponent } from "../common/layout";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
@@ -177,19 +177,14 @@
           <h2 class="ds_page-header__title">Design local access network</h2>
         </header>
 
-        <div>
-          <button
-            type="button"
-            class="ds_link"
-            on:click={() => {
-              exitCurrentStage();
-              $mode = { kind: "overview" };
-            }}
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-            Back to project overview
-          </button>
-        </div>
+        <BackLink
+          on:click={() => {
+            exitCurrentStage();
+            $mode = { kind: "overview" };
+          }}
+        >
+          Back to project overview
+        </BackLink>
 
         <p>
           Your network needs to provide connectivity to key points of interest,
@@ -231,16 +226,9 @@
           <h2 class="ds_page-header__title">Fix connectivity for a POI</h2>
         </header>
 
-        <div>
-          <button
-            type="button"
-            class="ds_link"
-            on:click={() => ($currentPOI = null)}
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-            Back to local access overview
-          </button>
-        </div>
+        <BackLink on:click={() => ($currentPOI = null)}>
+          Back to local access overview
+        </BackLink>
 
         {#if $currentPOI.reachable}
           <p>

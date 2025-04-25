@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { stripPrefix } from "./common";
+  import { BackLink, stripPrefix } from "./common";
   import { getKey, listFilesInBoundary, setLocalStorage } from "./common/files";
   import { SplitComponent } from "./common/layout";
   import NewProject from "./NewProject.svelte";
@@ -104,16 +104,9 @@
           <h2 class="ds_page-header__title">Explore {prettyprintBoundary()}</h2>
         </header>
 
-        <div>
-          <button
-            type="button"
-            class="ds_link"
-            on:click={() => (window.location.href = "./")}
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-            Work in a different area
-          </button>
-        </div>
+        <BackLink on:click={() => (window.location.href = "./")}>
+          Work in a different area
+        </BackLink>
 
         <p>Explore the map and layers, or begin a new network project.</p>
         <p>
@@ -137,16 +130,9 @@
 
         <h4>Start a new project for this area</h4>
 
-        <div>
-          <button
-            type="button"
-            class="ds_link"
-            on:click={() => (window.location.href = "./")}
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-            Work in a different area
-          </button>
-        </div>
+        <BackLink on:click={() => (window.location.href = "./")}>
+          Work in a different area
+        </BackLink>
 
         <p>
           You should familiarise yourself with current infrastructure, via the

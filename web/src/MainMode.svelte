@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { BackLink } from "./common";
   import { SplitComponent } from "./common/layout";
   import RelevantLayers from "./layers/RelevantLayers.svelte";
   import LeftSidebarStats from "./stats/LeftSidebarStats.svelte";
@@ -36,19 +37,14 @@
         <h2 class="ds_page-header__title">{titles[$currentStage]}</h2>
       </header>
 
-      <div>
-        <button
-          type="button"
-          class="ds_link"
-          on:click={() => {
-            exitCurrentStage();
-            $mode = { kind: "overview" };
-          }}
-        >
-          <i class="fa-solid fa-chevron-left"></i>
-          Back to project overview
-        </button>
-      </div>
+      <BackLink
+        on:click={() => {
+          exitCurrentStage();
+          $mode = { kind: "overview" };
+        }}
+      >
+        Back to project overview
+      </BackLink>
 
       {#if $currentStage == "Primary"}
         <p>

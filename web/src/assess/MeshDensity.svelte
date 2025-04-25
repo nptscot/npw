@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
+  import { BackLink } from "../common";
   import { gridMeshDensity } from "../layers/stores";
   import { subpage } from "./index";
 
@@ -15,16 +16,9 @@
   <h2 class="ds_page-header__title">Network coverage</h2>
 </header>
 
-<div>
-  <button
-    type="button"
-    class="ds_link"
-    on:click={() => ($subpage = "overview")}
-  >
-    <i class="fa-solid fa-chevron-left"></i>
-    Back to network assessment
-  </button>
-</div>
+<BackLink on:click={() => ($subpage = "overview")}>
+  Back to network assessment
+</BackLink>
 
 <p>
   This map measures the mesh density of your network. Only areas touching a

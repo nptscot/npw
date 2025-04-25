@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   import { downloadGeneratedFile } from "svelte-utils";
+  import { BackLink } from "../common";
   import { uncoveredPopulation } from "../layers/stores";
   import { backend, changeStage, devMode } from "../stores";
   import { subpage } from "./index";
@@ -22,16 +23,9 @@
   <h2 class="ds_page-header__title">Population coverage</h2>
 </header>
 
-<div>
-  <button
-    type="button"
-    class="ds_link"
-    on:click={() => ($subpage = "overview")}
-  >
-    <i class="fa-solid fa-chevron-left"></i>
-    Back to network assessment
-  </button>
-</div>
+<BackLink on:click={() => ($subpage = "overview")}>
+  Back to network assessment
+</BackLink>
 
 <p>Zones with a red outline are not connected by the current network.</p>
 

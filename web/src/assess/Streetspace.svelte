@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
-  import { percent, prettyPrintDistance } from "../common";
+  import { BackLink, percent, prettyPrintDistance } from "../common";
   import { editsRoadStyle, stats } from "../stores";
   import { subpage } from "./index";
 
@@ -16,16 +16,9 @@
   <h2 class="ds_page-header__title">Streetspace deliverability</h2>
 </header>
 
-<div>
-  <button
-    type="button"
-    class="ds_link"
-    on:click={() => ($subpage = "overview")}
-  >
-    <i class="fa-solid fa-chevron-left"></i>
-    Back to network assessment
-  </button>
-</div>
+<BackLink on:click={() => ($subpage = "overview")}>
+  Back to network assessment
+</BackLink>
 
 {#if $stats}
   {#if $stats.total_undeliverable_length == 0}

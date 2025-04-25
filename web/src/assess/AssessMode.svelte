@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { BackLink } from "../common";
   import { SplitComponent } from "../common/layout";
   import {
     lastUpdateSlowStats,
@@ -23,16 +24,9 @@
           <h2 class="ds_page-header__title">Assess the new network</h2>
         </header>
 
-        <div>
-          <button
-            type="button"
-            class="ds_link"
-            on:click={() => ($mode = { kind: "overview" })}
-          >
-            <i class="fa-solid fa-chevron-left"></i>
-            Back to project overview
-          </button>
-        </div>
+        <BackLink on:click={() => ($mode = { kind: "overview" })}>
+          Back to project overview
+        </BackLink>
 
         <p>
           Having designed your network, you can now fix any problems and assess

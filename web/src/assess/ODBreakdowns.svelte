@@ -10,6 +10,7 @@
   import { onDestroy, onMount } from "svelte";
   import { Pie } from "svelte-chartjs";
   import { infraTypeColors, levelOfServiceColors, tierColors } from "../colors";
+  import { BackLink } from "../common";
   import {
     backend,
     backgroundLayer,
@@ -43,16 +44,9 @@
   <h2 class="ds_page-header__title">Network impacts on demand</h2>
 </header>
 
-<div>
-  <button
-    type="button"
-    class="ds_link"
-    on:click={() => ($subpage = "overview")}
-  >
-    <i class="fa-solid fa-chevron-left"></i>
-    Back to network assessment
-  </button>
-</div>
+<BackLink on:click={() => ($subpage = "overview")}>
+  Back to network assessment
+</BackLink>
 
 <p>
   This shows how journeys from census demand data would pick quiet routes using
