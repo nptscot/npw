@@ -80,6 +80,13 @@
 </header>
 
 <style>
+  :root {
+    --primary-tier-colour: #970f52;
+    --secondary-tier-colour: #ff978c;
+    --localaccess-tier-colour: #feae01;
+    --longdistance-tier-colour: #fef157;
+  }
+
   header {
     display: flex;
     padding: 0 20px;

@@ -1,14 +1,5 @@
-/* Svelte framework built-ins */
-body {
-  margin: 0;
-}
-
-/* Layout - existing */
-header {
-  width: 100%; /* padding: 4px; */
-}
-
-/* https://verpex.com/blog/website-tips/how-to-style-a-progress-bar-using-css */
+/* https://verpex.com/blog/website-tips/how-to-style-a-progress-bar-using-css,
+ * used in top bar and left bar */
 progress[value] {
   appearance: none;
   --color: #0065bd;
@@ -28,7 +19,7 @@ progress[value]::-moz-progress-bar {
   background: var(--color);
 }
 
-/* Overrides to styles */
+/* Global overrides to SG styles */
 body .ds_page-header {
   margin: 0 0 14px;
 }
@@ -39,11 +30,4 @@ body .ds_link {
 
 body .ds_button {
   text-align: left;
-}
-
-:root {
-  --primary-tier-colour: #970f52;
-  --secondary-tier-colour: #ff978c;
-  --localaccess-tier-colour: #feae01;
-  --longdistance-tier-colour: #fef157;
 }
