@@ -48,12 +48,14 @@
           <button
             class="ds_button"
             class:ds_button--secondary={$currentStage != stage}
+            style:margin-bottom="1rem"
             on:click={() => changeStage(stage)}
           >
             {label}
           </button>
         </div>
       {/each}
+      <br />
 
       <h4>Assess my network</h4>
 
