@@ -258,7 +258,7 @@ export class InnerBackend {
   fixUnreachablePOI(
     kind: string,
     idx: number,
-  ): Feature<LineString, SetRouteInput> {
+  ): Feature<LineString, SetRouteInput & { length_meters: number }> {
     this.checkReady();
     return JSON.parse(this.inner!.fixUnreachablePOI(kind, idx));
   }

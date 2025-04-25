@@ -1,6 +1,7 @@
 <script lang="ts">
   import { MapEvents } from "svelte-maplibre";
   import { tierColors } from "../colors";
+  import { prettyPrintDistance } from "../common";
   import { SplitComponent } from "../common/layout";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
@@ -16,7 +17,7 @@
   import type { PoiKind } from "../types";
   import Greenspaces from "./Greenspaces.svelte";
   import PointPOIs from "./PointPOIs.svelte";
-  import { currentPOI, type POI } from "./stores";
+  import { currentPOI, fixCurrentPOI, type POI } from "./stores";
   import StreetViewPOI from "./StreetViewPOI.svelte";
 
   let lastUpdate = 0;
@@ -247,7 +248,13 @@
           <p>
             {$currentPOI.description} is not connected to the network.
           </p>
-          <p>A suggested local access route is shown dashed.</p>
+          {#if $fixCurrentPOI}
+            <p>
+              A suggested local access route of length {prettyPrintDistance(
+                $fixCurrentPOI.properties.length_meters,
+              )} is shown dashed.
+            </p>
+          {/if}
 
           <div>
             <button class="ds_button" on:click={fixUnreachable}>

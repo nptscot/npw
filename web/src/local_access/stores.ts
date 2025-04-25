@@ -1,5 +1,6 @@
+import type { Feature, LineString } from "geojson";
 import { writable, type Writable } from "svelte/store";
-import type { PoiKind } from "../types";
+import type { PoiKind, SetRouteInput } from "../types";
 
 export interface POI {
   kind: PoiKind;
@@ -10,3 +11,7 @@ export interface POI {
 }
 
 export let currentPOI: Writable<POI | null> = writable(null);
+export let fixCurrentPOI: Writable<Feature<
+  LineString,
+  SetRouteInput & { length_meters: number }
+> | null> = writable(null);

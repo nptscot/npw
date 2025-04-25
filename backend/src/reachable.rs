@@ -1,6 +1,7 @@
 use std::collections::{BinaryHeap, HashMap, HashSet};
 
 use anyhow::Result;
+use geo::{Haversine, Length};
 use geojson::{Feature, FeatureCollection, Geometry};
 use graph::{Graph, RoadID};
 use utils::PriorityQueueItem;
@@ -173,7 +174,7 @@ impl MapModel {
     }
 
     /// Calculates a route to connect any of start_roads with the network. Returns a stringified
-    /// Feature<LineString, SetRouteInput>.
+    /// Feature<LineString, SetRouteInput & { length_meters }>.
     pub fn fix_unreachable_poi(&self, start_roads: HashSet<RoadID>) -> Result<String> {
         let mut visited: HashSet<RoadID> = HashSet::new();
         let mut backrefs: HashMap<RoadID, RoadID> = HashMap::new();
@@ -220,6 +221,7 @@ impl MapModel {
                     .unwrap()
                     .clone(),
                 );
+                f.set_property("length_meters", Haversine.length(&linestring_wgs84));
                 return Ok(serde_json::to_string(&f)?);
             }
 

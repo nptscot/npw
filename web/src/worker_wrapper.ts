@@ -309,7 +309,7 @@ export class Backend {
   async fixUnreachablePOI(
     kind: string,
     idx: number,
-  ): Promise<Feature<LineString, SetRouteInput>> {
+  ): Promise<Feature<LineString, SetRouteInput & { length_meters: number }>> {
     this.start();
     let result = await this.inner.fixUnreachablePOI(kind, idx);
     this.stop();
