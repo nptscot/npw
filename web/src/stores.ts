@@ -2,7 +2,11 @@ import type { Map } from "maplibre-gl";
 import { get, writable, type Writable } from "svelte/store";
 import { getKey, setLocalStorage } from "./common/files";
 import { disableLayersPerStage, enableLayersPerStage } from "./layers/stores";
-import { currentPOI, fixCurrentPOI } from "./local_access/stores";
+import {
+  currentPOI,
+  debugReachabilityCurrentPOI,
+  fixCurrentPOI,
+} from "./local_access/stores";
 import type {
   ConnectedComponents,
   ODStats,
@@ -157,6 +161,7 @@ export function exitCurrentStage() {
   if (oldStage == "LocalAccess") {
     currentPOI.set(null);
     fixCurrentPOI.set(null);
+    debugReachabilityCurrentPOI.set(null);
   }
 }
 

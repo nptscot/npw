@@ -9,7 +9,8 @@ use serde::{Deserialize, Serialize};
 use crate::join_lines::KeyedLineString;
 use crate::route_snapper::roads_to_waypoints;
 use crate::{
-    level_of_service::get_level_of_service, Highway, InfraType, LevelOfService, MapModel, Tier,
+    level_of_service::get_level_of_service, utils::into_object_value, Highway, InfraType,
+    LevelOfService, MapModel, Tier,
 };
 
 #[derive(Clone)]
@@ -196,15 +197,10 @@ impl MapModel {
                 .map(|(id, r)| r.to_gj(*id))
                 .collect::<Vec<_>>(),
             bbox: None,
-            foreign_members: Some(
-                serde_json::json!({
-                    "id_counter": self.id_counter,
-                    "version": 1,
-                })
-                .as_object()
-                .unwrap()
-                .clone(),
-            ),
+            foreign_members: Some(into_object_value(serde_json::json!({
+                "id_counter": self.id_counter,
+                "version": 1,
+            }))),
         }
     }
 

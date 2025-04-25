@@ -8,7 +8,9 @@ use utils::PriorityQueueItem;
 
 use crate::route_snapper::roads_to_waypoints;
 use crate::routes::glue_route_wgs84;
-use crate::{Dir, InfraType, LevelOfService, MapModel, SetRouteInput, Tier};
+use crate::{
+    utils::into_object_value, Dir, InfraType, LevelOfService, MapModel, SetRouteInput, Tier,
+};
 
 pub struct Reachability {
     pub network: HashSet<RoadID>,
@@ -73,7 +75,8 @@ impl MapModel {
         }
     }
 
-    /// Show the shortest distance path from any of the start roads to any part of the network.
+    /// Show the shortest distance path from any of the start roads to any part of the network. If
+    /// any of the start_roads are on the network, then returns an error.
     pub fn debug_reachable_path(&self, start_roads: HashSet<RoadID>) -> Result<String> {
         let mut visited: HashSet<RoadID> = HashSet::new();
         let mut backrefs: HashMap<RoadID, RoadID> = HashMap::new();
@@ -83,6 +86,7 @@ impl MapModel {
         }
 
         let mut features = Vec::new();
+        let mut length_meters = 0.0;
 
         while let Some(item) = queue.pop() {
             let r1 = item.value;
@@ -96,6 +100,10 @@ impl MapModel {
             }
 
             if self.infra_types[r1.0].is_some() {
+                if start_roads.contains(&r1) {
+                    bail!("A starting road is directly on the network");
+                }
+
                 // We don't even need the path in order; just draw all of the roads part of the
                 // path
                 features.push(
@@ -103,6 +111,7 @@ impl MapModel {
                         .mercator
                         .to_wgs84_gj(&self.graph.roads[r1.0].linestring),
                 );
+                length_meters += self.graph.roads[r1.0].length_meters;
                 let mut current = r1;
                 while let Some(next) = backrefs.get(&current) {
                     features.push(
@@ -110,6 +119,7 @@ impl MapModel {
                             .mercator
                             .to_wgs84_gj(&self.graph.roads[next.0].linestring),
                     );
+                    length_meters += self.graph.roads[next.0].length_meters;
                     current = *next;
                 }
                 break;
@@ -137,7 +147,9 @@ impl MapModel {
         Ok(serde_json::to_string(&FeatureCollection {
             features,
             bbox: None,
-            foreign_members: None,
+            foreign_members: Some(into_object_value(serde_json::json!({
+                "length_meters": length_meters,
+            }))),
         })?)
     }
 
@@ -206,21 +218,16 @@ impl MapModel {
                 let waypoints_wgs84 = roads_to_waypoints(&self.graph, &roads);
                 let linestring_wgs84 = glue_route_wgs84(&self.graph, &roads);
                 let mut f = Feature::from(Geometry::from(&linestring_wgs84));
-                f.properties = Some(
-                    serde_json::to_value(&SetRouteInput {
-                        waypoints: waypoints_wgs84,
+                f.properties = Some(into_object_value(serde_json::to_value(&SetRouteInput {
+                    waypoints: waypoints_wgs84,
 
-                        name: "connection to local POI".to_string(),
-                        notes: String::new(),
-                        // Doesn't matter
-                        infra_type: InfraType::MixedTraffic,
-                        override_infra_type: false,
-                        tier: Tier::LocalAccess,
-                    })?
-                    .as_object()
-                    .unwrap()
-                    .clone(),
-                );
+                    name: "connection to local POI".to_string(),
+                    notes: String::new(),
+                    // Doesn't matter
+                    infra_type: InfraType::MixedTraffic,
+                    override_infra_type: false,
+                    tier: Tier::LocalAccess,
+                })?));
                 f.set_property("length_meters", Haversine.length(&linestring_wgs84));
                 return Ok(serde_json::to_string(&f)?);
             }

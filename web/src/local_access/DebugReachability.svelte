@@ -4,34 +4,40 @@
   import { tierColors } from "../colors";
   import { layerId } from "../common";
   import { backend } from "../stores";
-  import { fixCurrentPOI, type POI } from "./stores";
+  import {
+    debugReachabilityCurrentPOI,
+    fixCurrentPOI,
+    type POI,
+  } from "./stores";
 
   export let current: POI | null;
   export let show: boolean;
 
-  let debug = emptyGeojson();
   $: updateDebug(current);
-
   async function updateDebug(current: POI | null) {
+    $debugReachabilityCurrentPOI = null;
+    $fixCurrentPOI = null;
+
     if ($backend && current) {
       if (current.reachable) {
-        debug = await $backend.debugReachablePath(current.kind, current.idx);
-        $fixCurrentPOI = null;
+        // If this returns an error, then the POI is directly on the network
+        try {
+          $debugReachabilityCurrentPOI = await $backend.debugReachablePath(
+            current.kind,
+            current.idx,
+          );
+        } catch (err) {}
       } else {
-        debug = emptyGeojson();
         $fixCurrentPOI = await $backend.fixUnreachablePOI(
           current.kind,
           current.idx,
         );
       }
-    } else {
-      debug = emptyGeojson();
-      $fixCurrentPOI = null;
     }
   }
 </script>
 
-<GeoJSON data={debug}>
+<GeoJSON data={$debugReachabilityCurrentPOI || emptyGeojson()}>
   <LineLayer
     {...layerId("debug-reachability-pois")}
     interactive={false}
@@ -41,6 +47,7 @@
     paint={{
       "line-width": 3,
       "line-color": "blue",
+      "line-dasharray": [2, 1],
     }}
   />
 </GeoJSON>

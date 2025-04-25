@@ -10,7 +10,9 @@ use nanorand::{Rng, WyRand};
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
 
-use crate::{stats::percent, uptake, InfraType, LevelOfService, MapModel, Tier};
+use crate::{
+    stats::percent, uptake, utils::into_object_value, InfraType, LevelOfService, MapModel, Tier,
+};
 
 pub struct CountsOD {
     pub counts: HashMap<RoadID, usize>,
@@ -171,14 +173,11 @@ impl MapModel {
             features.push(f);
         }
 
-        let mut foreign_members = serde_json::json!({
+        let mut foreign_members = into_object_value(serde_json::json!({
             "succeeded": od.succeeded,
             "failed": od.failed,
             "max_count": max_count,
-        })
-        .as_object()
-        .unwrap()
-        .clone();
+        }));
         od.describe(self, &mut foreign_members)?;
 
         Ok(serde_json::to_string(&FeatureCollection {

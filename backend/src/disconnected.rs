@@ -5,7 +5,7 @@ use geojson::FeatureCollection;
 use graph::{IntersectionID, RoadID};
 use petgraph::graphmap::UnGraphMap;
 
-use crate::MapModel;
+use crate::{utils::into_object_value, MapModel};
 
 impl MapModel {
     // TODO Lift into graph from severance_snape and here?
@@ -60,15 +60,10 @@ impl MapModel {
         FeatureCollection {
             features,
             bbox: None,
-            foreign_members: Some(
-                serde_json::json!({
-                    "component_lengths": component_lengths,
-                    "component_bboxes": component_bboxes,
-                })
-                .as_object()
-                .unwrap()
-                .clone(),
-            ),
+            foreign_members: Some(into_object_value(serde_json::json!({
+                "component_lengths": component_lengths,
+                "component_bboxes": component_bboxes,
+            }))),
         }
     }
 }

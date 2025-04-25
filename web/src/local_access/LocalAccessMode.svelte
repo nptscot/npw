@@ -17,7 +17,12 @@
   import type { PoiKind } from "../types";
   import Greenspaces from "./Greenspaces.svelte";
   import PointPOIs from "./PointPOIs.svelte";
-  import { currentPOI, fixCurrentPOI, type POI } from "./stores";
+  import {
+    currentPOI,
+    debugReachabilityCurrentPOI,
+    fixCurrentPOI,
+    type POI,
+  } from "./stores";
   import StreetViewPOI from "./StreetViewPOI.svelte";
 
   let lastUpdate = 0;
@@ -241,9 +246,13 @@
           <p>
             {$currentPOI.description} is connected to the network.
           </p>
-          <p>
-            The blue path shows the route through quiet streets to the network.
-          </p>
+          {#if $debugReachabilityCurrentPOI}
+            <p>
+              The dashed blue path of length {prettyPrintDistance(
+                $debugReachabilityCurrentPOI.length_meters,
+              )} shows the route through quiet streets to the network.
+            </p>
+          {/if}
         {:else}
           <p>
             {$currentPOI.description} is not connected to the network.

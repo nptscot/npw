@@ -86,11 +86,6 @@ const layerZorder = [
   "greenspace-access-points",
   "major-junctions",
 
-  // Draw these on top of the respective objects, in case the path goes through
-  // the middle of a polygon
-  "debug-reachability-pois",
-  "fix-reachability-pois",
-
   // Roads
   "precalculated-rnet-debug",
   "uncovered-cycling-demands",
@@ -105,6 +100,11 @@ const layerZorder = [
   "los-debug",
   "calculated-rnet",
   "network-disconnections",
+
+  // Draw these on top of the respective objects, in case the path goes through
+  // the middle of a polygon
+  "debug-reachability-pois",
+  "fix-reachability-pois",
 
   "block-reference-layers",
 

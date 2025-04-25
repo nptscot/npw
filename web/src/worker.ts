@@ -244,7 +244,10 @@ export class InnerBackend {
     return JSON.parse(this.inner!.getPopulationZones());
   }
 
-  debugReachablePath(kind: string, idx: number): FeatureCollection {
+  debugReachablePath(
+    kind: string,
+    idx: number,
+  ): FeatureCollection & { length_meters: number } {
     this.checkReady();
     return JSON.parse(this.inner!.debugReachablePath(kind, idx));
   }

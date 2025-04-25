@@ -288,11 +288,13 @@ export class Backend {
   async debugReachablePath(
     kind: string,
     idx: number,
-  ): Promise<FeatureCollection> {
+  ): Promise<FeatureCollection & { length_meters: number }> {
     this.start();
-    let result = await this.inner.debugReachablePath(kind, idx);
-    this.stop();
-    return result;
+    try {
+      return await this.inner.debugReachablePath(kind, idx);
+    } finally {
+      this.stop();
+    }
   }
 
   // TODO Unused
