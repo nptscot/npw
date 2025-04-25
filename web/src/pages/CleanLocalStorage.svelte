@@ -1,6 +1,6 @@
 <script lang="ts">
   import { downloadGeneratedFile } from "svelte-utils";
-  import { measureLocalStorageSizes } from "./common/files";
+  import { measureLocalStorageSizes } from "../common/files";
 
   let items: [string, number][] = measureLocalStorageSizes();
   $: sum = items.reduce((sum, pair) => sum + pair[1], 0);

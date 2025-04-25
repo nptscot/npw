@@ -1,5 +1,5 @@
 <script lang="ts">
-  import "./style.css";
+  import "../style.css";
   import "@scottish-government/design-system/dist/css/design-system.css";
   import "@scottish-government/design-system/dist/scripts/design-system.js";
   import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -16,30 +16,30 @@
   } from "svelte-maplibre";
   import { fetchWithProgress, Loading } from "svelte-utils";
   import { Geocoder } from "svelte-utils/map";
-  import hospital3Icon from "../assets/hospital_ignore.png";
-  import hospital1Icon from "../assets/hospital_reachable.png";
-  import hospital2Icon from "../assets/hospital_unreachable.png";
-  import school3Icon from "../assets/school_ignore.png";
-  import school1Icon from "../assets/school_reachable.png";
-  import school2Icon from "../assets/school_unreachable.png";
-  import AssessMode from "./assess/AssessMode.svelte";
-  import BulkEditMode from "./BulkEditMode.svelte";
-  import { layerId, LoadingSpinner } from "./common";
-  import DisableInteractiveLayers from "./common/DisableInteractiveLayers.svelte";
-  import { getKey } from "./common/files";
-  import { controlsContents, Layout, mapContents } from "./common/layout";
-  import StreetView from "./common/StreetView.svelte";
-  import EditRouteMode from "./edit/EditRouteMode.svelte";
-  import EvaluateJourneyMode from "./EvaluateJourneyMode.svelte";
-  import ExportMode from "./ExportMode.svelte";
-  import ReferenceLayers from "./layers/ReferenceLayers.svelte";
-  import BottomPanel from "./layers/roads/BottomPanel.svelte";
-  import LegendPanel from "./layers/roads/LegendPanel.svelte";
-  import RightLayers from "./layers/roads/RightLayers.svelte";
-  import LocalAccessMode from "./local_access/LocalAccessMode.svelte";
-  import MainMode from "./MainMode.svelte";
-  import OverviewMode from "./OverviewMode.svelte";
-  import SetupMode from "./SetupMode.svelte";
+  import hospital3Icon from "../../assets/hospital_ignore.png";
+  import hospital1Icon from "../../assets/hospital_reachable.png";
+  import hospital2Icon from "../../assets/hospital_unreachable.png";
+  import school3Icon from "../../assets/school_ignore.png";
+  import school1Icon from "../../assets/school_reachable.png";
+  import school2Icon from "../../assets/school_unreachable.png";
+  import AssessMode from "../assess/AssessMode.svelte";
+  import BulkEditMode from "../BulkEditMode.svelte";
+  import { layerId, LoadingSpinner } from "../common";
+  import DisableInteractiveLayers from "../common/DisableInteractiveLayers.svelte";
+  import { getKey } from "../common/files";
+  import { controlsContents, Layout, mapContents } from "../common/layout";
+  import StreetView from "../common/StreetView.svelte";
+  import EditRouteMode from "../edit/EditRouteMode.svelte";
+  import EvaluateJourneyMode from "../EvaluateJourneyMode.svelte";
+  import ExportMode from "../ExportMode.svelte";
+  import ReferenceLayers from "../layers/ReferenceLayers.svelte";
+  import BottomPanel from "../layers/roads/BottomPanel.svelte";
+  import LegendPanel from "../layers/roads/LegendPanel.svelte";
+  import RightLayers from "../layers/roads/RightLayers.svelte";
+  import LocalAccessMode from "../local_access/LocalAccessMode.svelte";
+  import MainMode from "../MainMode.svelte";
+  import OverviewMode from "../OverviewMode.svelte";
+  import SetupMode from "../SetupMode.svelte";
   import {
     assetUrl,
     backend,
@@ -56,12 +56,12 @@
     stats,
     zoom,
     type Mode,
-  } from "./stores";
-  import TopBar from "./TopBar.svelte";
-  import type { Tier } from "./types";
-  import type { InnerBackend } from "./worker";
-  import { Backend } from "./worker_wrapper";
-  import workerWrapper from "./worker?worker";
+  } from "../stores";
+  import TopBar from "../TopBar.svelte";
+  import type { Tier } from "../types";
+  import type { InnerBackend } from "../worker";
+  import { Backend } from "../worker_wrapper";
+  import workerWrapper from "../worker?worker";
 
   let loading = "";
   let progress = 0;

@@ -13,11 +13,11 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import boundariesUrl from "../assets/boundaries.geojson?url";
-  import logo from "../assets/npt_logo.png?url";
-  import { stripPrefix } from "./common";
-  import { listAllFiles } from "./common/files";
-  import { maptilerApiKey } from "./stores";
+  import boundariesUrl from "../../assets/boundaries.geojson?url";
+  import logo from "../../assets/npt_logo.png?url";
+  import { stripPrefix } from "../common";
+  import { listAllFiles } from "../common/files";
+  import { maptilerApiKey } from "../stores";
 
   let gj: FeatureCollection<Polygon | MultiPolygon, { name: string }> = {
     type: "FeatureCollection" as const,
