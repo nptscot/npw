@@ -217,11 +217,7 @@ impl TownCentre {
         f.set_property("poi_kind", "town_centres");
         f.set_property(
             "description",
-            if let Some(name) = &self.name {
-                name
-            } else {
-                "This town centre"
-            },
+            self.name.clone().unwrap_or_else(String::new)
         );
         f.set_property("reachable", reachable);
         f.set_property("idx", idx);

@@ -36,7 +36,7 @@
     manageHoverState
     paint={{
       "fill-color": "red",
-      "fill-opacity": hoverStateFilter(0.1, 0.5),
+      "fill-opacity": hoverStateFilter(0, 0.5),
     }}
     layout={{
       visibility: $show ? "visible" : "none",
