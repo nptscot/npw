@@ -14,12 +14,12 @@
     mutationCounter,
     zoom,
   } from "../stores";
-  import type { PoiKind } from "../types";
   import Greenspaces from "./Greenspaces.svelte";
   import PointPOIs from "./PointPOIs.svelte";
   import {
     currentPOI,
     debugReachabilityCurrentPOI,
+    filterKind,
     fixCurrentPOI,
     type POI,
   } from "./stores";
@@ -29,7 +29,6 @@
 
   let allPOIs: POI[] = [];
 
-  let filterKind: PoiKind | "all" = "all";
   let filterIdx = 0;
   let filteredPOIs: POI[] = [];
 
@@ -101,9 +100,9 @@
     filterIdx = 0;
     let unconnected = allPOIs.filter((poi) => !poi.reachable);
     filteredPOIs =
-      filterKind == "all"
+      $filterKind == "all"
         ? unconnected
-        : unconnected.filter((poi) => poi.kind == filterKind);
+        : unconnected.filter((poi) => poi.kind == $filterKind);
   }
 
   function warp() {
@@ -195,7 +194,7 @@
         <div class="ds_select-wrapper ds_input--fluid-two-thirds">
           <select
             class="ds_select"
-            bind:value={filterKind}
+            bind:value={$filterKind}
             on:change={refilterPOIs}
           >
             <option value="all">Showing all POIs</option>
@@ -290,9 +289,8 @@
   <div slot="map">
     <MapEvents on:click={() => ($currentPOI = null)} />
 
-    <Greenspaces {filterKind} />
-
-    <PointPOIs {filterKind} />
+    <Greenspaces />
+    <PointPOIs />
 
     <StreetViewPOI />
   </div>

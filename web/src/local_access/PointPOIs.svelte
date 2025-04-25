@@ -13,9 +13,7 @@
   import { backend, mutationCounter } from "../stores";
   import type { PoiKind, POIs } from "../types";
   import DebugReachability from "./DebugReachability.svelte";
-  import { currentPOI, type POI } from "./stores";
-
-  export let filterKind: PoiKind | "all" = "all";
+  import { currentPOI, filterKind, type POI } from "./stores";
 
   let lastUpdate = 0;
   let schools: POIs = {
@@ -108,7 +106,7 @@
       visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
-      "icon-image": iconImage("schools", filterKind),
+      "icon-image": iconImage("schools", $filterKind),
     }}
     hoverCursor="pointer"
     on:click={setCurrentPOI}
@@ -123,7 +121,7 @@
       visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
-      "icon-image": iconImage("gp_hospitals", filterKind),
+      "icon-image": iconImage("gp_hospitals", $filterKind),
     }}
     hoverCursor="pointer"
     on:click={setCurrentPOI}

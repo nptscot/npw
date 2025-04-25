@@ -11,12 +11,10 @@
   import { layerId } from "../common";
   import { localPOIs as show } from "../layers/stores";
   import { backend, mutationCounter } from "../stores";
-  import type { Greenspaces, PoiKind } from "../types";
-  import { currentPOI, type POI } from "./stores";
+  import type { Greenspaces } from "../types";
+  import { currentPOI, filterKind, type POI } from "./stores";
 
-  export let filterKind: PoiKind | "all" = "all";
-
-  $: showGreenspaces = filterKind == "all" || filterKind == "greenspaces";
+  $: showGreenspaces = $filterKind == "all" || $filterKind == "greenspaces";
 
   let lastUpdate = 0;
   let data: Greenspaces = {

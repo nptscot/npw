@@ -16,6 +16,8 @@
   import { SplitComponent } from "../common/layout";
   import RelevantLayers from "../layers/RelevantLayers.svelte";
   import { majorJunctions } from "../layers/stores";
+  import Greenspaces from "../local_access/Greenspaces.svelte";
+  import PointPOIs from "../local_access/PointPOIs.svelte";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
   import {
     autosave,
@@ -262,6 +264,11 @@
         }}
       />
     </GeoJSON>
+
+    {#if $currentStage == "LocalAccess"}
+      <Greenspaces />
+      <PointPOIs />
+    {/if}
   </div>
 </SplitComponent>
 
