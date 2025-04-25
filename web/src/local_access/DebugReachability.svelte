@@ -11,7 +11,6 @@
   } from "./stores";
 
   export let current: POI | null;
-  export let show: boolean;
 
   $: updateDebug(current);
   async function updateDebug(current: POI | null) {
@@ -41,9 +40,6 @@
   <LineLayer
     {...layerId("debug-reachability-pois")}
     interactive={false}
-    layout={{
-      visibility: show ? "visible" : "none",
-    }}
     paint={{
       "line-width": 3,
       "line-color": "blue",
@@ -56,9 +52,6 @@
   <LineLayer
     {...layerId("fix-reachability-pois")}
     interactive={false}
-    layout={{
-      visibility: show ? "visible" : "none",
-    }}
     paint={{
       "line-width": 5,
       "line-color": tierColors.LocalAccess,

@@ -11,8 +11,6 @@ export let majorJunctions = writable(false);
 export let cyclingDemandMedium = writable(false);
 export let townCentres = writable(false);
 
-export let localPOIs = writable(false);
-
 export let settlements = writable(false);
 
 export let gridMeshDensity = writable(false);
@@ -29,7 +27,7 @@ export let enableLayersPerStage = {
     uncoveredPopulation,
     majorJunctions,
   ],
-  LocalAccess: [localPOIs],
+  LocalAccess: [],
   LongDistance: [settlements],
   assessment: [],
 };
@@ -43,7 +41,7 @@ export let disableLayersPerStage = {
     severances,
     majorJunctions,
   ],
-  LocalAccess: [localPOIs, severances],
+  LocalAccess: [severances],
   LongDistance: [settlements, severances],
   assessment: [gridMeshDensity, uncoveredPopulation],
 };

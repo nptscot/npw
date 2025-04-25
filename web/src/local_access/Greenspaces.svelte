@@ -9,7 +9,6 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { layerId } from "../common";
-  import { localPOIs as show } from "../layers/stores";
   import { backend, mutationCounter } from "../stores";
   import type { Greenspaces } from "../types";
   import { currentPOI, filterKind, type POI } from "./stores";
@@ -29,7 +28,7 @@
     }
   }
 
-  $: if ($show && $mutationCounter > 0) {
+  $: if ($mutationCounter > 0) {
     recalc();
   }
 
@@ -67,9 +66,6 @@
         : "#666666",
       "fill-opacity": fillOpacity($currentPOI),
     }}
-    layout={{
-      visibility: $show ? "visible" : "none",
-    }}
     hoverCursor="pointer"
     on:click={setCurrentPOI}
   />
@@ -83,9 +79,6 @@
         : "#666666",
       "line-width": 1,
     }}
-    layout={{
-      visibility: $show ? "visible" : "none",
-    }}
   />
 
   <CircleLayer
@@ -95,9 +88,6 @@
     paint={{
       "circle-color": "grey",
       "circle-radius": ["step", ["zoom"], 0, 14, 5],
-    }}
-    layout={{
-      visibility: $show && showGreenspaces ? "visible" : "none",
     }}
   />
 </GeoJSON>

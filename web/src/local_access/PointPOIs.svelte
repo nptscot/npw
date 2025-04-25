@@ -9,10 +9,8 @@
   } from "svelte-maplibre";
   import { emptyGeojson } from "svelte-utils/map";
   import { layerId } from "../common";
-  import { localPOIs as show } from "../layers/stores";
   import { backend, mutationCounter } from "../stores";
   import type { PoiKind, POIs } from "../types";
-  import DebugReachability from "./DebugReachability.svelte";
   import { currentPOI, filterKind, type POI } from "./stores";
 
   let lastUpdate = 0;
@@ -41,7 +39,7 @@
     }
   }
 
-  $: if ($show && $mutationCounter > 0) {
+  $: if ($mutationCounter > 0) {
     recalc();
   }
 
@@ -103,7 +101,6 @@
     {...layerId("schools")}
     manageHoverState
     layout={{
-      visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
       "icon-image": iconImage("schools", $filterKind),
@@ -118,7 +115,6 @@
     {...layerId("gp-hospitals")}
     manageHoverState
     layout={{
-      visibility: $show ? "visible" : "none",
       "icon-allow-overlap": true,
       "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
       "icon-image": iconImage("gp_hospitals", $filterKind),
@@ -131,9 +127,6 @@
 <GeoJSON data={focusCurrentPOI($currentPOI)}>
   <CircleLayer
     {...layerId("current-poi")}
-    layout={{
-      visibility: $show ? "visible" : "none",
-    }}
     paint={{
       "circle-radius": 15,
       "circle-opacity": 0,
@@ -142,5 +135,3 @@
     }}
   />
 </GeoJSON>
-
-<DebugReachability current={$currentPOI} show={$show} />

@@ -14,6 +14,7 @@
     mutationCounter,
     zoom,
   } from "../stores";
+  import DebugReachability from "./DebugReachability.svelte";
   import Greenspaces from "./Greenspaces.svelte";
   import PointPOIs from "./PointPOIs.svelte";
   import {
@@ -291,6 +292,7 @@
 
     <Greenspaces />
     <PointPOIs />
+    <DebugReachability current={$currentPOI} />
 
     <StreetViewPOI />
   </div>
