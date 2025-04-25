@@ -245,21 +245,27 @@
           <p>
             {$currentPOI.description} is not connected to the network.
           </p>
+
           {#if $fixCurrentPOI}
             <p>
               A suggested local access route of length {prettyPrintDistance(
                 $fixCurrentPOI.properties.length_meters,
               )} is shown dashed.
             </p>
-          {/if}
 
-          <div>
-            <button class="ds_button" on:click={fixUnreachable}>
-              Add the dashed line to fix (
-              <kbd>a</kbd>
-              )
-            </button>
-          </div>
+            <div>
+              <button class="ds_button" on:click={fixUnreachable}>
+                Add the dashed line to fix (
+                <kbd>a</kbd>
+                )
+              </button>
+            </div>
+          {:else}
+            <p>
+              No route to the network can be found automatically. You may need
+              to work on your primary and secondary network first.
+            </p>
+          {/if}
 
           <div>
             <button

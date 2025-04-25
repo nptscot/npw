@@ -27,10 +27,13 @@
           );
         } catch (err) {}
       } else {
-        $fixCurrentPOI = await $backend.fixUnreachablePOI(
-          current.kind,
-          current.idx,
-        );
+        // If this returns an error, then no automated fix is possible
+        try {
+          $fixCurrentPOI = await $backend.fixUnreachablePOI(
+            current.kind,
+            current.idx,
+          );
+        } catch (err) {}
       }
     }
   }

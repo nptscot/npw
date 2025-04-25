@@ -313,9 +313,11 @@ export class Backend {
     idx: number,
   ): Promise<Feature<LineString, SetRouteInput & { length_meters: number }>> {
     this.start();
-    let result = await this.inner.fixUnreachablePOI(kind, idx);
-    this.stop();
-    return result;
+    try {
+      return await this.inner.fixUnreachablePOI(kind, idx);
+    } finally {
+      this.stop();
+    }
   }
 
   async getConnectedComponents(): Promise<ConnectedComponents> {
