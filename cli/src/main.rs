@@ -209,6 +209,9 @@ fn read_desire_lines_csv(
             out.push((row.geo_code1, row.geo_code2, row.all));
         }
     }
+    if out.is_empty() {
+        bail!("No matching desire lines");
+    }
     Ok(out)
 }
 

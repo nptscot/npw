@@ -215,10 +215,7 @@ impl TownCentre {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.polygon);
         f.set_property("poi_kind", "town_centres");
-        f.set_property(
-            "description",
-            self.name.clone().unwrap_or_else(String::new)
-        );
+        f.set_property("description", self.name.clone().unwrap_or_else(String::new));
         f.set_property("reachable", reachable);
         f.set_property("idx", idx);
         f

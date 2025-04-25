@@ -193,6 +193,14 @@ impl MapModel {
         timer.step("generate OD pairs");
         let requests = self.get_town_centre_od();
 
+        // Edge case for Orkney Islands
+        if requests.is_empty() {
+            return SlowStats {
+                average_weighted_directness: 1.0,
+                worst_directness_routes: Vec::new(),
+            };
+        }
+
         timer.step(format!("calculate {} routes", requests.len()));
         let keep_directness_routes = 10;
         let quiet_profile = self.graph.profile_names["bicycle_quiet"];
