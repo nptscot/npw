@@ -17,7 +17,6 @@ geo = { git = "https://github.com/georust/geo", branch="mkirk/geo-buffer" }
 geojson = { git = "https://github.com/georust/geojson", features = ["geo-types"] }
 graph = { git = "https://github.com/a-b-street/15m" }
 hilbert_2d = "1.1.0"
-itertools = "0.14.0"
 js-sys = "0.3.69"
 log = "0.4.20"
 nanorand = { version = "0.7.0", default-features = false, features = ["wyrand"] }

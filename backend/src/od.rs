@@ -4,8 +4,7 @@ use anyhow::Result;
 use enum_map::EnumMap;
 use geo::{BoundingRect, Centroid, Contains, Coord, Distance, Euclidean, Intersects, MultiPolygon};
 use geojson::{FeatureCollection, Value};
-use graph::{PathStep, RoadID, Timer};
-use itertools::Itertools;
+use graph::{Graph, PathStep, RoadID, Route, Timer};
 use nanorand::{Rng, WyRand};
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
@@ -204,6 +203,7 @@ impl MapModel {
         timer.step(format!("calculate {} routes", requests.len()));
         let keep_directness_routes = 10;
         let quiet_profile = self.graph.profile_names["bicycle_quiet"];
+        let direct_profile = self.graph.profile_names["bicycle_direct"];
 
         let mut sum_directness = 0.0;
         let mut sum_count = 0;
@@ -212,60 +212,19 @@ impl MapModel {
         for (input_pt1, input_pt2) in requests {
             let start = self.graph.snap_to_road(input_pt1, quiet_profile);
             let end = self.graph.snap_to_road(input_pt2, quiet_profile);
-            let Ok(route) = self.graph.routers[quiet_profile.0].route(&self.graph, start, end)
+            let Ok(quiet_route) =
+                self.graph.routers[quiet_profile.0].route(&self.graph, start, end)
+            else {
+                continue;
+            };
+            let Ok(direct_route) =
+                self.graph.routers[direct_profile.0].route(&self.graph, start, end)
             else {
                 continue;
             };
 
-            // route.linestring() is more accurate, but slower
-            let mut route_length = 0.0;
-            let mut snapped_pt1 = None;
-            let mut snapped_pt2 = None;
-            for (pos, step) in route.steps.iter().with_position() {
-                if let PathStep::Road { road, forwards } = step {
-                    let road = &self.graph.roads[road.0];
-                    route_length += road.length_meters;
-
-                    match pos {
-                        itertools::Position::First => {
-                            snapped_pt1 = Some(if *forwards {
-                                road.linestring.0[0]
-                            } else {
-                                *road.linestring.0.last().unwrap()
-                            });
-                        }
-                        itertools::Position::Last => {
-                            snapped_pt2 = Some(if !*forwards {
-                                road.linestring.0[0]
-                            } else {
-                                *road.linestring.0.last().unwrap()
-                            });
-                        }
-                        itertools::Position::Only => {
-                            snapped_pt1 = Some(if *forwards {
-                                road.linestring.0[0]
-                            } else {
-                                *road.linestring.0.last().unwrap()
-                            });
-                            snapped_pt2 = Some(if !*forwards {
-                                road.linestring.0[0]
-                            } else {
-                                *road.linestring.0.last().unwrap()
-                            });
-                        }
-                        itertools::Position::Middle => {}
-                    }
-                }
-            }
-
-            let straight_line_length =
-                Euclidean.distance(snapped_pt1.unwrap(), snapped_pt2.unwrap());
-            if straight_line_length == 0.0 {
-                // This should never happen in practice; this was a degenerately empty route
-                continue;
-            }
-
-            let directness = route_length / straight_line_length;
+            let directness = route_length_fast(&self.graph, &quiet_route)
+                / route_length_fast(&self.graph, &direct_route);
             sum_directness += directness;
             sum_count += 1;
 
@@ -414,4 +373,15 @@ fn find_cycling_demand_thresholds(demands: &Vec<usize>) -> Result<(usize, usize)
     let medium = maxes[10 - 7];
     info!("ckmeans classes are {maxes:?}. high_demand_threshold is {high}, medium_demand_threshold is {medium}");
     Ok((high, medium))
+}
+
+// route.linestring() is more accurate, but slower
+fn route_length_fast(graph: &Graph, route: &Route) -> f64 {
+    let mut len = 0.0;
+    for step in &route.steps {
+        if let PathStep::Road { road, .. } = step {
+            len += graph.roads[road.0].length_meters;
+        }
+    }
+    len
 }
