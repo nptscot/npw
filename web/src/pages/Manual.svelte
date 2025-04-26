@@ -45,8 +45,8 @@
   <li>
     Motorways are excluded (
     <b>TODO verify</b>
-    ), because they will never be appropriate for cycling infrastructure. (We
-    may need to support new off-road segments that could be parallel.)
+    ), because they will never be appropriate for cycling infrastructure. (We may
+    need to support new off-road segments that could be parallel.)
   </li>
   <li>Most OSM highway types for roads are included</li>
   <li>Anything currently under construction is excluded</li>
@@ -73,12 +73,12 @@
   A simplifying assumption throughout NPW is that all infrastructure is <b>
     bidirectional
   </b>
-  . When you draw something along a road, it's assumed that cyclists will be
-  able to travel either direction along it,
+  . When you draw something along a road, it's assumed that cyclists will be able
+  to travel either direction along it,
   <b>even when the road is one-way for drivers</b>
-  . NPW does not care about the difference beteen two segregated cycletracks on
-  both sides of the road, versus one segregated bidirectional track on one side
-  of the road.
+  . NPW does not care about the difference beteen two segregated cycletracks on both
+  sides of the road, versus one segregated bidirectional track on one side of the
+  road.
 </p>
 
 <h3>Starting a network</h3>
@@ -104,8 +104,8 @@
   You can also start with the <b>core network</b>
   , which is a suggested network automatically produced by the NPT team.
   <b>TODO link to its methodology</b>
-  . There are many caveats with this network, so you should not just blindly
-  trust it.
+  . There are many caveats with this network, so you should not just blindly trust
+  it.
 </p>
 
 <h3>Drawing routes</h3>
@@ -158,30 +158,30 @@
 <ul>
   <li>
     <b>Mixed traffic</b>
-     follows the CbD table; speed and traffic matter
+    follows the CbD table; speed and traffic matter
   </li>
   <li>
     <b>Segregated cycletracks</b>
-     follow the table too, for "Cycle Track at Carriageway Level".
+    follow the table too, for "Cycle Track at Carriageway Level".
   </li>
   <li>
     <b>Painted cycle lanestraffic</b>
-     follow the CbD table; speed and traffic matter
+    follow the CbD table; speed and traffic matter
   </li>
   <li>
     Mixed traffic or segregated tracks <b>with traffic measures</b>
-     always achieve high LoS, by definition. This is used to model external plans
+    always achieve high LoS, by definition. This is used to model external plans
     that NPW doesn't know about to reduce traffic volume and/or speed to the level
     that makes mixed traffic or a segregated track appropriate.
   </li>
   <li>
     <b>Off-road</b>
-     routes are high LoS by definition, because they are separated from motor vehicles.
+    routes are high LoS by definition, because they are separated from motor vehicles.
     NPW's LoS definition does not account for path surface or lighting.
   </li>
   <li>
     <b>Shared footways</b>
-     are low LoS when they are within a settlement, and high when they're out.
+    are low LoS when they are within a settlement, and high when they're out.
   </li>
 </ul>
 
@@ -217,9 +217,9 @@
 
 <p>
   <b>TODO</b>
-  . For each layer, list the data sources, limits, etc. Maybe some of this info
-  should get inlined as help in the app too. For example for greenspaces, which
-  are included? How do we determine attractive streets?
+  . For each layer, list the data sources, limits, etc. Maybe some of this info should
+  get inlined as help in the app too. For example for greenspaces, which are included?
+  How do we determine attractive streets?
 </p>
 
 <h3>Reachability</h3>
@@ -229,7 +229,7 @@
   (school, hospital or GP, or greenspace) are <b>reachable</b>
   from your network.
   <b>TODO</b>
-   discuss what this means, using the audit doc. Be careful about disconnectd networks.
+  discuss what this means, using the audit doc. Be careful about disconnectd networks.
 </p>
 
 <h3>Cycling demand</h3>

@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { Loading } from "svelte-utils";
   import { BackLink } from "../common";
   import { SplitComponent } from "../common/layout";
   import {
+    backend,
     lastUpdateSlowStats,
     mode,
     mutationCounter,
@@ -14,7 +16,24 @@
   import ODBreakdowns from "./ODBreakdowns.svelte";
   import Population from "./Population.svelte";
   import Streetspace from "./Streetspace.svelte";
+
+  let loading = "";
+
+  async function checkDirectness() {
+    if (!$slowStats || $lastUpdateSlowStats != $mutationCounter) {
+      loading = "Recalculating directness";
+      $slowStats = await $backend!.recalculateSlowStats();
+      $lastUpdateSlowStats = $mutationCounter;
+      loading = "";
+    }
+    $mode = {
+      kind: "evaluate-journey",
+      browse: $slowStats.worst_directness_routes,
+    };
+  }
 </script>
+
+<Loading {loading} />
 
 <SplitComponent>
   <svelte:fragment slot="controls">
@@ -95,20 +114,11 @@
           </button>
         </div>
 
-        {#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
-          <div>
-            <button
-              class="ds_button"
-              on:click={() =>
-                ($mode = {
-                  kind: "evaluate-journey",
-                  browse: $slowStats.worst_directness_routes,
-                })}
-            >
-              Check journeys used to calculate directness
-            </button>
-          </div>
-        {/if}
+        <div>
+          <button class="ds_button" on:click={checkDirectness}>
+            Check journeys used to calculate directness
+          </button>
+        </div>
       {:else if $subpage == "report"}
         <FinalReport />
       {:else if $subpage == "disconnected"}
