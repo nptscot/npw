@@ -1,5 +1,6 @@
 <script lang="ts">
   import { QualitativeLegend, SequentialLegend } from "svelte-utils";
+  import { subpage } from "../../assess";
   import {
     cnTierColors,
     deprived,
@@ -19,6 +20,7 @@
   import { Checkbox, HelpButton } from "../../common";
   import {
     backgroundLayer,
+    currentStage,
     devMode,
     editModeBreakdown,
     mode,
@@ -47,12 +49,18 @@
     "#FF00C5",
   ];
 
+  $: directnessNetwork =
+    $mode.kind == "main" &&
+    $currentStage == "assessment" &&
+    $subpage == "directness-network";
+
   $: anyEnabled =
     !["off", "attractive", "disconnections"].includes($backgroundLayer) ||
     $cyclingDemandHigh ||
     $cyclingDemandMedium ||
     $mode.kind == "edit-route" ||
-    $gridMeshDensity;
+    $gridMeshDensity ||
+    directnessNetwork;
 </script>
 
 <div class="panel" class:hidden={!anyEnabled}>
@@ -236,6 +244,11 @@
       colorScale={meshDensity.colorScale}
       limits={meshDensity.legendLimits}
     />
+  {/if}
+
+  {#if directnessNetwork}
+    <b>Level of Service</b>
+    <QualitativeLegend colors={levelOfServiceLegend} />
   {/if}
 </div>
 

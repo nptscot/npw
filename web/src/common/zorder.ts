@@ -119,6 +119,8 @@ const layerZorder = [
   "eval-car-route",
   "eval-quiet-bike-route",
 
+  "directness-network",
+
   "draw-rectangle-fill",
   "draw-rectangle-outline",
 

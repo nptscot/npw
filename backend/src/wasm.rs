@@ -503,6 +503,16 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = getTownCentreRoutes)]
+    pub fn get_town_centre_routes_wasm(&mut self) -> Result<String, JsValue> {
+        let mut timer = Timer::new("recalculate quiet router", None);
+        if !self.quiet_router_ok {
+            self.recalculate_quiet_router(&mut timer);
+        }
+
+        self.get_town_centre_routes().map_err(err_to_js)
+    }
+
     fn to_mercator(&self, pt: &mut [f64; 2]) {
         let c: Coord = Coord { x: pt[0], y: pt[1] };
         let out = self.graph.mercator.pt_to_mercator(c);

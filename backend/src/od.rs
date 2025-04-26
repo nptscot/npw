@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use anyhow::Result;
 use enum_map::EnumMap;
@@ -291,6 +291,58 @@ impl MapModel {
         self.high_demand_threshold = high_demand_threshold;
         self.medium_demand_threshold = medium_demand_threshold;
         Ok(())
+    }
+
+    pub fn get_town_centre_routes(&self) -> Result<String> {
+        assert!(self.quiet_router_ok);
+        let quiet_profile = self.graph.profile_names["bicycle_quiet"];
+        let direct_profile = self.graph.profile_names["bicycle_direct"];
+        let mut quiet_roads = HashSet::new();
+        let mut direct_roads = HashSet::new();
+
+        for (input_pt1, input_pt2) in self.get_town_centre_od() {
+            let start = self.graph.snap_to_road(input_pt1, quiet_profile);
+            let end = self.graph.snap_to_road(input_pt2, quiet_profile);
+
+            if let Ok(quiet_route) =
+                self.graph.routers[quiet_profile.0].route(&self.graph, start, end)
+            {
+                for step in quiet_route.steps {
+                    if let PathStep::Road { road, .. } = step {
+                        quiet_roads.insert(road);
+                    }
+                }
+            }
+
+            if let Ok(direct_route) =
+                self.graph.routers[direct_profile.0].route(&self.graph, start, end)
+            {
+                for step in direct_route.steps {
+                    if let PathStep::Road { road, .. } = step {
+                        direct_roads.insert(road);
+                    }
+                }
+            }
+        }
+
+        let mut features = Vec::new();
+        for (idx, road) in self.graph.roads.iter().enumerate() {
+            let direct = direct_roads.contains(&RoadID(idx));
+            let quiet = quiet_roads.contains(&RoadID(idx));
+            if direct || quiet {
+                let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
+                f.set_property("direct", direct);
+                f.set_property("quiet", quiet);
+                f.set_property("los", serde_json::to_value(&self.los[idx])?);
+                features.push(f);
+            }
+        }
+
+        Ok(serde_json::to_string(&FeatureCollection {
+            features,
+            bbox: None,
+            foreign_members: None,
+        })?)
     }
 }
 

@@ -213,6 +213,11 @@ export type AutosplitRoute = FeatureCollection<
   }
 >;
 
+export type TownCentreRoutes = FeatureCollection<
+  LineString,
+  { direct: boolean; quiet: boolean; los: string }
+>;
+
 export type PoiKind =
   | "schools"
   | "gp_hospitals"

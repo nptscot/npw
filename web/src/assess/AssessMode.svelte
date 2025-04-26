@@ -9,6 +9,8 @@
     mutationCounter,
     slowStats,
   } from "../stores";
+  import DirectnessNetworkControls from "./DirectnessNetworkControls.svelte";
+  import DirectnessNetworkMap from "./DirectnessNetworkMap.svelte";
   import Disconnections from "./Disconnections.svelte";
   import FinalReport from "./FinalReport.svelte";
   import { subpage } from "./index";
@@ -119,6 +121,15 @@
             Check journeys used to calculate directness
           </button>
         </div>
+
+        <div>
+          <button
+            class="ds_button"
+            on:click={() => ($subpage = "directness-network")}
+          >
+            Check directness network
+          </button>
+        </div>
       {:else if $subpage == "report"}
         <FinalReport />
       {:else if $subpage == "disconnected"}
@@ -131,8 +142,16 @@
         <Population />
       {:else if $subpage == "calculated-routes"}
         <ODBreakdowns />
+      {:else if $subpage == "directness-network"}
+        <DirectnessNetworkControls />
       {/if}
     </div>
+  </svelte:fragment>
+
+  <svelte:fragment slot="map">
+    {#if $subpage == "directness-network"}
+      <DirectnessNetworkMap />
+    {/if}
   </svelte:fragment>
 </SplitComponent>
 

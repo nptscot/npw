@@ -27,6 +27,7 @@ import type {
   StaticRoad,
   Stats,
   Tier,
+  TownCentreRoutes,
   TownCentres,
   Waypoint,
 } from "./types";
@@ -355,6 +356,13 @@ export class Backend {
   async getMajorJunctions(): Promise<FeatureCollection> {
     this.start();
     let result = await this.inner.getMajorJunctions();
+    this.stop();
+    return result;
+  }
+
+  async getTownCentreRoutes(): Promise<TownCentreRoutes> {
+    this.start();
+    let result = await this.inner.getTownCentreRoutes();
     this.stop();
     return result;
   }

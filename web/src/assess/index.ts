@@ -7,5 +7,8 @@ type Subpage =
   | "mesh-density"
   | "streetspace"
   | "population"
-  | "calculated-routes";
+  | "calculated-routes"
+  | "directness-network";
 export let subpage: Writable<Subpage> = writable("overview");
+
+export let showDirectness: Writable<"direct" | "quiet"> = writable("quiet");

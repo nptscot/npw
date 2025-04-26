@@ -27,6 +27,7 @@ import type {
   StaticRoad,
   Stats,
   Tier,
+  TownCentreRoutes,
   TownCentres,
   Waypoint,
 } from "./types";
@@ -291,6 +292,11 @@ export class InnerBackend {
   getMajorJunctions(): FeatureCollection {
     this.checkReady();
     return JSON.parse(this.inner!.getMajorJunctions());
+  }
+
+  getTownCentreRoutes(): TownCentreRoutes {
+    this.checkReady();
+    return JSON.parse(this.inner!.getTownCentreRoutes());
   }
 
   private checkReady() {
