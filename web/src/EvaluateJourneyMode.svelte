@@ -17,7 +17,7 @@
   import { Checkbox, layerId, prettyPrintDistance } from "./common";
   import { SplitComponent } from "./common/layout";
   import RelevantLayers from "./layers/RelevantLayers.svelte";
-  import { backend, mode, routeA, routeB } from "./stores";
+  import { backend, map, mode, routeA, routeB } from "./stores";
   import type { RouteGJ, Step, WorstRoutes } from "./types";
 
   export let browse: WorstRoutes;
@@ -62,6 +62,13 @@
     $routeB = { lng: route[1].x, lat: route[1].y };
     // Reactivity not working for some reason
     update($routeA, $routeB, breakdown);
+
+    // TODO Ideally fit everything
+    if ($map) {
+      $map.easeTo({
+        center: [route[0].x, route[0].y],
+      });
+    }
   }
   $: updateBrowse(currentBrowse);
 
@@ -110,7 +117,11 @@
   <svelte:fragment slot="controls">
     <div class="main-controls">
       <header class="ds_page-header">
-        <h2 class="ds_page-header__title">Evaluate a journey</h2>
+        {#if browse.length > 0}
+          <h2 class="ds_page-header__title">Assess directness</h2>
+        {:else}
+          <h2 class="ds_page-header__title">Evaluate a journey</h2>
+        {/if}
       </header>
 
       <div>
