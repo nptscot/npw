@@ -211,8 +211,7 @@ impl MapModel {
         Ok(route.to_gj(id))
     }
 
-    /// Returns the number of edits
-    pub fn import_existing_routes(&mut self, only_some_infra_types: bool) -> usize {
+    pub fn import_existing_routes(&mut self, only_some_infra_types: bool) {
         let used_roads = self.used_roads();
         let mut imports = Vec::new();
         for (idx, road) in self.graph.roads.iter().enumerate() {
@@ -257,11 +256,10 @@ impl MapModel {
             imports.push((road_id, infra_type, tier));
         }
 
-        self.import_roads(imports)
+        self.import_roads(imports);
     }
 
-    /// Returns the number of edits
-    pub fn import_core_network(&mut self) -> usize {
+    pub fn import_core_network(&mut self) {
         let used_roads = self.used_roads();
         let mut imports = Vec::new();
 
@@ -275,7 +273,32 @@ impl MapModel {
             }
         }
 
-        self.import_roads(imports)
+        self.import_roads(imports);
+    }
+
+    pub fn import_main_roads(&mut self) {
+        let used_roads = self.used_roads();
+        let mut imports = Vec::new();
+
+        for idx in 0..self.graph.roads.len() {
+            let road_id = RoadID(idx);
+            if used_roads.contains(&road_id) {
+                continue;
+            }
+            if self.highways[idx].is_main_road() {
+                imports.push((
+                    road_id,
+                    self.best_infra_type(road_id),
+                    if self.within_settlement[idx] {
+                        Tier::Primary
+                    } else {
+                        Tier::LongDistance
+                    },
+                ));
+            }
+        }
+
+        self.import_roads(imports);
     }
 
     /// Split a route into sections, returning a FeatureCollection
@@ -417,7 +440,7 @@ impl MapModel {
         Ok(())
     }
 
-    fn import_roads(&mut self, imports: Vec<(RoadID, InfraType, Tier)>) -> usize {
+    fn import_roads(&mut self, imports: Vec<(RoadID, InfraType, Tier)>) {
         let used_roads = self.used_roads();
 
         // Create individual segments to import
@@ -440,7 +463,6 @@ impl MapModel {
         // TODO Could try more aggressive joining after this, but this one seems to work fine so
         // far. Although oddly it seems to handle more than just degree 2...
         pieces = crate::join_lines::collapse_degree_2(pieces);
-        let changes = pieces.len();
 
         for line in pieces {
             let (infra_type, tier, _) = line.key;
@@ -476,7 +498,6 @@ impl MapModel {
         }
 
         self.recalculate_after_edits();
-        changes
     }
 
     fn used_roads(&self) -> HashSet<RoadID> {

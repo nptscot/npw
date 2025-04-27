@@ -363,13 +363,18 @@ impl MapModel {
 
     /// true means only import some infra types, false means import anything achieving good LoS
     #[wasm_bindgen(js_name = importExistingRoutes)]
-    pub fn import_existing_routes_wasm(&mut self, only_some_infra_types: bool) -> usize {
-        self.import_existing_routes(only_some_infra_types)
+    pub fn import_existing_routes_wasm(&mut self, only_some_infra_types: bool) {
+        self.import_existing_routes(only_some_infra_types);
     }
 
     #[wasm_bindgen(js_name = importCoreNetwork)]
-    pub fn import_core_network_wasm(&mut self) -> usize {
-        self.import_core_network()
+    pub fn import_core_network_wasm(&mut self) {
+        self.import_core_network();
+    }
+
+    #[wasm_bindgen(js_name = importMainRoads)]
+    pub fn import_main_roads_wasm(&mut self) {
+        self.import_main_roads();
     }
 
     // TODO Except greenspaces

@@ -22,7 +22,8 @@
   let useCN = false;
   let useExistingSomeTypes = false;
   let useExistingHighLoS = false;
-  $: reimport(useCN, useExistingSomeTypes, useExistingHighLoS);
+  let useMainRoads = false;
+  $: reimport(useCN, useExistingSomeTypes, useExistingHighLoS, useMainRoads);
 
   async function newFile() {
     setCurrentFile(name);
@@ -35,6 +36,7 @@
     useCN: boolean,
     useExistingSomeTypes: boolean,
     useExistingHighLoS: boolean,
+    useMainRoads: boolean,
   ) {
     loading = "Loading network for preview";
     await $backend!.clearAllRoutes();
@@ -47,6 +49,9 @@
     }
     if (useExistingHighLoS) {
       await $backend!.importExistingRoutes("los");
+    }
+    if (useMainRoads) {
+      await $backend!.importMainRoads();
     }
 
     $mutationCounter += 1;
@@ -106,6 +111,8 @@
   </Checkbox>
 
   <Checkbox bind:checked={useCN}>Core network</Checkbox>
+
+  <Checkbox bind:checked={useMainRoads}>All main roads</Checkbox>
 </div>
 
 <!--<p>Or clone from your existing projects</p>-->
@@ -116,7 +123,7 @@
   class="ds_button"
   disabled={name.length == 0 ||
     usedFiles.has(name) ||
-    !(useExistingSomeTypes || useExistingHighLoS || useCN)}
+    !(useExistingSomeTypes || useExistingHighLoS || useCN || useMainRoads)}
   on:click={newFile}
 >
   Start designing from existing layers

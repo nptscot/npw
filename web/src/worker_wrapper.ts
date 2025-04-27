@@ -230,19 +230,24 @@ export class Backend {
   }
 
   // Needs loading screen
-  async importExistingRoutes(kind: "infra-type" | "los"): Promise<number> {
+  async importExistingRoutes(kind: "infra-type" | "los") {
     this.start();
-    let result = await this.inner.importExistingRoutes(kind);
+    await this.inner.importExistingRoutes(kind);
     this.stop();
-    return result;
   }
 
   // Needs loading screen
-  async importCoreNetwork(): Promise<number> {
+  async importCoreNetwork() {
     this.start();
-    let result = await this.inner.importCoreNetwork();
+    await this.inner.importCoreNetwork();
     this.stop();
-    return result;
+  }
+
+  // Needs loading screen
+  async importMainRoads() {
+    this.start();
+    await this.inner.importMainRoads();
+    this.stop();
   }
 
   async loadSavefile(contents: string) {

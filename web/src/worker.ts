@@ -204,15 +204,21 @@ export class InnerBackend {
   }
 
   // Needs loading screen
-  importExistingRoutes(kind: "infra-type" | "los"): number {
+  importExistingRoutes(kind: "infra-type" | "los") {
     this.checkReady();
-    return this.inner!.importExistingRoutes(kind == "infra-type");
+    this.inner!.importExistingRoutes(kind == "infra-type");
   }
 
   // Needs loading screen
-  importCoreNetwork(): number {
+  importCoreNetwork() {
     this.checkReady();
-    return this.inner!.importCoreNetwork();
+    this.inner!.importCoreNetwork();
+  }
+
+  // Needs loading screen
+  importMainRoads() {
+    this.checkReady();
+    this.inner!.importMainRoads();
   }
 
   loadSavefile(contents: string) {
