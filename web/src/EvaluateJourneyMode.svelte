@@ -26,7 +26,7 @@
   let gj: RouteGJ | null = null;
   let err = "";
   let breakdown: "" | "los" | "infra_type" | "gradient" = "los";
-  let showQuietBikeRoute = false;
+  let showQuietBikeRoute = browse.length > 0;
   let showCarRoute = false;
 
   async function update(
