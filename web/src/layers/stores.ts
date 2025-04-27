@@ -15,6 +15,7 @@ export let settlements = writable(false);
 
 export let gridMeshDensity = writable(false);
 export let uncoveredPopulation = writable(false);
+export let townCentrePoints = writable(false);
 
 export let severances = writable(false);
 export let debugOriginalData = writable(false);

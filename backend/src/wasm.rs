@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::sync::Once;
 
-use geo::{Coord, LineString, MultiPolygon, Polygon};
+use geo::{Centroid, Coord, LineString, MultiPolygon, Polygon};
 use geojson::{Feature, FeatureCollection, Geometry};
 use graph::{RoadID, Timer};
 use serde::Deserialize;
@@ -425,6 +425,24 @@ impl MapModel {
                 .iter()
                 .enumerate()
                 .map(|(idx, x)| x.to_gj(&self.graph.mercator, roads.covers_any(&x.roads), idx))
+                .collect(),
+        })
+        .map_err(err_to_js)
+    }
+
+    #[wasm_bindgen(js_name = getTownCentrePoints)]
+    pub fn get_town_centre_points(&self) -> Result<String, JsValue> {
+        serde_json::to_string(&FeatureCollection {
+            bbox: None,
+            foreign_members: None,
+            features: self
+                .town_centres
+                .iter()
+                .map(|x| {
+                    self.graph
+                        .mercator
+                        .to_wgs84_gj(&x.polygon.centroid().unwrap())
+                })
                 .collect(),
         })
         .map_err(err_to_js)

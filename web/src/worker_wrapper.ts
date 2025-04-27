@@ -367,6 +367,13 @@ export class Backend {
     return result;
   }
 
+  async getTownCentrePoints(): Promise<FeatureCollection> {
+    this.start();
+    let result = await this.inner.getTownCentrePoints();
+    this.stop();
+    return result;
+  }
+
   private start() {
     loadingSpinners.update((x) => {
       return x + 1;

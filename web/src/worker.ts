@@ -299,6 +299,11 @@ export class InnerBackend {
     return JSON.parse(this.inner!.getTownCentreRoutes());
   }
 
+  getTownCentrePoints(): FeatureCollection {
+    this.checkReady();
+    return JSON.parse(this.inner!.getTownCentrePoints());
+  }
+
   private checkReady() {
     if (!this.inner) {
       throw new Error("InnerBackend used without a file loaded");

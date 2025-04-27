@@ -81,6 +81,7 @@ const layerZorder = [
   "settlements-outline",
   "town-centres-fill",
   "town-centres-outline",
+  "town-centres-points",
   "greenspaces-fill",
   "greenspaces-outline",
   "greenspace-access-points",

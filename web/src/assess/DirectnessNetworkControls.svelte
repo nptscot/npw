@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   import { BackLink, Radio } from "../common";
-  import { townCentres } from "../layers/stores";
+  import { townCentrePoints } from "../layers/stores";
   import { editsRoadStyle } from "../stores";
   import { showDirectness } from "./";
   import { subpage } from "./index";
@@ -9,11 +9,11 @@
   let originalEditsStyle = $editsRoadStyle;
 
   onMount(() => {
-    $townCentres = true;
+    $townCentrePoints = true;
     $editsRoadStyle = "off";
   });
   onDestroy(() => {
-    $townCentres = false;
+    $townCentrePoints = false;
     $editsRoadStyle = originalEditsStyle;
   });
 </script>

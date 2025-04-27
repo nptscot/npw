@@ -6,6 +6,7 @@
   import NetworkDisconnections from "./roads/NetworkDisconnections.svelte";
   import Roads from "./roads/Roads.svelte";
   import Settlements from "./Settlements.svelte";
+  import TownCentrePoints from "./TownCentrePoints.svelte";
   import TownCentres from "./TownCentres.svelte";
   import UncoveredPopulation from "./UncoveredPopulation.svelte";
 </script>
@@ -33,3 +34,4 @@
 <GridMeshDensity />
 <NetworkDisconnections />
 <UncoveredPopulation />
+<TownCentrePoints />
