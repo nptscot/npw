@@ -9,7 +9,14 @@
   } from "chart.js";
   import { onDestroy, onMount } from "svelte";
   import { Pie } from "svelte-chartjs";
-  import { infraTypeColors, levelOfServiceColors, tierColors } from "../colors";
+  import { QualitativeLegend } from "svelte-utils";
+  import {
+    infraTypeColorLegend,
+    infraTypeColors,
+    levelOfServiceColors,
+    levelOfServiceLegend,
+    tierColors,
+  } from "../colors";
   import { BackLink } from "../common";
   import {
     backend,
@@ -22,6 +29,15 @@
   import { subpage } from "./index";
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
+
+  // Don't display the legend with ChartJS; it's too hard to control
+  let options = {
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
+  };
 
   onMount(async () => {
     $backgroundLayer = "calculated_rnet";
@@ -55,60 +71,59 @@
 
 {#if $odStats && $lastUpdateOD == $mutationCounter}
   <h4>Percent of demand by level of service</h4>
-  <div style:height="300px">
-    <Pie
-      data={{
-        labels: Object.keys($odStats.od_percents_los),
-        datasets: [
-          {
-            data: Object.values($odStats.od_percents_los).map((p) => p * 100),
-            backgroundColor: Object.keys($odStats.od_percents_los).map(
-              (key) => levelOfServiceColors[key],
-            ),
-          },
-        ],
-      }}
-      options={{ responsive: true }}
-    />
-  </div>
+  <QualitativeLegend colors={levelOfServiceLegend} />
+  <Pie
+    data={{
+      labels: Object.keys($odStats.od_percents_los),
+      datasets: [
+        {
+          data: Object.values($odStats.od_percents_los).map((p) => p * 100),
+          backgroundColor: Object.keys($odStats.od_percents_los).map(
+            (key) => levelOfServiceColors[key],
+          ),
+        },
+      ],
+    }}
+    {options}
+  />
 
   <h4>Percent of demand by infrastructure type</h4>
-  <div style:height="300px">
-    <Pie
-      data={{
-        labels: Object.keys($odStats.od_percents_infra_type),
-        datasets: [
-          {
-            data: Object.values($odStats.od_percents_infra_type).map(
-              (p) => p * 100,
-            ),
-            backgroundColor: Object.keys($odStats.od_percents_infra_type).map(
-              (key) => infraTypeColors[key] || "grey",
-            ),
-          },
-        ],
-      }}
-      options={{ responsive: true }}
-    />
-  </div>
+  <QualitativeLegend
+    colors={{ ...infraTypeColorLegend, "Not on the network": "grey" }}
+  />
+  <Pie
+    data={{
+      labels: Object.keys($odStats.od_percents_infra_type),
+      datasets: [
+        {
+          data: Object.values($odStats.od_percents_infra_type).map(
+            (p) => p * 100,
+          ),
+          backgroundColor: Object.keys($odStats.od_percents_infra_type).map(
+            (key) => infraTypeColors[key] || "grey",
+          ),
+        },
+      ],
+    }}
+    {options}
+  />
 
   <h4>Percent of demand by tier</h4>
-  <div style:height="300px">
-    <Pie
-      data={{
-        labels: Object.keys($odStats.od_percents_tier),
-        datasets: [
-          {
-            data: Object.values($odStats.od_percents_tier).map((p) => p * 100),
-            backgroundColor: Object.keys($odStats.od_percents_tier).map(
-              (key) => tierColors[castTier(key)] || "grey",
-            ),
-          },
-        ],
-      }}
-      options={{ responsive: true }}
-    />
-  </div>
+  <QualitativeLegend colors={{ ...tierColors, "Not on the network": "grey" }} />
+  <Pie
+    data={{
+      labels: Object.keys($odStats.od_percents_tier),
+      datasets: [
+        {
+          data: Object.values($odStats.od_percents_tier).map((p) => p * 100),
+          backgroundColor: Object.keys($odStats.od_percents_tier).map(
+            (key) => tierColors[castTier(key)] || "grey",
+          ),
+        },
+      ],
+    }}
+    {options}
+  />
 {:else}
   <p>Recalculating...</p>
 {/if}
