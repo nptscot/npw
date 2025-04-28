@@ -79,6 +79,12 @@ Some of the metrics determine if a population zone, town centre, or POI (school,
 
 Discuss how the demand network is built -- the OD data source, the methods, the lack of gradient data, the difference from what's shown on the NPT site.
 
+Commute data from...
+
+Utility trips from...
+
+School trips excluded, because the zone-to-point isn't public data.
+
 ### Other metrics
 
 Anything else not covered, like mesh density

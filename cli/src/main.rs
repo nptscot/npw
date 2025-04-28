@@ -8,7 +8,7 @@ use clap::Parser;
 use elevation::GeoTiffElevation;
 use gdal::{vector::LayerAccess, Dataset};
 use geo::{
-    Area, BoundingRect, Buffer, Centroid, Geometry, Intersects, LineString, MultiPolygon, Point,
+    Area, BoundingRect, Buffer, Centroid, Contains, Coord, Geometry, Intersects, LineString, MultiPolygon, Point,
     Polygon, Rect,
 };
 use graph::{Graph, RoadID, Timer};
@@ -112,6 +112,13 @@ fn create(
     timer.step("loading commute desire lines");
     let commute_desire_lines =
         read_commute_desire_lines_csv("../data_prep/tmp/od_commute.csv", &zone_ids)?;
+    timer.step("loading utility desire lines");
+    let utility_desire_lines = read_utility_desire_lines_csv(
+        "../data_prep/tmp/od_utility.csv",
+        &zone_ids,
+        &graph,
+        &boundary_wgs84,
+    )?;
 
     timer.step("loading schools");
     let schools = backend::places::School::from_gj(
@@ -169,6 +176,7 @@ fn create(
         graph,
         boundary_wgs84,
         commute_desire_lines,
+        utility_desire_lines,
         schools,
         gp_hospitals,
         town_centres,
@@ -219,6 +227,44 @@ fn read_commute_desire_lines_csv(
 struct CommuteDesireLineRow {
     geo_code1: String,
     geo_code2: String,
+    count: usize,
+}
+
+fn read_utility_desire_lines_csv(
+    path: &str,
+    zone_ids: &HashMap<String, usize>,
+    graph: &Graph,
+    boundary_wgs84: &MultiPolygon,
+) -> Result<Vec<(usize, Coord, usize)>> {
+    let mut out = Vec::new();
+    for rec in csv::Reader::from_reader(File::open(path)?).deserialize() {
+        let row: UtilityDesireLineRow = rec?;
+        // Around 84k rows aren't useful
+        if row.count == 0 {
+            continue;
+        }
+        if let Some(zone1) = zone_ids.get(&row.geo_code1) {
+            let pt = Coord {
+                x: row.destination_lon,
+                y: row.destination_lat,
+            };
+            if boundary_wgs84.contains(&pt) {
+                out.push((*zone1, graph.mercator.pt_to_mercator(pt), row.count));
+            }
+        }
+    }
+    if out.is_empty() {
+        bail!("No matching commute desire lines");
+    }
+    info!("Read {} utility desire lines", out.len());
+    Ok(out)
+}
+
+#[derive(Deserialize)]
+struct UtilityDesireLineRow {
+    geo_code1: String,
+    destination_lon: f64,
+    destination_lat: f64,
     count: usize,
 }
 

@@ -6,7 +6,7 @@ extern crate log;
 use std::collections::HashMap;
 
 use enum_map::Enum;
-use geo::{Area, MultiPolygon, Point};
+use geo::{Area, Coord, MultiPolygon, Point};
 use geojson::GeoJson;
 use graph::{Graph, Intersection, IntersectionID, RoadID, Timer};
 use rstar::{primitives::GeomWithData, RTree};
@@ -50,6 +50,8 @@ pub struct MapModel {
 
     // (zone1 idx, zone2 idx, count)
     commute_desire_lines: Vec<(usize, usize, usize)>,
+    // (zone1 idx, destination (Mercator), count)
+    utility_desire_lines: Vec<(usize, Coord, usize)>,
 
     schools: Vec<places::School>,
     gp_hospitals: Vec<places::GPHospital>,
@@ -129,6 +131,7 @@ impl MapModel {
         graph: Graph,
         boundary_wgs84: MultiPolygon,
         commute_desire_lines: Vec<(usize, usize, usize)>,
+        utility_desire_lines: Vec<(usize, Coord, usize)>,
         schools: Vec<places::School>,
         gp_hospitals: Vec<places::GPHospital>,
         town_centres: Vec<places::TownCentre>,
@@ -197,6 +200,7 @@ impl MapModel {
             id_counter: 0,
             boundary_wgs84,
             commute_desire_lines,
+            utility_desire_lines,
             schools,
             gp_hospitals,
             town_centres,

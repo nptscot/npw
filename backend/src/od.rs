@@ -98,62 +98,44 @@ impl MapModel {
         }
         let profile = self.graph.profile_names[profile_name];
 
-        let mut rng = WyRand::new_seed(42);
-
         let mut counts = HashMap::new();
         let mut succeeded = 0;
         let mut failed = 0;
 
+        let (requests, total_trips) = self.get_od_requests(fast_sample);
+
         info!(
-            "Evaluating {} desire lines",
-            self.commute_desire_lines.len()
+            "Evaluating {} desire lines, representing {total_trips} trips",
+            requests.len()
         );
-        let mut total_trips = 0;
         let mut total_uptake = 0.0;
 
-        for (zone1, zone2, raw_count) in &self.commute_desire_lines {
-            total_trips += *raw_count;
-            let (iterations, uptake_multiplier) = if fast_sample {
-                (1, *raw_count as f64)
-            } else {
-                (*raw_count, 1.0)
+        for (pt1, pt2, uptake_multiplier) in requests {
+            let start = self.graph.snap_to_road(pt1, profile);
+            let end = self.graph.snap_to_road(pt2, profile);
+            let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) else {
+                failed += 1;
+                continue;
             };
+            succeeded += 1;
 
-            for _ in 0..iterations {
-                let input_pt1 = self.population_zones[*zone1].random_point(&mut rng);
-                let input_pt2 = self.population_zones[*zone2].random_point(&mut rng);
-
-                let start = self.graph.snap_to_road(input_pt1, profile);
-                let end = self.graph.snap_to_road(input_pt2, profile);
-                let Ok(route) = self.graph.routers[profile.0].route(&self.graph, start, end) else {
-                    failed += 1;
-                    continue;
-                };
-                succeeded += 1;
-
-                let mut route_length = 0.0;
-                for step in &route.steps {
-                    if let PathStep::Road { road, .. } = step {
-                        route_length += self.graph.roads[road.0].length_meters;
-                    }
+            let mut route_length = 0.0;
+            for step in &route.steps {
+                if let PathStep::Road { road, .. } = step {
+                    route_length += self.graph.roads[road.0].length_meters;
                 }
+            }
 
-                let count = uptake::pct_godutch_2020(route_length) * uptake_multiplier;
-                total_uptake += count;
-                for step in route.steps {
-                    if let PathStep::Road { road, .. } = step {
-                        *counts.entry(road).or_insert(0.0) += count;
-                    }
+            let count = uptake::pct_godutch_2020(route_length) * uptake_multiplier;
+            total_uptake += count;
+            for step in route.steps {
+                if let PathStep::Road { road, .. } = step {
+                    *counts.entry(road).or_insert(0.0) += count;
                 }
             }
         }
 
-        info!(
-            "The {} desire lines had {} total trips, with {} total uptake",
-            self.commute_desire_lines.len(),
-            total_trips,
-            total_uptake.round()
-        );
+        info!("Total uptake {}", total_uptake.round());
 
         Ok(CountsOD {
             // Round count after summing decimals
@@ -164,6 +146,43 @@ impl MapModel {
             succeeded,
             failed,
         })
+    }
+
+    fn get_od_requests(&self, fast_sample: bool) -> (Vec<(Coord, Coord, f64)>, usize) {
+        let mut rng = WyRand::new_seed(42);
+        let mut total_trips = 0;
+        let mut requests = Vec::new();
+
+        for (zone1, zone2, raw_count) in &self.commute_desire_lines {
+            total_trips += *raw_count;
+            let (iterations, uptake_multiplier) = if fast_sample {
+                (1, *raw_count as f64)
+            } else {
+                (*raw_count, 1.0)
+            };
+
+            for _ in 0..iterations {
+                let pt1 = self.population_zones[*zone1].random_point(&mut rng);
+                let pt2 = self.population_zones[*zone2].random_point(&mut rng);
+                requests.push((pt1, pt2, uptake_multiplier));
+            }
+        }
+
+        for (zone1, pt2, raw_count) in &self.utility_desire_lines {
+            total_trips += *raw_count;
+            let (iterations, uptake_multiplier) = if fast_sample {
+                (1, *raw_count as f64)
+            } else {
+                (*raw_count, 1.0)
+            };
+
+            for _ in 0..iterations {
+                let pt1 = self.population_zones[*zone1].random_point(&mut rng);
+                requests.push((pt1, *pt2, uptake_multiplier));
+            }
+        }
+
+        (requests, total_trips)
     }
 
     /// Returns detailed GJ with per-road counts
