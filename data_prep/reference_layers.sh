@@ -73,15 +73,9 @@ function gp_and_hospitals {
   # TODO Consider combining
 }
 
-function od_and_zones {
-  # Manually download https://github.com/nptscot/inputdata/releases/download/v1/desire_lines_scotland.csv from internal GH repo
-  xsv select geo_code1,geo_code2,all $1 > tmp/od.csv
-
-  # From https://spatialdata.gov.scot/geonetwork/srv/api/records/389787c0-697d-4824-9ca9-9ce8cb79d6f5
-  wget https://maps.gov.scot/ATOM/shapefiles/SG_IntermediateZoneBdry_2011.zip
-  unzip SG_IntermediateZoneBdry_2011.zip
-  ogr2ogr tmp/intermediate_zones.geojson -t_srs EPSG:4326 SG_IntermediateZone_Bdry_2011.shp -sql 'SELECT InterZone FROM SG_IntermediateZone_Bdry_2011'
-  rm -f SG_IntermediateZone_Bdry_2011*
+function od {
+  # Manually download https://github.com/nptscot/npt/releases/download/od-data-2025-05/od_commute_simple.csv from internal GH repo
+  cp $1 tmp/od_commute.csv
 }
 
 function traffic {
@@ -151,7 +145,7 @@ function greenspace {
 #schools
 #town_centres ~/Downloads/Town_Centres_-_Scotland.json
 #gp_and_hospitals ~/Downloads/GP_Practices_-_Scotland.json ~/Downloads/NHS_Hospitals_-_Scotland.json
-#od_and_zones ~/Downloads/desire_lines_scotland.csv
+#od ~/Downloads/od_commute_simple.csv
 #traffic ~/Downloads/final_estimates_Scotland_2025-04-15_correct.gpkg
 #population
 #elevation

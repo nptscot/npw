@@ -6,6 +6,7 @@ use geo::{
 };
 use geojson::Feature;
 use graph::{Graph, RoadID};
+use nanorand::{Rng, WyRand};
 use rstar::AABB;
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
@@ -347,7 +348,7 @@ struct SettlementGJ {
 #[derive(Serialize, Deserialize)]
 pub struct PopulationZone {
     polygon: MultiPolygon,
-    id: String,
+    pub id: String,
     imd_rank: usize,
     pub imd_percentile: usize,
     pub population: usize,
@@ -355,6 +356,12 @@ pub struct PopulationZone {
     area_km2: f64,
     // Relative to the study area, not all of Scotland
     density_quintile: usize,
+
+    // The bbox, rounded to centimeters, for generate_range to work
+    x1: i64,
+    y1: i64,
+    x2: i64,
+    y2: i64,
 }
 
 impl PopulationZone {
@@ -416,6 +423,11 @@ impl PopulationZone {
                     area_km2,
                     roads,
                     density_quintile: 0,
+
+                    x1: (bbox.min().x * 100.0) as i64,
+                    y1: (bbox.min().y * 100.0) as i64,
+                    x2: (bbox.max().x * 100.0) as i64,
+                    y2: (bbox.max().y * 100.0) as i64,
                 });
 
                 densities.push(((x.population as f64) / area_km2) as usize);
@@ -430,6 +442,17 @@ impl PopulationZone {
 
         info!("Matched {} population zones", zones.len());
         Ok(zones)
+    }
+
+    pub fn random_point(&self, rng: &mut WyRand) -> Coord {
+        loop {
+            let x = (rng.generate_range(self.x1..=self.x2) as f64) / 100.0;
+            let y = (rng.generate_range(self.y1..=self.y2) as f64) / 100.0;
+            let pt = Coord { x, y };
+            if self.polygon.contains(&pt) {
+                return pt;
+            }
+        }
     }
 }
 

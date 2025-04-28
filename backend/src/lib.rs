@@ -48,9 +48,8 @@ pub struct MapModel {
 
     boundary_wgs84: MultiPolygon,
 
-    od_zones: HashMap<String, od::Zone>,
-    // TODO Use more compact encoding for zone names
-    desire_lines: Vec<(String, String, usize)>,
+    // (zone1 idx, zone2 idx, count)
+    commute_desire_lines: Vec<(usize, usize, usize)>,
 
     schools: Vec<places::School>,
     gp_hospitals: Vec<places::GPHospital>,
@@ -129,8 +128,7 @@ impl MapModel {
     pub fn create(
         graph: Graph,
         boundary_wgs84: MultiPolygon,
-        od_zones: HashMap<String, od::Zone>,
-        desire_lines: Vec<(String, String, usize)>,
+        commute_desire_lines: Vec<(usize, usize, usize)>,
         schools: Vec<places::School>,
         gp_hospitals: Vec<places::GPHospital>,
         town_centres: Vec<places::TownCentre>,
@@ -198,8 +196,7 @@ impl MapModel {
             routes: HashMap::new(),
             id_counter: 0,
             boundary_wgs84,
-            od_zones,
-            desire_lines,
+            commute_desire_lines,
             schools,
             gp_hospitals,
             town_centres,

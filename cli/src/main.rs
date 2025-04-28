@@ -97,15 +97,21 @@ fn create(
     )?;
     let boundary_wgs84 = read_multipolygon(boundary_gj)?;
 
-    timer.step("loading OD zones");
-    let od_zones = backend::od::Zone::parse_zones(
-        std::fs::read_to_string("../data_prep/tmp/intermediate_zones.geojson")?,
+    timer.step("loading population zones");
+    let population_zones = backend::places::PopulationZone::from_gj(
+        &std::fs::read_to_string("../data_prep/tmp/population.geojson")?,
         &boundary_wgs84,
-        &graph.mercator,
+        &graph,
     )?;
+    let zone_ids: HashMap<String, usize> = population_zones
+        .iter()
+        .enumerate()
+        .map(|(idx, zone)| (zone.id.clone(), idx))
+        .collect();
 
-    timer.step("loading desire lines");
-    let desire_lines = read_desire_lines_csv("../data_prep/tmp/od.csv", &od_zones)?;
+    timer.step("loading commute desire lines");
+    let commute_desire_lines =
+        read_commute_desire_lines_csv("../data_prep/tmp/od_commute.csv", &zone_ids)?;
 
     timer.step("loading schools");
     let schools = backend::places::School::from_gj(
@@ -136,13 +142,6 @@ fn create(
         &graph,
     )?;
 
-    timer.step("loading population zones");
-    let population_zones = backend::places::PopulationZone::from_gj(
-        &std::fs::read_to_string("../data_prep/tmp/population.geojson")?,
-        &boundary_wgs84,
-        &graph,
-    )?;
-
     timer.step("loading greenspaces");
     let greenspaces = read_greenspaces(
         "../data_prep/tmp/greenspace.gpkg",
@@ -169,8 +168,7 @@ fn create(
     Ok(MapModel::create(
         graph,
         boundary_wgs84,
-        od_zones,
-        desire_lines,
+        commute_desire_lines,
         schools,
         gp_hospitals,
         town_centres,
@@ -198,28 +196,30 @@ fn read_multipolygon(gj_string: &str) -> Result<MultiPolygon> {
     }
 }
 
-fn read_desire_lines_csv(
+fn read_commute_desire_lines_csv(
     path: &str,
-    zones: &HashMap<String, backend::od::Zone>,
-) -> Result<Vec<(String, String, usize)>> {
+    zone_ids: &HashMap<String, usize>,
+) -> Result<Vec<(usize, usize, usize)>> {
     let mut out = Vec::new();
     for rec in csv::Reader::from_reader(File::open(path)?).deserialize() {
-        let row: DesireLineRow = rec?;
-        if zones.contains_key(&row.geo_code1) && zones.contains_key(&row.geo_code2) {
-            out.push((row.geo_code1, row.geo_code2, row.all));
+        let row: CommuteDesireLineRow = rec?;
+        if let (Some(zone1), Some(zone2)) =
+            (zone_ids.get(&row.geo_code1), zone_ids.get(&row.geo_code2))
+        {
+            out.push((*zone1, *zone2, row.count));
         }
     }
     if out.is_empty() {
-        bail!("No matching desire lines");
+        bail!("No matching commute desire lines");
     }
     Ok(out)
 }
 
 #[derive(Deserialize)]
-struct DesireLineRow {
+struct CommuteDesireLineRow {
     geo_code1: String,
     geo_code2: String,
-    all: usize,
+    count: usize,
 }
 
 fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<usize>> {

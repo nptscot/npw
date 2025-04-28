@@ -2,12 +2,11 @@ use std::collections::{HashMap, HashSet};
 
 use anyhow::Result;
 use enum_map::EnumMap;
-use geo::{BoundingRect, Centroid, Contains, Coord, Distance, Euclidean, Intersects, MultiPolygon};
-use geojson::{FeatureCollection, Value};
+use geo::{Centroid, Coord, Distance, Euclidean};
+use geojson::FeatureCollection;
 use graph::{Graph, PathStep, RoadID, Route, Timer};
-use nanorand::{Rng, WyRand};
+use nanorand::WyRand;
 use serde::{Deserialize, Serialize};
-use utils::Mercator;
 
 use crate::{
     stats::percent, uptake, utils::into_object_value, InfraType, LevelOfService, MapModel, Tier,
@@ -105,9 +104,15 @@ impl MapModel {
         let mut succeeded = 0;
         let mut failed = 0;
 
-        info!("Evaluating {} desire lines", self.desire_lines.len());
+        info!(
+            "Evaluating {} desire lines",
+            self.commute_desire_lines.len()
+        );
+        let mut total_trips = 0;
+        let mut total_uptake = 0.0;
 
-        for (zone1, zone2, raw_count) in &self.desire_lines {
+        for (zone1, zone2, raw_count) in &self.commute_desire_lines {
+            total_trips += *raw_count;
             let (iterations, uptake_multiplier) = if fast_sample {
                 (1, *raw_count as f64)
             } else {
@@ -115,8 +120,8 @@ impl MapModel {
             };
 
             for _ in 0..iterations {
-                let input_pt1 = self.od_zones[zone1].random_point(&mut rng);
-                let input_pt2 = self.od_zones[zone2].random_point(&mut rng);
+                let input_pt1 = self.population_zones[*zone1].random_point(&mut rng);
+                let input_pt2 = self.population_zones[*zone2].random_point(&mut rng);
 
                 let start = self.graph.snap_to_road(input_pt1, profile);
                 let end = self.graph.snap_to_road(input_pt2, profile);
@@ -134,6 +139,7 @@ impl MapModel {
                 }
 
                 let count = uptake::pct_godutch_2020(route_length) * uptake_multiplier;
+                total_uptake += count;
                 for step in route.steps {
                     if let PathStep::Road { road, .. } = step {
                         *counts.entry(road).or_insert(0.0) += count;
@@ -141,6 +147,13 @@ impl MapModel {
                 }
             }
         }
+
+        info!(
+            "The {} desire lines had {} total trips, with {} total uptake",
+            self.commute_desire_lines.len(),
+            total_trips,
+            total_uptake.round()
+        );
 
         Ok(CountsOD {
             // Round count after summing decimals
@@ -343,72 +356,6 @@ impl MapModel {
             bbox: None,
             foreign_members: None,
         })?)
-    }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Zone {
-    pub mp: MultiPolygon,
-    // The bbox, rounded to centimeters, for generate_range to work
-    pub x1: i64,
-    pub y1: i64,
-    pub x2: i64,
-    pub y2: i64,
-}
-
-impl Zone {
-    fn random_point(&self, rng: &mut WyRand) -> Coord {
-        loop {
-            let x = (rng.generate_range(self.x1..=self.x2) as f64) / 100.0;
-            let y = (rng.generate_range(self.y1..=self.y2) as f64) / 100.0;
-            let pt = Coord { x, y };
-            if self.mp.contains(&pt) {
-                return pt;
-            }
-        }
-    }
-
-    pub fn parse_zones(
-        gj: String,
-        boundary_wgs84: &MultiPolygon,
-        mercator: &Mercator,
-    ) -> Result<HashMap<String, Zone>> {
-        let gj: FeatureCollection = gj.parse()?;
-        let mut zones = HashMap::new();
-        for f in gj.features {
-            // TODO Rename in data_prep
-            let name = f
-                .property("InterZone")
-                .unwrap()
-                .as_str()
-                .unwrap()
-                .to_string();
-            let mut mp: MultiPolygon =
-                if matches!(f.geometry.as_ref().unwrap().value, Value::Polygon(_)) {
-                    MultiPolygon(vec![f.try_into()?])
-                } else {
-                    f.try_into()?
-                };
-
-            if !boundary_wgs84.intersects(&mp) {
-                continue;
-            }
-
-            mercator.to_mercator_in_place(&mut mp);
-            let bbox = mp.bounding_rect().unwrap();
-            zones.insert(
-                name,
-                Zone {
-                    mp,
-                    x1: (bbox.min().x * 100.0) as i64,
-                    y1: (bbox.min().y * 100.0) as i64,
-                    x2: (bbox.max().x * 100.0) as i64,
-                    y2: (bbox.max().y * 100.0) as i64,
-                },
-            );
-        }
-        info!("Matched to {} zones", zones.len());
-        Ok(zones)
     }
 }
 
