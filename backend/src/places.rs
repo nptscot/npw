@@ -346,7 +346,7 @@ struct SettlementGJ {
 
 // These are data zones from the 2020 SIMD
 #[derive(Serialize, Deserialize)]
-pub struct PopulationZone {
+pub struct DataZone {
     polygon: MultiPolygon,
     pub id: String,
     imd_rank: usize,
@@ -364,7 +364,7 @@ pub struct PopulationZone {
     y2: i64,
 }
 
-impl PopulationZone {
+impl DataZone {
     pub fn to_gj(&self, mercator: &Mercator, reachable: bool) -> Feature {
         let mut f = mercator.to_wgs84_gj(&self.polygon);
         f.set_property("id", self.id.clone());
@@ -383,7 +383,7 @@ impl PopulationZone {
 
         let mut zones = Vec::new();
         let mut densities = Vec::new();
-        for x in geojson::de::deserialize_feature_collection_str_to_vec::<PopulationZoneGj>(gj)? {
+        for x in geojson::de::deserialize_feature_collection_str_to_vec::<DataZoneGj>(gj)? {
             if boundary_wgs84.intersects(&x.geometry) {
                 let polygon = graph.mercator.to_mercator(&x.geometry);
 
@@ -414,7 +414,7 @@ impl PopulationZone {
                     .collect();
 
                 let area_km2 = x.area / 10.0e6;
-                zones.push(PopulationZone {
+                zones.push(DataZone {
                     polygon,
                     id: x.id,
                     imd_rank: x.rank,
@@ -457,7 +457,7 @@ impl PopulationZone {
 }
 
 #[derive(Deserialize)]
-struct PopulationZoneGj {
+struct DataZoneGj {
     #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
     geometry: MultiPolygon,
     #[serde(rename = "DataZone")]

@@ -14,7 +14,7 @@
   });
 
   async function downloadZones() {
-    let gj = await $backend!.getPopulationZones();
+    let gj = await $backend!.getDataZones();
     downloadGeneratedFile("population_zones.geojson", JSON.stringify(gj));
   }
 </script>

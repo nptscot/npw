@@ -8,18 +8,18 @@
   import { Popup } from "svelte-utils/map";
   import { layerId } from "../common";
   import { backend, mutationCounter } from "../stores";
-  import type { PopulationZones } from "../types";
+  import type { DataZones } from "../types";
   import { uncoveredPopulation as show } from "./stores";
 
   let lastUpdate = 0;
-  let data: PopulationZones = {
+  let data: DataZones = {
     type: "FeatureCollection",
     features: [],
   };
 
   async function recalc() {
     if ($backend && lastUpdate != $mutationCounter) {
-      data = await $backend.getPopulationZones();
+      data = await $backend.getDataZones();
       lastUpdate = $mutationCounter;
     }
   }

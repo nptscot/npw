@@ -471,8 +471,8 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
-    #[wasm_bindgen(js_name = getPopulationZones)]
-    pub fn get_population_zones(&self) -> Result<String, JsValue> {
+    #[wasm_bindgen(js_name = getDataZones)]
+    pub fn get_data_zones(&self) -> Result<String, JsValue> {
         // TODO Some kind of caching would make this nicer
         let roads = self.get_reachable_network();
 
@@ -480,7 +480,7 @@ impl MapModel {
             bbox: None,
             foreign_members: None,
             features: self
-                .population_zones
+                .data_zones
                 .iter()
                 .map(|x| x.to_gj(&self.graph.mercator, roads.covers_any(&x.roads)))
                 .collect(),

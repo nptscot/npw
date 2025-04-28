@@ -162,8 +162,8 @@ impl MapModel {
             };
 
             for _ in 0..iterations {
-                let pt1 = self.population_zones[*zone1].random_point(&mut rng);
-                let pt2 = self.population_zones[*zone2].random_point(&mut rng);
+                let pt1 = self.data_zones[*zone1].random_point(&mut rng);
+                let pt2 = self.data_zones[*zone2].random_point(&mut rng);
                 requests.push((pt1, pt2, uptake_multiplier));
             }
         }
@@ -177,7 +177,7 @@ impl MapModel {
             };
 
             for _ in 0..iterations {
-                let pt1 = self.population_zones[*zone1].random_point(&mut rng);
+                let pt1 = self.data_zones[*zone1].random_point(&mut rng);
                 requests.push((pt1, *pt2, uptake_multiplier));
             }
         }

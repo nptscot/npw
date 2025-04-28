@@ -8,8 +8,8 @@ use clap::Parser;
 use elevation::GeoTiffElevation;
 use gdal::{vector::LayerAccess, Dataset};
 use geo::{
-    Area, BoundingRect, Buffer, Centroid, Contains, Coord, Geometry, Intersects, LineString, MultiPolygon, Point,
-    Polygon, Rect,
+    Area, BoundingRect, Buffer, Centroid, Contains, Coord, Geometry, Intersects, LineString,
+    MultiPolygon, Point, Polygon, Rect,
 };
 use graph::{Graph, RoadID, Timer};
 use log::{info, warn};
@@ -97,13 +97,13 @@ fn create(
     )?;
     let boundary_wgs84 = read_multipolygon(boundary_gj)?;
 
-    timer.step("loading population zones");
-    let population_zones = backend::places::PopulationZone::from_gj(
+    timer.step("loading data zones");
+    let data_zones = backend::places::DataZone::from_gj(
         &std::fs::read_to_string("../data_prep/tmp/population.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
-    let zone_ids: HashMap<String, usize> = population_zones
+    let zone_ids: HashMap<String, usize> = data_zones
         .iter()
         .enumerate()
         .map(|(idx, zone)| (zone.id.clone(), idx))
@@ -181,7 +181,7 @@ fn create(
         gp_hospitals,
         town_centres,
         settlements,
-        population_zones,
+        data_zones,
         greenspaces,
         traffic_volumes,
         core_network,
