@@ -31,7 +31,7 @@
 
 <GeoJSON {data} generateId>
   <FillLayer
-    {...layerId("uncovered-population-fill")}
+    {...layerId("uncovered-population-fill", false)}
     filter={["!", ["get", "reachable"]]}
     manageHoverState
     paint={{

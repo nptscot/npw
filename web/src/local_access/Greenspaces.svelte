@@ -58,7 +58,7 @@
 
 <GeoJSON {data} generateId>
   <FillLayer
-    {...layerId("greenspaces-fill")}
+    {...layerId("greenspaces-fill", false)}
     manageHoverState
     paint={{
       "fill-color": showGreenspaces

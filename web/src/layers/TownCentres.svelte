@@ -36,7 +36,7 @@
 
 <GeoJSON {data} generateId>
   <FillLayer
-    {...layerId("town-centres-fill")}
+    {...layerId("town-centres-fill", false)}
     manageHoverState
     paint={{
       "fill-color": ["case", ["get", "reachable"], "green", "red"],
