@@ -85,6 +85,8 @@ Utility trips from...
 
 School trips excluded, because the zone-to-point isn't public data.
 
+You may not be able to achieve 100% on the cycling demand coverage metrics in the tool. In some cases, there is high demand on parallel roads, like with dual carriageways or a more suitable street parallel to a main road. Even though you have provided an adequate route, this score literally counts coverage on a fixed set of roads.
+
 ### Other metrics
 
 Anything else not covered, like mesh density
