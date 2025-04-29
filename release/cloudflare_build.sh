@@ -15,3 +15,6 @@ cd web
 npm ci
 npm run wasm-release
 npm run build --if-present
+
+# Writes to dist/
+npm run generate-manual
