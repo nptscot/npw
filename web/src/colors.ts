@@ -67,8 +67,8 @@ export let gradientColors = {
 };
 
 export let traffic = {
-  colorScale: ["#27918d", "#ffaa33", "#440154"],
-  limits: [0, 2000, 4000, 10000],
+  colorScale: ["#86dfdc", "#27918d", "#ffaa33", "#440154"],
+  limits: [0, 1000, 2000, 4000, 10000],
 };
 
 export let speed = {

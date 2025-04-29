@@ -27,11 +27,12 @@
       "line-color": constructMatchExpression(
         ["get", "Traffic volume category"],
         {
-          "0 to 1999": "#27918d",
+          "0 to 999": "#86dfdc",
+          "1000 to 1999": "#27918d",
           "2000 to 3999": "#ffaa33",
           "4000+": "#440154",
         },
-        "cyan",
+        "red",
       ),
       "line-width": roadLineWidth(0),
     }}

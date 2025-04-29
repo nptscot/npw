@@ -196,6 +196,19 @@
   function castInfraType(x: string): InfraType {
     return x as InfraType;
   }
+
+  // Don't expose exact traffic counts
+  function trafficGroup(x: number): string {
+    if (x < 1000) {
+      return "0 to 999";
+    } else if (x < 2000) {
+      return "1000 to 1999";
+    } else if (x < 4000) {
+      return "2000 to 3999";
+    } else {
+      return "4000+";
+    }
+  }
 </script>
 
 <LineLayer
@@ -226,7 +239,7 @@
         Is next to greenspace? <b>{props.is_attractive ? "yes" : "no"}</b>
       </p>
       <p>
-        Traffic: <b>{props.traffic.toLocaleString()}</b>
+        Traffic: <b>{trafficGroup(props.traffic)}</b>
       </p>
       <p>
         Gradient: <b>{props.gradient.toFixed(1)}%</b>
