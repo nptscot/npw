@@ -28,6 +28,8 @@
   import DisableInteractiveLayers from "../common/DisableInteractiveLayers.svelte";
   import { getKey } from "../common/files";
   import { controlsContents, Layout, mapContents } from "../common/layout";
+  import ReportProblemMap from "../common/ReportProblemMap.svelte";
+  import ReportProblemModal from "../common/ReportProblemModal.svelte";
   import StreetView from "../common/StreetView.svelte";
   import EditRouteMode from "../edit/EditRouteMode.svelte";
   import EvaluateJourneyMode from "../EvaluateJourneyMode.svelte";
@@ -225,6 +227,9 @@
   </header>
   <main slot="controls">
     <div class="controlsDiv" bind:this={controlsDiv} />
+    {#if $backend}
+      <ReportProblemModal />
+    {/if}
   </main>
 
   <main slot="map" class="map-container">
@@ -257,6 +262,7 @@
         {#if $currentStage != "LocalAccess"}
           <StreetView />
         {/if}
+        <ReportProblemMap />
 
         <div bind:this={mapDiv} />
 

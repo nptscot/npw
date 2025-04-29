@@ -86,6 +86,7 @@ export let interactiveMapLayersEnabled = writable(true);
 
 export let remoteStorage = writable(true);
 export let devMode = writable(import.meta.env.MODE == "development");
+export let showReportProblem = writable(false);
 
 export let stats: Writable<Stats | null> = writable(null);
 export let slowStats: Writable<SlowStats | null> = writable(null);
