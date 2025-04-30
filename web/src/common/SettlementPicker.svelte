@@ -8,7 +8,7 @@
       return;
     }
     let bounds: [number, number, number, number] = JSON.parse(value);
-    $map?.fitBounds(bounds);
+    $map?.fitBounds(bounds, { padding: 20, duration: 2000 });
   }
 </script>
 
