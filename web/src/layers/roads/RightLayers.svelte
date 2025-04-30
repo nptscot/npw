@@ -72,7 +72,7 @@
     <ul>
       <Toggle name="Level of Service" style="los" icon="fa-face-smile" />
       <Toggle
-        name="Reachability"
+        name="Severances"
         style="reachability"
         icon="fa-link"
         relevant={showRelevant && $currentStage == "LocalAccess"}

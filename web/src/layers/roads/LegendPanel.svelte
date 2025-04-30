@@ -209,8 +209,9 @@
       </Checkbox>
     {/if}
   {:else if $backgroundLayer == "reachability"}
-    <b>Reachability</b>
-    <QualitativeLegend labelColors={reachabilityColors} />
+    <b>Severances</b>
+    <QualitativeLegend itemsPerRow={1} labelColors={reachabilityColors} />
+    <p>Based on estimated traffic volumes and speeds</p>
   {/if}
 
   <CalculatedRouteNetwork />
