@@ -249,7 +249,7 @@
       </p>
       {#if props.cn}
         <p>
-          Core network tier: <b>{props.cn}</b>
+          Coherent network tier: <b>{props.cn}</b>
         </p>
       {/if}
       {#if props.existing_infra}

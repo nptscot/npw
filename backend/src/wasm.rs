@@ -375,9 +375,9 @@ impl MapModel {
         self.import_existing_routes(only_some_infra_types);
     }
 
-    #[wasm_bindgen(js_name = importCoreNetwork)]
-    pub fn import_core_network_wasm(&mut self) {
-        self.import_core_network();
+    #[wasm_bindgen(js_name = importCoherentNetwork)]
+    pub fn import_coherent_network_wasm(&mut self) {
+        self.import_coherent_network();
     }
 
     #[wasm_bindgen(js_name = importMainRoads)]

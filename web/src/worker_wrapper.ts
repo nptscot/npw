@@ -238,9 +238,9 @@ export class Backend {
   }
 
   // Needs loading screen
-  async importCoreNetwork() {
+  async importCoherentNetwork() {
     this.start();
-    await this.inner.importCoreNetwork();
+    await this.inner.importCoherentNetwork();
     this.stop();
   }
 

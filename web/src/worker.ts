@@ -211,9 +211,9 @@ export class InnerBackend {
   }
 
   // Needs loading screen
-  importCoreNetwork() {
+  importCoherentNetwork() {
     this.checkReady();
-    this.inner!.importCoreNetwork();
+    this.inner!.importCoherentNetwork();
   }
 
   // Needs loading screen

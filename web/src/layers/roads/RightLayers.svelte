@@ -27,7 +27,7 @@
 <div class="panel">
   <h3>Background layers</h3>
   <ul>
-    <Toggle name="Core network" style="cn" icon="fa-person-biking" />
+    <Toggle name="Coherent network" style="cn" icon="fa-person-biking" />
     <Toggle
       name="Existing infrastructure"
       style="existing_infra"

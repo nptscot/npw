@@ -173,7 +173,8 @@ fn create(
 
     let traffic_volumes = read_traffic_volumes("../data_prep/tmp/traffic.gpkg", &graph, timer)?;
 
-    let core_network = read_core_network("../data_prep/tmp/core_network.gpkg", &graph, timer)?;
+    let coherent_network =
+        read_coherent_network("../data_prep/tmp/coherent_network.gpkg", &graph, timer)?;
 
     let street_space = read_street_space("../data_prep/tmp/streetspace.gpkg", &graph, timer)?;
 
@@ -199,7 +200,7 @@ fn create(
         settlements,
         data_zones,
         traffic_volumes,
-        core_network,
+        coherent_network,
         street_space,
         is_attractive,
         gradients,
@@ -431,10 +432,14 @@ fn read_gradients(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<f6
     Ok(gradients)
 }
 
-// The output is per road. If the road is part of the core network, what tier is it?
-fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<Option<Tier>>> {
+// The output is per road. If the road is part of the coherent network, what tier is it?
+fn read_coherent_network(
+    path: &str,
+    graph: &Graph,
+    timer: &mut Timer,
+) -> Result<Vec<Option<Tier>>> {
     // Read all relevant lines
-    timer.step("read core network");
+    timer.step("read coherent network");
     let dataset = Dataset::open(path)?;
     let mut layer = dataset.layer(0)?;
     let b = &graph.mercator.wgs84_bounds;
@@ -471,11 +476,11 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
                     source_data.push(tier);
                 }
             }
-            _ => bail!("read_core_network found something besides a LS or MLS"),
+            _ => bail!("read_coherent_network found something besides a LS or MLS"),
         }
     }
 
-    timer.step("match core network");
+    timer.step("match coherent network");
     let distance_tolerance = 15.0;
     let angle_tolerance = 10.0;
     let matches = Anime::new(
@@ -490,8 +495,8 @@ fn read_core_network(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec
 
     let mut results = Vec::new();
     for (idx, road) in graph.roads.iter().enumerate() {
-        // The core network can never be on the motorway, but in Glasgow, it's hard to distinguish
-        // some of the parallel roads
+        // The coherent network can never be on the motorway, but in Glasgow, it's hard to
+        // distinguish some of the parallel roads
         if matches!(
             Highway::classify(&road.osm_tags).unwrap(),
             Highway::Motorway

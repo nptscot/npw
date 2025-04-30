@@ -114,7 +114,7 @@
   />
 </VectorTileSource>
 
-<VectorTileSource url={`pmtiles://${assetUrl("core_network.pmtiles")}`}>
+<VectorTileSource url={`pmtiles://${assetUrl("coherent_network.pmtiles")}`}>
   <LineLayer
     {...layerId("cn-debug")}
     sourceLayer="coherent_networks"

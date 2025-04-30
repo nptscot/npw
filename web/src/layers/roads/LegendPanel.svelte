@@ -64,7 +64,7 @@
 
 <div class="panel" class:hidden={!anyEnabled}>
   {#if $backgroundLayer == "cn"}
-    <b>Core network</b>
+    <b>Coherent network</b>
     <QualitativeLegend labelColors={cnTierColors} />
 
     {#if $devMode}

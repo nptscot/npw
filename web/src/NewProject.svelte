@@ -42,7 +42,7 @@
     await $backend!.clearAllRoutes();
 
     if (useCN) {
-      await $backend!.importCoreNetwork();
+      await $backend!.importCoherentNetwork();
     }
     if (useExistingSomeTypes) {
       await $backend!.importExistingRoutes("infra-type");
@@ -110,7 +110,7 @@
     Existing segregated tracks and off-road cycleways from OpenStreetMap
   </Checkbox>
 
-  <Checkbox bind:checked={useCN}>Core network</Checkbox>
+  <Checkbox bind:checked={useCN}>Coherent network</Checkbox>
 
   <Checkbox bind:checked={useMainRoads}>All main roads</Checkbox>
 </div>

@@ -17,10 +17,10 @@ function get_private_data {
   cp $path $output
 }
 
-function core_net {
-  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.gpkg tmp/core_network.gpkg
+function coherent_net {
+  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.gpkg tmp/coherent_network.gpkg
   # While we're still comparing map-matched results, include this too
-  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.pmtiles ../web/public/core_network.pmtiles
+  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.pmtiles ../web/public/coherent_network.pmtiles
 }
 
 function rnet {
@@ -158,7 +158,7 @@ function railways {
         rm -f railway.osm.pbf
 }
 
-#core_net
+#coherent_net
 #rnet
 #streetspace
 #schools

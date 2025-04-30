@@ -267,7 +267,7 @@ impl MapModel {
         self.import_roads(imports);
     }
 
-    pub fn import_core_network(&mut self) {
+    pub fn import_coherent_network(&mut self) {
         let used_roads = self.used_roads();
         let mut imports = Vec::new();
 
@@ -276,7 +276,7 @@ impl MapModel {
             if used_roads.contains(&road_id) {
                 continue;
             }
-            if let Some(mut tier) = self.core_network[idx] {
+            if let Some(mut tier) = self.coherent_network[idx] {
                 // Override the tier only in one case; ignore if the CN doesn't match the demand
                 // thresholds here
                 if !self.within_settlement[idx] {
