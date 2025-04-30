@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::sync::Once;
 
-use geo::{Centroid, Coord, LineString, MultiPolygon, Polygon};
+use geo::{BoundingRect, Centroid, Coord, LineString, MultiPolygon, Polygon, Rect};
 use geojson::{Feature, FeatureCollection, Geometry};
 use graph::{RoadID, Timer};
 use serde::Deserialize;
@@ -477,6 +477,30 @@ impl MapModel {
                 .collect(),
         })
         .map_err(err_to_js)
+    }
+
+    /// A JSONified list of (name, bounds)
+    #[wasm_bindgen(js_name = getSettlementLocations)]
+    pub fn get_settlement_locations(&self) -> Result<String, JsValue> {
+        let mut list: Vec<(String, [f64; 4])> = Vec::new();
+        let mut untitled = 0;
+        for s in &self.settlements {
+            let name = match s.name.clone() {
+                Some(x) => x,
+                None => {
+                    untitled += 1;
+                    format!("Untitled settlement {untitled}")
+                }
+            };
+            let mut bbox: Rect = s.polygon.bounding_rect().unwrap().into();
+            self.graph.mercator.to_wgs84_in_place(&mut bbox);
+            list.push((
+                name,
+                [bbox.min().x, bbox.min().y, bbox.max().x, bbox.max().y],
+            ));
+        }
+        list.sort_by_key(|(name, _)| name.clone());
+        serde_json::to_string(&list).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = getDataZones)]

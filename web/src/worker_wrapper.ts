@@ -278,6 +278,15 @@ export class Backend {
     return result;
   }
 
+  async getSettlementLocations(): Promise<
+    [string, [number, number, number, number]][]
+  > {
+    this.start();
+    let result = await this.inner.getSettlementLocations();
+    this.stop();
+    return result;
+  }
+
   async getGreenspaces(): Promise<Greenspaces> {
     this.start();
     let result = await this.inner.getGreenspaces();

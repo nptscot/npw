@@ -24,12 +24,13 @@
   import AssessMode from "../assess/AssessMode.svelte";
   import BulkEditMode from "../BulkEditMode.svelte";
   import { layerId, LoadingSpinner } from "../common";
-        import Geocoder from "../common/Geocoder.svelte";
   import DisableInteractiveLayers from "../common/DisableInteractiveLayers.svelte";
   import { getKey } from "../common/files";
+  import Geocoder from "../common/Geocoder.svelte";
   import { controlsContents, Layout, mapContents } from "../common/layout";
   import ReportProblemMap from "../common/ReportProblemMap.svelte";
   import ReportProblemModal from "../common/ReportProblemModal.svelte";
+  import SettlementPicker from "../common/SettlementPicker.svelte";
   import StreetView from "../common/StreetView.svelte";
   import EditRouteMode from "../edit/EditRouteMode.svelte";
   import EvaluateJourneyMode from "../EvaluateJourneyMode.svelte";
@@ -258,6 +259,7 @@
         <ScaleControl />
         <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
         <LoadingSpinner />
+        <SettlementPicker />
         <DisableInteractiveLayers />
         {#if $currentStage != "LocalAccess"}
           <StreetView />

@@ -242,6 +242,11 @@ export class InnerBackend {
     return JSON.parse(this.inner!.getSettlements());
   }
 
+  getSettlementLocations(): [string, [number, number, number, number]][] {
+    this.checkReady();
+    return JSON.parse(this.inner!.getSettlementLocations());
+  }
+
   getGreenspaces(): Greenspaces {
     this.checkReady();
     return JSON.parse(this.inner!.getGreenspaces());

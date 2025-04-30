@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl";
-  import type { MapController } from "@maptiler/geocoding-control/types";
   import GeocodingControl from "@maptiler/geocoding-control/svelte/GeocodingControl.svelte";
+  import type { MapController } from "@maptiler/geocoding-control/types";
   import maplibregl, { type Map } from "maplibre-gl";
 
   export let apiKey: string;

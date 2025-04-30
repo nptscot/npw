@@ -261,7 +261,7 @@ struct TownCentreGJ {
 #[derive(Serialize, Deserialize)]
 pub struct Settlement {
     pub polygon: Polygon,
-    name: Option<String>,
+    pub name: Option<String>,
     population: usize,
     pub roads: HashSet<RoadID>,
 }
