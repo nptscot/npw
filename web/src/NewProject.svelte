@@ -86,6 +86,8 @@
   </p>
 {/if}
 
+<h4>Plan a network from scratch</h4>
+
 <button
   class="ds_button"
   disabled={name.length == 0 ||
@@ -95,10 +97,10 @@
     useCN}
   on:click={newFile}
 >
-  Start designing from blank map
+  Start
 </button>
 
-<h4>Use existing layers</h4>
+<h4>Plan a network from existing infrastructure</h4>
 
 <div class="ds_field-group">
   <Checkbox bind:checked={useExistingHighLoS}>
@@ -109,13 +111,7 @@
   <Checkbox bind:checked={useExistingSomeTypes}>
     Existing segregated tracks and off-road cycleways from OpenStreetMap
   </Checkbox>
-
-  <Checkbox bind:checked={useCN}>Coherent network</Checkbox>
-
-  <Checkbox bind:checked={useMainRoads}>All main roads</Checkbox>
 </div>
-
-<!--<p>Or clone from your existing projects</p>-->
 
 <br />
 
@@ -123,8 +119,28 @@
   class="ds_button"
   disabled={name.length == 0 ||
     usedFiles.has(name) ||
-    !(useExistingSomeTypes || useExistingHighLoS || useCN || useMainRoads)}
+    !(useExistingSomeTypes || useExistingHighLoS)}
   on:click={newFile}
 >
-  Start designing from existing layers
+  Start
 </button>
+
+<h4>Plan a network using shortcuts</h4>
+
+<div class="ds_field-group">
+  <Checkbox bind:checked={useCN}>Coherent network</Checkbox>
+
+  <Checkbox bind:checked={useMainRoads}>All main roads</Checkbox>
+</div>
+
+<br />
+
+<button
+  class="ds_button"
+  disabled={name.length == 0 || usedFiles.has(name) || !(useCN || useMainRoads)}
+  on:click={newFile}
+>
+  Start
+</button>
+
+<!--<p>Or clone from your existing projects</p>-->
