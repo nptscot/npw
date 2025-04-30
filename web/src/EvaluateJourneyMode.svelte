@@ -7,9 +7,10 @@
     MapEvents,
     Marker,
   } from "svelte-maplibre";
-  import { QualitativeLegend } from "svelte-utils";
+  import { QualitativeLegend, SequentialLegend } from "svelte-utils";
   import { constructMatchExpression } from "svelte-utils/map";
   import {
+    gradient,
     gradientColors,
     infraTypeColors,
     levelOfServiceColors,
@@ -181,9 +182,12 @@
       </label>
 
       {#if breakdown == "los"}
-        <QualitativeLegend horiz colors={levelOfServiceColors} />
+        <QualitativeLegend itemsPerRow={2} labelColors={levelOfServiceColors} />
       {:else if breakdown == "gradient"}
-        <QualitativeLegend horiz colors={gradientColors} />
+        <SequentialLegend
+          colorScale={gradient.colorScale}
+          labels={{ limits: gradient.limits }}
+        />
       {/if}
 
       {#if gj}

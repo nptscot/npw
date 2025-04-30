@@ -71,7 +71,7 @@
 
 {#if $odStats && $lastUpdateOD == $mutationCounter}
   <h4>Percent of demand by level of service</h4>
-  <QualitativeLegend colors={levelOfServiceLegend} />
+  <QualitativeLegend labelColors={levelOfServiceLegend} />
   <Pie
     data={{
       labels: Object.keys($odStats.od_percents_los),
@@ -89,7 +89,7 @@
 
   <h4>Percent of demand by infrastructure type</h4>
   <QualitativeLegend
-    colors={{ ...infraTypeColorLegend, "Not on the network": "grey" }}
+    labelColors={{ ...infraTypeColorLegend, "Not on the network": "grey" }}
   />
   <Pie
     data={{
@@ -109,7 +109,9 @@
   />
 
   <h4>Percent of demand by tier</h4>
-  <QualitativeLegend colors={{ ...tierColors, "Not on the network": "grey" }} />
+  <QualitativeLegend
+    labelColors={{ ...tierColors, "Not on the network": "grey" }}
+  />
   <Pie
     data={{
       labels: Object.keys($odStats.od_percents_tier),
