@@ -70,7 +70,7 @@
     severances: boolean,
     style: BackgroundLayer,
   ): DataDrivenPropertyValueSpecification<number> {
-    let show = $mode.kind == "main" ? 1.0 : 0.5;
+    let show = $mode.kind == "edit-route" ? 0.5 : 1.0;
 
     if (severances) {
       return [
