@@ -62,10 +62,8 @@
     recalc();
   }
 
-  $: clickToEdit = $mode.kind == "main";
-
   function editRouteMap(e: CustomEvent<LayerClickInfo>) {
-    if (clickToEdit) {
+    if ($mode.kind == "main") {
       let road_id = e.detail.features[0].id as number;
       let route_id = dynamicData[road_id].current_route_id;
       // If it's null, we clicked an opacity 0 road that's not part of a route
@@ -196,7 +194,7 @@
   }
 
   function showEditPopup(features: Feature[]): boolean {
-    if ($mode.kind == "overview" || $mode.kind == "export") {
+    if ($mode.kind != "main") {
       return false;
     }
     let roadId = features[0]?.properties?.id;
