@@ -184,7 +184,7 @@
           class="ds_page-header"
           style="display: flex; justify-content: space-between;"
         >
-          <h2 class="ds_page-header__title">Design local access network</h2>
+          <h2 class="ds_page-header__title">Plan local access network</h2>
         </header>
 
         <BackLink
@@ -197,9 +197,13 @@
         </BackLink>
 
         <p>
-          Your network needs to provide connectivity to key points of interest,
-          such as railway stations, schools, hospitals and green spaces. POIs
-          with severed connectivity are shown in red and need to be fixed.
+          The local access tier is the finest grained part of the network and
+          ensures access to key points of interest (POIs), such as railway
+          stations, schools, hospitals and green spaces. Some POIs (shown in
+          red) may be unreachable from the current network due to severance
+          caused by streets with high speeds and volumes, visible on the right
+          panel. POIs unreachable from the current network should be connected
+          by adding new routes.
         </p>
 
         <div class="ds_select-wrapper ds_input--fluid-two-thirds">

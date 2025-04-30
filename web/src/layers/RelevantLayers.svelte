@@ -13,7 +13,7 @@
 </script>
 
 {#if $currentStage == "Primary"}
-  <h3>Relevant layers</h3>
+  <h3>Reference layers</h3>
 
   <Checkbox small bind:checked={$cyclingDemandHigh}>
     High cycling demand
@@ -37,7 +37,7 @@
 {/if}
 
 {#if $currentStage == "Secondary"}
-  <h3>Relevant layers</h3>
+  <h3>Reference layers</h3>
 
   <Checkbox small bind:checked={$cyclingDemandMedium}>
     Medium cycling demand
@@ -58,7 +58,7 @@
 {/if}
 
 {#if $currentStage == "LongDistance"}
-  <h3>Relevant layers</h3>
+  <h3>Reference layers</h3>
 
   <Checkbox small bind:checked={$settlements}>Settlements</Checkbox>
 {/if}

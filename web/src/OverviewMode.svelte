@@ -6,10 +6,10 @@
   import type { Tier } from "./types";
 
   let tiers = {
-    Primary: "Design primary routes",
-    Secondary: "Design secondary routes",
-    LocalAccess: "Design local access to POIs",
-    LongDistance: "Design long distance routes",
+    Primary: "Plan primary routes",
+    Secondary: "Plan secondary routes",
+    LocalAccess: "Plan local access to POIs",
+    LongDistance: "Plan long distance routes",
   } as { [name in Tier]: string };
 
   // TODO Get TS for Object.entries better
@@ -22,7 +22,7 @@
   <svelte:fragment slot="controls">
     <div class="main-controls">
       <header class="ds_page-header">
-        <h2 class="ds_page-header__title">Plan my network</h2>
+        <h2 class="ds_page-header__title">NPW workflow overview</h2>
       </header>
 
       <BackLink
@@ -59,7 +59,7 @@
         class="ds_button ds_button--secondary"
         on:click={() => changeStage("assessment")}
       >
-        Assess performance of the network
+        Assess network quality
       </button>
 
       <h4>Export project</h4>

@@ -17,10 +17,10 @@
 
   // Some stages are unreachable here
   let titles = {
-    Primary: "Design primary network",
-    Secondary: "Design secondary network",
+    Primary: "Plan primary network",
+    Secondary: "Plan secondary network",
     LocalAccess: "",
-    LongDistance: "Design long distance network",
+    LongDistance: "Plan long distance network",
     assessment: "",
   };
 </script>
@@ -48,30 +48,55 @@
 
       {#if $currentStage == "Primary"}
         <p>
-          Primary routes should be direct, coherent, meet high demand, and
-          potentially connect settlements.
+          Primary routes form the core of a cycle network. They should closely
+          follow the highest demand, most strategic corridors and form key
+          connections over LA boundaries.
         </p>
+
+        <div>
+          <button
+            class="ds_button"
+            on:click={() => ($mode = { kind: "edit-route", id: null })}
+          >
+            Draw new primary route
+            <kbd>r</kbd>
+          </button>
+        </div>
       {:else if $currentStage == "Secondary"}
         <p>
-          Secondary routes should connect town centres and cover medium cycling
-          demand.
+          Secondary tier routes should cover medium cycling demand corridors,
+          connect town centres and population zones. To see severance issues
+          (due to high traffic speeds and volumes), turn on the layer on the
+          right.
         </p>
+
+        <div>
+          <button
+            class="ds_button"
+            on:click={() => ($mode = { kind: "edit-route", id: null })}
+          >
+            Draw new secondary route
+            <kbd>r</kbd>
+          </button>
+        </div>
       {:else if $currentStage == "LongDistance"}
         <p>
-          Long distance routes should connect EDJ reachable settlements out with
-          main urban areas.
+          In NPW, long distance routes are primarily inter-settlement links
+          connecting settlements together with main urban areas (that are close
+          enough for everyday work, shopping or social journeys).
         </p>
+
+        <div>
+          <button
+            class="ds_button"
+            on:click={() => ($mode = { kind: "edit-route", id: null })}
+          >
+            Draw new long distance route
+            <kbd>r</kbd>
+          </button>
+        </div>
       {/if}
 
-      <div>
-        <button
-          class="ds_button"
-          on:click={() => ($mode = { kind: "edit-route", id: null })}
-        >
-          Draw new route line
-          <kbd>r</kbd>
-        </button>
-      </div>
       <div>
         <button
           class="ds_button ds_button--secondary"

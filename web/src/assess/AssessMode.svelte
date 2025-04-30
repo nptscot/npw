@@ -42,7 +42,7 @@
     <div class="main-controls">
       {#if $subpage == "overview"}
         <header class="ds_page-header">
-          <h2 class="ds_page-header__title">Assess the new network</h2>
+          <h2 class="ds_page-header__title">Assess network quality</h2>
         </header>
 
         <BackLink on:click={() => ($mode = { kind: "overview" })}>

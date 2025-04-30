@@ -75,7 +75,8 @@
         name="Severances"
         style="reachability"
         icon="fa-link"
-        relevant={showRelevant && $currentStage == "LocalAccess"}
+        relevant={showRelevant &&
+          ($currentStage == "Secondary" || $currentStage == "LocalAccess")}
       />
     </ul>
   {/if}
