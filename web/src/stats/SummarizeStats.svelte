@@ -9,7 +9,7 @@
     slowStats,
     stats,
   } from "../stores";
-  import type { SlowStats, Stats } from "../types";
+  import type { Stats } from "../types";
 
   function percent(pct: number): string {
     return `${Math.round(pct * 100)}%`;
@@ -88,7 +88,7 @@
     return `${pct}% (${rating})`;
   }
 
-  function directness(s: SlowStats): string {
+  function directness(s: { average_weighted_directness: number }): string {
     let rating = stepGreaterThan(
       s.average_weighted_directness,
       [1.5, 1.4, 1.3, 1.2],
@@ -116,7 +116,7 @@
 
         <tr>
           <th scope="row">Directness</th>
-          <td>TODO</td>
+          <td>{directness(baseline)}</td>
           {#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
             <td>{directness($slowStats)}</td>
           {:else}

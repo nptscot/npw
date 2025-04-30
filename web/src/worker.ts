@@ -10,6 +10,7 @@ import type {
 } from "geojson";
 import type {
   AutosplitRoute,
+  BaselineStats,
   ConnectedComponents,
   DataZones,
   DynamicRoad,
@@ -181,7 +182,7 @@ export class InnerBackend {
     return JSON.parse(this.inner!.recalculateSlowStats());
   }
 
-  getBaselineStats(): Stats {
+  getBaselineStats(): BaselineStats {
     this.checkReady();
     return JSON.parse(this.inner!.getBaselineStats());
   }

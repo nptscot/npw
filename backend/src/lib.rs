@@ -78,6 +78,7 @@ pub struct MapModel {
 
     // Stats calculated on a network only with existing infrastructure imported
     baseline_stats: stats::Stats,
+    baseline_slow_stats: od::SlowStats,
 
     high_demand_threshold: usize,
     medium_demand_threshold: usize,
@@ -221,6 +222,7 @@ impl MapModel {
             gradients,
             // Calculated below
             baseline_stats: stats::Stats::default(),
+            baseline_slow_stats: od::SlowStats::default(),
             high_demand_threshold: 0,
             medium_demand_threshold: 0,
             infra_types,
@@ -234,8 +236,11 @@ impl MapModel {
         let only_some_infra_types = true;
         model.import_existing_routes(only_some_infra_types);
         model.baseline_stats = model.get_stats(timer);
+        model.recalculate_quiet_router(timer);
+        model.baseline_slow_stats = model.get_slow_stats(timer);
         // Clear those edits
         model.clear_all_routes();
+        model.recalculate_quiet_router(timer);
 
         // Calculate precalculated_demands
         timer.step("precalculate demands");

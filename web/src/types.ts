@@ -92,6 +92,8 @@ export interface Stats {
   density_network_in_settlements: number | null;
 }
 
+export type BaselineStats = Stats & { average_weighted_directness: number };
+
 export interface SlowStats {
   average_weighted_directness: number;
   worst_directness_routes: WorstRoutes;

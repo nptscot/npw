@@ -297,9 +297,17 @@ impl MapModel {
         result
     }
 
+    /// Includes slow stats too
     #[wasm_bindgen(js_name = getBaselineStats)]
     pub fn get_baseline_stats_wasm(&self) -> Result<String, JsValue> {
-        serde_json::to_string(&self.baseline_stats).map_err(err_to_js)
+        let mut props = crate::utils::into_object_value(
+            serde_json::to_value(&self.baseline_stats).map_err(err_to_js)?,
+        );
+        props.insert(
+            "average_weighted_directness".to_string(),
+            self.baseline_slow_stats.average_weighted_directness.into(),
+        );
+        serde_json::to_string(&props).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = recalculateODStats)]

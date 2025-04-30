@@ -4,26 +4,36 @@ set -e
 set -x
 mkdir -p tmp
 
+# From https://github.com/nptscot/outputdata/releases
+function get_private_data {
+  url=$1
+  output=$2
+  path=~/Downloads/`basename $url`
+
+  if [ ! -f $path ]; then
+    echo "You have to manually download $url and put it in ~/Downloads"
+    exit 1
+  fi
+  cp $path $output
+}
+
 function core_net {
-  # From https://github.com/nptscot/outputdata/releases
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.gpkg -O tmp/core_network.gpkg
+  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.gpkg tmp/core_network.gpkg
   # While we're still comparing map-matched results, include this too
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.pmtiles -O ../web/public/core_network.pmtiles
+  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.pmtiles ../web/public/core_network.pmtiles
 }
 
 function rnet {
-  # From https://github.com/nptscot/outputdata/releases
-
   # For visualization
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-04-01/rnet_2025-04-01.pmtiles -O ../web/public/route_network.pmtiles
+  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/rnet_2025-04-01.pmtiles ../web/public/route_network.pmtiles
 }
 
 function streetspace {
   # For visualization
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-03-01/os_networks_categorized_street_space_with_widths.pmtiles -O ../web/public/streetspace.pmtiles
+  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-03-01/os_networks_categorized_street_space_with_widths.pmtiles ../web/public/streetspace.pmtiles
 
   # For analysis
-  wget https://github.com/nptscot/outputdata/releases/download/v2025-03-01/os_networks_categorized_street_space_with_widths.gpkg -O tmp/streetspace.gpkg
+  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-03-01/os_networks_categorized_street_space_with_widths.gpkg tmp/streetspace.gpkg
 }
 
 function schools {
@@ -123,9 +133,10 @@ function settlements {
 
 function greenspace {
   # Manually download all of GB as GeoPackage from https://osdatahub.os.uk/downloads/open/OpenGreenspace and pass in the .zip here
-  unzip $1 -j Data/opgrsp_gb.gpkg
+  unzip $1
   mv Data/opgrsp_gb.gpkg .
   rmdir Data
+  rm -rf Doc
   ogr2ogr tmp/greenspace.gpkg \
           -t_srs EPSG:4326 \
           opgrsp_gb.gpkg \

@@ -18,7 +18,7 @@ pub struct CountsOD {
     pub failed: usize,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct SlowStats {
     pub average_weighted_directness: f64,
     pub worst_directness_routes: Vec<(Coord, Coord)>,

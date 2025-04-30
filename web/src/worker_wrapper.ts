@@ -10,6 +10,7 @@ import type {
 import { loadingSpinners } from "./stores";
 import type {
   AutosplitRoute,
+  BaselineStats,
   ConnectedComponents,
   DataZones,
   DynamicRoad,
@@ -199,7 +200,7 @@ export class Backend {
     return result;
   }
 
-  async getBaselineStats(): Promise<Stats> {
+  async getBaselineStats(): Promise<BaselineStats> {
     this.start();
     let result = await this.inner.getBaselineStats();
     this.stop();
