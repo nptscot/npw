@@ -37,7 +37,7 @@
 
     {#if $currentStage == "Primary"}
       <Metric
-        label="High cycling demand coverage"
+        label="High cycling demand corridor coverage"
         pct={percent($stats.covered_high_demand, $stats.total_high_demand)}
       />
 

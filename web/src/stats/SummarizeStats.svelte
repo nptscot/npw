@@ -159,7 +159,7 @@
 
         <tr>
           <th scope="row" style:background={tierColors.Primary}>
-            High cycling demand coverage
+            High cycling demand corridor coverage
           </th>
           <td>
             {percent2(baseline.covered_high_demand, baseline.total_high_demand)}

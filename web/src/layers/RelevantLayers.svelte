@@ -16,7 +16,7 @@
   <h3>Reference layers</h3>
 
   <Checkbox small bind:checked={$cyclingDemandHigh}>
-    High cycling demand
+    High cycling demand corridors
   </Checkbox>
   {#if $cyclingDemandHigh}
     <div style:margin-left="20px">
