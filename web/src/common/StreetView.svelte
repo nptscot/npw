@@ -2,7 +2,6 @@
   import type { MapMouseEvent } from "maplibre-gl";
   import { onDestroy } from "svelte";
   import { MapEvents } from "svelte-maplibre";
-  import icon from "../../assets/streetview.svg?url";
   import { interactiveMapLayersEnabled, map } from "../stores";
 
   function start() {
@@ -48,12 +47,12 @@
 <div>
   {#if $interactiveMapLayersEnabled}
     <button on:click={start}>
-      <img src={icon} title="StreetView" alt="StreetView" />
+      <i class="fa-solid fa-street-view"></i>
       StreetView
     </button>
   {:else}
     <button style:background="green" on:click={stop}>
-      <img src={icon} title="StreetView" alt="StreetView" />
+      <i class="fa-solid fa-street-view"></i>
       Stop
     </button>
   {/if}

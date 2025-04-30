@@ -1,5 +1,4 @@
 <script lang="ts">
-  import icon from "../../assets/streetview.svg?url";
   import { currentPOI } from "./stores";
 
   // Per https://developers.google.com/maps/documentation/embed/quickstart,
@@ -24,7 +23,7 @@
     <br />
   {/if}
   <button on:click={() => (show = !show)}>
-    <img src={icon} title="StreetView" alt="StreetView" />
+    <i class="fa-solid fa-street-view"></i>
     StreetView
   </button>
 </div>
