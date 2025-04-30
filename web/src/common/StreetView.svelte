@@ -62,7 +62,7 @@
 <style>
   div {
     position: absolute;
-    bottom: 40px;
+    bottom: 100px;
     left: 10px;
   }
 </style>

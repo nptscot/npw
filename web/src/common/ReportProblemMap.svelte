@@ -15,7 +15,7 @@
 <style>
   div {
     position: absolute;
-    bottom: 80px;
+    bottom: 40px;
     left: 10px;
   }
 </style>

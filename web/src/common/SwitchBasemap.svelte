@@ -8,14 +8,14 @@
 
 <div>
   <button type="button" on:click={swap}>
-    <i class="fa-solid fa-layer-group"></i>
+    <i class="fa-solid fa-layer-group"></i> Basemap
   </button>
 </div>
 
 <style>
   div {
     position: absolute;
-    bottom: 110px;
+    bottom: 70px;
     left: 10px;
   }
 </style>
