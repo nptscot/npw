@@ -42,7 +42,7 @@
   <h3>Reference layers</h3>
 
   <Checkbox small bind:checked={$cyclingDemandMedium}>
-    Medium cycling demand
+    Medium cycling demand corridors
   </Checkbox>
   {#if $cyclingDemandMedium}
     <div style:margin-left="20px">
@@ -62,5 +62,5 @@
 {#if $currentStage == "LongDistance"}
   <h3>Reference layers</h3>
 
-  <Checkbox small bind:checked={$settlements}>Settlements</Checkbox>
+  <Checkbox small bind:checked={$settlements}>Settlement boundaries</Checkbox>
 {/if}

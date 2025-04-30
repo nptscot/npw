@@ -50,7 +50,7 @@
       />
     {:else if $currentStage == "Secondary"}
       <Metric
-        label="Medium cycling demand coverage"
+        label="Medium cycling demand corridor coverage"
         pct={percent($stats.covered_medium_demand, $stats.total_medium_demand)}
       />
 
@@ -83,7 +83,10 @@
 
       <Metric label="Greenspaces" pct={$stats.percent_reachable_greenspaces} />
     {:else if $currentStage == "LongDistance"}
-      <Metric label="Settlements" pct={$stats.percent_reachable_settlements} />
+      <Metric
+        label="Settlements connected to the network"
+        pct={$stats.percent_reachable_settlements}
+      />
     {/if}
   </div>
 {/if}

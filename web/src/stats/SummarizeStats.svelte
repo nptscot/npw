@@ -191,7 +191,7 @@
 
         <tr>
           <th scope="row" style:background={tierColors.Secondary}>
-            Medium cycling demand coverage
+            Medium cycling demand corridor coverage
           </th>
           <td>
             {percent2(
@@ -264,7 +264,7 @@
 
         <tr>
           <th scope="row" style:background={tierColors.LongDistance}>
-            Settlements
+            Settlements connected to the network
           </th>
           <td>{percent(baseline.percent_reachable_settlements)}</td>
           <td>{percent($stats.percent_reachable_settlements)}</td>
