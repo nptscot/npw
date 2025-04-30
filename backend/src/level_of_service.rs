@@ -193,8 +193,8 @@ pub fn get_speed_mph(hwy: Highway, tags: &Tags) -> usize {
         Highway::Motorway => 70,
         Highway::Trunk => 60,
         Highway::Primary => 40,
-        Highway::Secondary | Highway::Tertiary => 30,
-        Highway::Residential | Highway::Service | Highway::Unclassified => 20,
+        Highway::Secondary | Highway::Tertiary | Highway::Residential => 30,
+        Highway::Service | Highway::Unclassified => 10,
         Highway::LivingStreet => 15,
         // TODO What should these do?
         Highway::Footway | Highway::Cycleway | Highway::Pedestrian | Highway::Path => 10,
