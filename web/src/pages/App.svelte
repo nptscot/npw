@@ -33,6 +33,7 @@
   import ReportProblemModal from "../common/ReportProblemModal.svelte";
   import SettlementPicker from "../common/SettlementPicker.svelte";
   import StreetView from "../common/StreetView.svelte";
+  import SwitchBasemap from "../common/SwitchBasemap.svelte";
   import EditRouteMode from "../edit/EditRouteMode.svelte";
   import EvaluateJourneyMode from "../EvaluateJourneyMode.svelte";
   import ExportMode from "../ExportMode.svelte";
@@ -47,6 +48,7 @@
   import {
     assetUrl,
     backend,
+    basemap,
     boundaryName,
     currentFilename,
     currentStage,
@@ -176,7 +178,18 @@
     mapDiv.appendChild($mapContents);
   }
 
-  async function getStyle(): Promise<StyleSpecification | string> {
+  let style: string | StyleSpecification | null = null;
+  $: updateStyle($basemap);
+  async function updateStyle(basemap: string) {
+    if (basemap == "light") {
+      let resp = await fetch(
+        `https://api.maptiler.com/maps/dataviz-light/style.json?key=${maptilerApiKey}`,
+      );
+      let json = await resp.json();
+      style = json;
+      return;
+    }
+
     // streets-v2 uses a fill-extrusion layer for 3D buildings that's very distracting. Remove it, and make the regular buildings layer display at high zoom instead.
     let resp = await fetch(
       `https://api.maptiler.com/maps/streets-v2/style.json?key=${maptilerApiKey}`,
@@ -184,7 +197,7 @@
     let json = await resp.json();
     json.layers = json.layers.filter((l: any) => l.id != "Building 3D");
     delete json.layers.find((l: any) => l.id == "Building")!.maxzoom;
-    return json;
+    style = json;
   }
 
   // Start less than $mutationCounter
@@ -235,7 +248,7 @@
   </main>
 
   <main slot="map" class="map-container">
-    {#await getStyle() then style}
+    {#if style}
       <MapLibre
         {style}
         maxZoom={19}
@@ -266,6 +279,7 @@
           <StreetView />
         {/if}
         <ReportProblemMap />
+        <SwitchBasemap />
 
         <div bind:this={mapDiv} />
 
@@ -355,7 +369,7 @@
           {/if}
         {/if}
       </MapLibre>
-    {/await}
+    {/if}
   </main>
 </Layout>
 

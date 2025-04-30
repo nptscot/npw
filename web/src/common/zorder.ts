@@ -59,6 +59,7 @@ function getBeforeId(layerId: string): string | undefined {
 
 // Dummy functions just used for documentation below.
 let streets = (x: string) => x;
+let datavizLight = (x: string) => x;
 
 // All layer IDs used with layerId must be defined here, with later entries
 // drawn on top.
@@ -68,6 +69,7 @@ let streets = (x: string) => x;
 // https://cloud.maptiler.com/maps/streets-v2/
 const layerZorder = [
   streets("Ferry line"),
+  datavizLight("Railway dash"),
 
   // Reference layers (areas)
   "population",
@@ -128,7 +130,7 @@ const layerZorder = [
   "draw-rectangle-fill",
   "draw-rectangle-outline",
 
-  streets("Road labels"),
+  streets(datavizLight("Road labels")),
 
   "fade-study-area-inside",
   "fade-study-area-outside",
