@@ -4,9 +4,9 @@
   import { layerId } from "./";
 
   // There are two cases when we want to disable interactions with layers --
-  // when StreetView mode is on, block everything. And when in overview
-  // or editing, block all reference layers. Achieve this by toggling a
-  // layer with a certain z-order.
+  // when StreetView mode is on, block everything. And while editing,
+  // block all reference layers. Achieve this by toggling a layer with a
+  // certain z-order.
   let coverEverything = {
     type: "Feature" as const,
     properties: {},
@@ -33,10 +33,7 @@
       "fill-opacity": 0.0,
     }}
     layout={{
-      visibility:
-        $mode.kind == "edit-route" || $mode.kind == "overview"
-          ? "visible"
-          : "none",
+      visibility: $mode.kind == "edit-route" ? "visible" : "none",
     }}
   />
 

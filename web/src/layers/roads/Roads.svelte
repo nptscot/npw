@@ -90,8 +90,6 @@
       return 0.0;
     }
 
-    let opacity = $mode.kind == "main" || $mode.kind == "overview" ? 1.0 : 0.5;
-
     // @ts-expect-error Guaranteed to be set below
     let showLayer: ExpressionSpecification = null;
     if (style == "edits_infra") {
@@ -144,13 +142,13 @@
           ["!=", $mode.id, ["feature-state", "current_route_id"]],
           showLayer,
         ],
-        opacity,
+        1.0,
         0.0,
       ];
     }
 
     // @ts-expect-error This really works
-    let highlightHoveredRoute: ExpressionSpecification = opacity;
+    let highlightHoveredRoute: ExpressionSpecification = 1.0;
     if (hovered != null) {
       let roadId = hovered.properties!.id;
       let routeId = dynamicData[roadId].current_route_id;
@@ -158,8 +156,8 @@
         highlightHoveredRoute = [
           "case",
           ["==", ["feature-state", "current_route_id"], routeId],
-          opacity / 2,
-          opacity,
+          0.5,
+          1.0,
         ];
       }
     }
@@ -198,7 +196,7 @@
   }
 
   function showEditPopup(features: Feature[]): boolean {
-    if ($mode.kind == "export") {
+    if ($mode.kind == "overview" || $mode.kind == "export") {
       return false;
     }
     let roadId = features[0]?.properties?.id;
