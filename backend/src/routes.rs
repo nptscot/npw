@@ -122,7 +122,7 @@ impl MapModel {
                 Case::New {
                     infra_type,
                     fits: self.does_infra_type_fit(r, infra_type),
-                    tier: fix_tier(
+                    tier: fix_tier_drawing(
                         orig_route.tier,
                         self.within_settlement[r.0],
                         self.highways[r.0],
@@ -211,6 +211,19 @@ impl MapModel {
         Ok(route.to_gj(id))
     }
 
+    fn tier_for_import(&self, r: RoadID) -> Tier {
+        if !self.within_settlement[r.0] {
+            return Tier::LongDistance;
+        }
+        if self.precalculated_demands[r.0] >= self.high_demand_threshold {
+            Tier::Primary
+        } else if self.precalculated_demands[r.0] >= self.medium_demand_threshold {
+            Tier::Secondary
+        } else {
+            Tier::LocalAccess
+        }
+    }
+
     pub fn import_existing_routes(&mut self, only_some_infra_types: bool) {
         let used_roads = self.used_roads();
         let mut imports = Vec::new();
@@ -247,13 +260,8 @@ impl MapModel {
                     continue;
                 }
             }
-            let tier = if infra_type == InfraType::Segregated {
-                Tier::Primary
-            } else {
-                Tier::Secondary
-            };
 
-            imports.push((road_id, infra_type, tier));
+            imports.push((road_id, infra_type, self.tier_for_import(road_id)));
         }
 
         self.import_roads(imports);
@@ -268,7 +276,12 @@ impl MapModel {
             if used_roads.contains(&road_id) {
                 continue;
             }
-            if let Some(tier) = self.core_network[idx] {
+            if let Some(mut tier) = self.core_network[idx] {
+                // Override the tier only in one case; ignore if the CN doesn't match the demand
+                // thresholds here
+                if !self.within_settlement[idx] {
+                    tier = Tier::LongDistance;
+                }
                 imports.push((road_id, self.best_infra_type(road_id), tier));
             }
         }
@@ -289,11 +302,7 @@ impl MapModel {
                 imports.push((
                     road_id,
                     self.best_infra_type(road_id),
-                    if self.within_settlement[idx] {
-                        Tier::Primary
-                    } else {
-                        Tier::LongDistance
-                    },
+                    self.tier_for_import(road_id),
                 ));
             }
         }
@@ -357,7 +366,7 @@ impl MapModel {
                     self.traffic_volumes[r.0],
                     self.within_settlement[r.0],
                 );
-                let tier = fix_tier(
+                let tier = fix_tier_drawing(
                     default_tier,
                     self.within_settlement[r.0],
                     self.highways[r.0],
@@ -615,7 +624,7 @@ pub fn gradient_group(gradient: f64) -> &'static str {
     }
 }
 
-fn fix_tier(default: Tier, within_settlement: bool, highway: Highway) -> Tier {
+fn fix_tier_drawing(default: Tier, within_settlement: bool, highway: Highway) -> Tier {
     if within_settlement {
         if default != Tier::LongDistance {
             return default;
