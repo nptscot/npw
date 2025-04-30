@@ -2,7 +2,7 @@
   import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
   import { LineLayer } from "svelte-maplibre";
   import { layerId, roadLineWidth } from "../../common";
-  import { mainRoadCoverage, showUncoveredDemand } from "../stores";
+  import { arterialRoadCoverage, showUncoveredDemand } from "../stores";
 
   // Filter to only show uncovered roads?
   $: opacity = $showUncoveredDemand
@@ -17,9 +17,9 @@
 
 <LineLayer
   {...layerId("uncovered-main-roads")}
-  filter={["all", ["get", "is_main_road"], ["get", "within_settlement"]]}
+  filter={["all", ["get", "is_arterial_road"], ["get", "within_settlement"]]}
   layout={{
-    visibility: $mainRoadCoverage ? "visible" : "none",
+    visibility: $arterialRoadCoverage ? "visible" : "none",
   }}
   paint={{
     "line-color": "grey",

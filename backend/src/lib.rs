@@ -293,7 +293,7 @@ impl MapModel {
             let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
             f.set_property("id", idx);
             f.set_property("way", road.way.to_string());
-            f.set_property("is_main_road", self.highways[idx].is_main_road());
+            f.set_property("is_arterial_road", self.highways[idx].is_arterial_road());
             f.set_property("within_settlement", self.within_settlement[idx]);
             f.set_property("is_attractive", self.is_attractive[idx]);
 
@@ -394,7 +394,7 @@ impl MapModel {
 
     pub fn does_infra_type_fit(&self, r: RoadID, infra_type: InfraType) -> bool {
         let Some(streetspace) = self.street_space[r.0] else {
-            // Only have this info on main roads. Assume anything can fit on smaller roads. In
+            // Only have this info on arterialroads. Assume anything can fit on smaller roads. In
             // practice, we won't ask about things like Segregated there anyway.
             return true;
         };
@@ -449,7 +449,7 @@ pub fn is_major_junction(intersection: &Intersection, highways: &Vec<Highway>) -
     intersection
         .roads
         .iter()
-        .filter(|r| highways[r.0].is_main_road())
+        .filter(|r| highways[r.0].is_arterial_road())
         .count()
         >= 3
 }

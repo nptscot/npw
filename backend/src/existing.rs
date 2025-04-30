@@ -71,7 +71,7 @@ impl Highway {
         Some(hwy)
     }
 
-    pub fn is_main_road(&self) -> bool {
+    pub fn is_arterial_road(&self) -> bool {
         // Motorway can't be drawn on, so ignore it
         matches!(
             self,

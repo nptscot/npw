@@ -4,7 +4,7 @@ import type { BackgroundLayer } from "../stores";
 export let debugCyclingDemandMin = writable(0);
 export let styleCyclingDemand = writable(true);
 export let cyclingDemandHigh = writable(false);
-export let mainRoadCoverage = writable(false);
+export let arterialRoadCoverage = writable(false);
 export let showUncoveredDemand = writable(false);
 export let majorJunctions = writable(false);
 
@@ -34,7 +34,7 @@ export let enableLayersPerStage = {
 };
 
 export let disableLayersPerStage = {
-  Primary: [cyclingDemandHigh, mainRoadCoverage, majorJunctions],
+  Primary: [cyclingDemandHigh, arterialRoadCoverage, majorJunctions],
   Secondary: [
     cyclingDemandMedium,
     townCentres,

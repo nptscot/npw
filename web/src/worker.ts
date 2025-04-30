@@ -217,9 +217,9 @@ export class InnerBackend {
   }
 
   // Needs loading screen
-  importMainRoads() {
+  importArterialRoads() {
     this.checkReady();
-    this.inner!.importMainRoads();
+    this.inner!.importArterialRoads();
   }
 
   loadSavefile(contents: string) {

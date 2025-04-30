@@ -245,9 +245,9 @@ export class Backend {
   }
 
   // Needs loading screen
-  async importMainRoads() {
+  async importArterialRoads() {
     this.start();
-    await this.inner.importMainRoads();
+    await this.inner.importArterialRoads();
     this.stop();
   }
 

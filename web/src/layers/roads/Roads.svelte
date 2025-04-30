@@ -33,8 +33,8 @@
     showNetworkLoS,
     showNetworkTiers,
   } from "../stores";
+  import ArterialRoadCoverage from "./ArterialRoadCoverage.svelte";
   import CyclingDemandCoverage from "./CyclingDemandCoverage.svelte";
-  import MainRoadCoverage from "./MainRoadCoverage.svelte";
   import ReferenceRoads from "./ReferenceRoads.svelte";
 
   let lastUpdate = 0;
@@ -243,7 +243,7 @@
       <ReferenceRoads {dynamicData} />
 
       <CyclingDemandCoverage />
-      <MainRoadCoverage />
+      <ArterialRoadCoverage />
     </GeoJSON>
   {/await}
 {/if}

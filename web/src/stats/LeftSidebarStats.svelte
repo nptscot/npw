@@ -42,10 +42,10 @@
       />
 
       <Metric
-        label="Main road coverage"
+        label="Arterial road network coverage"
         pct={percent(
-          $stats.covered_main_road_length,
-          $stats.total_main_road_length,
+          $stats.covered_arterial_road_length,
+          $stats.total_arterial_road_length,
         )}
       />
     {:else if $currentStage == "Secondary"}

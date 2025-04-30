@@ -22,8 +22,13 @@
   let useCN = false;
   let useExistingSomeTypes = false;
   let useExistingHighLoS = false;
-  let useMainRoads = false;
-  $: reimport(useCN, useExistingSomeTypes, useExistingHighLoS, useMainRoads);
+  let useArterialRoads = false;
+  $: reimport(
+    useCN,
+    useExistingSomeTypes,
+    useExistingHighLoS,
+    useArterialRoads,
+  );
 
   async function newFile() {
     setCurrentFile(name);
@@ -36,7 +41,7 @@
     useCN: boolean,
     useExistingSomeTypes: boolean,
     useExistingHighLoS: boolean,
-    useMainRoads: boolean,
+    useArterialRoads: boolean,
   ) {
     loading = "Loading network for preview";
     await $backend!.clearAllRoutes();
@@ -50,8 +55,8 @@
     if (useExistingHighLoS) {
       await $backend!.importExistingRoutes("los");
     }
-    if (useMainRoads) {
-      await $backend!.importMainRoads();
+    if (useArterialRoads) {
+      await $backend!.importArterialRoads();
     }
 
     $mutationCounter += 1;
@@ -130,14 +135,16 @@
 <div class="ds_field-group">
   <Checkbox bind:checked={useCN}>Coherent network</Checkbox>
 
-  <Checkbox bind:checked={useMainRoads}>All main roads</Checkbox>
+  <Checkbox bind:checked={useArterialRoads}>All arterial roads</Checkbox>
 </div>
 
 <br />
 
 <button
   class="ds_button"
-  disabled={name.length == 0 || usedFiles.has(name) || !(useCN || useMainRoads)}
+  disabled={name.length == 0 ||
+    usedFiles.has(name) ||
+    !(useCN || useArterialRoads)}
   on:click={newFile}
 >
   Start

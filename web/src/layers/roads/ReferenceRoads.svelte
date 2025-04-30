@@ -230,7 +230,7 @@
   <Popup openOn="click" let:props>
     <div style="max-width: 30vw; max-height: 60vh; overflow: auto;">
       <p>
-        Main road? <b>{props.is_main_road ? "yes" : "no"}</b>
+        Arterial road? <b>{props.is_arterial_road ? "yes" : "no"}</b>
       </p>
       <p>
         Within a settlement? <b>{props.within_settlement ? "yes" : "no"}</b>

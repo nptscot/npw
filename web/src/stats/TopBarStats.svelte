@@ -86,7 +86,8 @@
   <Modal bind:show={showSafety}>
     <h2>Safety</h2>
     <p>
-      What percent of main roads within settlements has high Level of Service?
+      What percent of arterial roads within settlements has high Level of
+      Service?
     </p>
   </Modal>
 
@@ -119,8 +120,8 @@
           <br />
           <progress
             value={percent(
-              $stats.total_high_los_main_roads_length,
-              $stats.total_main_road_length,
+              $stats.total_high_los_arterial_roads_length,
+              $stats.total_arterial_road_length,
             )}
             max="100"
           />

@@ -2,9 +2,9 @@
   import { Checkbox } from "../common";
   import { currentStage } from "../stores";
   import {
+    arterialRoadCoverage,
     cyclingDemandHigh,
     cyclingDemandMedium,
-    mainRoadCoverage,
     settlements,
     showUncoveredDemand,
     townCentres,
@@ -26,11 +26,13 @@
     </div>
   {/if}
 
-  <Checkbox small bind:checked={$mainRoadCoverage}>Main road coverage</Checkbox>
-  {#if $mainRoadCoverage}
+  <Checkbox small bind:checked={$arterialRoadCoverage}>
+    Arterial road network coverage
+  </Checkbox>
+  {#if $arterialRoadCoverage}
     <div style:margin-left="20px">
       <Checkbox small bind:checked={$showUncoveredDemand}>
-        Show all demand, even if covered
+        Show all arterial roads, even if covered
       </Checkbox>
     </div>
   {/if}

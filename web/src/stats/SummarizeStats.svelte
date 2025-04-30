@@ -57,8 +57,8 @@
 
   function safety(s: Stats): string {
     let pct = percent3(
-      s.total_high_los_main_roads_length,
-      s.total_main_road_length,
+      s.total_high_los_arterial_roads_length,
+      s.total_arterial_road_length,
     );
     let rating = stepLessThanOrEqual(pct, [20, 40, 60, 80]);
     return `${pct}% (${rating})`;
@@ -171,18 +171,18 @@
 
         <tr>
           <th scope="row" style:background={tierColors.Primary}>
-            Main road coverage
+            Arterial road network coverage
           </th>
           <td>
             {percent2(
-              baseline.covered_main_road_length,
-              baseline.total_main_road_length,
+              baseline.covered_arterial_road_length,
+              baseline.total_arterial_road_length,
             )}
           </td>
           <td>
             {percent2(
-              $stats.covered_main_road_length,
-              $stats.total_main_road_length,
+              $stats.covered_arterial_road_length,
+              $stats.total_arterial_road_length,
             )}
           </td>
         </tr>

@@ -82,13 +82,13 @@ export interface Stats {
   total_medium_demand: number;
 
   total_network_length: number;
-  total_high_los_main_roads_length: number;
+  total_high_los_arterial_roads_length: number;
   total_low_gradient_length: number;
   total_undeliverable_length: number;
   total_attractive_length: number;
 
-  total_main_road_length: number;
-  covered_main_road_length: number;
+  total_arterial_road_length: number;
+  covered_arterial_road_length: number;
 
   density_network_in_settlements: number | null;
 }
@@ -232,7 +232,7 @@ export type PoiKind =
 export interface StaticRoad {
   id: number;
   way: number;
-  is_main_road: boolean;
+  is_arterial_road: boolean;
   within_settlement: boolean;
   is_attractive: boolean;
   traffic: number;

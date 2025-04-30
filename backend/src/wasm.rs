@@ -380,9 +380,9 @@ impl MapModel {
         self.import_coherent_network();
     }
 
-    #[wasm_bindgen(js_name = importMainRoads)]
-    pub fn import_main_roads_wasm(&mut self) {
-        self.import_main_roads();
+    #[wasm_bindgen(js_name = importArterialRoads)]
+    pub fn import_arterial_roads_wasm(&mut self) {
+        self.import_arterial_roads();
     }
 
     // TODO Except greenspaces

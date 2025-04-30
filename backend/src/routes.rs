@@ -289,7 +289,7 @@ impl MapModel {
         self.import_roads(imports);
     }
 
-    pub fn import_main_roads(&mut self) {
+    pub fn import_arterial_roads(&mut self) {
         let used_roads = self.used_roads();
         let mut imports = Vec::new();
 
@@ -298,7 +298,7 @@ impl MapModel {
             if used_roads.contains(&road_id) {
                 continue;
             }
-            if self.highways[idx].is_main_road() {
+            if self.highways[idx].is_arterial_road() {
                 imports.push((
                     road_id,
                     self.best_infra_type(road_id),
@@ -630,8 +630,8 @@ fn fix_tier_drawing(default: Tier, within_settlement: bool, highway: Highway) ->
             return default;
         }
         // If the user is drawing a long-distance route and enters a settlement, then override the
-        // tier to primary for main roads and local access otherwise
-        return if highway.is_main_road() {
+        // tier to primary for arterial roads and local access otherwise
+        return if highway.is_arterial_road() {
             Tier::Primary
         } else {
             Tier::LocalAccess

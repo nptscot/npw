@@ -175,7 +175,7 @@
 
       {#if $currentStage == "Primary" || $currentStage == "Secondary"}
         <Checkbox bind:checked={$majorJunctions} small>
-          Snap to main roads
+          Snap to arterial roads
         </Checkbox>
       {/if}
 
