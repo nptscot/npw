@@ -101,7 +101,9 @@
     <div class="main-controls">
       {#if subpage == "explore"}
         <header class="ds_page-header">
-          <h2 class="ds_page-header__title">Explore {prettyprintBoundary()}</h2>
+          <h2 class="ds_page-header__title">
+            Explore existing situation in {prettyprintBoundary()}
+          </h2>
         </header>
 
         <BackLink on:click={() => (window.location.href = "./")}>
@@ -120,12 +122,12 @@
             on:click={() =>
               ($mode = { kind: "setup", subpage: "project-list" })}
           >
-            Design my network
+            Plan cycle network
           </button>
         </div>
       {:else if subpage == "project-list"}
         <header class="ds_page-header">
-          <h2 class="ds_page-header__title">Design my network</h2>
+          <h2 class="ds_page-header__title">Plan cycle network</h2>
         </header>
 
         <h4>Start a new project for this area</h4>
