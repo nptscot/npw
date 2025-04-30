@@ -86,7 +86,7 @@
 
     let params = new URLSearchParams(window.location.search);
     $boundaryName = params.get("boundary") || "LAD_City of Edinburgh";
-    loading = `Loading ${stripPrefix($boundaryName, "LAD_")}`;
+    loading = `Opening ${stripPrefix($boundaryName, "LAD_")}`;
 
     interface WorkerConstructor {
       new (): InnerBackend;
