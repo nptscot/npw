@@ -168,7 +168,7 @@ impl MapModel {
             }
         }
 
-        for (zone1, pt2, raw_count) in &self.utility_desire_lines {
+        for (zone1, pt2, raw_count) in &self.other_desire_lines {
             total_trips += *raw_count;
             let (iterations, uptake_multiplier) = if fast_sample {
                 (1, *raw_count as f64)

@@ -112,13 +112,20 @@ fn create(
     timer.step("loading commute desire lines");
     let commute_desire_lines =
         read_commute_desire_lines_csv("../data_prep/tmp/od_commute.csv", &zone_ids)?;
-    timer.step("loading utility desire lines");
-    let utility_desire_lines = read_utility_desire_lines_csv(
+    timer.step("loading utility and school desire lines");
+    let mut other_desire_lines = read_other_desire_lines_csv(
         "../data_prep/tmp/od_utility.csv",
         &zone_ids,
         &graph,
         &boundary_wgs84,
     )?;
+    // TODO Combine counts for utility and school trips
+    other_desire_lines.extend(read_other_desire_lines_csv(
+        "../data_prep/tmp/od_school.csv",
+        &zone_ids,
+        &graph,
+        &boundary_wgs84,
+    )?);
 
     timer.step("loading schools");
     let schools = backend::places::School::from_gj(
@@ -176,7 +183,7 @@ fn create(
         graph,
         boundary_wgs84,
         commute_desire_lines,
-        utility_desire_lines,
+        other_desire_lines,
         schools,
         gp_hospitals,
         town_centres,
@@ -230,7 +237,7 @@ struct CommuteDesireLineRow {
     count: usize,
 }
 
-fn read_utility_desire_lines_csv(
+fn read_other_desire_lines_csv(
     path: &str,
     zone_ids: &HashMap<String, usize>,
     graph: &Graph,
@@ -238,7 +245,7 @@ fn read_utility_desire_lines_csv(
 ) -> Result<Vec<(usize, Coord, usize)>> {
     let mut out = Vec::new();
     for rec in csv::Reader::from_reader(File::open(path)?).deserialize() {
-        let row: UtilityDesireLineRow = rec?;
+        let row: OtherDesireLineRow = rec?;
         // Around 84k rows aren't useful
         if row.count == 0 {
             continue;
@@ -254,14 +261,14 @@ fn read_utility_desire_lines_csv(
         }
     }
     if out.is_empty() {
-        bail!("No matching commute desire lines");
+        bail!("No matching utility or school desire lines");
     }
-    info!("Read {} utility desire lines", out.len());
+    info!("Read {} utility or school desire lines", out.len());
     Ok(out)
 }
 
 #[derive(Deserialize)]
-struct UtilityDesireLineRow {
+struct OtherDesireLineRow {
     geo_code1: String,
     destination_lon: f64,
     destination_lat: f64,

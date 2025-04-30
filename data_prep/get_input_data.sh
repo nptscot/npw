@@ -84,11 +84,10 @@ function gp_and_hospitals {
 }
 
 function od {
-  # Manually download https://github.com/nptscot/npt/releases/download/od-data-2025-05/od_commute_simple.csv from internal GH repo
-  cp $1 tmp/od_commute.csv
-
-  # And https://github.com/nptscot/npt/releases/download/od-data-2025-05/od_utility_simple.csv
-  cp $2 tmp/od_utility.csv
+  # From https://github.com/nptscot/npt/releases/tag/od-data-2025-05, a public release
+  wget https://github.com/nptscot/npt/releases/download/od-data-2025-05/od_commute_simple.csv -O tmp/od_commute.csv
+  wget https://github.com/nptscot/npt/releases/download/od-data-2025-05/od_utility_simple.csv -O tmp/od_utility.csv
+  wget https://github.com/nptscot/npt/releases/download/od-data-2025-05/od_school_simple.csv -O tmp/od_school.csv
 }
 
 function traffic {
@@ -159,7 +158,7 @@ function greenspace {
 #schools
 #town_centres ~/Downloads/Town_Centres_-_Scotland.json
 #gp_and_hospitals ~/Downloads/GP_Practices_-_Scotland.json ~/Downloads/NHS_Hospitals_-_Scotland.json
-#od ~/Downloads/od_commute_simple.csv ~/Downloads/od_utility_simple.csv
+#od
 #traffic ~/Downloads/final_estimates_Scotland_2025-04-15_correct.gpkg
 #population
 #elevation
