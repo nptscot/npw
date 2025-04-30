@@ -1,4 +1,5 @@
 <script lang="ts">
+  // TODO Upstream back to svelte-utils
   import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl";
   import GeocodingControl from "@maptiler/geocoding-control/svelte/GeocodingControl.svelte";
   import type { MapController } from "@maptiler/geocoding-control/types";

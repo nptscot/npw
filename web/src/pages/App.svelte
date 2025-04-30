@@ -14,7 +14,7 @@
     NavigationControl,
     ScaleControl,
   } from "svelte-maplibre";
-  import { fetchWithProgress, Loading } from "svelte-utils";
+  import { fetchWithProgress } from "svelte-utils";
   import hospital3Icon from "../../assets/hospital_ignore.png";
   import hospital1Icon from "../../assets/hospital_reachable.png";
   import hospital2Icon from "../../assets/hospital_unreachable.png";
@@ -28,6 +28,7 @@
   import { getKey } from "../common/files";
   import Geocoder from "../common/Geocoder.svelte";
   import { controlsContents, Layout, mapContents } from "../common/layout";
+  import Loading from "../common/Loading.svelte";
   import ReportProblemMap from "../common/ReportProblemMap.svelte";
   import ReportProblemModal from "../common/ReportProblemModal.svelte";
   import SettlementPicker from "../common/SettlementPicker.svelte";
