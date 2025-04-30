@@ -3,22 +3,20 @@
   import { Modal } from "../common";
   import {
     backend,
-    changeStage,
     lastUpdateSlowStats,
     mutationCounter,
     slowStats,
     stats,
   } from "../stores";
   import type { Stats } from "../types";
-  import SummarizeStats from "./SummarizeStats.svelte";
 
-  let showStats = false;
+  let showSafety = false;
+  let showDirectness = false;
+  let showCoherence = false;
+  let showComfort = false;
+  let showAttractiveness = false;
+
   let loading = "";
-
-  function gotoAssess() {
-    changeStage("assessment");
-    showStats = false;
-  }
 
   // Returns something [0, 1]
   function percent(x: number, total: number): number {
@@ -28,9 +26,9 @@
     return (100 * x) / total;
   }
 
-  async function openStats() {
+  async function openDirectness() {
     await recalculateDirectness();
-    showStats = true;
+    showDirectness = true;
   }
 
   async function recalculateDirectness() {
@@ -85,24 +83,38 @@
 <Loading {loading} />
 
 {#if $stats}
-  <Modal bind:show={showStats}>
-    <div style="display: flex; justify-content: space-between">
-      <h2>Network metrics</h2>
-      <button class="ds_button ds_button--secondary" on:click={gotoAssess}>
-        See full assessment
-      </button>
-    </div>
+  <Modal bind:show={showSafety}>
+    <h2>Safety</h2>
+    <p>
+      What percent of main roads within settlements has high Level of Service?
+    </p>
+  </Modal>
 
-    <SummarizeStats />
+  <Modal bind:show={showDirectness}>
+    <h2>Directness</h2>
+    <p>Average weighted directness</p>
+  </Modal>
+
+  <Modal bind:show={showCoherence}>
+    <h2>Coherence</h2>
+    <p>Density of primary/secondary network within settlements</p>
+  </Modal>
+
+  <Modal bind:show={showComfort}>
+    <h2>Comfort</h2>
+    <p>What percent of your network is on low gradient (&le; 3%)?</p>
+  </Modal>
+
+  <Modal bind:show={showAttractiveness}>
+    <h2>Attractiveness</h2>
+    <p>What percent of your network is next to greenspace?</p>
   </Modal>
 
   <div class="progress-summary">
-    <!-- svelte-ignore a11y-invalid-attribute -->
-    <a href="#" on:click|stopPropagation={openStats}>
-      <ul>
-        <li
-          title="What percent of main roads within settlements has high Level of Service?"
-        >
+    <ul>
+      <li>
+        <!-- svelte-ignore a11y-invalid-attribute -->
+        <a href="#" on:click|stopPropagation={() => (showSafety = true)}>
           Safety
           <br />
           <progress
@@ -112,9 +124,12 @@
             )}
             max="100"
           />
-        </li>
+        </a>
+      </li>
 
-        <li title="Average weighted directness">
+      <li>
+        <!-- svelte-ignore a11y-invalid-attribute -->
+        <a href="#" on:click|stopPropagation={openDirectness}>
           Directness
           {#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
             <br />
@@ -127,15 +142,21 @@
               <i class="fa-solid fa-calculator"></i>
             </a>
           {/if}
-        </li>
+        </a>
+      </li>
 
-        <li title="Density of primary/secondary network within settlements">
+      <li>
+        <!-- svelte-ignore a11y-invalid-attribute -->
+        <a href="#" on:click|stopPropagation={() => (showCoherence = true)}>
           Coherence
           <br />
           <progress value={coherentDensityScore($stats)} max="5" />
-        </li>
+        </a>
+      </li>
 
-        <li title="What percent of your network is on low gradient (&le; 3%)?">
+      <li>
+        <!-- svelte-ignore a11y-invalid-attribute -->
+        <a href="#" on:click|stopPropagation={() => (showComfort = true)}>
           Comfort
           <br />
           <progress
@@ -145,9 +166,15 @@
             )}
             max="100"
           />
-        </li>
+        </a>
+      </li>
 
-        <li title="What percent of your network is next to greenspace?">
+      <li>
+        <!-- svelte-ignore a11y-invalid-attribute -->
+        <a
+          href="#"
+          on:click|stopPropagation={() => (showAttractiveness = true)}
+        >
           Attractiveness
           <br />
           <progress
@@ -157,13 +184,17 @@
             )}
             max="100"
           />
-        </li>
-      </ul>
-    </a>
+        </a>
+      </li>
+    </ul>
   </div>
 {/if}
 
 <style>
+  a:hover {
+    font-weight: bold;
+  }
+
   .progress-summary {
     padding-left: 20px;
     margin-left: auto;
