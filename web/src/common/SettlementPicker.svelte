@@ -29,7 +29,7 @@
 <style>
   div {
     position: absolute;
-    top: 60px;
+    top: 45px;
     left: 50px;
 
     background: white;
