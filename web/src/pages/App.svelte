@@ -23,7 +23,7 @@
   import school2Icon from "../../assets/school_unreachable.png";
   import AssessMode from "../assess/AssessMode.svelte";
   import BulkEditMode from "../BulkEditMode.svelte";
-  import { layerId, LoadingSpinner } from "../common";
+  import { layerId, LoadingSpinner, stripPrefix } from "../common";
   import DisableInteractiveLayers from "../common/DisableInteractiveLayers.svelte";
   import { getKey } from "../common/files";
   import Geocoder from "../common/Geocoder.svelte";
@@ -84,7 +84,7 @@
 
     let params = new URLSearchParams(window.location.search);
     $boundaryName = params.get("boundary") || "LAD_City of Edinburgh";
-    loading = `Loading ${$boundaryName}`;
+    loading = `Loading ${stripPrefix($boundaryName, "LAD_")}`;
 
     interface WorkerConstructor {
       new (): InnerBackend;
