@@ -69,6 +69,7 @@ export interface ODStats {
 export interface Stats {
   percent_reachable_schools: number;
   percent_reachable_gp_hospitals: number;
+  percent_reachable_railway_stations: number;
   percent_reachable_town_centres: number;
   percent_reachable_settlements: number;
   percent_reachable_greenspaces: number;
@@ -221,6 +222,7 @@ export type TownCentreRoutes = FeatureCollection<
 >;
 
 export type PoiKind =
+  | "railway_stations"
   | "schools"
   | "gp_hospitals"
   | "greenspaces"

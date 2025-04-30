@@ -49,7 +49,17 @@
           reachable: f.properties.reachable,
           pt: f.geometry.coordinates as [number, number],
         },
-        f.properties.poi_kind == "schools" ? 1 : 2,
+        // TODO Maybe refine PoiKind
+        {
+          railway_stations: 1,
+          schools: 2,
+          gp_hospitals: 3,
+        }[
+          f.properties.poi_kind as
+            | "railway_stations"
+            | "schools"
+            | "gp_hospitals"
+        ],
         f.properties.sort,
       ]);
     }
@@ -71,8 +81,8 @@
       ]);
     }
 
-    // Prioritize schools, then GPs, then greenspaces. Within each group, use a
-    // Hilbert curve to group nearby POIs together.
+    // Prioritize railway stations, then schools, then GPs, then greenspaces.
+    // Within each group, use a Hilbert curve to group nearby POIs together.
     list.sort((a, b) => {
       if (a[1] != b[1]) {
         return a[1] - b[1];
@@ -188,8 +198,8 @@
 
         <p>
           Your network needs to provide connectivity to key points of interest,
-          such as schools, hospitals and green spaces. POIs with severed
-          connectivity are shown in red and need to be fixed.
+          such as railway stations, schools, hospitals and green spaces. POIs
+          with severed connectivity are shown in red and need to be fixed.
         </p>
 
         <div class="ds_select-wrapper ds_input--fluid-two-thirds">
@@ -199,6 +209,7 @@
             on:change={refilterPOIs}
           >
             <option value="all">Showing all POIs</option>
+            <option value="railway_stations">Railway stations</option>
             <option value="schools">Schools</option>
             <option value="gp_hospitals">GPs/hospitals</option>
             <option value="greenspaces">Greenspaces</option>

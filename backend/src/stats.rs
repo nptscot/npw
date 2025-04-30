@@ -9,9 +9,10 @@ use crate::{LevelOfService, MapModel, Tier};
 pub struct Stats {
     percent_reachable_schools: f64,
     percent_reachable_gp_hospitals: f64,
+    percent_reachable_railway_stations: f64,
+    percent_reachable_greenspaces: f64,
     percent_reachable_town_centres: f64,
     percent_reachable_settlements: f64,
-    percent_reachable_greenspaces: f64,
     percent_reachable_imd_population: f64,
     percent_reachable_population: f64,
 
@@ -51,6 +52,20 @@ impl MapModel {
                 .count(),
             self.gp_hospitals.len(),
         );
+        let percent_reachable_railway_stations = percent(
+            self.railway_stations
+                .iter()
+                .filter(|x| roads.covers(x.road))
+                .count(),
+            self.railway_stations.len(),
+        );
+        let percent_reachable_greenspaces = percent(
+            self.greenspaces
+                .iter()
+                .filter(|x| roads.covers_any(&x.roads))
+                .count(),
+            self.greenspaces.len(),
+        );
         let percent_reachable_town_centres = percent(
             self.town_centres
                 .iter()
@@ -65,13 +80,6 @@ impl MapModel {
                 .filter(|x| roads.covers_any(&x.roads))
                 .count(),
             self.settlements.len(),
-        );
-        let percent_reachable_greenspaces = percent(
-            self.greenspaces
-                .iter()
-                .filter(|x| roads.covers_any(&x.roads))
-                .count(),
-            self.greenspaces.len(),
         );
 
         // Weighted by population, not just count
@@ -175,9 +183,10 @@ impl MapModel {
         Stats {
             percent_reachable_schools,
             percent_reachable_gp_hospitals,
+            percent_reachable_railway_stations,
+            percent_reachable_greenspaces,
             percent_reachable_town_centres,
             percent_reachable_settlements,
-            percent_reachable_greenspaces,
             percent_reachable_imd_population,
             percent_reachable_population,
 

@@ -309,7 +309,7 @@ impl MapModel {
     }
 
     pub fn precalculate_demands(&mut self) -> Result<()> {
-        assert!(self.precalculated_demands.is_empty());
+        self.precalculated_demands.clear();
 
         let fast_sample = false;
         let counts = self.od_counts(fast_sample, "bicycle_direct")?;

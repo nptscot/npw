@@ -152,6 +152,12 @@ function greenspace {
   rm -f opgrsp_gb.gpkg
 }
 
+function railways {
+        osmium tags-filter scotland-latest.osm.pbf n/railway=station -o railway.osm.pbf
+        osmium export railway.osm.pbf -o tmp/railways.geojson
+        rm -f railway.osm.pbf
+}
+
 #core_net
 #rnet
 #streetspace
@@ -164,6 +170,7 @@ function greenspace {
 #elevation
 #settlements
 #greenspace ~/Downloads/opgrsp_gpkg_gb.zip
+#railways
 
 # Keep track of input files
 md5sum tmp/* ../web/public/*pmtiles > manifest

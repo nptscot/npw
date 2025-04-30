@@ -231,6 +231,14 @@
         <!-- Local access -->
 
         <tr>
+          <th scope="row" style:background={tierColors.LocalAccess}>
+            Railway stations
+          </th>
+          <td>{percent(baseline.percent_reachable_railway_stations)}</td>
+          <td>{percent($stats.percent_reachable_railway_stations)}</td>
+        </tr>
+
+        <tr>
           <th scope="row" style:background={tierColors.LocalAccess}>Schools</th>
           <td>{percent(baseline.percent_reachable_schools)}</td>
           <td>{percent($stats.percent_reachable_schools)}</td>

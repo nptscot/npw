@@ -69,6 +69,11 @@
         pct={$stats.percent_reachable_population}
       />
     {:else if $currentStage == "LocalAccess"}
+      <Metric
+        label="Railway stations"
+        pct={$stats.percent_reachable_railway_stations}
+      />
+
       <Metric label="Schools" pct={$stats.percent_reachable_schools} />
 
       <Metric

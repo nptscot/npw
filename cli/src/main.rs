@@ -142,6 +142,21 @@ fn create(
         &graph,
     )?;
 
+    timer.step("loading railway stations");
+    let railway_stations = backend::places::RailwayStation::from_gj(
+        &std::fs::read_to_string("../data_prep/tmp/railways.geojson")?,
+        &boundary_wgs84,
+        &graph,
+    )?;
+
+    timer.step("loading greenspaces");
+    let greenspaces = read_greenspaces(
+        "../data_prep/tmp/greenspace.gpkg",
+        "../data_prep/tmp/greenspace_access_points.gpkg",
+        &boundary_wgs84,
+        &graph,
+    )?;
+
     timer.step("loading town centres");
     let town_centres = backend::places::TownCentre::from_gj(
         &std::fs::read_to_string("../data_prep/tmp/town_centres.geojson")?,
@@ -152,14 +167,6 @@ fn create(
     timer.step("loading settlements");
     let settlements = backend::places::Settlement::from_gj(
         &std::fs::read_to_string("../data_prep/tmp/settlements.geojson")?,
-        &boundary_wgs84,
-        &graph,
-    )?;
-
-    timer.step("loading greenspaces");
-    let greenspaces = read_greenspaces(
-        "../data_prep/tmp/greenspace.gpkg",
-        "../data_prep/tmp/greenspace_access_points.gpkg",
         &boundary_wgs84,
         &graph,
     )?;
@@ -186,10 +193,11 @@ fn create(
         other_desire_lines,
         schools,
         gp_hospitals,
+        railway_stations,
+        greenspaces,
         town_centres,
         settlements,
         data_zones,
-        greenspaces,
         traffic_volumes,
         core_network,
         street_space,

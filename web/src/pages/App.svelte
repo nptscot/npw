@@ -18,6 +18,9 @@
   import hospital3Icon from "../../assets/hospital_ignore.png";
   import hospital1Icon from "../../assets/hospital_reachable.png";
   import hospital2Icon from "../../assets/hospital_unreachable.png";
+  import railwayStation3Icon from "../../assets/railway_station_ignore.png";
+  import railwayStation1Icon from "../../assets/railway_station_reachable.png";
+  import railwayStation2Icon from "../../assets/railway_station_unreachable.png";
   import school3Icon from "../../assets/school_ignore.png";
   import school1Icon from "../../assets/school_reachable.png";
   import school2Icon from "../../assets/school_unreachable.png";
@@ -260,6 +263,9 @@
           console.log(e.detail.error);
         }}
         images={[
+          { id: "railway_stations_reachable", url: railwayStation1Icon },
+          { id: "railway_stations_unreachable", url: railwayStation2Icon },
+          { id: "railway_stations_ignore", url: railwayStation3Icon },
           { id: "schools_reachable", url: school1Icon },
           { id: "schools_unreachable", url: school2Icon },
           { id: "schools_ignore", url: school3Icon },

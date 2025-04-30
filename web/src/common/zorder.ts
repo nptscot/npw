@@ -79,16 +79,17 @@ const layerZorder = [
   "mesh-density-grid-outline",
 
   // Reference layers (points or polygons)
-  "gp-hospitals",
+  "railway-stations", // TODO Need to cover up the basemap one sometimes
   "schools",
+  "gp-hospitals",
+  "greenspaces-fill",
+  "greenspaces-outline",
   "current-poi",
   "settlements-fill",
   "settlements-outline",
   "town-centres-fill",
   "town-centres-outline",
   "town-centres-points",
-  "greenspaces-fill",
-  "greenspaces-outline",
   "greenspace-access-points",
   "major-junctions",
 

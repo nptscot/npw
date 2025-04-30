@@ -55,10 +55,11 @@ pub struct MapModel {
 
     schools: Vec<places::School>,
     gp_hospitals: Vec<places::GPHospital>,
+    railway_stations: Vec<places::RailwayStation>,
+    greenspaces: Vec<places::Greenspace>,
     town_centres: Vec<places::TownCentre>,
     settlements: Vec<places::Settlement>,
     data_zones: Vec<places::DataZone>,
-    greenspaces: Vec<places::Greenspace>,
     total_settlement_area_m2: f64,
 
     // Per RoadID, static data
@@ -135,10 +136,11 @@ impl MapModel {
         other_desire_lines: Vec<(usize, Coord, usize)>,
         schools: Vec<places::School>,
         gp_hospitals: Vec<places::GPHospital>,
+        railway_stations: Vec<places::RailwayStation>,
+        greenspaces: Vec<places::Greenspace>,
         town_centres: Vec<places::TownCentre>,
         settlements: Vec<places::Settlement>,
         data_zones: Vec<places::DataZone>,
-        greenspaces: Vec<places::Greenspace>,
         traffic_volumes: Vec<usize>,
         core_network: Vec<Option<Tier>>,
         street_space: Vec<Option<Streetspace>>,
@@ -192,6 +194,8 @@ impl MapModel {
         let los = std::iter::repeat(LevelOfService::ShouldNotBeUsed)
             .take(graph.roads.len())
             .collect();
+        // Calculated below
+        let precalculated_demands = std::iter::repeat(0).take(graph.roads.len()).collect();
 
         let mut model = Self {
             graph,
@@ -204,18 +208,18 @@ impl MapModel {
             other_desire_lines,
             schools,
             gp_hospitals,
+            railway_stations,
+            greenspaces,
             town_centres,
             settlements,
             data_zones,
             total_settlement_area_m2,
-            greenspaces,
             highways,
             within_settlement,
             is_offroad,
             traffic_volumes,
             core_network,
-            // Calculated below
-            precalculated_demands: Vec::new(),
+            precalculated_demands,
             street_space,
             is_attractive,
             speeds,

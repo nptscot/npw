@@ -14,6 +14,10 @@
   import { currentPOI, filterKind, type POI } from "./stores";
 
   let lastUpdate = 0;
+  let railwayStations: POIs = {
+    type: "FeatureCollection",
+    features: [],
+  };
   let schools: POIs = {
     type: "FeatureCollection",
     features: [],
@@ -27,6 +31,10 @@
     if ($backend && lastUpdate != $mutationCounter) {
       let gj = await $backend.getPOIs();
       // It's easiest to filter upfront here, to simplify iconImage
+      railwayStations.features = gj.features.filter(
+        (f) => f.properties.poi_kind == "railway_stations",
+      );
+      railwayStations = railwayStations;
       schools.features = gj.features.filter(
         (f) => f.properties.poi_kind == "schools",
       );
@@ -62,10 +70,16 @@
 
   function setCurrentPOI(e: CustomEvent<LayerClickInfo>) {
     // Find the original feature, to set the point correctly
-    let collection =
-      e.detail.features[0].properties!.poi_kind == "schools"
-        ? schools
-        : gpHospitals;
+    let collection = {
+      schools,
+      gp_hospitals: gpHospitals,
+      railway_stations: railwayStations,
+    }[
+      e.detail.features[0].properties!.poi_kind as
+        | "railway_stations"
+        | "schools"
+        | "gp_hospitals"
+    ];
     let feature = collection.features.find(
       (f) => f.properties.idx == e.detail.features[0].properties!.idx,
     );
@@ -95,6 +109,20 @@
     return gj;
   }
 </script>
+
+<GeoJSON data={railwayStations} generateId>
+  <SymbolLayer
+    {...layerId("railway-stations")}
+    manageHoverState
+    layout={{
+      "icon-allow-overlap": true,
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 10, 0.1, 12, 1.0],
+      "icon-image": iconImage("railway_stations", $filterKind),
+    }}
+    hoverCursor="pointer"
+    on:click={setCurrentPOI}
+  />
+</GeoJSON>
 
 <GeoJSON data={schools} generateId>
   <SymbolLayer

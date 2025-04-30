@@ -158,6 +158,67 @@ struct GPHospitalGJ {
     name: String,
 }
 
+///
+
+#[derive(Serialize, Deserialize)]
+pub struct RailwayStation {
+    pub point: Point,
+    name: Option<String>,
+    pub road: RoadID,
+    sort: f64,
+}
+
+impl RailwayStation {
+    pub fn to_gj(&self, mercator: &Mercator, reachable: bool, idx: usize) -> Feature {
+        let mut f = mercator.to_wgs84_gj(&self.point);
+        f.set_property("poi_kind", "railway_stations");
+        f.set_property("reachable", reachable);
+        f.set_property("idx", idx);
+        f.set_property("sort", self.sort);
+
+        f.set_property(
+            "description",
+            self.name
+                .clone()
+                .unwrap_or_else(|| "This railway station".to_string()),
+        );
+
+        f
+    }
+
+    pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
+        let mut railway_stations = Vec::new();
+        for obj in geojson::de::deserialize_feature_collection_str_to_vec::<RailwayStationGJ>(gj)? {
+            if boundary_wgs84.contains(&obj.geometry) {
+                let point = graph.mercator.to_mercator(&obj.geometry);
+                let road = graph
+                    .snap_to_road(point.into(), graph.profile_names["bicycle_direct"])
+                    .road;
+                let x = point.x() / graph.mercator.width;
+                let y = point.y() / graph.mercator.height;
+                let sort =
+                    hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0;
+
+                railway_stations.push(RailwayStation {
+                    point,
+                    name: obj.name,
+                    road,
+                    sort,
+                });
+            }
+        }
+        info!("Matched {} railway stations", railway_stations.len());
+        Ok(railway_stations)
+    }
+}
+
+#[derive(Deserialize)]
+struct RailwayStationGJ {
+    #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
+    geometry: Point,
+    name: Option<String>,
+}
+
 ////
 
 #[derive(Serialize, Deserialize)]

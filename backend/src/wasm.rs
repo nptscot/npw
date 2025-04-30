@@ -398,6 +398,9 @@ impl MapModel {
         for (idx, poi) in self.gp_hospitals.iter().enumerate() {
             features.push(poi.to_gj(&self.graph.mercator, roads.covers(poi.road), idx));
         }
+        for (idx, poi) in self.railway_stations.iter().enumerate() {
+            features.push(poi.to_gj(&self.graph.mercator, roads.covers(poi.road), idx));
+        }
 
         serde_json::to_string(&FeatureCollection {
             bbox: None,
@@ -578,6 +581,7 @@ impl MapModel {
         match kind {
             "schools" => Ok([self.schools[idx].road].into()),
             "gp_hospitals" => Ok([self.gp_hospitals[idx].road].into()),
+            "railway_stations" => Ok([self.railway_stations[idx].road].into()),
             "greenspaces" => Ok(self.greenspaces[idx].roads.clone()),
             "town_centres" => Ok(self.town_centres[idx].roads.clone()),
             "settlements" => Ok(self.settlements[idx].roads.clone()),
