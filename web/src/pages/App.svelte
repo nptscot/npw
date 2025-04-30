@@ -15,7 +15,6 @@
     ScaleControl,
   } from "svelte-maplibre";
   import { fetchWithProgress, Loading } from "svelte-utils";
-  import { Geocoder } from "svelte-utils/map";
   import hospital3Icon from "../../assets/hospital_ignore.png";
   import hospital1Icon from "../../assets/hospital_reachable.png";
   import hospital2Icon from "../../assets/hospital_unreachable.png";
@@ -25,6 +24,7 @@
   import AssessMode from "../assess/AssessMode.svelte";
   import BulkEditMode from "../BulkEditMode.svelte";
   import { layerId, LoadingSpinner } from "../common";
+        import Geocoder from "../common/Geocoder.svelte";
   import DisableInteractiveLayers from "../common/DisableInteractiveLayers.svelte";
   import { getKey } from "../common/files";
   import { controlsContents, Layout, mapContents } from "../common/layout";
