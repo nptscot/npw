@@ -45,7 +45,7 @@
     "#30B0FF",
     "#2E5FFF",
     "#0000FF",
-    "#FF00C5",
+    "#ba00ff",
   ];
 
   $: directnessNetwork =

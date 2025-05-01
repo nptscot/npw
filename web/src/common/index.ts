@@ -107,7 +107,7 @@ export function lineColorForDemand(
     2000,
     "#0000FF",
     3000,
-    "#FF00C5",
+    "#ba00ff",
   ] as ExpressionSpecification;
 }
 
