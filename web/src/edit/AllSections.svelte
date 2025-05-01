@@ -59,128 +59,114 @@
   }
 </script>
 
+{#if overrideInfraType}
+  <p>
+    You've forced this route to always use {infraTypeMapping[infraType][0]}.
+  </p>
+
+  <button
+    class="ds_button ds_button--secondary"
+    on:click={() => (overrideInfraType = false)}
+  >
+    Remove override
+  </button>
+{:else}
+  <p>
+    The route you've drawn has been split into sections, automatically picking
+    an infrastructure type to achieve the best possible Level of Service.
+  </p>
+
+  <button
+    class="ds_button ds_button--secondary"
+    on:click={() => {
+      overrideInfraType = true;
+      showOverrideModal = true;
+    }}
+  >
+    Override infrastructure type...
+  </button>
+{/if}
+
 <section>
-  <h4>
-    <!-- svelte-ignore a11y-invalid-attribute -->
-    <a
-      href="#"
-      on:click|preventDefault={() => ($editModeBreakdown = "infra_type")}
+  <div style="display: flex; justify-content: space-between">
+    <b>Infrastructure type</b>
+    <button
+      class:style-icon={true}
+      on:click={() => ($editModeBreakdown = "infra_type")}
       class:focused={$editModeBreakdown == "infra_type"}
     >
-      Infrastructure type
-    </a>
-  </h4>
+      ☰
+    </button>
+  </div>
 
   <SectionDiagram breakdown="infra_type" {sectionsGj} />
-
-  {#if overrideInfraType}
-    <p>
-      You've forced this route to always use {infraTypeMapping[infraType][0]}.
-    </p>
-
-    <button
-      class="ds_button ds_button--secondary"
-      on:click={() => (overrideInfraType = false)}
-    >
-      Remove override
-    </button>
-  {:else}
-    <p>
-      The route you've drawn has been split into sections, automatically picking
-      an infrastructure type to achieve the best possible Level of Service.
-    </p>
-
-    <button
-      class="ds_button ds_button--secondary"
-      on:click={() => {
-        overrideInfraType = true;
-        showOverrideModal = true;
-      }}
-    >
-      Override infrastructure type
-    </button>
-  {/if}
 </section>
 
 <section>
-  <!-- svelte-ignore a11y-invalid-attribute -->
-  <h4>
-    <a
-      href="#"
-      on:click|preventDefault={() => ($editModeBreakdown = "deliverability")}
-      class:focused={$editModeBreakdown == "deliverability"}
-    >
-      Deliverability
-    </a>
-  </h4>
+  <div style="display: flex; justify-content: space-between">
+    <b>Deliverability</b>
+    <span>
+      <span>{pctFits} fits</span>
+      <button
+        class:style-icon={true}
+        on:click={() => ($editModeBreakdown = "deliverability")}
+        class:focused={$editModeBreakdown == "deliverability"}
+      >
+        <i class="fa-solid fa-person-digging"></i>
+      </button>
+    </span>
+  </div>
 
   <SectionDiagram breakdown="deliverability" {sectionsGj} />
-
-  {#if pctFits != "100%"}
-    <p>
-      Only {pctFits} of the route fits in the available streetspace. You may need
-      to override the infrastructure type for some sections.
-    </p>
-  {/if}
 </section>
 
 <section>
-  <h4>
-    <!-- svelte-ignore a11y-invalid-attribute -->
-    <a
-      href="#"
-      on:click|preventDefault={() => ($editModeBreakdown = "los")}
-      class:focused={$editModeBreakdown == "los"}
-    >
-      Level of Service
-    </a>
-  </h4>
+  <div style="display: flex; justify-content: space-between">
+    <b>Level of Service</b>
+    <span>
+      <span>{pctHighLoS} high</span>
+      <button
+        class:style-icon={true}
+        on:click={() => ($editModeBreakdown = "los")}
+        class:focused={$editModeBreakdown == "los"}
+      >
+        <i class="fa-solid fa-face-smile"></i>
+      </button>
+    </span>
+  </div>
 
   <SectionDiagram breakdown="los" {sectionsGj} />
-
-  {#if pctHighLoS != "100%"}
-    <p>
-      Only {pctHighLoS} of the route has a high level of service. You may need to
-      override the infrastructure type for some sections and reduce traffic speeds
-      and volumes.
-    </p>
-  {/if}
 </section>
 
 <section>
-  <h4>
-    <!-- svelte-ignore a11y-invalid-attribute -->
-    <a
-      href="#"
-      on:click|preventDefault={() => ($editModeBreakdown = "tier")}
-      class:focused={$editModeBreakdown == "tier"}
-    >
-      Tier
-    </a>
-  </h4>
+  <div style="display: flex; justify-content: space-between">
+    <b>Tier</b>
+    <span>
+      <span>{pctMatchesTier} uses {tierLabels[tier]}</span>
+      <button
+        class:style-icon={true}
+        on:click={() => ($editModeBreakdown = "tier")}
+        class:focused={$editModeBreakdown == "tier"}
+      >
+        ‖‖
+      </button>
+    </span>
+  </div>
 
   <SectionDiagram breakdown="tier" {sectionsGj} />
-
-  {#if pctMatchesTier != "100%"}
-    <p>
-      Only {pctMatchesTier} of the route will use the {tierLabels[tier]} tier. Because
-      the route enters and exits settlements, part of it is assigned to a different
-      tier.
-    </p>
-  {/if}
 </section>
 
 <section>
-  <h4>
-    <!-- svelte-ignore a11y-invalid-attribute -->
-    <a
-      href="#"
-      on:click|preventDefault={() => ($editModeBreakdown = "gradient")}
+  <div style="display: flex; justify-content: space-between">
+    <b>Gradient</b>
+    <button
+      class:style-icon={true}
+      on:click={() => ($editModeBreakdown = "gradient")}
       class:focused={$editModeBreakdown == "gradient"}
     >
-      Gradient
-    </a>
-  </h4>
+      <i class="fa-solid fa-mound"></i>
+    </button>
+  </div>
 
   <SectionDiagram breakdown="gradient" {sectionsGj} />
 </section>
@@ -195,7 +181,13 @@
 </Modal>
 
 <style>
+  .style-icon {
+    background-color: #eee;
+    margin: 4px;
+  }
+
   .focused {
-    text-decoration: underline;
+    font-weight: bold;
+    background-color: #aaa;
   }
 </style>

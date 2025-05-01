@@ -180,20 +180,18 @@
       {/if}
 
       {#if $waypoints.length >= 2}
-        <button class="ds_button" on:click={finish}>Finish</button>
+        <div class="ds_button-group">
+          <button class="ds_button" on:click={finish}>Finish</button>
 
-        {#if id != null}
-          <div>
+          {#if id != null}
             <button
               class="ds_button ds_button--secondary"
               on:click={deleteRoute}
             >
               Delete
             </button>
-          </div>
-        {/if}
+          {/if}
 
-        <div>
           <button
             class="ds_button ds_button--secondary"
             disabled={cannotUndo}
@@ -211,13 +209,9 @@
           {tier}
         />
 
-        <h4>Route properties</h4>
+        <h3>Route properties</h3>
 
-        <input
-          class="ds_input ds_input--fixed-20"
-          placeholder="Name"
-          bind:value={name}
-        />
+        <input class="ds_input" placeholder="Name" bind:value={name} />
 
         <textarea
           class="ds_input"
@@ -228,7 +222,7 @@
 
         <div>
           <label>
-            Tier:
+            Override tier:
             <select bind:value={tier}>
               <option value="Primary">Primary routes</option>
               <option value="Secondary">Secondary routes</option>
