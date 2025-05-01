@@ -16,7 +16,7 @@ export let tierColors = {
   Primary: "#970f52",
   Secondary: "#ff978c",
   LocalAccess: "#feae01",
-  LongDistance: "#D2691E",
+  LongDistance: "#badc58",
 };
 
 export let stageColors = {
