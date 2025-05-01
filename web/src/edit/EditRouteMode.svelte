@@ -26,7 +26,7 @@
     editModeBreakdown,
     mode,
   } from "../stores";
-  import type { AutosplitRoute, InfraType, Waypoint } from "../types";
+  import type { AutosplitRoute, InfraType, Tier, Waypoint } from "../types";
   import AllSections from "./AllSections.svelte";
   import RouteControls from "./RouteControls.svelte";
   import { canStopDrawing, waypoints } from "./stores";
@@ -45,7 +45,7 @@
   let tier = $currentStage == "assessment" ? "Primary" : $currentStage;
 
   let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
-  $: recalculateSections($waypoints, overrideInfraType, infraType);
+  $: recalculateSections($waypoints, overrideInfraType, infraType, tier);
 
   $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
 
@@ -104,6 +104,7 @@
     waypts: Waypoint[],
     overrideInfraType: boolean,
     infraType: InfraType,
+    tier: Tier,
   ) {
     try {
       sectionsGj = await $backend!.autosplitRoute(
