@@ -101,9 +101,9 @@ export class InnerBackend {
   }
 
   // TODO Be consistent about undefined vs null
-  setRoute(id: number | null, input: SetRouteInput) {
+  setRoute(id: number | null, input: SetRouteInput): number[] {
     this.checkReady();
-    this.inner!.setRoute(id == null ? undefined : id, input);
+    return Array.from(this.inner!.setRoute(id == null ? undefined : id, input));
   }
 
   deleteRoutes(ids: number[]) {

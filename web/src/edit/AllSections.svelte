@@ -1,22 +1,12 @@
 <script lang="ts">
   import { tierLabels } from "../colors";
-  import { Modal, percent } from "../common";
+  import { percent } from "../common";
   import { editModeBreakdown } from "../stores";
-  import {
-    infraTypeMapping,
-    type AutosplitRoute,
-    type InfraType,
-    type Tier,
-  } from "../types";
-  import PickInfraType from "./PickInfraType.svelte";
+  import { type AutosplitRoute, type Tier } from "../types";
   import SectionDiagram from "./SectionDiagram.svelte";
 
   export let sectionsGj: AutosplitRoute;
-  export let infraType: InfraType;
-  export let overrideInfraType: boolean;
   export let tier: Tier;
-
-  let showOverrideModal = false;
 
   $: pctFits = percentFits(sectionsGj);
   $: pctHighLoS = percentHighLoS(sectionsGj);
@@ -58,34 +48,6 @@
     return percent(matches, total);
   }
 </script>
-
-{#if overrideInfraType}
-  <p>
-    You've forced this route to always use {infraTypeMapping[infraType][0]}.
-  </p>
-
-  <button
-    class="ds_button ds_button--secondary"
-    on:click={() => (overrideInfraType = false)}
-  >
-    Remove override
-  </button>
-{:else}
-  <p>
-    The route you've drawn has been split into sections, automatically picking
-    an infrastructure type to achieve the best possible Level of Service.
-  </p>
-
-  <button
-    class="ds_button ds_button--secondary"
-    on:click={() => {
-      overrideInfraType = true;
-      showOverrideModal = true;
-    }}
-  >
-    Override infrastructure type...
-  </button>
-{/if}
 
 <section>
   <div style="display: flex; justify-content: space-between">
@@ -170,15 +132,6 @@
 
   <SectionDiagram breakdown="gradient" {sectionsGj} />
 </section>
-
-<Modal bind:show={showOverrideModal}>
-  <PickInfraType
-    onFinish={(value) => {
-      infraType = value;
-      showOverrideModal = false;
-    }}
-  />
-</Modal>
 
 <style>
   .style-icon {

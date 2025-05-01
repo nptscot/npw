@@ -12,7 +12,7 @@
     tierColors,
     tierLabels,
   } from "../colors";
-  import { BackLink, Checkbox, layerId } from "../common";
+  import { BackLink, Checkbox, layerId, Modal } from "../common";
   import { SplitComponent } from "../common/layout";
   import RelevantLayers from "../layers/RelevantLayers.svelte";
   import { majorJunctions } from "../layers/stores";
@@ -26,8 +26,15 @@
     editModeBreakdown,
     mode,
   } from "../stores";
-  import type { AutosplitRoute, InfraType, Tier, Waypoint } from "../types";
+  import {
+    infraTypeMapping,
+    type AutosplitRoute,
+    type InfraType,
+    type Tier,
+    type Waypoint,
+  } from "../types";
   import AllSections from "./AllSections.svelte";
+  import PickInfraType from "./PickInfraType.svelte";
   import RouteControls from "./RouteControls.svelte";
   import { canStopDrawing, waypoints } from "./stores";
 
@@ -43,6 +50,7 @@
   let infraType: InfraType = "MixedTraffic";
   let overrideInfraType = false;
   let tier = $currentStage == "assessment" ? "Primary" : $currentStage;
+  let showOverrideModal = false;
 
   let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
   $: recalculateSections($waypoints, overrideInfraType, infraType, tier);
@@ -77,7 +85,7 @@
   }
 
   async function finish() {
-    await $backend!.setRoute(id, {
+    let allIds = await $backend!.setRoute(id, {
       waypoints: $waypoints,
 
       name,
@@ -87,7 +95,12 @@
       tier,
     });
     await autosave();
-    $mode = { kind: "main" };
+
+    if (allIds.length > 1) {
+      $mode = { kind: "review-sections", ids: allIds, sectionsGj };
+    } else {
+      $mode = { kind: "main" };
+    }
   }
 
   function cancel() {
@@ -203,12 +216,47 @@
           </button>
         </div>
 
-        <AllSections
-          {sectionsGj}
-          bind:infraType
-          bind:overrideInfraType
-          {tier}
-        />
+        {#if overrideInfraType}
+          <p>
+            You've forced this route to always use {infraTypeMapping[
+              infraType
+            ][0]}.
+          </p>
+
+          <button
+            class="ds_button ds_button--secondary"
+            on:click={() => (overrideInfraType = false)}
+          >
+            Remove override
+          </button>
+        {:else}
+          <p>
+            The route you've drawn has been split into sections, automatically
+            picking an infrastructure type to achieve the best possible Level of
+            Service.
+          </p>
+
+          <button
+            class="ds_button ds_button--secondary"
+            on:click={() => {
+              overrideInfraType = true;
+              showOverrideModal = true;
+            }}
+          >
+            Override infrastructure type...
+          </button>
+        {/if}
+
+        <Modal bind:show={showOverrideModal}>
+          <PickInfraType
+            onFinish={(value) => {
+              infraType = value;
+              showOverrideModal = false;
+            }}
+          />
+        </Modal>
+
+        <AllSections {sectionsGj} {tier} />
 
         <h3>Route properties</h3>
 

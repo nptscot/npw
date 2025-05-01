@@ -116,10 +116,11 @@ export class Backend {
     return result;
   }
 
-  async setRoute(id: number | null, input: SetRouteInput) {
+  async setRoute(id: number | null, input: SetRouteInput): Promise<number[]> {
     this.start();
-    await this.inner.setRoute(id, input);
+    let result = await this.inner.setRoute(id, input);
     this.stop();
+    return result;
   }
 
   async deleteRoutes(ids: number[]) {

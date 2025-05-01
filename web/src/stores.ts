@@ -8,6 +8,7 @@ import {
   fixCurrentPOI,
 } from "./local_access/stores";
 import type {
+  AutosplitRoute,
   ConnectedComponents,
   ODStats,
   SlowStats,
@@ -24,6 +25,7 @@ export type Mode =
   | { kind: "overview" }
   | { kind: "main" }
   | { kind: "edit-route"; id: number | null }
+  | { kind: "review-sections"; ids: number[]; sectionsGj: AutosplitRoute }
   | { kind: "evaluate-journey"; browse: WorstRoutes }
   | { kind: "bulk-edit" }
   | { kind: "export" };

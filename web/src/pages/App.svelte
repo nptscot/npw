@@ -38,6 +38,7 @@
   import StreetView from "../common/StreetView.svelte";
   import SwitchBasemap from "../common/SwitchBasemap.svelte";
   import EditRouteMode from "../edit/EditRouteMode.svelte";
+  import ReviewSectionsMode from "../edit/ReviewSectionsMode.svelte";
   import EvaluateJourneyMode from "../EvaluateJourneyMode.svelte";
   import ExportMode from "../ExportMode.svelte";
   import ReferenceLayers from "../layers/ReferenceLayers.svelte";
@@ -366,6 +367,8 @@
             {/if}
           {:else if $mode.kind == "edit-route" && map}
             <EditRouteMode id={$mode.id} {map} />
+          {:else if $mode.kind == "review-sections"}
+            <ReviewSectionsMode ids={$mode.ids} sectionsGj={$mode.sectionsGj} />
           {:else if $mode.kind == "evaluate-journey"}
             <EvaluateJourneyMode browse={$mode.browse} />
           {:else if $mode.kind == "bulk-edit"}

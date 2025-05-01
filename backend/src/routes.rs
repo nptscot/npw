@@ -79,7 +79,12 @@ pub struct SetRouteInput {
 }
 
 impl MapModel {
-    pub fn set_route(&mut self, edit_id: Option<usize>, orig_route: SetRouteInput) -> Result<()> {
+    /// Returns a list of route IDs in order (but there may be gaps for existing routes)
+    pub fn set_route(
+        &mut self,
+        edit_id: Option<usize>,
+        orig_route: SetRouteInput,
+    ) -> Result<Vec<usize>> {
         // The waypoints should already be corrected to the exact snapped positions
         let major_snap_threshold = None;
         let (orig_roads, _) = self.waypoints_to_path(&orig_route.waypoints, major_snap_threshold);
@@ -162,14 +167,16 @@ impl MapModel {
             });
         }
 
+        let mut new_ids = Vec::new();
         for route in new_routes {
             let route_id = self.id_counter;
             self.id_counter += 1;
             self.routes.insert(route_id, route);
+            new_ids.push(route_id);
         }
         self.recalculate_after_edits();
 
-        Ok(())
+        Ok(new_ids)
     }
 
     pub fn delete_routes(&mut self, ids: Vec<usize>) -> Result<()> {

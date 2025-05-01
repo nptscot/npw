@@ -126,9 +126,13 @@ impl MapModel {
         vec![b.min().x, b.min().y, b.max().x, b.max().y]
     }
 
-    /// Create or edit a route
+    /// Create or edit a route. Returns the list of route IDs
     #[wasm_bindgen(js_name = setRoute)]
-    pub fn set_route_wasm(&mut self, id: Option<usize>, input: JsValue) -> Result<(), JsValue> {
+    pub fn set_route_wasm(
+        &mut self,
+        id: Option<usize>,
+        input: JsValue,
+    ) -> Result<Vec<usize>, JsValue> {
         let mut route: SetRouteInput = serde_wasm_bindgen::from_value(input)?;
         for w in &mut route.waypoints {
             self.to_mercator(&mut w.point);
