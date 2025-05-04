@@ -368,6 +368,8 @@ fn read_street_space(
     let b = &graph.mercator.wgs84_bounds;
     layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
     let combined_2way_idx = layer.defn().field_index("combined_2way")?;
+    let cross_section_profile_idx = layer.defn().field_index("cross_section_profile")?;
+    let edge_to_edge_width_idx = layer.defn().field_index("edge_to_edge_width")?;
 
     let mut source_geometry = Vec::new();
     let mut source_data = Vec::new();
@@ -380,9 +382,19 @@ fn read_street_space(
         };
         let segregated_fits =
             combined_2way == "Absolute minimum" || combined_2way == "Desirable minimum";
+        let cross_section_profile = input
+            .field_as_string(cross_section_profile_idx)?
+            .unwrap_or_else(|| "no data".to_string());
+        let edge_to_edge_width = input
+            .field_as_integer(edge_to_edge_width_idx)?
+            .unwrap_or(0) as usize;
 
         source_geometry.push(geom);
-        source_data.push(Streetspace { segregated_fits });
+        source_data.push(Streetspace {
+            segregated_fits,
+            cross_section_profile,
+            edge_to_edge_width,
+        });
     }
 
     timer.step("match roads to streetspace");
@@ -638,7 +650,7 @@ fn read_access_points(path: &str, graph: &Graph) -> Result<HashMap<String, Vec<P
     Ok(pts_per_site)
 }
 
-fn get_anime_match<T: Copy>(
+fn get_anime_match<T: Clone>(
     matches: &anime::MatchesMap,
     source_data: &Vec<T>,
     target_idx: usize,
@@ -648,7 +660,7 @@ fn get_anime_match<T: Copy>(
     let c = candidates
         .into_iter()
         .max_by_key(|c| (c.shared_len * 1000.0) as usize)?;
-    Some(source_data[c.source_index])
+    Some(source_data[c.source_index].clone())
 }
 
 // TODO By michaelkirk, copied from ltn repo -- will wind up upstreamed in geo likely soon

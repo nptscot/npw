@@ -122,9 +122,11 @@ pub enum Tier {
 }
 
 /// This is a simplification of the NPT layer
-#[derive(Clone, Copy, Debug, Enum, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Streetspace {
     pub segregated_fits: bool,
+    pub cross_section_profile: String,
+    pub edge_to_edge_width: usize,
 }
 
 impl MapModel {
@@ -326,14 +328,12 @@ impl MapModel {
             );
             f.set_property(
                 "street_space",
-                serde_json::to_value(self.street_space[idx].map(|ss| {
-                    if ss.segregated_fits {
-                        "Segregated"
-                    } else {
-                        "nothing"
-                    }
-                }))
-                .unwrap(),
+                serde_json::to_value(self.street_space[idx].as_ref()).unwrap(),
+            );
+            f.set_property(
+                "segregated_fits",
+                serde_json::to_value(self.street_space[idx].as_ref().map(|ss| ss.segregated_fits))
+                    .unwrap(),
             );
 
             features.push(f);
@@ -393,7 +393,7 @@ impl MapModel {
     }
 
     pub fn does_infra_type_fit(&self, r: RoadID, infra_type: InfraType) -> bool {
-        let Some(streetspace) = self.street_space[r.0] else {
+        let Some(ref streetspace) = self.street_space[r.0] else {
             // Only have this info on arterialroads. Assume anything can fit on smaller roads. In
             // practice, we won't ask about things like Segregated there anyway.
             return true;

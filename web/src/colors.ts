@@ -101,11 +101,6 @@ export let reachabilityColors = {
   severance: "red",
 };
 
-export let streetSpaceColors = {
-  nothing: "red",
-  Segregated: "green",
-};
-
 export let nptStreetSpaceColors = {
   "Not enough space": "#dd7777",
   "Absolute minimum": "#e0b97d",

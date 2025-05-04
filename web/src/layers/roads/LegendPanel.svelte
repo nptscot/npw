@@ -12,7 +12,6 @@
     population,
     reachabilityColors,
     speed,
-    streetSpaceColors,
     tierColors,
     traffic,
   } from "../../colors";
@@ -114,7 +113,7 @@
   {:else if $backgroundLayer == "street_space"}
     <b>Street space</b>
     <p>
-      What fits within the carriageway, verges, and footways?
+      Does a segregated track fit within the carriageway, verges, and footways?
       <HelpButton>
         <p>
           Contains <a
@@ -147,7 +146,7 @@
     {#if $debugOriginalData}
       <QualitativeLegend labelColors={nptStreetSpaceColors} />
     {:else}
-      <QualitativeLegend labelColors={streetSpaceColors} />
+      <QualitativeLegend labelColors={{ yes: "green", no: "red" }} />
     {/if}
 
     {#if $devMode}

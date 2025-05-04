@@ -250,7 +250,12 @@ export interface StaticRoad {
   existing_infra: InfraType | null;
   precalculated_demand: number;
   precalculated_demand_group: "high" | "medium" | "";
-  street_space: "Segregated" | "nothing" | null;
+  segregated_fits: boolean | null;
+  street_space: {
+    segregated_fits: boolean;
+    cross_section_profile: string;
+    edge_to_edge_width: number;
+  } | null;
 }
 
 export interface DynamicRoad {

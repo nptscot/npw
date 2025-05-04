@@ -13,7 +13,6 @@
     levelOfServiceColors,
     reachabilityColors,
     speed,
-    streetSpaceColors,
     traffic,
   } from "../../colors";
   import {
@@ -114,11 +113,12 @@
         gradient.limits,
         gradient.colorScale,
       ),
-      street_space: constructMatchExpression(
-        ["get", "street_space"],
-        streetSpaceColors,
-        "cyan",
-      ),
+      street_space: [
+        "case",
+        ["get", "segregated_fits"],
+        "green",
+        "red",
+      ] as DataDrivenPropertyValueSpecification<string>,
       speed: makeRamp(["get", "speed"], speed.limits, speed.colorScale),
       attractive: "green",
       los: constructMatchExpression(
@@ -267,11 +267,23 @@
         </b>
       </p>
       {#if props.street_space}
-        <p>
-          What fits within the carriageway, verges, and footways? <b>
-            {props.street_space}
-          </b>
-        </p>
+        {@const ss = JSON.parse(props.street_space)}
+        <p>Streetspace evaluation data:</p>
+        <ul>
+          <li>
+            Does a segregated cycletrack fit? <b>
+              {ss.segregated_fits ? "yes" : "no"}
+            </b>
+          </li>
+          <li>
+            Edge-to-edge width: <b>{ss.edge_to_edge_width}m</b>
+          </li>
+          <li>
+            Details: <b>{ss.cross_section_profile}</b>
+          </li>
+        </ul>
+      {:else}
+        <p>No streetspace evaluation data</p>
       {/if}
       <a href={props.way} target="_blank">Open OSM</a>
 
