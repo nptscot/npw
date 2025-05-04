@@ -222,7 +222,12 @@ export type AutosplitRoute = FeatureCollection<
     los: string;
     tier: Tier;
   }
->;
+> & {
+  some_roads_without_sse: boolean;
+  min_e2e_width: number;
+  max_e2e_width: number;
+  cross_section_profiles: string[];
+};
 
 export type TownCentreRoutes = FeatureCollection<
   LineString,

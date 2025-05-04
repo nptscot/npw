@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use anyhow::Result;
 use geo::{Haversine, Length, LineString};
-use geojson::{Feature, FeatureCollection, GeoJson, Geometry};
+use geojson::{Feature, FeatureCollection, Geometry};
 use graph::{Graph, PathStep, Position, RoadID};
 use serde::{Deserialize, Serialize};
 
@@ -326,7 +326,7 @@ impl MapModel {
         self.import_roads(imports);
     }
 
-    /// Split a route into sections, returning a FeatureCollection
+    /// Split a route into sections, returning a FeatureCollection & SseDetails
     pub fn autosplit_route(
         &self,
         editing_route_id: Option<usize>,
@@ -397,8 +397,15 @@ impl MapModel {
             }
         };
 
+        let mut sse_details = SseDetails::default();
+        // Dummy placeholder value
+        sse_details.min_e2e_width = 100;
         let mut sections = Vec::new();
         for roads in route_roads.chunk_by(|a, b| case(*a) == case(*b)) {
+            for (r, _) in roads {
+                sse_details.update(self, *r);
+            }
+
             let c = case(roads[0]);
             let linestring_wgs84 = glue_route_wgs84(&self.graph, roads);
             let mut f = Feature::from(Geometry::from(&linestring_wgs84));
@@ -431,7 +438,18 @@ impl MapModel {
             f.set_property("length", Haversine.length(&linestring_wgs84));
             sections.push(f);
         }
-        Ok(serde_json::to_string(&GeoJson::from(sections))?)
+
+        if sse_details.min_e2e_width == 100 {
+            sse_details.min_e2e_width = 0;
+        }
+        sse_details.cross_section_profiles.sort();
+        sse_details.cross_section_profiles.dedup();
+
+        Ok(serde_json::to_string(&FeatureCollection {
+            features: sections,
+            bbox: None,
+            foreign_members: Some(into_object_value(serde_json::to_value(&sse_details)?)),
+        })?)
     }
 
     pub fn change_tier(&mut self, route_ids: Vec<usize>, tier: Tier) -> Result<()> {
@@ -700,4 +718,26 @@ struct RouteSection {
     infra_type: InfraType,
     fits: bool,
     los: LevelOfService,
+}
+
+#[derive(Default, Serialize)]
+struct SseDetails {
+    some_roads_without_sse: bool,
+    min_e2e_width: usize,
+    max_e2e_width: usize,
+    cross_section_profiles: Vec<String>,
+}
+
+impl SseDetails {
+    fn update(&mut self, map: &MapModel, r: RoadID) {
+        let Some(ref ss) = map.street_space[r.0] else {
+            self.some_roads_without_sse = true;
+            return;
+        };
+
+        self.min_e2e_width = self.min_e2e_width.min(ss.edge_to_edge_width);
+        self.max_e2e_width = self.max_e2e_width.max(ss.edge_to_edge_width);
+        self.cross_section_profiles
+            .push(ss.cross_section_profile.clone());
+    }
 }

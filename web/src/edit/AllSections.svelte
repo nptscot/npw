@@ -1,8 +1,9 @@
 <script lang="ts">
   import { tierLabels } from "../colors";
-  import { percent } from "../common";
+  import { HelpButton, percent } from "../common";
   import { editModeBreakdown } from "../stores";
-  import { type AutosplitRoute, type Tier } from "../types";
+  import type { AutosplitRoute, Tier } from "../types";
+  import ExplainSSE from "./ExplainSSE.svelte";
   import SectionDiagram from "./SectionDiagram.svelte";
 
   export let sectionsGj: AutosplitRoute;
@@ -68,7 +69,12 @@
   <div style="display: flex; justify-content: space-between">
     <b>Deliverability</b>
     <span>
-      <span>{pctFits} fits</span>
+      <span>
+        {pctFits} fits
+        <HelpButton>
+          <ExplainSSE {sectionsGj} />
+        </HelpButton>
+      </span>
       <button
         class:style-icon={true}
         on:click={() => ($editModeBreakdown = "deliverability")}
