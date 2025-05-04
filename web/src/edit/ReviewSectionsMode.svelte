@@ -132,7 +132,7 @@
 
                   <td
                     style:background={section.fits ? "green" : "red"}
-                    title={"Fits: " + section.fits ? "yes" : "no"}
+                    title={"Fits: " + (section.fits ? "yes" : "no")}
                   ></td>
 
                   <td
