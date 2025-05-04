@@ -13,12 +13,27 @@
   import Greenspaces from "../local_access/Greenspaces.svelte";
   import PointPOIs from "../local_access/PointPOIs.svelte";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
-  import { backend, currentStage, editsRoadStyle, mode } from "../stores";
+  import {
+    autosave,
+    backend,
+    currentStage,
+    editsRoadStyle,
+    mode,
+  } from "../stores";
 
   export let ids: number[];
 
   $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
   $: labelColor = stageColors[$currentStage];
+
+  async function deleteRoute() {
+    if (!window.confirm("Are you sure you want to delete this route?")) {
+      return;
+    }
+    await $backend!.deleteRoutes(ids);
+    await autosave();
+    $mode = { kind: "main" };
+  }
 </script>
 
 <SplitComponent>
@@ -37,9 +52,15 @@
 
       <!-- TODO no BackLink? -->
 
-      <button class="ds_button" on:click={() => ($mode = { kind: "main" })}>
-        Continue
-      </button>
+      <div class="ds_button-group">
+        <button class="ds_button" on:click={() => ($mode = { kind: "main" })}>
+          Continue
+        </button>
+
+        <button class="ds_button ds_button--secondary" on:click={deleteRoute}>
+          Delete
+        </button>
+      </div>
 
       <p>This route was split into {ids.length} sections.</p>
 
