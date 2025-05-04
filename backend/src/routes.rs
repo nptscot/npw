@@ -465,6 +465,34 @@ impl MapModel {
         Ok(())
     }
 
+    pub fn get_route_sections(&self, ids: Vec<usize>) -> Result<String> {
+        let mut sections = Vec::new();
+        for id in ids {
+            let Some(route) = self.routes.get(&id) else {
+                bail!("No route {id}");
+            };
+
+            // We assume fits and los are uniform for all roads in the route; everything that sets
+            // or imports routes must maintain this invariant
+            let (r, _) = route.roads[0];
+            let fits = self.does_infra_type_fit(r, route.infra_type);
+            let los = get_level_of_service(
+                route.infra_type,
+                self.speeds[r.0],
+                self.traffic_volumes[r.0],
+                self.within_settlement[r.0],
+            );
+            sections.push(RouteSection {
+                id,
+                tier: route.tier,
+                infra_type: route.infra_type,
+                fits,
+                los,
+            });
+        }
+        Ok(serde_json::to_string(&sections)?)
+    }
+
     fn import_roads(&mut self, imports: Vec<(RoadID, InfraType, Tier)>) {
         let used_roads = self.used_roads();
 
@@ -663,4 +691,13 @@ fn fix_tier_drawing(default: Tier, within_settlement: bool, highway: Highway) ->
 
     // If we're outside a settlement, force LongDistance
     Tier::LongDistance
+}
+
+#[derive(Serialize)]
+struct RouteSection {
+    id: usize,
+    tier: Tier,
+    infra_type: InfraType,
+    fits: bool,
+    los: LevelOfService,
 }

@@ -196,6 +196,14 @@ export interface RouteProps {
   tier: Tier;
 }
 
+export interface RouteSection {
+  id: number;
+  tier: Tier;
+  infra_type: InfraType;
+  fits: boolean;
+  los: string;
+}
+
 export type ConnectedComponents = FeatureCollection<
   LineString,
   { component: number }

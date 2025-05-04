@@ -22,6 +22,7 @@ import type {
   POIs,
   RouteGJ,
   RouteProps,
+  RouteSection,
   SetRouteInput,
   Settlements,
   SlowStats,
@@ -112,6 +113,13 @@ export class Backend {
   async getRoute(id: number): Promise<Feature<LineString, RouteProps>> {
     this.start();
     let result = await this.inner.getRoute(id);
+    this.stop();
+    return result;
+  }
+
+  async getRouteSections(ids: Array<number>): Promise<RouteSection[]> {
+    this.start();
+    let result = await this.inner.getRouteSections(ids);
     this.stop();
     return result;
   }

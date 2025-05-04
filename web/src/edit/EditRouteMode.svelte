@@ -97,7 +97,7 @@
     await autosave();
 
     if (allIds.length > 1) {
-      $mode = { kind: "review-sections", ids: allIds, sectionsGj };
+      $mode = { kind: "review-sections", ids: allIds };
     } else {
       $mode = { kind: "main" };
     }

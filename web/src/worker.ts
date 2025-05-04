@@ -22,6 +22,7 @@ import type {
   POIs,
   RouteGJ,
   RouteProps,
+  RouteSection,
   SetRouteInput,
   Settlements,
   SlowStats,
@@ -98,6 +99,11 @@ export class InnerBackend {
   getRoute(id: number): Feature<LineString, RouteProps> {
     this.checkReady();
     return JSON.parse(this.inner!.getRoute(id));
+  }
+
+  getRouteSections(ids: Array<number>): RouteSection[] {
+    this.checkReady();
+    return JSON.parse(this.inner!.getRouteSections(new Uint32Array(ids)));
   }
 
   // TODO Be consistent about undefined vs null

@@ -222,6 +222,11 @@ impl MapModel {
         serde_json::to_string(&route).map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = getRouteSections)]
+    pub fn get_route_sections_wasm(&self, ids: Vec<usize>) -> Result<String, JsValue> {
+        self.get_route_sections(ids).map_err(err_to_js)
+    }
+
     #[wasm_bindgen(js_name = evaluateRoute)]
     pub fn evaluate_route_wasm(&mut self, input: JsValue) -> Result<String, JsValue> {
         if !self.quiet_router_ok {

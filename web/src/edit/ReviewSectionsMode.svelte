@@ -1,18 +1,21 @@
 <script lang="ts">
-  import { stageColors, tierLabels } from "../colors";
+  import {
+    infraTypeColors,
+    infraTypeLabels,
+    levelOfServiceColors,
+    levelOfServiceLabels,
+    stageColors,
+    tierColors,
+    tierLabels,
+  } from "../colors";
   import { SplitComponent } from "../common/layout";
   import RelevantLayers from "../layers/RelevantLayers.svelte";
   import Greenspaces from "../local_access/Greenspaces.svelte";
   import PointPOIs from "../local_access/PointPOIs.svelte";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
-  import { currentStage, mode } from "../stores";
-  import type { AutosplitRoute } from "../types";
-  import AllSections from "./AllSections.svelte";
+  import { backend, currentStage, editsRoadStyle, mode } from "../stores";
 
   export let ids: number[];
-  export let sectionsGj: AutosplitRoute;
-
-  let tier = $currentStage == "assessment" ? "Primary" : $currentStage;
 
   $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
   $: labelColor = stageColors[$currentStage];
@@ -40,22 +43,84 @@
 
       <p>This route was split into {ids.length} sections.</p>
 
-      <ol>
-        {#each ids as id, idx}
-          <li>
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a
-              href="#"
-              on:click|preventDefault={() =>
-                ($mode = { kind: "edit-route", id })}
-            >
-              Section {idx + 1}
-            </a>
-          </li>
-        {/each}
-      </ol>
+      {#if $backend}
+        {#await $backend.getRouteSections(ids) then sections}
+          <table>
+            <thead>
+              <tr>
+                <th>Section</th>
+                <th>
+                  <button
+                    class:selected={$editsRoadStyle == "edits_tier"}
+                    on:click={() => ($editsRoadStyle = "edits_tier")}
+                  >
+                    ‖‖
+                  </button>
+                </th>
+                <th>
+                  <button
+                    class:selected={$editsRoadStyle == "edits_infra"}
+                    on:click={() => ($editsRoadStyle = "edits_infra")}
+                  >
+                    ☰
+                  </button>
+                </th>
+                <th>
+                  <button
+                    class:selected={$editsRoadStyle == "edits_deliverability"}
+                    on:click={() => ($editsRoadStyle = "edits_deliverability")}
+                  >
+                    <i class="fa-solid fa-person-digging"></i>
+                  </button>
+                </th>
+                <th>
+                  <button
+                    class:selected={$editsRoadStyle == "edits_los"}
+                    on:click={() => ($editsRoadStyle = "edits_los")}
+                  >
+                    <i class="fa-solid fa-face-smile"></i>
+                  </button>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each sections as section, idx}
+                <tr>
+                  <td
+                    class="section-cell"
+                    on:click={() =>
+                      ($mode = { kind: "edit-route", id: section.id })}
+                  >
+                    {idx + 1}
+                  </td>
 
-      <AllSections {sectionsGj} {tier} />
+                  <td
+                    style:background={tierColors[section.tier]}
+                    title={"Tier: " + tierLabels[section.tier]}
+                  ></td>
+
+                  <td
+                    style:background={infraTypeColors[section.infra_type]}
+                    title={"Infrastructure type: " +
+                      infraTypeLabels[section.infra_type]}
+                  ></td>
+
+                  <td
+                    style:background={section.fits ? "green" : "red"}
+                    title={"Fits: " + section.fits ? "yes" : "no"}
+                  ></td>
+
+                  <td
+                    style:background={levelOfServiceColors[section.los]}
+                    title={"Level of Service: " +
+                      levelOfServiceLabels[section.los]}
+                  ></td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        {/await}
+      {/if}
 
       <RelevantLayers />
     </div>
@@ -83,5 +148,32 @@
   .main-controls {
     overflow-y: auto;
     padding: 20px;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  th,
+  td {
+    border: 1px solid black;
+  }
+
+  table button {
+    width: 100%;
+    border-radius: 0;
+    background-color: #fff;
+  }
+
+  .selected {
+    font-weight: bold;
+    background-color: #ccc;
+  }
+
+  .section-cell {
+    text-align: center;
+  }
+  .section-cell:hover {
+    background: grey;
   }
 </style>
