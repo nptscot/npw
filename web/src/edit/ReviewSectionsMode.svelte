@@ -1,22 +1,11 @@
 <script lang="ts">
-  import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
-  import { GeoJSON, LineLayer } from "svelte-maplibre";
-  import { constructMatchExpression } from "svelte-utils/map";
-  import {
-    gradientColors,
-    infraTypeColors,
-    levelOfServiceColors,
-    stageColors,
-    tierColors,
-    tierLabels,
-  } from "../colors";
-  import { layerId } from "../common";
+  import { stageColors, tierLabels } from "../colors";
   import { SplitComponent } from "../common/layout";
   import RelevantLayers from "../layers/RelevantLayers.svelte";
   import Greenspaces from "../local_access/Greenspaces.svelte";
   import PointPOIs from "../local_access/PointPOIs.svelte";
   import LeftSidebarStats from "../stats/LeftSidebarStats.svelte";
-  import { currentStage, editModeBreakdown, mode } from "../stores";
+  import { currentStage, mode } from "../stores";
   import type { AutosplitRoute } from "../types";
   import AllSections from "./AllSections.svelte";
 
@@ -26,33 +15,7 @@
   let tier = $currentStage == "assessment" ? "Primary" : $currentStage;
 
   $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
-
   $: labelColor = stageColors[$currentStage];
-
-  let colorSections = {
-    infra_type: constructMatchExpression(
-      ["get", "infra_type"],
-      infraTypeColors,
-      "black",
-    ),
-    gradient: constructMatchExpression(
-      ["get", "gradient_group"],
-      gradientColors,
-      "black",
-    ),
-    deliverability: [
-      "case",
-      ["get", "fits"],
-      "green",
-      "red",
-    ] as DataDrivenPropertyValueSpecification<string>,
-    los: constructMatchExpression(
-      ["get", "los"],
-      levelOfServiceColors,
-      "black",
-    ),
-    tier: constructMatchExpression(["get", "tier"], tierColors, "black"),
-  };
 </script>
 
 <SplitComponent>
@@ -77,6 +40,21 @@
 
       <p>This route was split into {ids.length} sections.</p>
 
+      <ol>
+        {#each ids as id, idx}
+          <li>
+            <!-- svelte-ignore a11y-invalid-attribute -->
+            <a
+              href="#"
+              on:click|preventDefault={() =>
+                ($mode = { kind: "edit-route", id })}
+            >
+              Section {idx + 1}
+            </a>
+          </li>
+        {/each}
+      </ol>
+
       <AllSections {sectionsGj} {tier} />
 
       <RelevantLayers />
@@ -86,16 +64,6 @@
   </div>
 
   <div slot="map">
-    <GeoJSON data={sectionsGj}>
-      <LineLayer
-        {...layerId("edit-route-sections")}
-        paint={{
-          "line-width": 10,
-          "line-color": colorSections[$editModeBreakdown],
-        }}
-      />
-    </GeoJSON>
-
     {#if $currentStage == "LocalAccess"}
       <Greenspaces />
       <PointPOIs />

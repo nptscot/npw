@@ -63,7 +63,7 @@
   }
 
   function editRouteMap(e: CustomEvent<LayerClickInfo>) {
-    if ($mode.kind == "main") {
+    if ($mode.kind == "main" || $mode.kind == "review-sections") {
       let road_id = e.detail.features[0].id as number;
       let route_id = dynamicData[road_id].current_route_id;
       // If it's null, we clicked an opacity 0 road that's not part of a route
@@ -71,6 +71,20 @@
         $mode = { kind: "edit-route", id: route_id };
       }
     }
+  }
+
+  function lineWidth(mode: Mode): DataDrivenPropertyValueSpecification<number> {
+    // While reviewing sections, thicken them
+    if ($mode.kind == "review-sections") {
+      return [
+        "case",
+        ["in", ["feature-state", "current_route_id"], ["literal", $mode.ids]],
+        10,
+        1,
+      ];
+    }
+
+    return roadLineWidth(1);
   }
 
   // TODO Filter doesn't work on feature-state
@@ -194,7 +208,7 @@
   }
 
   function showEditPopup(features: Feature[]): boolean {
-    if ($mode.kind != "main") {
+    if ($mode.kind != "main" && $mode.kind != "review-sections") {
       return false;
     }
     let roadId = features[0]?.properties?.id;
@@ -220,7 +234,7 @@
             $showNetworkLoS,
             hovered,
           ),
-          "line-width": roadLineWidth(1),
+          "line-width": lineWidth($mode),
         }}
         layout={{
           visibility:
