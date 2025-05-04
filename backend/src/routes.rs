@@ -104,6 +104,7 @@ impl MapModel {
         // - the auto-recommended infrastructure type changes (unless manually overriden)
         // - the route crosses something existing
         // - the infrastructure type does or does not fit in the available streetspace
+        // - the level of service changes
         // - the tier changes (based on whether the road is inside a settlement or not)
         #[derive(PartialEq)]
         enum Case {
@@ -111,6 +112,7 @@ impl MapModel {
             New {
                 infra_type: InfraType,
                 fits: bool,
+                los: LevelOfService,
                 tier: Tier,
             },
         }
@@ -123,10 +125,17 @@ impl MapModel {
                 } else {
                     self.best_infra_type(r)
                 };
+                let los = get_level_of_service(
+                    infra_type,
+                    self.speeds[r.0],
+                    self.traffic_volumes[r.0],
+                    self.within_settlement[r.0],
+                );
 
                 Case::New {
                     infra_type,
                     fits: self.does_infra_type_fit(r, infra_type),
+                    los,
                     tier: fix_tier_drawing(
                         orig_route.tier,
                         self.within_settlement[r.0],
@@ -468,10 +477,17 @@ impl MapModel {
             }
 
             let fits = self.does_infra_type_fit(r, infra_type);
+            let los = get_level_of_service(
+                infra_type,
+                self.speeds[r.0],
+                self.traffic_volumes[r.0],
+                self.within_settlement[r.0],
+            );
+
             pieces.push(KeyedLineString {
                 linestring: self.graph.roads[r.0].linestring.clone(),
                 ids: vec![(r, Dir::Forwards)],
-                key: (infra_type, tier, fits),
+                key: (infra_type, tier, fits, los),
             });
         }
 
@@ -481,7 +497,7 @@ impl MapModel {
         pieces = crate::join_lines::collapse_degree_2(pieces);
 
         for line in pieces {
-            let (infra_type, tier, _) = line.key;
+            let (infra_type, tier, _, _) = line.key;
 
             let linestring_wgs84 = self.graph.mercator.to_wgs84(&line.linestring);
             let waypoints_wgs84 = roads_to_waypoints(&self.graph, &line.ids);

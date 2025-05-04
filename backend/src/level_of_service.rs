@@ -5,7 +5,7 @@ use utils::Tags;
 
 use crate::{Highway, InfraType, MapModel};
 
-#[derive(Clone, Copy, Debug, PartialEq, Enum, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Enum, Serialize)]
 pub enum LevelOfService {
     High,
     Medium,
