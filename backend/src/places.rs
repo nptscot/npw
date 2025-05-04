@@ -355,22 +355,24 @@ impl Settlement {
             if boundary_wgs84.intersects(&x.geometry) {
                 let settlement_mercator = graph.mercator.to_mercator(&x.geometry);
                 // Clip the settlement to the study area
-                let settlement_pieces = boundary_mercator.intersection(&settlement_mercator);
-
-                for polygon in settlement_pieces {
+                let mut settlement_pieces = boundary_mercator.intersection(&settlement_mercator);
+                settlement_pieces.0.retain(|polygon| {
                     // Settlement polygons are more precise than the simplified local authority
                     // boundaries. Rather than switch to the precise LA boundaries (from
                     // https://data.spatialhub.scot/dataset/local_authority_boundaries-is/resource/d24c5735-0f1c-4819-a6bd-dbfeb93bd8e4)
                     // and incur a file size hit, just check for a minimum area of the clipped settlements. By manual inspection, this threshold is reasonable.
-                    let area = polygon.unsigned_area();
-                    if area < 10_000.0 {
+                    let keep = polygon.unsigned_area() >= 10_000.0;
+                    if !keep {
                         info!(
                             "Skipping settlement {:?} because it's tiny after being clipped",
                             x.name
                         );
-                        continue;
                     }
+                    keep
+                });
 
+                let n = settlement_pieces.0.len();
+                for (idx, polygon) in settlement_pieces.0.into_iter().enumerate() {
                     // All intersecting roads
                     // TODO Could rtree to speed up
                     let mut roads: HashSet<RoadID> = HashSet::new();
@@ -382,7 +384,15 @@ impl Settlement {
 
                     settlements.push(Settlement {
                         polygon,
-                        name: x.name.clone(),
+                        name: if let Some(ref name) = x.name {
+                            if n > 1 {
+                                Some(format!("{name} ({} / {n})", idx + 1))
+                            } else {
+                                Some(name.clone())
+                            }
+                        } else {
+                            None
+                        },
                         population: x.population as usize,
                         roads,
                     });
