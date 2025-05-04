@@ -366,7 +366,7 @@
               <MainMode />
             {/if}
           {:else if $mode.kind == "edit-route" && map}
-            <EditRouteMode id={$mode.id} {map} />
+            <EditRouteMode id={$mode.id} {map} bind:anyEdits={$mode.anyEdits} />
           {:else if $mode.kind == "review-sections"}
             <ReviewSectionsMode ids={$mode.ids} />
           {:else if $mode.kind == "evaluate-journey"}

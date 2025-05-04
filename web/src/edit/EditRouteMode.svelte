@@ -40,6 +40,7 @@
 
   export let map: Map;
   export let id: number | null;
+  export let anyEdits: boolean;
 
   let routeControls: RouteControls | null = null;
   let cannotUndo = true;
@@ -53,6 +54,8 @@
   let showOverrideModal = false;
 
   let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
+  let setupDone = id == null;
+  let firstRunParams = "";
   $: recalculateSections($waypoints, overrideInfraType, infraType, tier);
 
   $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
@@ -70,6 +73,14 @@
       tier = feature.properties.tier;
 
       $waypoints = feature.properties.waypoints;
+
+      setupDone = true;
+      firstRunParams = JSON.stringify([
+        feature.properties.waypoints,
+        overrideInfraType,
+        infraType,
+        tier,
+      ]);
     }
   });
 
@@ -119,6 +130,19 @@
     infraType: InfraType,
     tier: Tier,
   ) {
+    // This function gets called a few times immediately during setup, before any actual changes
+    if (!anyEdits && setupDone) {
+      let paramsNow = JSON.stringify([
+        waypts,
+        overrideInfraType,
+        infraType,
+        tier,
+      ]);
+      if (firstRunParams != paramsNow) {
+        anyEdits = true;
+      }
+    }
+
     try {
       sectionsGj = await $backend!.autosplitRoute(
         id,

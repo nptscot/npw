@@ -89,7 +89,11 @@
                   <td
                     class="section-cell"
                     on:click={() =>
-                      ($mode = { kind: "edit-route", id: section.id })}
+                      ($mode = {
+                        kind: "edit-route",
+                        id: section.id,
+                        anyEdits: false,
+                      })}
                   >
                     {idx + 1}
                   </td>

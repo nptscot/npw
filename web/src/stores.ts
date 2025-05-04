@@ -23,7 +23,7 @@ export type Mode =
   | { kind: "setup"; subpage: "explore" | "project-list" | "new-project" }
   | { kind: "overview" }
   | { kind: "main" }
-  | { kind: "edit-route"; id: number | null }
+  | { kind: "edit-route"; id: number | null; anyEdits: boolean }
   | { kind: "review-sections"; ids: number[] }
   | { kind: "evaluate-journey"; browse: WorstRoutes }
   | { kind: "bulk-edit" }
