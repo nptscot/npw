@@ -214,7 +214,7 @@
 
         <tr>
           <th scope="row" style:background={tierColors.Secondary}>
-            Deprived population coverage
+            Connected deprived population
           </th>
           <td>{percent(baseline.percent_reachable_imd_population)}</td>
           <td>{percent($stats.percent_reachable_imd_population)}</td>
@@ -222,7 +222,7 @@
 
         <tr>
           <th scope="row" style:background={tierColors.Secondary}>
-            Population coverage
+            Connected population
           </th>
           <td>{percent(baseline.percent_reachable_population)}</td>
           <td>{percent($stats.percent_reachable_population)}</td>

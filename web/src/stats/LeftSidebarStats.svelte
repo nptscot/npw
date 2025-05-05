@@ -60,12 +60,12 @@
       />
 
       <Metric
-        label="Deprived population coverage"
+        label="Connected deprived population"
         pct={$stats.percent_reachable_imd_population}
       />
 
       <Metric
-        label="Population coverage"
+        label="Connected population"
         pct={$stats.percent_reachable_population}
       />
     {:else if $currentStage == "LocalAccess"}

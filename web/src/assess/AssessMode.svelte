@@ -76,7 +76,7 @@
 
         <div>
           <button class="ds_button" on:click={() => ($subpage = "population")}>
-            Fix unreachable population zones
+            Fix unconnected neighbourhoods
           </button>
         </div>
 

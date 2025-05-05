@@ -53,7 +53,7 @@
   {/if}
 
   <Checkbox small bind:checked={$uncoveredPopulation}>
-    Unreachable population zones
+    Unconnected neighbourhoods
   </Checkbox>
 
   <Checkbox small bind:checked={$townCentres}>Town centres</Checkbox>

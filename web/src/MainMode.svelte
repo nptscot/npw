@@ -66,9 +66,8 @@
       {:else if $currentStage == "Secondary"}
         <p>
           Secondary tier routes should cover medium cycling demand corridors,
-          connect town centres and population zones. To see severance issues
-          (due to high traffic speeds and volumes), turn on the layer on the
-          right.
+          connect town centres and neighbourhoods. To see severance issues (due
+          to high traffic speeds and volumes), turn on the layer on the right.
         </p>
 
         <div>
