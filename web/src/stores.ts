@@ -145,9 +145,9 @@ export function setCurrentFile(name: string) {
 }
 
 export function assetUrl(path: string): string {
-  let dir =
-    import.meta.env.BASE_URL == "/npw/demo" ? "demo_npw" : "tmp_npt_editor";
-  return get(remoteStorage) ? `https://assets.od2net.org/${dir}/${path}` : path;
+  return get(remoteStorage)
+    ? `https://assets.od2net.org/tmp_npt_editor/${path}`
+    : path;
 }
 
 // TODO Might work better as onDestroy of the components?

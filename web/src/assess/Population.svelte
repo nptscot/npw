@@ -27,7 +27,9 @@
   Back to network assessment
 </BackLink>
 
-<p>Neighbourhoods with a red outline are not connected by the current network.</p>
+<p>
+  Neighbourhoods with a red outline are not connected by the current network.
+</p>
 
 <div>
   <button class="ds_button" on:click={() => changeStage("Secondary")}>
