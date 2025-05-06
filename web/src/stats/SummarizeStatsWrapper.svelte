@@ -3,8 +3,10 @@
   import { Loading } from "svelte-utils";
   import {
     backend,
+    lastUpdateOD,
     lastUpdateSlowStats,
     mutationCounter,
+    odStats,
     slowStats,
   } from "../stores";
   import SummarizeStats from "./SummarizeStats.svelte";
@@ -18,11 +20,18 @@
       $lastUpdateSlowStats = $mutationCounter;
       loading = "";
     }
+
+    if ($lastUpdateOD != $mutationCounter) {
+      loading = "Recalculating network impacts";
+      $odStats = await $backend!.recalculateODStats();
+      $lastUpdateOD = $mutationCounter;
+      loading = "";
+    }
   });
 </script>
 
 <Loading {loading} />
 
-{#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
+{#if $slowStats && $lastUpdateSlowStats == $mutationCounter && $odStats && $lastUpdateOD == $mutationCounter}
   <SummarizeStats />
 {/if}

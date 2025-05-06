@@ -1,22 +1,5 @@
 <script lang="ts">
-  import {
-    ArcElement,
-    CategoryScale,
-    Chart as ChartJS,
-    Legend,
-    Title,
-    Tooltip,
-  } from "chart.js";
   import { onDestroy, onMount } from "svelte";
-  import { Pie } from "svelte-chartjs";
-  import { QualitativeLegend } from "svelte-utils";
-  import {
-    infraTypeColorLegend,
-    infraTypeColors,
-    levelOfServiceColors,
-    levelOfServiceLegend,
-    tierColors,
-  } from "../colors";
   import { BackLink } from "../common";
   import {
     backend,
@@ -25,19 +8,8 @@
     mutationCounter,
     odStats,
   } from "../stores";
-  import type { Tier } from "../types";
   import { subpage } from "./index";
-
-  ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale);
-
-  // Don't display the legend with ChartJS; it's too hard to control
-  let options = {
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-  };
+  import ODStats from "./ODStats.svelte";
 
   onMount(async () => {
     $backgroundLayer = "calculated_rnet";
@@ -50,10 +22,6 @@
   onDestroy(() => {
     $backgroundLayer = "off";
   });
-
-  function castTier(x: string): Tier {
-    return x as Tier;
-  }
 </script>
 
 <header class="ds_page-header">
@@ -66,66 +34,11 @@
 
 <p>
   This shows how journeys from census demand data would pick quiet routes using
-  the network you have drawn.
+  the proposed network.
 </p>
 
 {#if $odStats && $lastUpdateOD == $mutationCounter}
-  <h4>Percent of demand by level of service</h4>
-  <QualitativeLegend labelColors={levelOfServiceLegend} />
-  <Pie
-    data={{
-      labels: Object.keys($odStats.od_percents_los),
-      datasets: [
-        {
-          data: Object.values($odStats.od_percents_los).map((p) => p * 100),
-          backgroundColor: Object.keys($odStats.od_percents_los).map(
-            (key) => levelOfServiceColors[key],
-          ),
-        },
-      ],
-    }}
-    {options}
-  />
-
-  <h4>Percent of demand by infrastructure type</h4>
-  <QualitativeLegend
-    labelColors={{ ...infraTypeColorLegend, "Not part of designated network": "grey" }}
-  />
-  <Pie
-    data={{
-      labels: Object.keys($odStats.od_percents_infra_type),
-      datasets: [
-        {
-          data: Object.values($odStats.od_percents_infra_type).map(
-            (p) => p * 100,
-          ),
-          backgroundColor: Object.keys($odStats.od_percents_infra_type).map(
-            (key) => infraTypeColors[key] || "grey",
-          ),
-        },
-      ],
-    }}
-    {options}
-  />
-
-  <h4>Percent of demand by tier</h4>
-  <QualitativeLegend
-    labelColors={{ ...tierColors, "Not part of designated network": "grey" }}
-  />
-  <Pie
-    data={{
-      labels: Object.keys($odStats.od_percents_tier),
-      datasets: [
-        {
-          data: Object.values($odStats.od_percents_tier).map((p) => p * 100),
-          backgroundColor: Object.keys($odStats.od_percents_tier).map(
-            (key) => tierColors[castTier(key)] || "grey",
-          ),
-        },
-      ],
-    }}
-    {options}
-  />
+  <ODStats />
 {:else}
   <p>Recalculating...</p>
 {/if}

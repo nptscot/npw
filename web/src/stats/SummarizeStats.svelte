@@ -1,5 +1,6 @@
 <script lang="ts">
   import { notNull } from "svelte-utils";
+  import ODStats from "../assess/ODStats.svelte";
   import { tierColors } from "../colors";
   import { percent as percent2 } from "../common";
   import {
@@ -318,3 +319,10 @@
     </table>
   {/await}
 {/if}
+
+<h3>Network impacts on demand</h3>
+<p>
+  This shows how journeys from census demand data would pick quiet routes using
+  the proposed network.
+</p>
+<ODStats />
