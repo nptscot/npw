@@ -313,7 +313,13 @@ impl TownCentre {
                     }
                 }
                 if roads.is_empty() {
-                    bail!("Town centre {:?} doesn't snap to any roads", x.name);
+                    info!("Town centre {:?} doesn't intersect any road. Just snapping to one arbitrary close road.", x.name);
+                    let centroid = polygon.centroid().unwrap();
+                    roads.insert(
+                        graph
+                            .snap_to_road(centroid.into(), graph.profile_names["bicycle_direct"])
+                            .road,
+                    );
                 }
 
                 town_centres.push(TownCentre {
