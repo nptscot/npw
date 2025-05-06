@@ -11,6 +11,15 @@
   } from "../stores";
   import type { Stats } from "../types";
 
+  type Rating = "very poor" | "poor" | "medium" | "good" | "very good";
+  let ratingColors = {
+    "very poor": "#d73027",
+    poor: "#fc8d59",
+    medium: "#fee08b",
+    good: "#d9ef8b",
+    "very good": "#1a9850",
+  };
+
   function percent(pct: number): string {
     return `${Math.round(pct * 100)}%`;
   }
@@ -23,7 +32,7 @@
     return Math.round((x / total) * 100);
   }
 
-  function stepLessThanOrEqual(pct: number, steps: number[]): string {
+  function stepLessThanOrEqual(pct: number, steps: number[]): Rating {
     if (pct <= steps[0]) {
       return "very poor";
     }
@@ -39,7 +48,7 @@
     return "very good";
   }
 
-  function stepGreaterThan(pct: number, steps: number[]): string {
+  function stepGreaterThan(pct: number, steps: number[]): Rating {
     if (pct > steps[0]) {
       return "very poor";
     }
@@ -55,45 +64,48 @@
     return "very good";
   }
 
-  function safety(s: Stats): string {
+  function renderScore(pair: [string, Rating]): string {
+    return `<td style="background: ${ratingColors[pair[1]]}">${pair[0]} (${pair[1]})</td>`;
+  }
+
+  function safety(s: Stats): [string, Rating] {
     let pct = percent3(
       s.total_high_los_arterial_roads_length,
       s.total_arterial_road_length,
     );
-    let rating = stepLessThanOrEqual(pct, [20, 40, 60, 80]);
-    return `${pct}% (${rating})`;
+    return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
   }
 
-  function coherentDensity(s: Stats): string {
+  function coherentDensity(s: Stats): [string, Rating] {
     if (!s.density_network_in_settlements) {
-      return "no routes";
+      return ["no routes", "very poor"];
     }
     let rating = stepGreaterThan(
       s.density_network_in_settlements,
       [1000, 500, 400, 250],
     );
-    return `${Math.round(s.density_network_in_settlements)}m (${rating})`;
+    return [`${Math.round(s.density_network_in_settlements)}m`, rating];
   }
 
-  function comfort(s: Stats): string {
+  function comfort(s: Stats): [string, Rating] {
     let pct = percent3(s.total_low_gradient_length, s.total_network_length);
-    let rating = stepLessThanOrEqual(pct, [10, 20, 40, 60]);
-    return `${pct}% (${rating})`;
+    return [`${pct}%`, stepLessThanOrEqual(pct, [10, 20, 40, 60])];
   }
 
-  function attractiveness(s: Stats): string {
+  function attractiveness(s: Stats): [string, Rating] {
     let pct = percent3(s.total_attractive_length, s.total_network_length);
     // First threshold will almost never happen; this is a deliberate choice
-    let rating = stepLessThanOrEqual(pct, [0, 25, 50, 75]);
-    return `${pct}% (${rating})`;
+    return [`${pct}%`, stepLessThanOrEqual(pct, [0, 25, 50, 75])];
   }
 
-  function directness(s: { average_weighted_directness: number }): string {
+  function directness(s: {
+    average_weighted_directness: number;
+  }): [string, Rating] {
     let rating = stepGreaterThan(
       s.average_weighted_directness,
       [1.5, 1.4, 1.3, 1.2],
     );
-    return `${s.average_weighted_directness.toFixed(1)}x (${rating})`;
+    return [`${s.average_weighted_directness.toFixed(1)}x`, rating];
   }
 </script>
 
@@ -112,15 +124,15 @@
       <tbody>
         <tr>
           <th scope="row">Safety</th>
-          <td>{safety(baseline)}</td>
-          <td>{safety($stats)}</td>
+          {@html renderScore(safety(baseline))}
+          {@html renderScore(safety($stats))}
         </tr>
 
         <tr>
           <th scope="row">Directness</th>
-          <td>{directness(baseline)}</td>
+          {@html renderScore(directness(baseline))}
           {#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
-            <td>{directness($slowStats)}</td>
+            {@html renderScore(directness($slowStats))}
           {:else}
             <td>Need to recalculate</td>
           {/if}
@@ -128,20 +140,20 @@
 
         <tr>
           <th scope="row">Coherence (density)</th>
-          <td>{coherentDensity(baseline)}</td>
-          <td>{coherentDensity($stats)}</td>
+          {@html renderScore(coherentDensity(baseline))}
+          {@html renderScore(coherentDensity($stats))}
         </tr>
 
         <tr>
           <th scope="row">Comfort</th>
-          <td>{comfort(baseline)}</td>
-          <td>{comfort($stats)}</td>
+          {@html renderScore(comfort(baseline))}
+          {@html renderScore(comfort($stats))}
         </tr>
 
         <tr>
           <th scope="row">Attractiveness</th>
-          <td>{attractiveness(baseline)}</td>
-          <td>{attractiveness($stats)}</td>
+          {@html renderScore(attractiveness(baseline))}
+          {@html renderScore(attractiveness($stats))}
         </tr>
       </tbody>
     </table>
