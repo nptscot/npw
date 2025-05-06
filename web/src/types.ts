@@ -154,6 +154,7 @@ export type DataZones = FeatureCollection<
     area_km2: number;
     reachable: boolean;
     density_quintile: number;
+    centroid: [number, number];
   }
 >;
 

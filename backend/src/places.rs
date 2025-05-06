@@ -2,7 +2,8 @@ use std::collections::HashSet;
 
 use anyhow::Result;
 use geo::{
-    Area, BooleanOps, BoundingRect, Contains, Coord, Intersects, MultiPolygon, Point, Polygon, Rect,
+    Area, BooleanOps, BoundingRect, Centroid, Contains, Coord, Intersects, MultiPolygon, Point,
+    Polygon, Rect,
 };
 use geojson::Feature;
 use graph::{Graph, RoadID};
@@ -427,6 +428,7 @@ pub struct DataZone {
     area_km2: f64,
     // Relative to the study area, not all of Scotland
     density_quintile: usize,
+    centroid_wgs84: Coord,
 
     // The bbox, rounded to centimeters, for generate_range to work
     x1: i64,
@@ -445,6 +447,10 @@ impl DataZone {
         f.set_property("area_km2", self.area_km2);
         f.set_property("density_quintile", self.density_quintile);
         f.set_property("reachable", reachable);
+        f.set_property(
+            "centroid",
+            vec![self.centroid_wgs84.x, self.centroid_wgs84.y],
+        );
         f
     }
 
@@ -484,7 +490,12 @@ impl DataZone {
                     .map(|obj| obj.data)
                     .collect();
 
+                // Of the entire data zone, not just the part clipped to the study area
                 let area_km2 = x.area / 10.0e6;
+
+                let centroid = overlap.centroid().unwrap();
+                let centroid_wgs84 = graph.mercator.pt_to_wgs84(centroid.into());
+
                 zones.push(DataZone {
                     polygon,
                     id: x.id,
@@ -494,6 +505,7 @@ impl DataZone {
                     area_km2,
                     roads,
                     density_quintile: 0,
+                    centroid_wgs84,
 
                     x1: (bbox.min().x * 100.0) as i64,
                     y1: (bbox.min().y * 100.0) as i64,

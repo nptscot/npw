@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Checkbox } from "../common";
-  import { currentStage } from "../stores";
+  import { backend, currentStage, map } from "../stores";
   import {
     arterialRoadCoverage,
     cyclingDemandHigh,
@@ -10,6 +10,24 @@
     townCentres,
     uncoveredPopulation,
   } from "./stores";
+
+  async function gotoUncovered() {
+    let zones = await $backend!.getDataZones();
+    let centroids = zones
+      .features
+      .filter((z) => !z.properties.reachable)
+      .map((z) => z.properties.centroid);
+    if (centroids.length == 0) {
+      window.alert("All neighbourhoods are connected already");
+      return;
+    }
+    // We don't need to consistently jump around in any order; literally just pick any random one
+    let center = centroids[Math.floor(Math.random() * centroids.length)];
+    // TODO Zoom in if we're too far away?
+    $map!.easeTo({
+      center,
+    });
+  }
 </script>
 
 {#if $currentStage == "Primary"}
@@ -55,6 +73,13 @@
   <Checkbox small bind:checked={$uncoveredPopulation}>
     Unconnected neighbourhoods
   </Checkbox>
+  {#if $uncoveredPopulation}
+    <div style:margin-left="20px">
+      <button class="ds_button ds_button--secondary" on:click={gotoUncovered}>
+        Jump to an unconnected neighbourhood
+      </button>
+    </div>
+  {/if}
 
   <Checkbox small bind:checked={$townCentres}>Town centres</Checkbox>
 {/if}
