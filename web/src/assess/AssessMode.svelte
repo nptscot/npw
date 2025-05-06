@@ -16,7 +16,6 @@
   import { subpage } from "./index";
   import MeshDensity from "./MeshDensity.svelte";
   import ODBreakdowns from "./ODBreakdowns.svelte";
-  import Population from "./Population.svelte";
   import Streetspace from "./Streetspace.svelte";
 
   let loading = "";
@@ -54,14 +53,14 @@
           its performance.
         </p>
 
-        <h3>Problems</h3>
+        <h3>Assess overall network and fix issues</h3>
 
         <div>
           <button
             class="ds_button"
             on:click={() => ($subpage = "disconnected")}
           >
-            Fix network splits
+            Network splits
           </button>
         </div>
 
@@ -75,18 +74,12 @@
         </div>
 
         <div>
-          <button class="ds_button" on:click={() => ($subpage = "population")}>
-            Fix unconnected neighbourhoods
-          </button>
-        </div>
-
-        <div>
           <button class="ds_button" on:click={() => ($subpage = "streetspace")}>
             Fix infrastructure that does not fit
           </button>
         </div>
 
-        <h3>Check overall performance</h3>
+        <h3>Overall network metrics</h3>
 
         <div>
           <button class="ds_button" on:click={() => ($subpage = "report")}>
@@ -100,19 +93,6 @@
             on:click={() => ($subpage = "calculated-routes")}
           >
             See network impacts on demand
-          </button>
-        </div>
-
-        <div>
-          <button
-            class="ds_button"
-            on:click={() =>
-              ($mode = {
-                kind: "evaluate-journey",
-                browse: [],
-              })}
-          >
-            Evaluate a journey
           </button>
         </div>
 
@@ -138,8 +118,6 @@
         <MeshDensity />
       {:else if $subpage == "streetspace"}
         <Streetspace />
-      {:else if $subpage == "population"}
-        <Population />
       {:else if $subpage == "calculated-routes"}
         <ODBreakdowns />
       {:else if $subpage == "directness-network"}

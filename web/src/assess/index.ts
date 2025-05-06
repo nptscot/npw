@@ -6,7 +6,6 @@ type Subpage =
   | "disconnected"
   | "mesh-density"
   | "streetspace"
-  | "population"
   | "calculated-routes"
   | "directness-network";
 export let subpage: Writable<Subpage> = writable("overview");

@@ -16,7 +16,7 @@
 </script>
 
 <header class="ds_page-header">
-  <h2 class="ds_page-header__title">Network disconnections</h2>
+  <h2 class="ds_page-header__title">Network splits</h2>
 </header>
 
 <BackLink on:click={() => ($subpage = "overview")}>
@@ -24,11 +24,12 @@
 </BackLink>
 
 <p>
-  The network you create should usually all be connected as one piece. If there
-  are gaps between pieces, then return to the appropriate tier and fill in the
-  gaps. If it looks like some routes should be connected but the map shows
-  otherwise, then try zooming in and looking for very small road segments
-  between dual carriageways or in complex junctions to fix the connection.
+  The network you create should usually all be connected as one piece per
+  settlement. If there are gaps between pieces, then return to the appropriate
+  tier and fill in the gaps. If it looks like some routes should be connected
+  but the map shows otherwise, then try zooming in and looking for very small
+  road segments between dual carriageways or in complex junctions to fix the
+  connection.
 </p>
 
 <p>Click a piece to see it:</p>
