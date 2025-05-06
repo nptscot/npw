@@ -11,6 +11,8 @@
   onDestroy(() => {
     $backgroundLayer = "off";
   });
+
+  let n = 15;
 </script>
 
 <header class="ds_page-header">
@@ -31,11 +33,11 @@
 
 <p>Click a piece to see it:</p>
 <ul>
-  {#each $connectedComponents.component_lengths.slice(0, 5) as length, idx}
+  {#each $connectedComponents.component_lengths.slice(0, n) as length, idx}
     <li>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
-        style:color={componentColors[idx]}
+        style:color={componentColors[idx % componentColors.length]}
         href="#"
         on:click|preventDefault={() =>
           $map?.fitBounds($connectedComponents.component_bboxes[idx])}
@@ -44,10 +46,10 @@
       </a>
     </li>
   {/each}
-  {#if $connectedComponents.component_lengths.length > 5}
+  {#if $connectedComponents.component_lengths.length > n}
     <p>
-      ({$connectedComponents.component_lengths.length} components total; only 5 largest
-      shown)
+      ({$connectedComponents.component_lengths.length} components total; only {n}
+      largest shown)
     </p>
   {/if}
 </ul>

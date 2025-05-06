@@ -33,7 +33,7 @@
   }
 
   let colorByComponent = constructMatchExpression(
-    ["to-string", ["get", "component"]],
+    ["to-string", ["%", ["get", "component"], componentColors.length]],
     Object.fromEntries(
       componentColors.map((color, i) => [i.toString(), color]),
     ),

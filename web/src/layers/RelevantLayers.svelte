@@ -13,8 +13,7 @@
 
   async function gotoUncovered() {
     let zones = await $backend!.getDataZones();
-    let centroids = zones
-      .features
+    let centroids = zones.features
       .filter((z) => !z.properties.reachable)
       .map((z) => z.properties.centroid);
     if (centroids.length == 0) {
