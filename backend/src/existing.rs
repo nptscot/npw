@@ -5,7 +5,7 @@ use graph::Direction;
 use serde::{Deserialize, Serialize};
 use utils::Tags;
 
-use crate::{level_of_service::get_speed_mph, InfraType};
+use crate::InfraType;
 
 /// All of the OSM highway types used anywhere. This forces exhaustive matching of all cases.
 #[derive(Clone, Copy, Serialize, Deserialize)]
@@ -98,34 +98,6 @@ pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Dura
     let speed = 4.4704;
     let cost = Duration::from_secs_f64(Euclidean.length(linestring) / speed);
     (Direction::Both, cost)
-}
-
-/// This is used for the directness metric. It looks at one-ways and speed limit, but not turn
-/// restrictions.
-pub fn car_profile(tags: &Tags, linestring: &LineString) -> (Direction, Duration) {
-    let exclude = (Direction::None, Duration::ZERO);
-
-    let Some(hwy) = Highway::classify(tags) else {
-        return exclude;
-    };
-    if matches!(
-        hwy,
-        Highway::Footway | Highway::Cycleway | Highway::Pedestrian | Highway::Path
-    ) {
-        return exclude;
-    }
-
-    // TODO Handle private access, modal filters, etc
-
-    let dir = if tags.is("oneway", "yes") {
-        Direction::Forwards
-    } else {
-        Direction::Both
-    };
-    // mph to m/s
-    let speed = (get_speed_mph(hwy, tags) as f64) / 0.44704;
-    let cost = Duration::from_secs_f64(Euclidean.length(linestring) / speed);
-    (dir, cost)
 }
 
 // https://github.com/nptscot/osmactive/blob/main/R/osmactive.R is a reference implementation.

@@ -91,7 +91,6 @@ fn create(
                 "bicycle_direct".to_string(),
                 Box::new(backend::existing::bicycle_profile),
             ),
-            ("car".to_string(), Box::new(backend::existing::car_profile)),
         ],
         timer,
     )?;

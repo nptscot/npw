@@ -123,7 +123,6 @@ const layerZorder = [
 
   // Eval route mode
   "eval-route-breakdown",
-  "eval-car-route",
   "eval-quiet-bike-route",
 
   "directness-network",

@@ -77,17 +77,6 @@ impl MapModel {
             }
         }
 
-        let car_profile = self.graph.profile_names["car"];
-        let car_start = self.graph.snap_to_road(pt1, car_profile);
-        let car_end = self.graph.snap_to_road(pt2, car_profile);
-        let car_route = self.graph.routers[car_profile.0].route(&self.graph, car_start, car_end)?;
-        let car_linestring = car_route.linestring(&self.graph);
-        {
-            let mut f = self.graph.mercator.to_wgs84_gj(&car_linestring);
-            f.set_property("kind", "car");
-            features.push(f);
-        }
-
         let quiet_bike_profile = self.graph.profile_names["bicycle_quiet"];
         let quiet_bike_route =
             self.graph.routers[quiet_bike_profile.0].route(&self.graph, start, end)?;
@@ -107,7 +96,6 @@ impl MapModel {
             features,
             bbox: None,
             foreign_members: Some(into_object_value(serde_json::json!({
-                "car_length": Euclidean.length(&car_linestring),
                 "direct_bike_length": Euclidean.length(&full_route_linestring),
                 "quiet_bike_length": Euclidean.length(&quiet_bike_linestring),
                 "straight_line_length": straight_line_length,

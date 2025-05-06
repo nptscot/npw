@@ -28,7 +28,6 @@
   let err = "";
   let breakdown: "" | "los" | "infra_type" | "gradient" = "los";
   let showQuietBikeRoute = browse.length > 0;
-  let showCarRoute = false;
 
   async function update(
     start: { lng: number; lat: number },
@@ -212,13 +211,6 @@
           longer than the direct cycling route
         </Checkbox>
 
-        <Checkbox bind:checked={showCarRoute} small>
-          <span style:color="purple">Driving route</span>
-          : {prettyPrintDistance(gj.car_length)} is
-          <b>{(gj.car_length / gj.direct_bike_length).toFixed(1)}x</b>
-          longer than the direct cycling route
-        </Checkbox>
-
         <h3>Stats</h3>
 
         <p>{numChanges(gj, byInfraType)} changes in infrastructure type</p>
@@ -273,20 +265,6 @@
                 "black",
               ),
             }[breakdown],
-            "line-opacity": hoverStateFilter(0.5, 1.0),
-          }}
-          manageHoverState
-        />
-
-        <LineLayer
-          {...layerId("eval-car-route")}
-          filter={["==", ["get", "kind"], "car"]}
-          layout={{
-            visibility: showCarRoute ? "visible" : "none",
-          }}
-          paint={{
-            "line-width": 10,
-            "line-color": "purple",
             "line-opacity": hoverStateFilter(0.5, 1.0),
           }}
           manageHoverState
