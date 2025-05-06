@@ -3,7 +3,17 @@
   import PrintableReport from "./assess/PrintableReport.svelte";
   import { BackLink } from "./common";
   import { SplitComponent } from "./common/layout";
-  import { backend, boundaryName, currentFilename, mode } from "./stores";
+  import {
+    backend,
+    boundaryName,
+    currentFilename,
+    lastUpdateOD,
+    lastUpdateSlowStats,
+    mode,
+    mutationCounter,
+    odStats,
+    slowStats,
+  } from "./stores";
 
   let reportContent: HTMLDivElement | undefined = undefined;
 
@@ -55,7 +65,11 @@
       <p>Export the project to share with stakeholders.</p>
 
       <div>
-        <button class="ds_button" on:click={makeReport}>Print report</button>
+        {#if $slowStats && $lastUpdateSlowStats == $mutationCounter && $odStats && $lastUpdateOD == $mutationCounter}
+          <button class="ds_button" on:click={makeReport}>Print report</button>
+        {:else}
+          <button class="ds_button" disabled>Print report (loading...)</button>
+        {/if}
       </div>
 
       <div>
