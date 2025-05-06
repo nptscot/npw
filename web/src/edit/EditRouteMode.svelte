@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { GeoJSON, LineLayer } from "svelte-maplibre";
   import { notNull } from "svelte-utils";
-  import { constructMatchExpression, emptyGeojson } from "svelte-utils/map";
+  import { constructMatchExpression } from "svelte-utils/map";
   import {
     gradientColors,
     infraTypeColors,
@@ -53,7 +53,14 @@
   let tier = $currentStage == "assessment" ? "Primary" : $currentStage;
   let showOverrideModal = false;
 
-  let sectionsGj: AutosplitRoute = emptyGeojson() as AutosplitRoute;
+  let sectionsGj: AutosplitRoute = {
+    type: "FeatureCollection",
+    features: [],
+    some_roads_without_sse: false,
+    min_e2e_width: 0,
+    max_e2e_width: 0,
+    cross_section_profiles: [],
+  };
   let setupDone = id == null;
   let firstRunParams = "";
   $: recalculateSections($waypoints, overrideInfraType, infraType, tier);
