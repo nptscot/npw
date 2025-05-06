@@ -9,6 +9,7 @@
     map,
     mode,
     showReportProblem,
+    zoom,
   } from "../stores";
   import { Checkbox, Modal, Radio } from "./";
 
@@ -87,6 +88,13 @@
   <h2>Report a problem</h2>
 
   <p>You can report a problem with NPW or the data to the team.</p>
+
+  {#if $zoom < 14}
+    <p>
+      <b>Please zoom in further to the problem.</b>
+       If the problem covers a large area, then ignore this and proceed.
+    </p>
+  {/if}
 
   <Radio
     bind:value={problemType}
