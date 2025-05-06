@@ -27,22 +27,28 @@
     <p>
       {percent($stats.total_undeliverable_length, $stats.total_network_length)} of
       your {prettyPrintDistance($stats.total_undeliverable_length)} of proposed network
-      doesn't fit in the available streetspace. Click on a red segment to fix this,
-      following these approaches:
+      doesn't fit in the available streetspace. (For assumptions applied, see the
+      manual.) Routes that may not fit are highlighted in red. Click on a red segment
+      to resolve the issue, following these approaches:
     </p>
 
     <ol>
       <li>
-        Reduce traffic speed and volume so that a segregated track is not
-        necessary for high Level of Service. Switch to the <i>
-          Mixed traffic with traffic measures
+        Reduce traffic speeds and volumes locally so that a segregated track is
+        no longer necessary to achieve high Level of Service. Use the <i>
+          Override infrastructure type
         </i>
-        infrastructure type to indicate this.
+        tool and switch to the
+        <i>Mixed traffic with traffic measures</i>
+         infrastructure type to indicate this.
       </li>
-      <li>Realign the route</li>
       <li>
-        Pick an infrastructure type aside from segregated track, accepting a
-        lower Level of Service
+        Realign the route (by moving the start/middle/end points as required),
+        accepting reduced directness.
+      </li>
+      <li>
+        Downgrade the infrastructure type from full segregation to painted lanes
+        (accepting a lower safety Level of Service).
       </li>
     </ol>
   {/if}

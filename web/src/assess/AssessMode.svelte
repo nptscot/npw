@@ -75,7 +75,7 @@
 
         <div>
           <button class="ds_button" on:click={() => ($subpage = "streetspace")}>
-            Fix infrastructure that does not fit
+            Streetspace deliverability
           </button>
         </div>
 
