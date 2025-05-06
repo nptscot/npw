@@ -13,8 +13,25 @@
       return;
     }
 
+    // Copy all the CSS/JS includes
+    let headContents = document.head.innerHTML;
+
+    // Temporarily render the report, to grab its DOM
     reportContent.style.display = "block";
-    newTab.document.write(reportContent.outerHTML);
+    let bodyContents = reportContent.innerHTML;
+    let fullContents = `
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				${headContents}
+			</head>
+			<body>
+				${bodyContents}
+			</body>
+			</html>
+		`;
+    newTab.document.write(fullContents);
+
     reportContent.style.display = "none";
   }
 

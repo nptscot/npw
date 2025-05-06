@@ -1,8 +1,5 @@
 <script lang="ts">
   import SummarizeStatsWrapper from "../stats/SummarizeStatsWrapper.svelte";
-
-  // TODO Having trouble getting SG css working on the new page; probably need to construct a <head> section properly
-  // TODO need to wire up chartjs too
 </script>
 
 <header class="ds_page-header">
