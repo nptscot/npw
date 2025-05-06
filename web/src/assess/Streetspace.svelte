@@ -40,7 +40,7 @@
         </i>
         tool and switch to the
         <i>Mixed traffic with traffic measures</i>
-         infrastructure type to indicate this.
+        infrastructure type to indicate this.
       </li>
       <li>
         Realign the route (by moving the start/middle/end points as required),

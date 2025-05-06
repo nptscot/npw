@@ -99,12 +99,14 @@
 
 {#if $stats}
   {#await notNull($backend).getBaselineStats() then baseline}
+    <h3>Network metrics</h3>
+
     <table class="ds_table">
       <thead>
         <tr>
           <th scope="col">Metric</th>
-          <th scope="col">Baseline score</th>
-          <th scope="col">Score with proposed network</th>
+          <th scope="col">Existing network quality</th>
+          <th scope="col">Proposed network quality</th>
         </tr>
       </thead>
       <tbody>
@@ -150,8 +152,8 @@
       <thead>
         <tr>
           <th scope="col">Metric</th>
-          <th scope="col">Baseline score</th>
-          <th scope="col">Score with proposed network</th>
+          <th scope="col">Existing network quality</th>
+          <th scope="col">Proposed network quality</th>
         </tr>
       </thead>
       <tbody>
