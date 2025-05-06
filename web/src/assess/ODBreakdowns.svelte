@@ -89,7 +89,7 @@
 
   <h4>Percent of demand by infrastructure type</h4>
   <QualitativeLegend
-    labelColors={{ ...infraTypeColorLegend, "Not on the network": "grey" }}
+    labelColors={{ ...infraTypeColorLegend, "Not part of designated network": "grey" }}
   />
   <Pie
     data={{
@@ -110,7 +110,7 @@
 
   <h4>Percent of demand by tier</h4>
   <QualitativeLegend
-    labelColors={{ ...tierColors, "Not on the network": "grey" }}
+    labelColors={{ ...tierColors, "Not part of designated network": "grey" }}
   />
   <Pie
     data={{

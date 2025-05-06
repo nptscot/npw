@@ -50,7 +50,7 @@ impl CountsOD {
 
         let mut od_percents_infra_type = serde_json::Map::new();
         od_percents_infra_type.insert(
-            "Not on the network".to_string(),
+            "Not part of designated network".to_string(),
             percent(count_not_on_network, total_count).into(),
         );
         for (infra_type, count) in count_by_infra {
@@ -62,7 +62,7 @@ impl CountsOD {
 
         let mut od_percents_tier = serde_json::Map::new();
         od_percents_tier.insert(
-            "Not on the network".to_string(),
+            "Not part of designated network".to_string(),
             percent(count_not_on_network, total_count).into(),
         );
         for (tier, count) in count_by_tier {
