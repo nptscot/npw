@@ -47,12 +47,10 @@ impl Highway {
             "footway" => {
                 // Exclude dedicated sidewalks; they're almost always parallel to a road that
                 // should be edited instead
-                if tags.is_any("bicycle", vec!["yes", "designated"])
-                    && !tags.is("footway", "sidewalk")
-                {
-                    Some(Highway::Footway)
-                } else {
+                if tags.is("footway", "sidewalk") {
                     None
+                } else {
+                    Some(Highway::Footway)
                 }
             }
             // TODO Make sure we got all cases; print stuff. (steps, construction...)
@@ -61,7 +59,10 @@ impl Highway {
 
         // Be stricter about some cases
         if matches!(hwy, Highway::Footway | Highway::Pedestrian | Highway::Path) {
-            if !tags.is_any("bicycle", vec!["yes", "designated"]) {
+            // There could be some existing paths that don't allow bicycles today, but could in the
+            // future. But many cases seem to just be hiking paths unlikely to ever be suitable, so
+            // exclude.
+            if tags.is("bicycle", "no") {
                 return None;
             }
             // Unlike osmactive, don't require surface or smoothness tags. If they're bad today,
@@ -205,11 +206,13 @@ mod tests {
     fn test_bicycle_profile() {
         let mut ok = true;
         for (input, should_include) in [
-            // https://www.openstreetmap.org/way/588483433
-            (vec!["highway=footway"], false),
+            // TODO https://www.openstreetmap.org/way/588483433 is a case that shouldn't be
+            // included, but is for now
+            (vec!["highway=footway"], true),
             (vec!["highway=footway", "footway=sidewalk"], false),
             (vec!["highway=footway", "bicycle=designated"], true),
             (vec!["highway=footway", "bicycle=yes"], true),
+            (vec!["highway=footway", "bicycle=no"], false),
             (vec!["highway=steps"], false),
         ] {
             let do_include =
