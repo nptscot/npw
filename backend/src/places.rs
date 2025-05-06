@@ -298,6 +298,9 @@ impl TownCentre {
                         roads.insert(RoadID(idx));
                     }
                 }
+                if roads.is_empty() {
+                    bail!("Town centre {:?} doesn't snap to any roads", x.name);
+                }
 
                 town_centres.push(TownCentre {
                     polygon,
@@ -381,6 +384,10 @@ impl Settlement {
                         if polygon.intersects(&road.linestring) {
                             roads.insert(RoadID(idx));
                         }
+                    }
+                    if roads.is_empty() {
+                        // Just log it; there are some settlement pieces on empty islands
+                        error!("Settlement {:?} doesn't snap to any roads", x.name);
                     }
 
                     settlements.push(Settlement {
