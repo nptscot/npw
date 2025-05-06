@@ -1,6 +1,6 @@
 use enum_map::Enum;
 use graph::RoadID;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utils::Tags;
 
 use crate::{Highway, InfraType, MapModel};
@@ -11,6 +11,14 @@ pub enum LevelOfService {
     Medium,
     Low,
     ShouldNotBeUsed,
+}
+
+#[derive(Clone, Copy, PartialOrd, PartialEq, Serialize, Deserialize)]
+pub enum TrafficVolume {
+    UpTo1000,
+    UpTo2000,
+    UpTo4000,
+    Over4000,
 }
 
 impl MapModel {
@@ -59,39 +67,39 @@ impl MapModel {
 pub fn get_level_of_service(
     infra_type: InfraType,
     speed: usize,
-    traffic: usize,
+    traffic: TrafficVolume,
     within_settlement: bool,
 ) -> LevelOfService {
     match infra_type {
         // "Mixed Traffic Street"
         InfraType::MixedTraffic => {
             if speed <= 20 {
-                if traffic < 2000 {
+                if traffic <= TrafficVolume::UpTo2000 {
                     LevelOfService::High
-                } else if traffic < 4000 {
+                } else if traffic <= TrafficVolume::UpTo4000 {
                     LevelOfService::Medium
                 } else {
                     LevelOfService::Low
                 }
             } else if speed <= 30 {
-                if traffic < 1000 {
+                if traffic <= TrafficVolume::UpTo1000 {
                     LevelOfService::High
-                } else if traffic < 2000 {
+                } else if traffic <= TrafficVolume::UpTo2000 {
                     LevelOfService::Medium
                 } else {
                     LevelOfService::Low
                 }
             } else if speed <= 40 {
-                if traffic < 1000 {
+                if traffic <= TrafficVolume::UpTo1000 {
                     LevelOfService::Medium
-                } else if traffic < 2000 {
+                } else if traffic <= TrafficVolume::UpTo2000 {
                     LevelOfService::Low
                 } else {
                     LevelOfService::ShouldNotBeUsed
                 }
             } else if speed <= 60 {
                 // Both 50 and 60mph cases
-                if traffic < 1000 {
+                if traffic <= TrafficVolume::UpTo1000 {
                     LevelOfService::Low
                 } else {
                     LevelOfService::ShouldNotBeUsed
@@ -108,7 +116,7 @@ pub fn get_level_of_service(
                 LevelOfService::High
             } else if speed <= 40 {
                 LevelOfService::Medium
-            } else if speed <= 50 && traffic < 1000 {
+            } else if speed <= 50 && traffic <= TrafficVolume::UpTo1000 {
                 LevelOfService::Medium
             } else {
                 LevelOfService::Low
@@ -135,21 +143,21 @@ pub fn get_level_of_service(
         // "Cycle Lane"
         InfraType::CycleLane => {
             if speed <= 20 {
-                if traffic < 4000 {
+                if traffic <= TrafficVolume::UpTo4000 {
                     LevelOfService::High
                 } else {
                     LevelOfService::Medium
                 }
             } else if speed <= 30 {
-                if traffic < 1000 {
+                if traffic <= TrafficVolume::UpTo1000 {
                     LevelOfService::High
-                } else if traffic < 4000 {
+                } else if traffic <= TrafficVolume::UpTo4000 {
                     LevelOfService::Medium
                 } else {
                     LevelOfService::Low
                 }
             } else if speed <= 40 {
-                if traffic < 1000 {
+                if traffic <= TrafficVolume::UpTo1000 {
                     LevelOfService::Medium
                 } else {
                     LevelOfService::Low
@@ -157,7 +165,7 @@ pub fn get_level_of_service(
             } else if speed <= 50 {
                 LevelOfService::Low
             } else if speed <= 60 {
-                if traffic < 1000 {
+                if traffic <= TrafficVolume::UpTo1000 {
                     LevelOfService::Low
                 } else {
                     LevelOfService::ShouldNotBeUsed

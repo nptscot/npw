@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
 pub use crate::existing::Highway;
-use crate::level_of_service::LevelOfService;
+pub use crate::level_of_service::{LevelOfService, TrafficVolume};
 use crate::routes::{Dir, InMemoryRoute, SavedRoute, SetRouteInput, Waypoint};
 
 mod costs;
@@ -66,7 +66,7 @@ pub struct MapModel {
     highways: Vec<Highway>,
     within_settlement: Vec<bool>,
     is_offroad: Vec<bool>,
-    traffic_volumes: Vec<usize>,
+    traffic_volumes: Vec<TrafficVolume>,
     coherent_network: Vec<Option<Tier>>,
     // Go Dutch totals for all purposes
     precalculated_demands: Vec<usize>,
@@ -143,7 +143,7 @@ impl MapModel {
         town_centres: Vec<places::TownCentre>,
         settlements: Vec<places::Settlement>,
         data_zones: Vec<places::DataZone>,
-        traffic_volumes: Vec<usize>,
+        traffic_volumes: Vec<TrafficVolume>,
         coherent_network: Vec<Option<Tier>>,
         street_space: Vec<Option<Streetspace>>,
         is_attractive: Vec<bool>,
@@ -299,7 +299,16 @@ impl MapModel {
             f.set_property("within_settlement", self.within_settlement[idx]);
             f.set_property("is_attractive", self.is_attractive[idx]);
 
-            f.set_property("traffic", self.traffic_volumes[idx]);
+            // TODO Plumb through enums on the frontend
+            f.set_property(
+                "traffic",
+                match self.traffic_volumes[idx] {
+                    TrafficVolume::UpTo1000 => 500,
+                    TrafficVolume::UpTo2000 => 1500,
+                    TrafficVolume::UpTo4000 => 3000,
+                    TrafficVolume::Over4000 => 6000,
+                },
+            );
             f.set_property(
                 "cn",
                 serde_json::to_value(self.coherent_network[idx]).unwrap(),

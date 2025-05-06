@@ -198,6 +198,7 @@
   }
 
   // Don't expose exact traffic counts
+  // TODO Just plumb the enum
   function trafficGroup(x: number): string {
     if (x < 1000) {
       return "0 to 999";

@@ -17,7 +17,7 @@ use rstar::AABB;
 use serde::Deserialize;
 
 use self::disconnected::remove_disconnected_components;
-use backend::{Highway, MapModel, Streetspace, Tier};
+use backend::{Highway, MapModel, Streetspace, Tier, TrafficVolume};
 
 mod disconnected;
 
@@ -283,7 +283,11 @@ struct OtherDesireLineRow {
     count: usize,
 }
 
-fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<usize>> {
+fn read_traffic_volumes(
+    path: &str,
+    graph: &Graph,
+    timer: &mut Timer,
+) -> Result<Vec<TrafficVolume>> {
     // Read all relevant lines
     timer.step("read traffic volumes");
     let dataset = Dataset::open(path)?;
@@ -299,19 +303,28 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
             // TODO Why missing?
             continue;
         };
+        let volume = if flows <= 1000 {
+            TrafficVolume::UpTo1000
+        } else if flows <= 2000 {
+            TrafficVolume::UpTo2000
+        } else if flows <= 4000 {
+            TrafficVolume::UpTo4000
+        } else {
+            TrafficVolume::Over4000
+        };
 
         let geo = input.geometry().unwrap().to_geo()?;
         match geo {
             Geometry::LineString(mut ls) => {
                 graph.mercator.to_mercator_in_place(&mut ls);
                 source_geometry.push(ls);
-                source_data.push(flows as usize);
+                source_data.push(volume);
             }
             Geometry::MultiLineString(mls) => {
                 for mut ls in mls {
                     graph.mercator.to_mercator_in_place(&mut ls);
                     source_geometry.push(ls);
-                    source_data.push(flows as usize);
+                    source_data.push(volume);
                 }
             }
             _ => bail!("read_traffic_volumes found something besides a LS or MLS"),
@@ -348,10 +361,11 @@ fn read_traffic_volumes(path: &str, graph: &Graph, timer: &mut Timer) -> Result<
                 | Highway::Pedestrian
                 | Highway::Path
         ) {
-            results.push(0);
+            results.push(TrafficVolume::UpTo1000);
             continue;
         }
-        results.push(get_anime_match(&matches, &source_data, idx).unwrap_or(0));
+        results
+            .push(get_anime_match(&matches, &source_data, idx).unwrap_or(TrafficVolume::UpTo1000));
     }
     Ok(results)
 }
@@ -384,9 +398,8 @@ fn read_street_space(
         let cross_section_profile = input
             .field_as_string(cross_section_profile_idx)?
             .unwrap_or_else(|| "no data".to_string());
-        let edge_to_edge_width = input
-            .field_as_integer(edge_to_edge_width_idx)?
-            .unwrap_or(0) as usize;
+        let edge_to_edge_width =
+            input.field_as_integer(edge_to_edge_width_idx)?.unwrap_or(0) as usize;
 
         source_geometry.push(geom);
         source_data.push(Streetspace {
