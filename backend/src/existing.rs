@@ -147,8 +147,10 @@ pub fn classify_existing_osm_infra(is_offroad: bool, tags: &Tags) -> Option<Infr
         Highway::Footway | Highway::Path => {
             if is_offroad {
                 Some(InfraType::OffRoad)
-            } else {
+            } else if tags.is_any("bicycle", vec!["yes", "designated"]) {
                 Some(InfraType::SharedFootway)
+            } else {
+                None
             }
         }
         Highway::Cycleway => {
