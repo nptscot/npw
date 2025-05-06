@@ -185,19 +185,14 @@
       colorScale={population.colorScale}
       labels={{ limits: population.limits }}
     />
-    <p>
-      Darker colours are denser. Only the top 3 densest quintiles are shown.
-    </p>
+    <p>Darker colours are denser.</p>
   {:else if $backgroundLayer == "deprived"}
     <b>Deprived population (SIMD)</b>
     <SequentialLegend
       colorScale={deprived.colorScale}
       labels={{ limits: deprived.limits }}
     />
-    <p>
-      Darker colours are more deprived. Only the top 20%ile most deprived zones
-      are shown.
-    </p>
+    <p>Darker colours are more deprived.</p>
   {:else if $backgroundLayer == "los"}
     <b>Level of Service</b>
     <QualitativeLegend labelColors={levelOfServiceLegend} />

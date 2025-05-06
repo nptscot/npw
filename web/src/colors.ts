@@ -108,9 +108,9 @@ export let nptStreetSpaceColors = {
 };
 
 export let deprived = {
-  // Color ramp from https://simd.scot. Only show the two most deprived deciles.
-  colorScale: ["#b30000", "#e34a33"],
-  limits: [0, 10, 20],
+  // Color ramp from https://simd.scot. Downscaling to 5 buckets is odd.
+  colorScale: ["#980528", "#E06742", "#E9CF88", "#9EC8D8", "#426EA8"],
+  limits: [0, 20, 40, 60, 80, 100],
 };
 
 export let population = {
@@ -118,7 +118,7 @@ export let population = {
   colorScale: ["#080C54", "#186290", "#1F9EB7", "#80C6A3", "#CDE594"],
 
   // For density_quintile
-  limits: [0, 1, 2, 3, 4, 5],
+  limits: [0, 2, 4, 6, 8, 10],
 };
 
 export let meshDensity = {

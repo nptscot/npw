@@ -1,8 +1,5 @@
 <script lang="ts">
-  import type {
-    DataDrivenPropertyValueSpecification,
-    ExpressionSpecification,
-  } from "maplibre-gl";
+  import type { DataDrivenPropertyValueSpecification } from "maplibre-gl";
   import { FillLayer, GeoJSON, hoverStateFilter } from "svelte-maplibre";
   import { makeRamp, Popup } from "svelte-utils/map";
   import { deprived, population } from "../colors";
@@ -25,15 +22,6 @@
       deprived.colorScale,
     );
   }
-
-  function makeFilter(
-    backgroundLayer: BackgroundLayer,
-  ): ExpressionSpecification {
-    if (backgroundLayer == "population") {
-      return ["<", ["get", "density_quintile"], 4];
-    }
-    return ["<=", ["get", "imd_percentile"], 20];
-  }
 </script>
 
 {#if $backend}
@@ -42,7 +30,6 @@
       <FillLayer
         {...layerId("population")}
         manageHoverState
-        filter={makeFilter($backgroundLayer)}
         paint={{
           "fill-color": fillColor($backgroundLayer),
           "fill-opacity": hoverStateFilter(0.7, 0.9),
