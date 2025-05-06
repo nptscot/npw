@@ -158,7 +158,7 @@
       </tbody>
     </table>
 
-    <h3>Per-tier metrics</h3>
+    <h3>Primary metrics</h3>
 
     <table class="ds_table">
       <thead>
@@ -169,8 +169,6 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Primary -->
-
         <tr>
           <th scope="row" style:background={tierColors.Primary}>
             High cycling demand corridor coverage
@@ -200,9 +198,20 @@
             )}
           </td>
         </tr>
+      </tbody>
+    </table>
 
-        <!-- Secondary -->
+    <h3>Secondary metrics</h3>
 
+    <table class="ds_table">
+      <thead>
+        <tr>
+          <th scope="col">Metric</th>
+          <th scope="col">Existing network quality</th>
+          <th scope="col">Proposed network quality</th>
+        </tr>
+      </thead>
+      <tbody>
         <tr>
           <th scope="row" style:background={tierColors.Secondary}>
             Medium cycling demand corridor coverage
@@ -241,9 +250,20 @@
           <td>{percent(baseline.percent_reachable_population)}</td>
           <td>{percent($stats.percent_reachable_population)}</td>
         </tr>
+      </tbody>
+    </table>
 
-        <!-- Local access -->
+    <h3>Local access metrics</h3>
 
+    <table class="ds_table">
+      <thead>
+        <tr>
+          <th scope="col">Metric</th>
+          <th scope="col">Existing network quality</th>
+          <th scope="col">Proposed network quality</th>
+        </tr>
+      </thead>
+      <tbody>
         <tr>
           <th scope="row" style:background={tierColors.LocalAccess}>
             Railway stations
@@ -273,9 +293,20 @@
           <td>{percent(baseline.percent_reachable_greenspaces)}</td>
           <td>{percent($stats.percent_reachable_greenspaces)}</td>
         </tr>
+      </tbody>
+    </table>
 
-        <!-- Long distance -->
+    <h3>Long distance metrics</h3>
 
+    <table class="ds_table">
+      <thead>
+        <tr>
+          <th scope="col">Metric</th>
+          <th scope="col">Existing network quality</th>
+          <th scope="col">Proposed network quality</th>
+        </tr>
+      </thead>
+      <tbody>
         <tr>
           <th scope="row" style:background={tierColors.LongDistance}>
             Settlements connected to the network
