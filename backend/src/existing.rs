@@ -57,6 +57,10 @@ impl Highway {
             _ => None,
         }?;
 
+        if tags.is("access", "private") {
+            return None;
+        }
+
         // Be stricter about some cases
         if matches!(hwy, Highway::Footway | Highway::Pedestrian | Highway::Path) {
             // There could be some existing paths that don't allow bicycles today, but could in the

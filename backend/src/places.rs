@@ -299,7 +299,7 @@ impl TownCentre {
                     }
                 }
                 if roads.is_empty() {
-                    bail!("Town centre {:?} doesn't snap to any roads", x.name);
+                    error!("Town centre {:?} doesn't snap to any roads", x.name);
                 }
 
                 town_centres.push(TownCentre {
