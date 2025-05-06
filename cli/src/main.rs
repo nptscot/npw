@@ -170,7 +170,7 @@ fn create(
         &graph,
     )?;
 
-    let traffic_volumes = read_traffic_volumes("../data_prep/tmp/traffic.gpkg", &graph, timer)?;
+    let traffic_volumes = read_traffic_volumes("../data_prep/tmp/clos.gpkg", &graph, timer)?;
 
     let coherent_network =
         read_coherent_network("../data_prep/tmp/coherent_network.gpkg", &graph, timer)?;
@@ -294,46 +294,32 @@ fn read_traffic_volumes(
     let mut layer = dataset.layer(0)?;
     let b = &graph.mercator.wgs84_bounds;
     layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
-    let pred_flows_idx = layer.defn().field_index("pred_flows")?;
+    let traffic_idx = layer.defn().field_index("Traffic.volume.category")?;
 
     let mut source_geometry = Vec::new();
     let mut source_data = Vec::new();
     for input in layer.features() {
-        let Some(flows) = input.field_as_integer(pred_flows_idx)? else {
+        let Some(traffic) = input.field_as_string(traffic_idx)? else {
             // TODO Why missing?
             continue;
         };
-        let volume = if flows <= 1000 {
-            TrafficVolume::UpTo1000
-        } else if flows <= 2000 {
-            TrafficVolume::UpTo2000
-        } else if flows <= 4000 {
-            TrafficVolume::UpTo4000
-        } else {
-            TrafficVolume::Over4000
+        let volume = match traffic.as_str() {
+            "0 to 999" => TrafficVolume::UpTo1000,
+            "1000 to 1999" => TrafficVolume::UpTo2000,
+            "2000 to 3999" => TrafficVolume::UpTo4000,
+            "4000+" => TrafficVolume::Over4000,
+            _ => bail!("Unknown Traffic.volume.category {traffic}"),
         };
 
-        let geo = input.geometry().unwrap().to_geo()?;
-        match geo {
-            Geometry::LineString(mut ls) => {
-                graph.mercator.to_mercator_in_place(&mut ls);
-                source_geometry.push(ls);
-                source_data.push(volume);
-            }
-            Geometry::MultiLineString(mls) => {
-                for mut ls in mls {
-                    graph.mercator.to_mercator_in_place(&mut ls);
-                    source_geometry.push(ls);
-                    source_data.push(volume);
-                }
-            }
-            _ => bail!("read_traffic_volumes found something besides a LS or MLS"),
-        }
+        let mut geom: LineString = input.geometry().unwrap().to_geo()?.try_into()?;
+        graph.mercator.to_mercator_in_place(&mut geom);
+
+        source_geometry.push(geom);
+        source_data.push(volume);
     }
     if source_geometry.is_empty() {
         bail!("No traffic volumes detected; input is broken");
     }
-    info!("{} links have pred_flows", source_geometry.len());
 
     timer.step("match traffic volumes");
     let distance_tolerance = 15.0;

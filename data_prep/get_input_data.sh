@@ -91,8 +91,7 @@ function od {
 }
 
 function traffic {
-  # Manually download https://github.com/nptscot/scottraffic/releases/download/v14/final_estimates_Scotland_2025-04-15_correct.gpkg
-  ogr2ogr tmp/traffic.gpkg -t_srs EPSG:4326 $1
+  wget https://github.com/nptscot/npt/releases/download/v2025-05-01/clos_2025-05-01.gpkg -O tmp/clos.gpkg
 
   # While we're still comparing map-matched results, include this too
   wget https://nptscot.blob.core.windows.net/pmtiles/cbd_layer_2025-04-01.pmtiles -O ../web/public/cbd.pmtiles
