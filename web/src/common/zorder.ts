@@ -77,6 +77,7 @@ const layerZorder = [
   "uncovered-population-outline",
   "mesh-density-grid",
   "mesh-density-grid-outline",
+  "mesh-density-settlements",
 
   // Reference layers (points or polygons)
   "railway-stations", // TODO Need to cover up the basemap one sometimes

@@ -13,7 +13,7 @@
 </script>
 
 <header class="ds_page-header">
-  <h2 class="ds_page-header__title">Network coverage</h2>
+  <h2 class="ds_page-header__title">Mesh density</h2>
 </header>
 
 <BackLink on:click={() => ($subpage = "overview")}>
@@ -21,7 +21,11 @@
 </BackLink>
 
 <p>
-  This map measures the mesh density of your network. Only areas touching a
-  settlement are shown. For any squares with poor coverage, you can return to an
-  appropriate tier and add more routes.
+  This map measures the mesh density of your network - a key feature of a good
+  quality, coherent network. Mesh density has been calculated based on the
+  spacing of primary and secondary routes, within settlements only. Mesh density
+  in dense urban centres should be high (green), while in lower density suburban
+  areas a lower mesh density may be acceptable (red). For any squares with an
+  unacceptably low mesh density, return to the primary secondary tier and add
+  more routes.
 </p>

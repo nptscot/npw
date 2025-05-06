@@ -69,7 +69,7 @@
             class="ds_button"
             on:click={() => ($subpage = "mesh-density")}
           >
-            Check mesh density
+            Mesh density
           </button>
         </div>
 

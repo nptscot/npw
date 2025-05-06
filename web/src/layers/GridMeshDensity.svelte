@@ -59,3 +59,21 @@
     }}
   />
 </GeoJSON>
+
+{#if $backend}
+  {#await $backend.getSettlements() then data}
+    <GeoJSON {data}>
+      <LineLayer
+        {...layerId("mesh-density-settlements")}
+        interactive={false}
+        paint={{
+          "line-color": "black",
+          "line-width": 3,
+        }}
+        layout={{
+          visibility: $show ? "visible" : "none",
+        }}
+      />
+    </GeoJSON>
+  {/await}
+{/if}
