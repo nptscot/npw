@@ -3,7 +3,7 @@ set -x
 
 cd web
 mkdir deployme
-for branch in main; do
+for branch in main demo_may6; do
   echo "Building $branch"
   git checkout $branch
 
