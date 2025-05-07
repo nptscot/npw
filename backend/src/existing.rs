@@ -46,8 +46,8 @@ impl Highway {
             "path" => Some(Highway::Path),
             "footway" => {
                 // Exclude dedicated sidewalks; they're almost always parallel to a road that
-                // should be edited instead
-                if tags.is("footway", "sidewalk") {
+                // should be edited instead. Crossings are also irrelevant.
+                if tags.is_any("footway", vec!["crossing", "sidewalk"]) {
                     None
                 } else {
                     Some(Highway::Footway)
