@@ -9,6 +9,11 @@
     stats,
   } from "../stores";
   import type { Stats } from "../types";
+  import Attractiveness from "./Attractiveness.svelte";
+  import Coherence from "./Coherence.svelte";
+  import Comfort from "./Comfort.svelte";
+  import Directness from "./Directness.svelte";
+  import Safety from "./Safety.svelte";
 
   let showSafety = false;
   let showDirectness = false;
@@ -84,31 +89,23 @@
 
 {#if $stats}
   <Modal bind:show={showSafety}>
-    <h2>Safety</h2>
-    <p>
-      What percent of arterial roads within settlements has high Level of
-      Service?
-    </p>
+    <Safety />
   </Modal>
 
   <Modal bind:show={showDirectness}>
-    <h2>Directness</h2>
-    <p>Average weighted directness</p>
+    <Directness />
   </Modal>
 
   <Modal bind:show={showCoherence}>
-    <h2>Coherence</h2>
-    <p>Density of primary/secondary network within settlements</p>
+    <Coherence />
   </Modal>
 
   <Modal bind:show={showComfort}>
-    <h2>Comfort</h2>
-    <p>What percent of your network is on low gradient (&le; 3%)?</p>
+    <Comfort />
   </Modal>
 
   <Modal bind:show={showAttractiveness}>
-    <h2>Attractiveness</h2>
-    <p>What percent of your network is next to greenspace?</p>
+    <Attractiveness />
   </Modal>
 
   <div class="progress-summary">
