@@ -18,6 +18,7 @@ import type {
   Greenspaces,
   GridMeshDensity,
   InfraType,
+  NetworkLengths,
   ODStats,
   POIs,
   RouteGJ,
@@ -394,6 +395,13 @@ export class Backend {
   async getTownCentrePoints(): Promise<FeatureCollection> {
     this.start();
     let result = await this.inner.getTownCentrePoints();
+    this.stop();
+    return result;
+  }
+
+  async getNetworkLengths(): Promise<NetworkLengths> {
+    this.start();
+    let result = await this.inner.getNetworkLengths();
     this.stop();
     return result;
   }

@@ -234,6 +234,12 @@ export type TownCentreRoutes = FeatureCollection<
   { direct: boolean; quiet: boolean; los: string }
 >;
 
+export interface NetworkLengths {
+  infra_type: Record<string, number>;
+  los: Record<string, number>;
+  tier: Record<string, number>;
+}
+
 export type PoiKind =
   | "railway_stations"
   | "schools"

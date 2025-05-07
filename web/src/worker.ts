@@ -18,6 +18,7 @@ import type {
   Greenspaces,
   GridMeshDensity,
   InfraType,
+  NetworkLengths,
   ODStats,
   POIs,
   RouteGJ,
@@ -320,6 +321,11 @@ export class InnerBackend {
   getTownCentrePoints(): FeatureCollection {
     this.checkReady();
     return JSON.parse(this.inner!.getTownCentrePoints());
+  }
+
+  getNetworkLengths(): NetworkLengths {
+    this.checkReady();
+    return JSON.parse(this.inner!.getNetworkLengths());
   }
 
   private checkReady() {

@@ -17,6 +17,7 @@
   import { percent as percent2 } from "../common";
   import { backend, slowStats, stats } from "../stores";
   import type { Stats } from "../types";
+  import NetworkLengths from "./NetworkLengths.svelte";
 
   ChartJS.register(
     Title,
@@ -218,6 +219,9 @@
         }}
       />
     </div>
+
+    <h3>Network components</h3>
+    <NetworkLengths />
 
     <h3>Primary metrics</h3>
 

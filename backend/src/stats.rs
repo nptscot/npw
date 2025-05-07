@@ -1,8 +1,9 @@
 use anyhow::Result;
+use enum_map::EnumMap;
 use graph::{RoadID, Timer};
 use serde::{Deserialize, Serialize};
 
-use crate::{LevelOfService, MapModel, Tier};
+use crate::{InfraType, LevelOfService, MapModel, Tier};
 
 /// A summary of metrics. All percents are 0 to 1.
 #[derive(Default, Serialize, Deserialize)]
@@ -218,6 +219,42 @@ impl MapModel {
         let mut out = serde_json::Map::new();
         od.describe(self, &mut out)?;
         Ok(serde_json::to_string(&out)?)
+    }
+
+    pub fn get_network_lengths(&self) -> Result<String> {
+        let mut by_infra: EnumMap<InfraType, f64> = EnumMap::default();
+        let mut by_los: EnumMap<LevelOfService, f64> = EnumMap::default();
+        let mut by_tier: EnumMap<Tier, f64> = EnumMap::default();
+
+        for (idx, road) in self.graph.roads.iter().enumerate() {
+            let Some(infra_type) = self.infra_types[idx] else {
+                continue;
+            };
+            by_infra[infra_type] += road.length_meters;
+            by_los[self.los[idx]] += road.length_meters;
+            if let Some(tier) = self.tiers[idx] {
+                by_tier[tier] += road.length_meters;
+            }
+        }
+
+        let mut infra = serde_json::Map::new();
+        let mut los = serde_json::Map::new();
+        let mut tier = serde_json::Map::new();
+        for (key, length) in by_infra {
+            infra.insert(format!("{key:?}"), length.into());
+        }
+        for (key, length) in by_los {
+            los.insert(format!("{key:?}"), length.into());
+        }
+        for (key, length) in by_tier {
+            tier.insert(format!("{key:?}"), length.into());
+        }
+
+        Ok(serde_json::to_string(&serde_json::json!({
+            "infra_type": infra,
+            "los": los,
+            "tier": tier,
+        }))?)
     }
 }
 

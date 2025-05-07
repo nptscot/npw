@@ -580,6 +580,11 @@ impl MapModel {
         self.get_town_centre_routes().map_err(err_to_js)
     }
 
+    #[wasm_bindgen(js_name = getNetworkLengths)]
+    pub fn get_network_lengths_wasm(&self) -> Result<String, JsValue> {
+        self.get_network_lengths().map_err(err_to_js)
+    }
+
     fn to_mercator(&self, pt: &mut [f64; 2]) {
         let c: Coord = Coord { x: pt[0], y: pt[1] };
         let out = self.graph.mercator.pt_to_mercator(c);
