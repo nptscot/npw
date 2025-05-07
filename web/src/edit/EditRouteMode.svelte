@@ -60,6 +60,7 @@
     min_e2e_width: 0,
     max_e2e_width: 0,
     cross_section_profiles: [],
+    los_details: [],
   };
   let setupDone = id == null;
   let firstRunParams = "";

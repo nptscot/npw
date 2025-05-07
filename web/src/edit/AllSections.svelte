@@ -3,6 +3,7 @@
   import { HelpButton, percent } from "../common";
   import { editModeBreakdown } from "../stores";
   import type { AutosplitRoute, Tier } from "../types";
+  import ExplainLoS from "./ExplainLoS.svelte";
   import ExplainSSE from "./ExplainSSE.svelte";
   import SectionDiagram from "./SectionDiagram.svelte";
 
@@ -92,7 +93,12 @@
   <div style="display: flex; justify-content: space-between">
     <b>Level of Service</b>
     <span>
-      <span>{pctHighLoS} high</span>
+      <span>
+        {pctHighLoS} high
+        <HelpButton>
+          <ExplainLoS {sectionsGj} />
+        </HelpButton>
+      </span>
       <button
         class:style-icon={true}
         on:click={() => ($editModeBreakdown = "los")}

@@ -227,7 +227,15 @@ export type AutosplitRoute = FeatureCollection<
   min_e2e_width: number;
   max_e2e_width: number;
   cross_section_profiles: string[];
+  los_details: LevelOfServiceDetails[];
 };
+
+export interface LevelOfServiceDetails {
+  speed: number;
+  traffic: TrafficVolume;
+  infra_type: InfraType | null;
+  los: string;
+}
 
 export type TownCentreRoutes = FeatureCollection<
   LineString,
@@ -248,13 +256,15 @@ export type PoiKind =
   | "town_centres"
   | "settlements";
 
+export type TrafficVolume = "UpTo1000" | "UpTo2000" | "UpTo4000" | "Over4000";
+
 export interface StaticRoad {
   id: number;
   way: number;
   is_arterial_road: boolean;
   within_settlement: boolean;
   is_attractive: boolean;
-  traffic: "UpTo1000" | "UpTo2000" | "UpTo4000" | "Over4000";
+  traffic: TrafficVolume;
   cn: Tier | null;
   speed: number;
   gradient: number;

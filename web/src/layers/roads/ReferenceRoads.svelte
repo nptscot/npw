@@ -32,6 +32,7 @@
     infraTypeMapping,
     type DynamicRoad,
     type InfraType,
+    type TrafficVolume,
   } from "../../types";
   import {
     debugCyclingDemandMin,
@@ -202,10 +203,8 @@
     return x as InfraType;
   }
 
-  function castTraffic(
-    x: string,
-  ): "UpTo1000" | "UpTo2000" | "UpTo4000" | "Over4000" {
-    return x as "UpTo1000" | "UpTo2000" | "UpTo4000" | "Over4000";
+  function castTraffic(x: string): TrafficVolume {
+    return x as TrafficVolume;
   }
 </script>
 

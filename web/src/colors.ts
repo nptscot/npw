@@ -90,6 +90,16 @@ export let speed = {
   ],
   limits: [20, 30, 40, 50, 60, 70],
 };
+// TODO Make it an enum properly?
+export let speedColors: { [name: number]: string } = {
+  10: "#8a9a5b",
+  20: "#8a9a5b",
+  30: "#ffc300",
+  40: "#cc5500",
+  50: "#c70039",
+  60: "#900c3f",
+  70: "#581845",
+};
 
 export let gradient = {
   colorScale: [

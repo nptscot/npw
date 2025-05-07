@@ -10,7 +10,7 @@ use crate::join_lines::KeyedLineString;
 use crate::route_snapper::roads_to_waypoints;
 use crate::{
     level_of_service::get_level_of_service, utils::into_object_value, Highway, InfraType,
-    LevelOfService, MapModel, Tier,
+    LevelOfService, MapModel, Tier, TrafficVolume,
 };
 
 #[derive(Clone)]
@@ -400,13 +400,29 @@ impl MapModel {
         let mut sse_details = SseDetails::default();
         // Dummy placeholder value
         sse_details.min_e2e_width = 100;
+        let mut los_details = Vec::new();
+
         let mut sections = Vec::new();
         for roads in route_roads.chunk_by(|a, b| case(*a) == case(*b)) {
+            let c = case(roads[0]);
+
+            let (common_infra_type, common_los) = match c {
+                Case::AlreadyExists { los, .. } => (None, los),
+                Case::New {
+                    infra_type, los, ..
+                } => (Some(infra_type), los),
+            };
+
             for (r, _) in roads {
                 sse_details.update(self, *r);
+                los_details.push(LevelOfServiceDetails {
+                    speed: self.speeds[r.0],
+                    traffic: self.traffic_volumes[r.0],
+                    infra_type: common_infra_type,
+                    los: common_los,
+                });
             }
 
-            let c = case(roads[0]);
             let linestring_wgs84 = glue_route_wgs84(&self.graph, roads);
             let mut f = Feature::from(Geometry::from(&linestring_wgs84));
             match c {
@@ -444,6 +460,8 @@ impl MapModel {
         }
         sse_details.cross_section_profiles.sort();
         sse_details.cross_section_profiles.dedup();
+        los_details.dedup();
+        sse_details.los_details = los_details;
 
         Ok(serde_json::to_string(&FeatureCollection {
             features: sections,
@@ -726,6 +744,8 @@ struct SseDetails {
     min_e2e_width: usize,
     max_e2e_width: usize,
     cross_section_profiles: Vec<String>,
+
+    los_details: Vec<LevelOfServiceDetails>,
 }
 
 impl SseDetails {
@@ -740,4 +760,13 @@ impl SseDetails {
         self.cross_section_profiles
             .push(ss.cross_section_profile.clone());
     }
+}
+
+#[derive(PartialEq, Serialize)]
+struct LevelOfServiceDetails {
+    speed: usize,
+    traffic: TrafficVolume,
+    /// None means overlap
+    infra_type: Option<InfraType>,
+    los: LevelOfService,
 }
