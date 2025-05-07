@@ -181,41 +181,43 @@
       </tbody>
     </table>
 
-    <Radar
-      data={{
-        labels: [
-          "Safety",
-          "Directness",
-          "Coherence",
-          "Comfort",
-          "Attractiveness",
-        ],
-        datasets: [
-          {
-            label: "Existing",
-            data: [
-              radarScore(safety(baseline)),
-              radarScore(directness(baseline)),
-              radarScore(coherentDensity(baseline)),
-              radarScore(comfort(baseline)),
-              radarScore(attractiveness(baseline)),
-            ],
-            backgroundColor: "red",
-          },
-          {
-            label: "Proposed",
-            data: [
-              radarScore(safety($stats)),
-              radarScore(directness($slowStats)),
-              radarScore(coherentDensity($stats)),
-              radarScore(comfort($stats)),
-              radarScore(attractiveness($stats)),
-            ],
-            backgroundColor: "blue",
-          },
-        ],
-      }}
-    />
+    <div style:height="500px">
+      <Radar
+        data={{
+          labels: [
+            "Safety",
+            "Directness",
+            "Coherence",
+            "Comfort",
+            "Attractiveness",
+          ],
+          datasets: [
+            {
+              label: "Existing",
+              data: [
+                radarScore(safety(baseline)),
+                radarScore(directness(baseline)),
+                radarScore(coherentDensity(baseline)),
+                radarScore(comfort(baseline)),
+                radarScore(attractiveness(baseline)),
+              ],
+              backgroundColor: "red",
+            },
+            {
+              label: "Proposed",
+              data: [
+                radarScore(safety($stats)),
+                radarScore(directness($slowStats)),
+                radarScore(coherentDensity($stats)),
+                radarScore(comfort($stats)),
+                radarScore(attractiveness($stats)),
+              ],
+              backgroundColor: "blue",
+            },
+          ],
+        }}
+      />
+    </div>
 
     <h3>Primary metrics</h3>
 
