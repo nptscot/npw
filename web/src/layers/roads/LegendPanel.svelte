@@ -13,7 +13,8 @@
     reachabilityColors,
     speed,
     tierColors,
-    traffic,
+    trafficColors,
+    trafficLabels,
   } from "../../colors";
   import { Checkbox, HelpButton } from "../../common";
   import {
@@ -83,8 +84,8 @@
   {:else if $backgroundLayer == "traffic"}
     <b>Estimated traffic volume</b>
     <SequentialLegend
-      colorScale={traffic.colorScale}
-      labels={{ limits: traffic.limits }}
+      colorScale={Object.values(trafficColors)}
+      labels={{ buckets: Object.values(trafficLabels) }}
     />
 
     {#if $devMode}

@@ -299,15 +299,9 @@ impl MapModel {
             f.set_property("within_settlement", self.within_settlement[idx]);
             f.set_property("is_attractive", self.is_attractive[idx]);
 
-            // TODO Plumb through enums on the frontend
             f.set_property(
                 "traffic",
-                match self.traffic_volumes[idx] {
-                    TrafficVolume::UpTo1000 => 500,
-                    TrafficVolume::UpTo2000 => 1500,
-                    TrafficVolume::UpTo4000 => 3000,
-                    TrafficVolume::Over4000 => 6000,
-                },
+                serde_json::to_value(self.traffic_volumes[idx]).unwrap(),
             );
             f.set_property(
                 "cn",

@@ -13,7 +13,8 @@
     levelOfServiceColors,
     reachabilityColors,
     speed,
-    traffic,
+    trafficColors,
+    trafficLabels,
   } from "../../colors";
   import {
     layerId,
@@ -107,7 +108,11 @@
         infraTypeColors,
         "black",
       ),
-      traffic: makeRamp(["get", "traffic"], traffic.limits, traffic.colorScale),
+      traffic: constructMatchExpression(
+        ["get", "traffic"],
+        trafficColors,
+        "black",
+      ),
       gradient: makeRamp(
         ["abs", ["get", "gradient"]],
         gradient.limits,
@@ -197,18 +202,10 @@
     return x as InfraType;
   }
 
-  // Don't expose exact traffic counts
-  // TODO Just plumb the enum
-  function trafficGroup(x: number): string {
-    if (x < 1000) {
-      return "0 to 999";
-    } else if (x < 2000) {
-      return "1000 to 1999";
-    } else if (x < 4000) {
-      return "2000 to 3999";
-    } else {
-      return "4000+";
-    }
+  function castTraffic(
+    x: string,
+  ): "UpTo1000" | "UpTo2000" | "UpTo4000" | "Over4000" {
+    return x as "UpTo1000" | "UpTo2000" | "UpTo4000" | "Over4000";
   }
 </script>
 
@@ -240,7 +237,7 @@
         Is next to greenspace? <b>{props.is_attractive ? "yes" : "no"}</b>
       </p>
       <p>
-        Traffic: <b>{trafficGroup(props.traffic)}</b>
+        Traffic: <b>{trafficLabels[castTraffic(props.traffic)]}</b>
       </p>
       <p>
         Gradient: <b>{props.gradient.toFixed(1)}%</b>

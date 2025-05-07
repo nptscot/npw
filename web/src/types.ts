@@ -254,8 +254,7 @@ export interface StaticRoad {
   is_arterial_road: boolean;
   within_settlement: boolean;
   is_attractive: boolean;
-  // TODO Make this an enum and change everywhere downstream
-  traffic: number;
+  traffic: "UpTo1000" | "UpTo2000" | "UpTo4000" | "Over4000";
   cn: Tier | null;
   speed: number;
   gradient: number;
