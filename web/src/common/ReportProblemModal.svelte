@@ -92,7 +92,7 @@
   {#if $zoom && $zoom < 14}
     <p>
       <b>Please zoom in further to the problem.</b>
-       If the problem covers a large area, then ignore this and proceed.
+      If the problem covers a large area, then ignore this and proceed.
     </p>
   {/if}
 

@@ -1,16 +1,31 @@
 <script lang="ts">
+  // This component must be protected by SummarizeStatsWrapper, which makes
+  // sure $stats and $slowStats are up-to-date
+  import {
+    Chart as ChartJS,
+    Legend,
+    LineElement,
+    PointElement,
+    RadialLinearScale,
+    Title,
+    Tooltip,
+  } from "chart.js";
+  import { Radar } from "svelte-chartjs";
   import { notNull } from "svelte-utils";
   import ODStats from "../assess/ODStats.svelte";
   import { tierColors } from "../colors";
   import { percent as percent2 } from "../common";
-  import {
-    backend,
-    lastUpdateSlowStats,
-    mutationCounter,
-    slowStats,
-    stats,
-  } from "../stores";
+  import { backend, slowStats, stats } from "../stores";
   import type { Stats } from "../types";
+
+  ChartJS.register(
+    Title,
+    Tooltip,
+    Legend,
+    PointElement,
+    RadialLinearScale,
+    LineElement,
+  );
 
   type Rating = "very poor" | "poor" | "medium" | "good" | "very good";
   let ratingColors = {
@@ -69,6 +84,17 @@
     return `<td style="background: ${ratingColors[pair[1]]}">${pair[0]} (${pair[1]})</td>`;
   }
 
+  function radarScore(pair: [string, Rating]): number {
+    // TODO Exact values
+    return {
+      "very poor": 0,
+      poor: 20,
+      medium: 40,
+      good: 60,
+      "very good": 80,
+    }[pair[1]];
+  }
+
   function safety(s: Stats): [string, Rating] {
     let pct = percent3(
       s.total_high_los_arterial_roads_length,
@@ -110,7 +136,7 @@
   }
 </script>
 
-{#if $stats}
+{#if $stats && $slowStats}
   {#await notNull($backend).getBaselineStats() then baseline}
     <h3>Network metrics</h3>
 
@@ -132,11 +158,7 @@
         <tr>
           <th scope="row">Directness</th>
           {@html renderScore(directness(baseline))}
-          {#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
-            {@html renderScore(directness($slowStats))}
-          {:else}
-            <td>Need to recalculate</td>
-          {/if}
+          {@html renderScore(directness($slowStats))}
         </tr>
 
         <tr>
@@ -158,6 +180,42 @@
         </tr>
       </tbody>
     </table>
+
+    <Radar
+      data={{
+        labels: [
+          "Safety",
+          "Directness",
+          "Coherence",
+          "Comfort",
+          "Attractiveness",
+        ],
+        datasets: [
+          {
+            label: "Existing",
+            data: [
+              radarScore(safety(baseline)),
+              radarScore(directness(baseline)),
+              radarScore(coherentDensity(baseline)),
+              radarScore(comfort(baseline)),
+              radarScore(attractiveness(baseline)),
+            ],
+            backgroundColor: "red",
+          },
+          {
+            label: "Proposed",
+            data: [
+              radarScore(safety($stats)),
+              radarScore(directness($slowStats)),
+              radarScore(coherentDensity($stats)),
+              radarScore(comfort($stats)),
+              radarScore(attractiveness($stats)),
+            ],
+            backgroundColor: "blue",
+          },
+        ],
+      }}
+    />
 
     <h3>Primary metrics</h3>
 
