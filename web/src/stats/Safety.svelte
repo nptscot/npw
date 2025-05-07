@@ -12,7 +12,7 @@
 <h3>Methodology</h3>
 <p>
   We use the <b>Safety Level of Service (LoS)</b>
-   as a key indicator to evaluate network safety across the network.
+  as a key indicator to evaluate network safety across the network.
 </p>
 
 <h3>How to improve</h3>

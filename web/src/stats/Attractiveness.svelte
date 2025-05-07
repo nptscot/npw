@@ -2,19 +2,24 @@
 </script>
 
 <h2>Attractiveness</h2>
-<p>What percent of your network is next to greenspace?</p>
 
 <h3>Definition</h3>
 <p>
+  Infrastructure should feel pleasant, safe, and in harmony with its
+  surroundings. Aesthetic quality and personal security matter.
 </p>
 
 <h3>Methodology</h3>
 <p>
+  Measured by the <b>share of green space along routes</b>
+  .
 </p>
+<p><i>Additional indicators like lighting and noise may be added later.</i></p>
 
 <h3>How to improve</h3>
 <ul>
   <li>
+    Route through <b>parks or green corridors</b>
   </li>
 </ul>
 
@@ -37,24 +42,14 @@
   </thead>
   <tbody>
     <tr>
-      <td></td>
-      <td>&le; 20%</td>
-      <td>&le; 40%</td>
-      <td>&le; 60%</td>
-      <td>&le; 80%</td>
-      <td>&gt; 80%</td>
+      <td>share of green spaces</td>
+      <td>0</td>
+      <td>&le; 25%</td>
+      <td>&le; 50%</td>
+      <td>&le; 75%</td>
+      <td>&gt; 75%</td>
       <td>TODO</td>
-      <td>90%</td>
-    </tr>
-    <tr>
-      <td></td>
-      <td>&le; 20%</td>
-      <td>&le; 40%</td>
-      <td>&le; 60%</td>
-      <td>&le; 80%</td>
-      <td>&gt; 80%</td>
-      <td>TODO</td>
-      <td>10%</td>
+      <td>100%</td>
     </tr>
   </tbody>
 </table>
