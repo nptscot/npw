@@ -16,7 +16,7 @@
   <b>network integrity</b>
   （whether the network is continuous or fragmented, and
   <b>Safety Level of Service (LoS)</b>
-   coverage on arterial roads.
+  coverage on arterial roads.
 </p>
 
 <h3>How to improve</h3>
@@ -26,11 +26,11 @@
   </li>
   <li>
     Ensure <b>high LoS coverage</b>
-     on arterial roads
+    on arterial roads
   </li>
   <li>
     Avoid fragmented networks — aim for a <b>single, integrated network</b>
-     to support internal connectivity and intuitive navigation
+    to support internal connectivity and intuitive navigation
   </li>
 </ul>
 

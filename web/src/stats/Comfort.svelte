@@ -12,7 +12,7 @@
 <h3>Methodology</h3>
 <p>
   Currently measured by the <b>proportion of low-gradient segments</b>
-   (&le; 3%), as gradient significantly affects comfort.
+  (&le; 3%), as gradient significantly affects comfort.
 </p>
 <p>
   <i>
@@ -25,7 +25,7 @@
 <ul>
   <li>
     Plan routes with <b>gentle slopes</b>
-     and avoid steep gradients wherever possible
+    and avoid steep gradients wherever possible
   </li>
 </ul>
 

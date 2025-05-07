@@ -14,10 +14,21 @@
   import { notNull } from "svelte-utils";
   import ODStats from "../assess/ODStats.svelte";
   import { tierColors } from "../colors";
-  import { percent as percent2 } from "../common";
+  import { Modal, percent as percent2 } from "../common";
   import { backend, slowStats, stats } from "../stores";
   import type { Stats } from "../types";
+  import Attractiveness from "./Attractiveness.svelte";
+  import Coherence from "./Coherence.svelte";
+  import Comfort from "./Comfort.svelte";
+  import Directness from "./Directness.svelte";
   import NetworkLengths from "./NetworkLengths.svelte";
+  import Safety from "./Safety.svelte";
+
+  let showSafety = false;
+  let showDirectness = false;
+  let showCoherence = false;
+  let showComfort = false;
+  let showAttractiveness = false;
 
   ChartJS.register(
     Title,
@@ -151,31 +162,71 @@
       </thead>
       <tbody>
         <tr>
-          <th scope="row">Safety</th>
+          <th scope="row">
+            Safety <button
+              type="button"
+              class="ds_link"
+              on:click={() => (showSafety = true)}
+            >
+              <i class="fa-solid fa-circle-info"></i>
+            </button>
+          </th>
           {@html renderScore(safety(baseline))}
           {@html renderScore(safety($stats))}
         </tr>
 
         <tr>
-          <th scope="row">Directness</th>
+          <th scope="row">
+            Directness <button
+              type="button"
+              class="ds_link"
+              on:click={() => (showDirectness = true)}
+            >
+              <i class="fa-solid fa-circle-info"></i>
+            </button>
+          </th>
           {@html renderScore(directness(baseline))}
           {@html renderScore(directness($slowStats))}
         </tr>
 
         <tr>
-          <th scope="row">Coherence (density)</th>
+          <th scope="row">
+            Coherence <button
+              type="button"
+              class="ds_link"
+              on:click={() => (showCoherence = true)}
+            >
+              <i class="fa-solid fa-circle-info"></i>
+            </button>
+          </th>
           {@html renderScore(coherentDensity(baseline))}
           {@html renderScore(coherentDensity($stats))}
         </tr>
 
         <tr>
-          <th scope="row">Comfort</th>
+          <th scope="row">
+            Comfort <button
+              type="button"
+              class="ds_link"
+              on:click={() => (showComfort = true)}
+            >
+              <i class="fa-solid fa-circle-info"></i>
+            </button>
+          </th>
           {@html renderScore(comfort(baseline))}
           {@html renderScore(comfort($stats))}
         </tr>
 
         <tr>
-          <th scope="row">Attractiveness</th>
+          <th scope="row">
+            Attractiveness <button
+              type="button"
+              class="ds_link"
+              on:click={() => (showAttractiveness = true)}
+            >
+              <i class="fa-solid fa-circle-info"></i>
+            </button>
+          </th>
           {@html renderScore(attractiveness(baseline))}
           {@html renderScore(attractiveness($stats))}
         </tr>
@@ -390,3 +441,23 @@
   the proposed network.
 </p>
 <ODStats />
+
+<Modal bind:show={showSafety}>
+  <Safety />
+</Modal>
+
+<Modal bind:show={showDirectness}>
+  <Directness />
+</Modal>
+
+<Modal bind:show={showCoherence}>
+  <Coherence />
+</Modal>
+
+<Modal bind:show={showComfort}>
+  <Comfort />
+</Modal>
+
+<Modal bind:show={showAttractiveness}>
+  <Attractiveness />
+</Modal>
