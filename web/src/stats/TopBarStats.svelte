@@ -49,6 +49,7 @@
 
   // TODO Refactor with SummarizeStats
   function directnessScore(average_weighted_directness: number): number {
+    // TODO Doesn't match table
     if (average_weighted_directness > 1.5) {
       return 1;
     }
@@ -92,9 +93,11 @@
     <Safety />
   </Modal>
 
-  <Modal bind:show={showDirectness}>
-    <Directness />
-  </Modal>
+  {#if $slowStats}
+    <Modal bind:show={showDirectness}>
+      <Directness />
+    </Modal>
+  {/if}
 
   <Modal bind:show={showCoherence}>
     <Coherence />

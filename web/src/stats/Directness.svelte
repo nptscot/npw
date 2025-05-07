@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { slowStats } from "../stores";
+  import { directness } from "./";
+
+  $: [value, rating] = directness($slowStats!);
 </script>
 
 <h2>Directness</h2>
@@ -14,7 +18,7 @@
   We assess <b>Detour Factor</b>
   , which compares the actual cycling route distance between town centres to the
   equivalent
-  <b>main road distance</b>
+  <b>arterial road distance</b>
   , to evaluate how direct the network is.
 </p>
 
@@ -24,9 +28,9 @@
     Reroute along <b>shorter, straighter paths</b>
   </li>
   <li>
-    Prioritise alignments that <b>follow or cut through main roads</b>
+    Prioritise alignments that <b>follow or cut through arterial roads</b>
     , aiming for
-    <b>shorter travel distances than the main road alternative</b>
+    <b>shorter travel distances than the arterial road alternative</b>
   </li>
 </ul>
 
@@ -50,13 +54,19 @@
   <tbody>
     <tr>
       <td>Detour factor</td>
-      <td>&ge; 1.3</td>
-      <td>&ge; 1.2</td>
-      <td>&ge; 1.1</td>
-      <td>&ge; 1</td>
-      <td>&lt; 1</td>
-      <td>TODO</td>
+      <td class:match={rating == "very poor"}>&ge; 1.3</td>
+      <td class:match={rating == "poor"}>&ge; 1.2</td>
+      <td class:match={rating == "medium"}>&ge; 1.1</td>
+      <td class:match={rating == "good"}>&ge; 1</td>
+      <td class:match={rating == "very good"}>&lt; 1</td>
+      <td>{value}</td>
       <td>100%</td>
     </tr>
   </tbody>
 </table>
+
+<style>
+  .match {
+    font-weight: bold;
+  }
+</style>

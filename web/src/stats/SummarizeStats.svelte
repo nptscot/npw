@@ -16,7 +16,14 @@
   import { tierColors } from "../colors";
   import { Modal, percent as percent2 } from "../common";
   import { backend, slowStats, stats } from "../stores";
-  import type { Stats } from "../types";
+  import {
+    attractiveness,
+    coherentDensity,
+    comfort,
+    directness,
+    safetyArterial,
+    type Rating,
+  } from "./";
   import Attractiveness from "./Attractiveness.svelte";
   import Coherence from "./Coherence.svelte";
   import Comfort from "./Comfort.svelte";
@@ -39,7 +46,6 @@
     LineElement,
   );
 
-  type Rating = "very poor" | "poor" | "medium" | "good" | "very good";
   let ratingColors = {
     "very poor": "#d73027",
     poor: "#fc8d59",
@@ -50,46 +56,6 @@
 
   function percent(pct: number): string {
     return `${Math.round(pct * 100)}%`;
-  }
-
-  function percent3(x: number, total: number): number {
-    if (total == 0) {
-      return 0;
-    }
-
-    return Math.round((x / total) * 100);
-  }
-
-  function stepLessThanOrEqual(pct: number, steps: number[]): Rating {
-    if (pct <= steps[0]) {
-      return "very poor";
-    }
-    if (pct <= steps[1]) {
-      return "poor";
-    }
-    if (pct <= steps[2]) {
-      return "medium";
-    }
-    if (pct <= steps[3]) {
-      return "good";
-    }
-    return "very good";
-  }
-
-  function stepGreaterThan(pct: number, steps: number[]): Rating {
-    if (pct > steps[0]) {
-      return "very poor";
-    }
-    if (pct > steps[1]) {
-      return "poor";
-    }
-    if (pct > steps[2]) {
-      return "medium";
-    }
-    if (pct > steps[3]) {
-      return "good";
-    }
-    return "very good";
   }
 
   function renderScore(pair: [string, Rating]): string {
@@ -105,46 +71,6 @@
       good: 60,
       "very good": 80,
     }[pair[1]];
-  }
-
-  function safety(s: Stats): [string, Rating] {
-    let pct = percent3(
-      s.total_high_los_arterial_roads_length,
-      s.total_arterial_road_length,
-    );
-    return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
-  }
-
-  function coherentDensity(s: Stats): [string, Rating] {
-    if (!s.density_network_in_settlements) {
-      return ["no routes", "very poor"];
-    }
-    let rating = stepGreaterThan(
-      s.density_network_in_settlements,
-      [1000, 500, 400, 250],
-    );
-    return [`${Math.round(s.density_network_in_settlements)}m`, rating];
-  }
-
-  function comfort(s: Stats): [string, Rating] {
-    let pct = percent3(s.total_low_gradient_length, s.total_network_length);
-    return [`${pct}%`, stepLessThanOrEqual(pct, [10, 20, 40, 60])];
-  }
-
-  function attractiveness(s: Stats): [string, Rating] {
-    let pct = percent3(s.total_attractive_length, s.total_network_length);
-    // First threshold will almost never happen; this is a deliberate choice
-    return [`${pct}%`, stepLessThanOrEqual(pct, [0, 25, 50, 75])];
-  }
-
-  function directness(s: {
-    average_weighted_directness: number;
-  }): [string, Rating] {
-    let rating = stepGreaterThan(
-      s.average_weighted_directness,
-      [1.5, 1.4, 1.3, 1.2],
-    );
-    return [`${s.average_weighted_directness.toFixed(1)}x`, rating];
   }
 </script>
 
@@ -171,8 +97,8 @@
               <i class="fa-solid fa-circle-info"></i>
             </button>
           </th>
-          {@html renderScore(safety(baseline))}
-          {@html renderScore(safety($stats))}
+          {@html renderScore(safetyArterial(baseline))}
+          {@html renderScore(safetyArterial($stats))}
         </tr>
 
         <tr>
@@ -247,7 +173,7 @@
             {
               label: "Existing",
               data: [
-                radarScore(safety(baseline)),
+                radarScore(safetyArterial(baseline)),
                 radarScore(directness(baseline)),
                 radarScore(coherentDensity(baseline)),
                 radarScore(comfort(baseline)),
@@ -258,7 +184,7 @@
             {
               label: "Proposed",
               data: [
-                radarScore(safety($stats)),
+                radarScore(safetyArterial($stats)),
                 radarScore(directness($slowStats)),
                 radarScore(coherentDensity($stats)),
                 radarScore(comfort($stats)),

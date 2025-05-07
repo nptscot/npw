@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { stats } from "../stores";
+  import { comfort } from "./";
+
+  $: [value, rating] = comfort($stats!);
 </script>
 
 <h2>Comfort</h2>
@@ -49,13 +53,19 @@
   <tbody>
     <tr>
       <td>Proportion of low gradient (&lt; 3%) length</td>
-      <td>&le; 10%</td>
-      <td>&le; 20%</td>
-      <td>&le; 40%</td>
-      <td>&le; 60%</td>
-      <td>&gt; 60%</td>
-      <td>TODO</td>
+      <td class:match={rating == "very poor"}>&le; 10%</td>
+      <td class:match={rating == "poor"}>&le; 20%</td>
+      <td class:match={rating == "medium"}>&le; 40%</td>
+      <td class:match={rating == "good"}>&le; 60%</td>
+      <td class:match={rating == "very good"}>&gt; 80%</td>
+      <td>{value}</td>
       <td>100%</td>
     </tr>
   </tbody>
 </table>
+
+<style>
+  .match {
+    font-weight: bold;
+  }
+</style>

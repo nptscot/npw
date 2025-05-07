@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { stats } from "../stores";
+  import { safetyArterial } from "./";
+
+  $: [arterialValue, arterialRating] = safetyArterial($stats!);
 </script>
 
 <h2>Safety</h2>
@@ -18,7 +22,7 @@
 <h3>How to improve</h3>
 <ul>
   <li>
-    Draw high LoS routes along <b>main roads</b>
+    Draw high LoS routes along <b>arterial roads</b>
   </li>
   <li>
     Override infrastructure types by adding <b>traffic constraints</b>
@@ -45,17 +49,17 @@
   </thead>
   <tbody>
     <tr>
-      <td>% of high LoS among main roads</td>
-      <td>&le; 20%</td>
-      <td>&le; 40%</td>
-      <td>&le; 60%</td>
-      <td>&le; 80%</td>
-      <td>&gt; 80%</td>
-      <td>TODO</td>
+      <td>% of high LoS among arterial roads</td>
+      <td class:match={arterialRating == "very poor"}>&le; 20%</td>
+      <td class:match={arterialRating == "poor"}>&le; 40%</td>
+      <td class:match={arterialRating == "medium"}>&le; 60%</td>
+      <td class:match={arterialRating == "good"}>&le; 80%</td>
+      <td class:match={arterialRating == "very good"}>&gt; 80%</td>
+      <td>{arterialValue}</td>
       <td>90%</td>
     </tr>
     <tr>
-      <td>% of high LoS among primary/secondar network</td>
+      <td>% of high LoS among primary/secondary network</td>
       <td>&le; 20%</td>
       <td>&le; 40%</td>
       <td>&le; 60%</td>
@@ -66,3 +70,9 @@
     </tr>
   </tbody>
 </table>
+
+<style>
+  .match {
+    font-weight: bold;
+  }
+</style>

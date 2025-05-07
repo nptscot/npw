@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { stats } from "../stores";
+  import { attractiveness } from "./";
+
+  $: [value, rating] = attractiveness($stats!);
 </script>
 
 <h2>Attractiveness</h2>
@@ -43,13 +47,19 @@
   <tbody>
     <tr>
       <td>share of green spaces</td>
-      <td>0</td>
-      <td>&le; 25%</td>
-      <td>&le; 50%</td>
-      <td>&le; 75%</td>
-      <td>&gt; 75%</td>
-      <td>TODO</td>
+      <td class:match={rating == "very poor"}>0</td>
+      <td class:match={rating == "poor"}>&le; 25%</td>
+      <td class:match={rating == "medium"}>&le; 50%</td>
+      <td class:match={rating == "good"}>&le; 75%</td>
+      <td class:match={rating == "very good"}>&gt; 75%</td>
+      <td>{value}</td>
       <td>100%</td>
     </tr>
   </tbody>
 </table>
+
+<style>
+  .match {
+    font-weight: bold;
+  }
+</style>

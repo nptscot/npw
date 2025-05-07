@@ -1,4 +1,9 @@
 <script lang="ts">
+  import { stats } from "../stores";
+  import { coherentDensity, safetyArterial } from "./";
+
+  $: [arterialValue, arterialRating] = safetyArterial($stats!);
+  $: [densityValue, densityRating] = coherentDensity($stats!);
 </script>
 
 <h2>Coherence</h2>
@@ -54,22 +59,22 @@
   <tbody>
     <tr>
       <td>Network density</td>
-      <td>&gt; 1000m</td>
-      <td>&gt; 500m</td>
-      <td>&gt; 400m</td>
-      <td>&gt; 250m</td>
-      <td>&le; 250m</td>
-      <td>TODO</td>
+      <td class:match={densityRating == "very poor"}>&gt; 1000m</td>
+      <td class:match={densityRating == "poor"}>&gt; 500m</td>
+      <td class:match={densityRating == "medium"}>&gt; 400m</td>
+      <td class:match={densityRating == "good"}>&gt; 250m</td>
+      <td class:match={densityRating == "very good"}>&le; 250m</td>
+      <td>{densityValue}</td>
       <td>40%</td>
     </tr>
     <tr>
       <td>% of high LoS among arterial roads</td>
-      <td>&le; 20%</td>
-      <td>&le; 40%</td>
-      <td>&le; 60%</td>
-      <td>&le; 80%</td>
-      <td>&gt; 80%</td>
-      <td>TODO</td>
+      <td class:match={arterialRating == "very poor"}>&le; 20%</td>
+      <td class:match={arterialRating == "poor"}>&le; 40%</td>
+      <td class:match={arterialRating == "medium"}>&le; 60%</td>
+      <td class:match={arterialRating == "good"}>&le; 80%</td>
+      <td class:match={arterialRating == "very good"}>&gt; 80%</td>
+      <td>{arterialValue}</td>
       <td>30%</td>
     </tr>
     <tr>
@@ -84,3 +89,9 @@
     </tr>
   </tbody>
 </table>
+
+<style>
+  .match {
+    font-weight: bold;
+  }
+</style>
