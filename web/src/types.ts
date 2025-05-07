@@ -233,7 +233,7 @@ export type AutosplitRoute = FeatureCollection<
 export interface LevelOfServiceDetails {
   speed: number;
   traffic: TrafficVolume;
-  infra_type: InfraType | null;
+  infra_type: InfraType;
   los: string;
 }
 

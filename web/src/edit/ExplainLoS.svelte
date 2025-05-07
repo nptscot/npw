@@ -28,13 +28,9 @@
         <td style:color={trafficColors[row.traffic]}>
           {trafficLabels[row.traffic]}
         </td>
-        {#if row.infra_type}
-          <td style:color={infraTypeColors[row.infra_type]}>
-            {infraTypeLabels[row.infra_type]}
-          </td>
-        {:else}
-          <td>overlaps existing route</td>
-        {/if}
+        <td style:color={infraTypeColors[row.infra_type]}>
+          {infraTypeLabels[row.infra_type]}
+        </td>
         <td style:color={levelOfServiceColors[row.los]}>{row.los}</td>
       </tr>
     {/each}

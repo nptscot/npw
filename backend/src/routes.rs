@@ -418,7 +418,8 @@ impl MapModel {
                 los_details.push(LevelOfServiceDetails {
                     speed: self.speeds[r.0],
                     traffic: self.traffic_volumes[r.0],
-                    infra_type: common_infra_type,
+                    // An existing route will have something filled out here
+                    infra_type: common_infra_type.or(self.infra_types[r.0]).unwrap(),
                     los: common_los,
                 });
             }
@@ -766,7 +767,6 @@ impl SseDetails {
 struct LevelOfServiceDetails {
     speed: usize,
     traffic: TrafficVolume,
-    /// None means overlap
-    infra_type: Option<InfraType>,
+    infra_type: InfraType,
     los: LevelOfService,
 }
