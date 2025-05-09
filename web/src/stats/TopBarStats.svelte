@@ -1,11 +1,7 @@
 <script lang="ts">
   import { Loading } from "svelte-utils";
   import { Modal } from "../common";
-  import {
-    coherenceCombinedPct,
-    directnessPct,
-    safetyCombinedPct,
-  } from "../stats";
+  import { coherenceCombined, directness, safetyCombined } from "../stats";
   import {
     backend,
     lastUpdateSlowStats,
@@ -84,7 +80,7 @@
         <a href="#" on:click|stopPropagation={() => (showSafety = true)}>
           Safety
           <br />
-          <progress value={safetyCombinedPct($stats)} max="100" />
+          <progress value={safetyCombined($stats)[2]} max="100" />
         </a>
       </li>
 
@@ -94,7 +90,7 @@
           Directness
           {#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
             <br />
-            <progress value={directnessPct($slowStats)} max="100" />
+            <progress value={directness($slowStats)[2]} max="100" />
           {:else}
             <a href="#" on:click|stopPropagation={recalculateDirectness}>
               <i class="fa-solid fa-calculator"></i>
@@ -108,7 +104,7 @@
         <a href="#" on:click|stopPropagation={() => (showCoherence = true)}>
           Coherence
           <br />
-          <progress value={coherenceCombinedPct($stats)} max="100" />
+          <progress value={coherenceCombined($stats)[2]} max="100" />
         </a>
       </li>
 

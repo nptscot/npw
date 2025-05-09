@@ -61,19 +61,8 @@
     return `${Math.round(pct * 100)}%`;
   }
 
-  function renderScore(pair: [string, Rating]): string {
+  function renderScore(pair: [string, Rating, number]): string {
     return `<td style="background: ${ratingColors[pair[1]]}">${pair[0]} (${pair[1]})</td>`;
-  }
-
-  function radarScore(pair: [string, Rating]): number {
-    // TODO Exact values
-    return {
-      "very poor": 0,
-      poor: 20,
-      medium: 40,
-      good: 60,
-      "very good": 80,
-    }[pair[1]];
   }
 </script>
 
@@ -201,22 +190,22 @@
             {
               label: "Existing",
               data: [
-                radarScore(safetyCombined(baseline)),
-                radarScore(directness(baseline)),
-                radarScore(coherenceCombined(baseline)),
-                radarScore(comfort(baseline)),
-                radarScore(attractiveness(baseline)),
+                safetyCombined(baseline)[2],
+                directness(baseline)[2],
+                coherenceCombined(baseline)[2],
+                comfort(baseline)[2],
+                attractiveness(baseline)[2],
               ],
               backgroundColor: "red",
             },
             {
               label: "Proposed",
               data: [
-                radarScore(safetyCombined($stats)),
-                radarScore(directness($slowStats)),
-                radarScore(coherenceCombined($stats)),
-                radarScore(comfort($stats)),
-                radarScore(attractiveness($stats)),
+                safetyCombined($stats)[2],
+                directness($slowStats)[2],
+                coherenceCombined($stats)[2],
+                comfort($stats)[2],
+                attractiveness($stats)[2],
               ],
               backgroundColor: "blue",
             },

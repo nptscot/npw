@@ -50,23 +50,23 @@ function stepGreaterThan(pct: number, steps: number[]): Rating {
   return "very good";
 }
 
-export function safetyArterial(s: Stats): [string, Rating] {
+export function safetyArterial(s: Stats): [string, Rating, number] {
   let pct = percent3(
     s.total_high_los_arterial_roads_length,
     s.total_arterial_road_length,
   );
-  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
+  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80]), pct];
 }
 
-export function safetyPrimarySecondary(s: Stats): [string, Rating] {
+export function safetyPrimarySecondary(s: Stats): [string, Rating, number] {
   let pct = percent3(
     s.high_los_primary_secondary_length,
     s.total_primary_secondary_length,
   );
-  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
+  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80]), pct];
 }
 
-export function safetyCombinedPct(s: Stats): number {
+export function safetyCombined(s: Stats): [string, Rating, number] {
   let pct1 = percent3(
     s.total_high_los_arterial_roads_length,
     s.total_arterial_road_length,
@@ -75,74 +75,72 @@ export function safetyCombinedPct(s: Stats): number {
     s.high_los_primary_secondary_length,
     s.total_primary_secondary_length,
   );
-  return Math.round(0.9 * pct1 + 0.1 * pct2);
+  let pct = Math.round(0.9 * pct1 + 0.1 * pct2);
+  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80]), pct];
 }
 
-export function safetyCombined(s: Stats): [string, Rating] {
-  let pct = safetyCombinedPct(s);
-  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
-}
-
-export function coherenceDensity(s: Stats): [string, Rating] {
+export function coherenceDensity(s: Stats): [string, Rating, number] {
   if (!s.density_network_in_settlements) {
-    return ["no routes", "very poor"];
+    return ["no routes", "very poor", 0];
   }
   let rating = stepGreaterThan(
     s.density_network_in_settlements,
     [1000, 500, 400, 250],
   );
-  return [`${Math.round(s.density_network_in_settlements)}m`, rating];
+  return [
+    `${Math.round(s.density_network_in_settlements)}m`,
+    rating,
+    ratingToPercent[rating],
+  ];
 }
 
-export function coherenceIntegrity(s: Stats): [string, Rating] {
+export function coherenceIntegrity(s: Stats): [string, Rating, number] {
   let rating: Rating = "very poor";
   if (s.num_connected_components <= s.num_settlements) {
     rating = "medium";
   } else if (s.num_connected_components == 1) {
     rating = "very good";
   }
-  return [s.num_connected_components.toString(), rating];
+  return [
+    s.num_connected_components.toString(),
+    rating,
+    ratingToPercent[rating],
+  ];
 }
 
-export function coherenceCombinedPct(s: Stats): number {
+export function coherenceCombined(s: Stats): [string, Rating, number] {
   let pct1 = ratingToPercent[coherenceDensity(s)[1]];
   let pct2 = percent3(
     s.total_high_los_arterial_roads_length,
     s.total_arterial_road_length,
   );
   let pct3 = ratingToPercent[coherenceIntegrity(s)[1]];
-  return Math.round(0.4 * pct1 + 0.3 * pct2 + 0.3 * pct3);
+  let pct = Math.round(0.4 * pct1 + 0.3 * pct2 + 0.3 * pct3);
+  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80]), pct];
 }
 
-export function coherenceCombined(s: Stats): [string, Rating] {
-  let pct = coherenceCombinedPct(s);
-  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
-}
-
-export function comfort(s: Stats): [string, Rating] {
+export function comfort(s: Stats): [string, Rating, number] {
   let pct = percent3(s.total_low_gradient_length, s.total_network_length);
-  return [`${pct}%`, stepLessThanOrEqual(pct, [10, 20, 40, 60])];
+  return [`${pct}%`, stepLessThanOrEqual(pct, [10, 20, 40, 60]), pct];
 }
 
-export function attractiveness(s: Stats): [string, Rating] {
+export function attractiveness(s: Stats): [string, Rating, number] {
   let pct = percent3(s.total_attractive_length, s.total_network_length);
   // First threshold will almost never happen; this is a deliberate choice
-  return [`${pct}%`, stepLessThanOrEqual(pct, [0, 25, 50, 75])];
+  return [`${pct}%`, stepLessThanOrEqual(pct, [0, 25, 50, 75]), pct];
 }
 
 export function directness(s: {
   average_weighted_directness: number;
-}): [string, Rating] {
+}): [string, Rating, number] {
   // TODO Doesn't match table
   let rating = stepGreaterThan(
     s.average_weighted_directness,
     [1.5, 1.4, 1.3, 1.2],
   );
-  return [`${s.average_weighted_directness.toFixed(1)}x`, rating];
-}
-
-export function directnessPct(s: {
-  average_weighted_directness: number;
-}): number {
-  return ratingToPercent[directness(s)[1]];
+  return [
+    `${s.average_weighted_directness.toFixed(1)}x`,
+    rating,
+    ratingToPercent[rating],
+  ];
 }
