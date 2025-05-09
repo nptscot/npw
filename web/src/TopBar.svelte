@@ -14,13 +14,6 @@
     }
   }
 
-  function gotoExport() {
-    if (canStopDrawing()) {
-      exitCurrentStage();
-      $mode = { kind: "export" };
-    }
-  }
-
   function switchStage(stage: string) {
     if (canStopDrawing()) {
       changeStage(stage);
@@ -57,28 +50,17 @@
               <a
                 class="ds_site-navigation__link {stage}"
                 class:ds_current={$mode.kind != "overview" &&
-                  $mode.kind != "export" &&
                   $currentStage == stage}
                 href="#"
                 on:click|preventDefault={() => switchStage(stage)}
               >
                 {label}
-                <i class="fa-solid fa-chevron-right"></i>
+                {#if stage != "assessment"}
+                  <i class="fa-solid fa-chevron-right"></i>
+                {/if}
               </a>
             </li>
           {/each}
-
-          <li class="ds_site-navigation__item">
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a
-              class="ds_site-navigation__link"
-              class:ds_current={$mode.kind == "export"}
-              href="#"
-              on:click|preventDefault={gotoExport}
-            >
-              Export
-            </a>
-          </li>
         {/if}
       </ul>
     </nav>

@@ -1,8 +1,16 @@
 <script lang="ts">
+  import { downloadGeneratedFile } from "svelte-utils";
   import { tierColors } from "./colors";
   import { BackLink } from "./common";
   import { SplitComponent } from "./common/layout";
-  import { changeStage, currentFilename, currentStage, mode } from "./stores";
+  import {
+    backend,
+    boundaryName,
+    changeStage,
+    currentFilename,
+    currentStage,
+    mode,
+  } from "./stores";
   import type { Tier } from "./types";
 
   let tiers = {
@@ -15,6 +23,11 @@
   // TODO Get TS for Object.entries better
   function castTier(x: string): Tier {
     return x as Tier;
+  }
+
+  async function exportFile() {
+    let file = `npw_${$boundaryName}_${$currentFilename}.geojson`;
+    downloadGeneratedFile(file, JSON.stringify(await $backend!.getAllRoutes()));
   }
 </script>
 
@@ -64,11 +77,8 @@
 
       <h4>Export project</h4>
 
-      <button
-        class="ds_button ds_button--secondary"
-        on:click={() => ($mode = { kind: "export" })}
-      >
-        Export project
+      <button class="ds_button ds_button--secondary" on:click={exportFile}>
+        Export project file to share
       </button>
     </div>
   </svelte:fragment>

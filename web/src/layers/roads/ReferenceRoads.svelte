@@ -259,8 +259,6 @@
       <p>
         Precalculated cycling demand: <b>
           {props.precalculated_demand.toLocaleString()}
-          (group
-          {props.precalculated_demand_group})
         </b>
       </p>
       {#if props.street_space}

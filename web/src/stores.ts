@@ -26,8 +26,7 @@ export type Mode =
   | { kind: "edit-route"; id: number | null; anyEdits: boolean }
   | { kind: "review-sections"; ids: number[] }
   | { kind: "evaluate-journey"; browse: WorstRoutes }
-  | { kind: "bulk-edit" }
-  | { kind: "export" };
+  | { kind: "bulk-edit" };
 
 export let boundaryName = writable("");
 // When this is blank, changes aren't saved.
