@@ -44,8 +44,7 @@ function build_graph_files {
           out=$(basename $osm .osm.pbf).bin
           stats=$(basename $osm .osm.pbf).json
           task=$(pueue add --print-task-id --escape $bin --input "$osm" --boundary "osm/$geojson" --output "../web/public/areas/$out" --stats-output "baseline_stats/$stats")
-          # TODO get gzip encoding to work on cloudflare
-          #pueue add --after $task --escape gzip "graph-files/$out"
+          pueue add --after $task --escape gzip "../web/public/areas/$out"
         done
 
         # Manually wait for pueue to finish
@@ -53,3 +52,14 @@ function build_graph_files {
 
 #split_osm
 build_graph_files
+
+# There are some tricks to serving .gz files through cloudflare with the right
+# header. Do not use rclone.
+#
+# Upload the files:
+#
+# aws s3 --profile cloudflare --endpoint-url https://FOO.r2.cloudflarestorage.com sync local_dir/ s3://bucket/remote_dir
+#
+# Then change their metadata:
+#
+# aws s3 --profile cloudflare --endpoint-url https://FOO.r2.cloudflarestorage.com cp s3://bucket/remote_dir/ s3://bucket/remote_dir/ --exclude '*' --include '*.bin.gz' --no-guess-mime-type --content-type="application/octet-stream" --content-encoding=gzip --metadata-directive="REPLACE" --recursive

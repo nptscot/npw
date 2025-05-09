@@ -164,7 +164,7 @@ function railways {
 #town_centres ~/Downloads/Town_Centres_-_Scotland.json
 #gp_and_hospitals ~/Downloads/GP_Practices_-_Scotland.json ~/Downloads/NHS_Hospitals_-_Scotland.json
 #od
-#traffic ~/Downloads/final_estimates_Scotland_2025-04-15_correct.gpkg
+#traffic
 #population
 #elevation
 #settlements

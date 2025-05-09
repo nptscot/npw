@@ -103,7 +103,7 @@
     // Detect if we're running locally first
     let bytes: Uint8Array<ArrayBufferLike> = new Uint8Array();
     try {
-      bytes = await fetchWithProgress(`areas/${$boundaryName}.bin`, (p) => {
+      bytes = await fetchWithProgress(`areas/${$boundaryName}.bin.gz`, (p) => {
         progress = p;
       });
       console.log(`Using locally hosted files`);
@@ -111,7 +111,7 @@
     } catch (err) {
       console.log(`Using remote hosted files`);
       bytes = await fetchWithProgress(
-        assetUrl(`areas/${$boundaryName}.bin`),
+        assetUrl(`areas/${$boundaryName}.bin.gz`),
         (p) => {
           progress = p;
         },
