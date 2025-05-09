@@ -140,3 +140,9 @@ export function directness(s: {
   );
   return [`${s.average_weighted_directness.toFixed(1)}x`, rating];
 }
+
+export function directnessPct(s: {
+  average_weighted_directness: number;
+}): number {
+  return ratingToPercent[directness(s)[1]];
+}

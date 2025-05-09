@@ -1,7 +1,11 @@
 <script lang="ts">
   import { Loading } from "svelte-utils";
   import { Modal } from "../common";
-  import { coherenceCombinedPct, safetyCombinedPct } from "../stats";
+  import {
+    coherenceCombinedPct,
+    directnessPct,
+    safetyCombinedPct,
+  } from "../stats";
   import {
     backend,
     lastUpdateSlowStats,
@@ -45,24 +49,6 @@
     $slowStats = await $backend!.recalculateSlowStats();
     $lastUpdateSlowStats = $mutationCounter;
     loading = "";
-  }
-
-  // TODO Refactor with SummarizeStats
-  function directnessScore(average_weighted_directness: number): number {
-    // TODO Doesn't match table
-    if (average_weighted_directness > 1.5) {
-      return 1;
-    }
-    if (average_weighted_directness > 1.4) {
-      return 2;
-    }
-    if (average_weighted_directness > 1.3) {
-      return 3;
-    }
-    if (average_weighted_directness > 1.2) {
-      return 4;
-    }
-    return 5;
   }
 </script>
 
@@ -108,10 +94,7 @@
           Directness
           {#if $slowStats && $lastUpdateSlowStats == $mutationCounter}
             <br />
-            <progress
-              value={directnessScore($slowStats.average_weighted_directness)}
-              max="5"
-            />
+            <progress value={directnessPct($slowStats)} max="100" />
           {:else}
             <a href="#" on:click|stopPropagation={recalculateDirectness}>
               <i class="fa-solid fa-calculator"></i>
