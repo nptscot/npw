@@ -1,6 +1,5 @@
 <script lang="ts">
-  // This component must be protected by SummarizeStatsWrapper, which makes
-  // sure $stats and $slowStats are up-to-date
+  // This component must be instantiated after $stats and $slowStats are up-to-date
   import {
     Chart as ChartJS,
     Legend,
