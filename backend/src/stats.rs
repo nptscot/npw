@@ -31,6 +31,9 @@ pub struct Stats {
     total_undeliverable_length: f64,
     total_attractive_length: f64,
 
+    total_primary_secondary_length: f64,
+    high_los_primary_secondary_length: f64,
+
     density_network_in_settlements: Option<f64>,
 }
 
@@ -138,6 +141,9 @@ impl MapModel {
         let mut total_arterial_road_length = 0.0;
         let mut covered_arterial_road_length = 0.0;
         let mut length_in_settlements = 0.0;
+        let mut total_primary_secondary_length = 0.0;
+        let mut high_los_primary_secondary_length = 0.0;
+
         for (idx, road) in self.graph.roads.iter().enumerate() {
             let part_of_network = self.infra_types[idx].is_some();
 
@@ -173,6 +179,14 @@ impl MapModel {
                     total_high_los_arterial_roads_length += road.length_meters;
                 }
             }
+
+            if matches!(self.tiers[idx], Some(Tier::Primary | Tier::Secondary)) {
+                total_primary_secondary_length += road.length_meters;
+
+                if self.los[idx] == LevelOfService::High {
+                    high_los_primary_secondary_length += road.length_meters;
+                }
+            }
         }
 
         let density_network_in_settlements = if length_in_settlements > 0.0 {
@@ -204,6 +218,9 @@ impl MapModel {
 
             total_arterial_road_length,
             covered_arterial_road_length,
+
+            total_primary_secondary_length,
+            high_los_primary_secondary_length,
 
             density_network_in_settlements,
         }

@@ -50,6 +50,14 @@ export function safetyArterial(s: Stats): [string, Rating] {
   return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
 }
 
+export function safetyPrimarySecondary(s: Stats): [string, Rating] {
+  let pct = percent3(
+    s.high_los_primary_secondary_length,
+    s.total_primary_secondary_length,
+  );
+  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
+}
+
 export function coherentDensity(s: Stats): [string, Rating] {
   if (!s.density_network_in_settlements) {
     return ["no routes", "very poor"];

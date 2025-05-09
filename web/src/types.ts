@@ -89,6 +89,9 @@ export interface Stats {
   total_arterial_road_length: number;
   covered_arterial_road_length: number;
 
+  total_primary_secondary_length: number;
+  high_los_primary_secondary_length: number;
+
   density_network_in_settlements: number | null;
 }
 

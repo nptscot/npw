@@ -1,8 +1,11 @@
 <script lang="ts">
   import { stats } from "../stores";
-  import { safetyArterial } from "./";
+  import { safetyArterial, safetyPrimarySecondary } from "./";
 
   $: [arterialValue, arterialRating] = safetyArterial($stats!);
+  $: [primarySecondaryValue, primarySecondaryRating] = safetyPrimarySecondary(
+    $stats!,
+  );
 </script>
 
 <h2>Safety</h2>
@@ -60,12 +63,12 @@
     </tr>
     <tr>
       <td>% of high LoS among primary/secondary network</td>
-      <td>&le; 20%</td>
-      <td>&le; 40%</td>
-      <td>&le; 60%</td>
-      <td>&le; 80%</td>
-      <td>&gt; 80%</td>
-      <td>TODO</td>
+      <td class:match={primarySecondaryRating == "very poor"}>&le; 20%</td>
+      <td class:match={primarySecondaryRating == "poor"}>&le; 40%</td>
+      <td class:match={primarySecondaryRating == "medium"}>&le; 60%</td>
+      <td class:match={primarySecondaryRating == "good"}>&le; 80%</td>
+      <td class:match={primarySecondaryRating == "very good"}>&gt; 80%</td>
+      <td>{primarySecondaryValue}</td>
       <td>10%</td>
     </tr>
   </tbody>
