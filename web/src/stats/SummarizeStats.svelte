@@ -18,9 +18,11 @@
   import {
     attractiveness,
     coherentDensity,
+    coherentIntegrity,
     comfort,
     directness,
     safetyArterial,
+    safetyPrimarySecondary,
     type Rating,
   } from "./";
   import Attractiveness from "./Attractiveness.svelte";
@@ -96,8 +98,18 @@
               <i class="fa-solid fa-circle-info"></i>
             </button>
           </th>
+          <td>TODO</td>
+          <td>TODO</td>
+        </tr>
+        <tr>
+          <td>% of high LoS among arterial roads</td>
           {@html renderScore(safetyArterial(baseline))}
           {@html renderScore(safetyArterial($stats))}
+        </tr>
+        <tr>
+          <td>% of high LoS among primary/secondary network</td>
+          {@html renderScore(safetyPrimarySecondary(baseline))}
+          {@html renderScore(safetyPrimarySecondary($stats))}
         </tr>
 
         <tr>
@@ -124,8 +136,23 @@
               <i class="fa-solid fa-circle-info"></i>
             </button>
           </th>
+          <td>TODO</td>
+          <td>TODO</td>
+        </tr>
+        <tr>
+          <td>Network density</td>
           {@html renderScore(coherentDensity(baseline))}
           {@html renderScore(coherentDensity($stats))}
+        </tr>
+        <tr>
+          <td>% of high LoS among arterial roads</td>
+          {@html renderScore(safetyArterial(baseline))}
+          {@html renderScore(safetyArterial($stats))}
+        </tr>
+        <tr>
+          <td>Network integrity</td>
+          {@html renderScore(coherentIntegrity(baseline))}
+          {@html renderScore(coherentIntegrity($stats))}
         </tr>
 
         <tr>
