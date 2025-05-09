@@ -58,6 +58,23 @@ export function safetyPrimarySecondary(s: Stats): [string, Rating] {
   return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
 }
 
+export function safetyCombinedPct(s: Stats): number {
+  let pct1 = percent3(
+    s.total_high_los_arterial_roads_length,
+    s.total_arterial_road_length,
+  );
+  let pct2 = percent3(
+    s.high_los_primary_secondary_length,
+    s.total_primary_secondary_length,
+  );
+  return Math.round(0.9 * pct1 + 0.1 * pct2);
+}
+
+export function safetyCombined(s: Stats): [string, Rating] {
+  let pct = safetyCombinedPct(s);
+  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
+}
+
 export function coherentDensity(s: Stats): [string, Rating] {
   if (!s.density_network_in_settlements) {
     return ["no routes", "very poor"];

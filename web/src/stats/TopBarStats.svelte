@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Loading } from "svelte-utils";
   import { Modal } from "../common";
+  import { safetyCombinedPct } from "../stats";
   import {
     backend,
     lastUpdateSlowStats,
@@ -118,13 +119,7 @@
         <a href="#" on:click|stopPropagation={() => (showSafety = true)}>
           Safety
           <br />
-          <progress
-            value={percent(
-              $stats.total_high_los_arterial_roads_length,
-              $stats.total_arterial_road_length,
-            )}
-            max="100"
-          />
+          <progress value={safetyCombinedPct($stats)} max="100" />
         </a>
       </li>
 

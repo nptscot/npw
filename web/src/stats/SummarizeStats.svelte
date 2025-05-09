@@ -22,6 +22,7 @@
     comfort,
     directness,
     safetyArterial,
+    safetyCombined,
     safetyPrimarySecondary,
     type Rating,
   } from "./";
@@ -98,8 +99,8 @@
               <i class="fa-solid fa-circle-info"></i>
             </button>
           </th>
-          <td>TODO</td>
-          <td>TODO</td>
+          {@html renderScore(safetyCombined(baseline))}
+          {@html renderScore(safetyCombined($stats))}
         </tr>
         <tr>
           <td>% of high LoS among arterial roads</td>
@@ -199,7 +200,7 @@
             {
               label: "Existing",
               data: [
-                radarScore(safetyArterial(baseline)),
+                radarScore(safetyCombined(baseline)),
                 radarScore(directness(baseline)),
                 radarScore(coherentDensity(baseline)),
                 radarScore(comfort(baseline)),
@@ -210,7 +211,7 @@
             {
               label: "Proposed",
               data: [
-                radarScore(safetyArterial($stats)),
+                radarScore(safetyCombined($stats)),
                 radarScore(directness($slowStats)),
                 radarScore(coherentDensity($stats)),
                 radarScore(comfort($stats)),

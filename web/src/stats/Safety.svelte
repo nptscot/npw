@@ -1,11 +1,12 @@
 <script lang="ts">
   import { stats } from "../stores";
-  import { safetyArterial, safetyPrimarySecondary } from "./";
+  import { safetyArterial, safetyCombined, safetyPrimarySecondary } from "./";
 
   $: [arterialValue, arterialRating] = safetyArterial($stats!);
   $: [primarySecondaryValue, primarySecondaryRating] = safetyPrimarySecondary(
     $stats!,
   );
+  $: [combinedValue, combinedRating] = safetyCombined($stats!);
 </script>
 
 <h2>Safety</h2>
@@ -70,6 +71,16 @@
       <td class:match={primarySecondaryRating == "very good"}>&gt; 80%</td>
       <td>{primarySecondaryValue}</td>
       <td>10%</td>
+    </tr>
+    <tr>
+      <td><b>Combined</b></td>
+      <td class:match={combinedRating == "very poor"}>&le; 20%</td>
+      <td class:match={combinedRating == "poor"}>&le; 40%</td>
+      <td class:match={combinedRating == "medium"}>&le; 60%</td>
+      <td class:match={combinedRating == "good"}>&le; 80%</td>
+      <td class:match={combinedRating == "very good"}>&gt; 80%</td>
+      <td>{combinedValue}</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
