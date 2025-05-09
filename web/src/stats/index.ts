@@ -2,6 +2,14 @@ import type { Stats } from "../types";
 
 export type Rating = "very poor" | "poor" | "medium" | "good" | "very good";
 
+let ratingToPercent = {
+  "very poor": 0,
+  poor: 25,
+  medium: 50,
+  good: 75,
+  "very good": 100,
+};
+
 function percent3(x: number, total: number): number {
   if (total == 0) {
     return 0;
@@ -75,7 +83,7 @@ export function safetyCombined(s: Stats): [string, Rating] {
   return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
 }
 
-export function coherentDensity(s: Stats): [string, Rating] {
+export function coherenceDensity(s: Stats): [string, Rating] {
   if (!s.density_network_in_settlements) {
     return ["no routes", "very poor"];
   }
@@ -86,7 +94,7 @@ export function coherentDensity(s: Stats): [string, Rating] {
   return [`${Math.round(s.density_network_in_settlements)}m`, rating];
 }
 
-export function coherentIntegrity(s: Stats): [string, Rating] {
+export function coherenceIntegrity(s: Stats): [string, Rating] {
   let rating: Rating = "very poor";
   if (s.num_connected_components <= s.num_settlements) {
     rating = "medium";
@@ -94,6 +102,21 @@ export function coherentIntegrity(s: Stats): [string, Rating] {
     rating = "very good";
   }
   return [s.num_connected_components.toString(), rating];
+}
+
+export function coherenceCombinedPct(s: Stats): number {
+  let pct1 = ratingToPercent[coherenceDensity(s)[1]];
+  let pct2 = percent3(
+    s.total_high_los_arterial_roads_length,
+    s.total_arterial_road_length,
+  );
+  let pct3 = ratingToPercent[coherenceIntegrity(s)[1]];
+  return Math.round(0.4 * pct1 + 0.3 * pct2 + 0.3 * pct3);
+}
+
+export function coherenceCombined(s: Stats): [string, Rating] {
+  let pct = coherenceCombinedPct(s);
+  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80])];
 }
 
 export function comfort(s: Stats): [string, Rating] {

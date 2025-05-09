@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Loading } from "svelte-utils";
   import { Modal } from "../common";
-  import { safetyCombinedPct } from "../stats";
+  import { coherenceCombinedPct, safetyCombinedPct } from "../stats";
   import {
     backend,
     lastUpdateSlowStats,
@@ -9,7 +9,6 @@
     slowStats,
     stats,
   } from "../stores";
-  import type { Stats } from "../types";
   import Attractiveness from "./Attractiveness.svelte";
   import Coherence from "./Coherence.svelte";
   import Comfort from "./Comfort.svelte";
@@ -61,26 +60,6 @@
       return 3;
     }
     if (average_weighted_directness > 1.2) {
-      return 4;
-    }
-    return 5;
-  }
-
-  // TODO Refactor with SummarizeStats
-  function coherentDensityScore(s: Stats): number {
-    if (
-      !s.density_network_in_settlements ||
-      s.density_network_in_settlements > 1000
-    ) {
-      return 1;
-    }
-    if (s.density_network_in_settlements > 500) {
-      return 2;
-    }
-    if (s.density_network_in_settlements > 400) {
-      return 3;
-    }
-    if (s.density_network_in_settlements > 250) {
       return 4;
     }
     return 5;
@@ -146,7 +125,7 @@
         <a href="#" on:click|stopPropagation={() => (showCoherence = true)}>
           Coherence
           <br />
-          <progress value={coherentDensityScore($stats)} max="5" />
+          <progress value={coherenceCombinedPct($stats)} max="100" />
         </a>
       </li>
 

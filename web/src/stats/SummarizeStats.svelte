@@ -17,8 +17,9 @@
   import { backend, slowStats, stats } from "../stores";
   import {
     attractiveness,
-    coherentDensity,
-    coherentIntegrity,
+    coherenceCombined,
+    coherenceDensity,
+    coherenceIntegrity,
     comfort,
     directness,
     safetyArterial,
@@ -137,13 +138,13 @@
               <i class="fa-solid fa-circle-info"></i>
             </button>
           </th>
-          <td>TODO</td>
-          <td>TODO</td>
+          {@html renderScore(coherenceCombined(baseline))}
+          {@html renderScore(coherenceCombined($stats))}
         </tr>
         <tr>
           <td>Network density</td>
-          {@html renderScore(coherentDensity(baseline))}
-          {@html renderScore(coherentDensity($stats))}
+          {@html renderScore(coherenceDensity(baseline))}
+          {@html renderScore(coherenceDensity($stats))}
         </tr>
         <tr>
           <td>% of high LoS among arterial roads</td>
@@ -152,8 +153,8 @@
         </tr>
         <tr>
           <td>Network integrity</td>
-          {@html renderScore(coherentIntegrity(baseline))}
-          {@html renderScore(coherentIntegrity($stats))}
+          {@html renderScore(coherenceIntegrity(baseline))}
+          {@html renderScore(coherenceIntegrity($stats))}
         </tr>
 
         <tr>
@@ -202,7 +203,7 @@
               data: [
                 radarScore(safetyCombined(baseline)),
                 radarScore(directness(baseline)),
-                radarScore(coherentDensity(baseline)),
+                radarScore(coherenceCombined(baseline)),
                 radarScore(comfort(baseline)),
                 radarScore(attractiveness(baseline)),
               ],
@@ -213,7 +214,7 @@
               data: [
                 radarScore(safetyCombined($stats)),
                 radarScore(directness($slowStats)),
-                radarScore(coherentDensity($stats)),
+                radarScore(coherenceCombined($stats)),
                 radarScore(comfort($stats)),
                 radarScore(attractiveness($stats)),
               ],

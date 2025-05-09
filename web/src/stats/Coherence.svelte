@@ -1,18 +1,24 @@
 <script lang="ts">
   import { stats } from "../stores";
-  import { coherentDensity, coherentIntegrity, safetyArterial } from "./";
+  import {
+    coherenceCombined,
+    coherenceDensity,
+    coherenceIntegrity,
+    safetyArterial,
+  } from "./";
 
   $: [arterialValue, arterialRating] = safetyArterial($stats!);
-  $: [densityValue, densityRating] = coherentDensity($stats!);
-  $: [integrityValue, integrityRating] = coherentIntegrity($stats!);
+  $: [densityValue, densityRating] = coherenceDensity($stats!);
+  $: [integrityValue, integrityRating] = coherenceIntegrity($stats!);
+  $: [combinedValue, combinedRating] = coherenceCombined($stats!);
 </script>
 
 <h2>Coherence</h2>
 
 <h3>Definition</h3>
 <p>
-  A coherent cycle network should provide continuous, well-connected routes that
-  link key destinations such as homes, schools, shops, and transport hubs.
+  A coherence cycle network should provide continuous, well-connected routes
+  that link key destinations such as homes, schools, shops, and transport hubs.
 </p>
 
 <h3>Methodology</h3>
@@ -94,6 +100,16 @@
         <td>30%</td>
       </tr>
     {/if}
+    <tr>
+      <td><b>Combined</b></td>
+      <td class:match={combinedRating == "very poor"}>&le; 20%</td>
+      <td class:match={combinedRating == "poor"}>&le; 40%</td>
+      <td class:match={combinedRating == "medium"}>&le; 60%</td>
+      <td class:match={combinedRating == "good"}>&le; 80%</td>
+      <td class:match={combinedRating == "very good"}>&gt; 80%</td>
+      <td>{combinedValue}</td>
+      <td></td>
+    </tr>
   </tbody>
 </table>
 
