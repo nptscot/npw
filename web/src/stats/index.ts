@@ -69,6 +69,16 @@ export function coherentDensity(s: Stats): [string, Rating] {
   return [`${Math.round(s.density_network_in_settlements)}m`, rating];
 }
 
+export function coherentIntegrity(s: Stats): [string, Rating] {
+  let rating: Rating = "very poor";
+  if (s.num_connected_components <= s.num_settlements) {
+    rating = "medium";
+  } else if (s.num_connected_components == 1) {
+    rating = "very good";
+  }
+  return [s.num_connected_components.toString(), rating];
+}
+
 export function comfort(s: Stats): [string, Rating] {
   let pct = percent3(s.total_low_gradient_length, s.total_network_length);
   return [`${pct}%`, stepLessThanOrEqual(pct, [10, 20, 40, 60])];

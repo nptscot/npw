@@ -8,6 +8,18 @@ use petgraph::graphmap::UnGraphMap;
 use crate::{utils::into_object_value, MapModel};
 
 impl MapModel {
+    // Fast enough to calculate immediately
+    pub fn num_connected_components(&self) -> usize {
+        let mut graph: UnGraphMap<IntersectionID, RoadID> = UnGraphMap::new();
+        for (idx, road) in self.graph.roads.iter().enumerate() {
+            if self.infra_types[idx].is_some() {
+                graph.add_edge(road.src_i, road.dst_i, road.id);
+            }
+        }
+
+        petgraph::algo::kosaraju_scc(&graph).len()
+    }
+
     // TODO Lift into graph from severance_snape and here?
     pub fn get_connected_components(&self) -> FeatureCollection {
         let mut graph: UnGraphMap<IntersectionID, RoadID> = UnGraphMap::new();

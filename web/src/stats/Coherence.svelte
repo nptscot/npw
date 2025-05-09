@@ -1,9 +1,10 @@
 <script lang="ts">
   import { stats } from "../stores";
-  import { coherentDensity, safetyArterial } from "./";
+  import { coherentDensity, coherentIntegrity, safetyArterial } from "./";
 
   $: [arterialValue, arterialRating] = safetyArterial($stats!);
   $: [densityValue, densityRating] = coherentDensity($stats!);
+  $: [integrityValue, integrityRating] = coherentIntegrity($stats!);
 </script>
 
 <h2>Coherence</h2>
@@ -77,16 +78,22 @@
       <td>{arterialValue}</td>
       <td>30%</td>
     </tr>
-    <tr>
-      <td>Network integrity</td>
-      <td>?</td>
-      <td>?</td>
-      <td>?</td>
-      <td>?</td>
-      <td>?</td>
-      <td>TODO</td>
-      <td>30%</td>
-    </tr>
+    {#if $stats}
+      <tr>
+        <td>Network integrity</td>
+        <td class:match={integrityRating == "very poor"}>
+          &gt; {$stats.num_settlements}
+        </td>
+        <td></td>
+        <td class:match={integrityRating == "medium"}>
+          &le; {$stats.num_settlements}
+        </td>
+        <td></td>
+        <td class:match={integrityRating == "very good"}>1</td>
+        <td>{integrityValue}</td>
+        <td>30%</td>
+      </tr>
+    {/if}
   </tbody>
 </table>
 

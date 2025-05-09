@@ -35,6 +35,9 @@ pub struct Stats {
     high_los_primary_secondary_length: f64,
 
     density_network_in_settlements: Option<f64>,
+
+    num_connected_components: usize,
+    num_settlements: usize,
 }
 
 impl MapModel {
@@ -223,6 +226,9 @@ impl MapModel {
             high_los_primary_secondary_length,
 
             density_network_in_settlements,
+
+            num_connected_components: self.num_connected_components(),
+            num_settlements: self.settlements.len(),
         }
     }
 

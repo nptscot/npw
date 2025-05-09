@@ -93,6 +93,9 @@ export interface Stats {
   high_los_primary_secondary_length: number;
 
   density_network_in_settlements: number | null;
+
+  num_connected_components: number;
+  num_settlements: number;
 }
 
 export type BaselineStats = Stats & { average_weighted_directness: number };
