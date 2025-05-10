@@ -1,5 +1,9 @@
 # Network Planning Workspace
 
+Dev: <https://nptscot.github.io/npw>
+
+Prod: <https://npw.scot>
+
 ## Developer instructions
 
 You'll need

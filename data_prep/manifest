@@ -1,6 +1,6 @@
 7634f42dd3d1f68951f46ae60f543657  tmp/UK-dem-50m-4326.tif
 3ac851b2bbf939ed802c8a6026b3efc0  tmp/all_greenspace.gpkg
-835eb1fbf03da0c86a362616bd04558b  tmp/clos.gpkg
+66b6d212b2393c1f033ca6f3fa54e060  tmp/clos.gpkg
 293c66f345c72e01c79a41bcb9d0c764  tmp/coherent_network.gpkg
 27366babc69963cc6897e580e8648a54  tmp/gp_practices.geojson
 cc29e040cf0a3f4fb988fa8d0a9e7d54  tmp/greenspace.gpkg
@@ -15,7 +15,7 @@ a66f0d6a2f02996455161f95dd651070  tmp/railways.geojson
 27f8345a57f58fa43191fb1ed3786e74  tmp/settlements.geojson
 3402610a9180053c1e91ce7d92772ea9  tmp/streetspace.gpkg
 61c8f501bab8b1e48b81f26574ac64bc  tmp/town_centres.geojson
-2157f16e8449d6b13c2ae810ccc4fd7c  ../web/public/cbd.pmtiles
+1d412992d7e89c29a7a650dcaa1e2be2  ../web/public/cbd.pmtiles
 11b46c92c10d84268f8aa8737bce8d76  ../web/public/coherent_network.pmtiles
 2b51effd2ecce67fcb9248633d4ceae2  ../web/public/route_network.pmtiles
 11d8a6204c30e59d8dc1dd509a6f4817  ../web/public/streetspace.pmtiles

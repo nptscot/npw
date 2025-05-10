@@ -144,11 +144,16 @@ export function setCurrentFile(name: string) {
 }
 
 export function assetUrl(path: string): string {
-  let dir =
-    import.meta.env.BASE_URL == "/npw/demo_may6"
-      ? "demo_may6"
-      : "npt_gzip_test";
-  return get(remoteStorage) ? `https://assets.od2net.org/${dir}/${path}` : path;
+  if (!get(remoteStorage)) {
+    return path;
+  }
+
+  // Github pages points to dev
+  if (import.meta.env.BASE_URL.startsWith("/npw") || !import.meta.env.PROD) {
+    return `https://assets.npw.scot/dev/${path}`;
+  }
+
+  return `https://assets.npw.scot/prod/${path}`;
 }
 
 // TODO Might work better as onDestroy of the components?
