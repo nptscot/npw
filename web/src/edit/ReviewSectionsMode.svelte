@@ -8,6 +8,7 @@
     tierColors,
     tierLabels,
   } from "../colors";
+  import { BackLink } from "../common";
   import { SplitComponent } from "../common/layout";
   import RelevantLayers from "../layers/RelevantLayers.svelte";
   import Greenspaces from "../local_access/Greenspaces.svelte";
@@ -20,8 +21,10 @@
     editsRoadStyle,
     mode,
   } from "../stores";
+  import type { Waypoint } from "../types";
 
   export let ids: number[];
+  export let restoreWaypoints: Waypoint[];
 
   $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
   $: labelColor = stageColors[$currentStage];
@@ -33,6 +36,17 @@
     await $backend!.deleteRoutes(ids);
     await autosave();
     $mode = { kind: "main" };
+  }
+
+  async function backToDrawing() {
+    await $backend!.deleteRoutes(ids);
+    await autosave();
+    $mode = {
+      kind: "edit-route",
+      id: null,
+      anyEdits: false,
+      restoreWaypoints,
+    };
   }
 </script>
 
@@ -50,7 +64,7 @@
         <h2 class="ds_page-header__title">Review route sections</h2>
       </header>
 
-      <!-- TODO no BackLink? -->
+      <BackLink on:click={backToDrawing}>Back to drawing</BackLink>
 
       <div class="ds_button-group">
         <button class="ds_button" on:click={() => ($mode = { kind: "main" })}>
@@ -114,6 +128,7 @@
                         kind: "edit-route",
                         id: section.id,
                         anyEdits: false,
+                        restoreWaypoints: [],
                       })}
                   >
                     {idx + 1}

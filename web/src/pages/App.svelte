@@ -365,9 +365,17 @@
               <MainMode />
             {/if}
           {:else if $mode.kind == "edit-route" && map}
-            <EditRouteMode id={$mode.id} {map} bind:anyEdits={$mode.anyEdits} />
+            <EditRouteMode
+              id={$mode.id}
+              {map}
+              bind:anyEdits={$mode.anyEdits}
+              restoreWaypoints={$mode.restoreWaypoints}
+            />
           {:else if $mode.kind == "review-sections"}
-            <ReviewSectionsMode ids={$mode.ids} />
+            <ReviewSectionsMode
+              ids={$mode.ids}
+              restoreWaypoints={$mode.restoreWaypoints}
+            />
           {:else if $mode.kind == "evaluate-journey"}
             <EvaluateJourneyMode browse={$mode.browse} />
           {:else if $mode.kind == "bulk-edit"}

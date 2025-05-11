@@ -10,7 +10,12 @@
       let tag = (e.target as HTMLElement).tagName;
       if (tag != "INPUT") {
         e.preventDefault();
-        $mode = { kind: "edit-route", id: null, anyEdits: false };
+        $mode = {
+          kind: "edit-route",
+          id: null,
+          anyEdits: false,
+          restoreWaypoints: [],
+        };
       }
     }
   }
@@ -57,7 +62,12 @@
           <button
             class="ds_button"
             on:click={() =>
-              ($mode = { kind: "edit-route", id: null, anyEdits: false })}
+              ($mode = {
+                kind: "edit-route",
+                id: null,
+                anyEdits: false,
+                restoreWaypoints: [],
+              })}
           >
             Draw new primary route
             <kbd>r</kbd>
@@ -74,7 +84,12 @@
           <button
             class="ds_button"
             on:click={() =>
-              ($mode = { kind: "edit-route", id: null, anyEdits: false })}
+              ($mode = {
+                kind: "edit-route",
+                id: null,
+                anyEdits: false,
+                restoreWaypoints: [],
+              })}
           >
             Draw new secondary route
             <kbd>r</kbd>
@@ -91,7 +106,12 @@
           <button
             class="ds_button"
             on:click={() =>
-              ($mode = { kind: "edit-route", id: null, anyEdits: false })}
+              ($mode = {
+                kind: "edit-route",
+                id: null,
+                anyEdits: false,
+                restoreWaypoints: [],
+              })}
           >
             Draw new long distance route
             <kbd>r</kbd>

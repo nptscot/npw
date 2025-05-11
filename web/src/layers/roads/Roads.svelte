@@ -68,7 +68,12 @@
       let route_id = dynamicData[road_id].current_route_id;
       // If it's null, we clicked an opacity 0 road that's not part of a route
       if (route_id != null) {
-        $mode = { kind: "edit-route", id: route_id, anyEdits: false };
+        $mode = {
+          kind: "edit-route",
+          id: route_id,
+          anyEdits: false,
+          restoreWaypoints: [],
+        };
       }
     }
   }

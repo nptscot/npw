@@ -285,7 +285,12 @@
             <button
               class="ds_button ds_button--secondary"
               on:click={() =>
-                ($mode = { kind: "edit-route", id: null, anyEdits: false })}
+                ($mode = {
+                  kind: "edit-route",
+                  id: null,
+                  anyEdits: false,
+                  restoreWaypoints: [],
+                })}
             >
               Or draw a new route line manually
             </button>

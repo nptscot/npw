@@ -41,6 +41,7 @@
   export let map: Map;
   export let id: number | null;
   export let anyEdits: boolean;
+  export let restoreWaypoints: Waypoint[];
 
   let routeControls: RouteControls | null = null;
   let cannotUndo = true;
@@ -71,6 +72,11 @@
   $: labelColor = stageColors[$currentStage];
 
   onMount(async () => {
+    if (restoreWaypoints.length > 0) {
+      $waypoints = restoreWaypoints;
+      return;
+    }
+
     $waypoints = [];
     if (id != null) {
       let feature = await $backend!.getRoute(id);
@@ -116,7 +122,11 @@
     await autosave();
 
     if (allIds.length > 1) {
-      $mode = { kind: "review-sections", ids: allIds };
+      $mode = {
+        kind: "review-sections",
+        ids: allIds,
+        restoreWaypoints: JSON.parse(JSON.stringify($waypoints)),
+      };
     } else {
       $mode = { kind: "main" };
     }

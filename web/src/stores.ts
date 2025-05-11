@@ -13,6 +13,7 @@ import type {
   SlowStats,
   Stats,
   Tier,
+  Waypoint,
   WorstRoutes,
 } from "./types";
 import type { Backend } from "./worker_wrapper";
@@ -23,8 +24,13 @@ export type Mode =
   | { kind: "setup"; subpage: "explore" | "project-list" | "new-project" }
   | { kind: "overview" }
   | { kind: "main" }
-  | { kind: "edit-route"; id: number | null; anyEdits: boolean }
-  | { kind: "review-sections"; ids: number[] }
+  | {
+      kind: "edit-route";
+      id: number | null;
+      anyEdits: boolean;
+      restoreWaypoints: Waypoint[];
+    }
+  | { kind: "review-sections"; ids: number[]; restoreWaypoints: Waypoint[] }
   | { kind: "evaluate-journey"; browse: WorstRoutes }
   | { kind: "bulk-edit" };
 
