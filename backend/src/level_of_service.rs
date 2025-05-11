@@ -1,9 +1,8 @@
 use enum_map::Enum;
 use graph::RoadID;
 use serde::{Deserialize, Serialize};
-use utils::Tags;
 
-use crate::{Highway, InfraType, MapModel};
+use crate::{InfraType, MapModel};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Enum, Serialize)]
 pub enum LevelOfService {
@@ -174,37 +173,5 @@ pub fn get_level_of_service(
                 LevelOfService::ShouldNotBeUsed
             }
         }
-    }
-}
-
-// TODO Unit test
-pub fn get_speed_mph(hwy: Highway, tags: &Tags) -> usize {
-    if tags.is("maxspeed", "national") {
-        return if matches!(hwy, Highway::Motorway) {
-            70
-        } else {
-            60
-        };
-    }
-
-    if let Some(maxspeed) = tags.get("maxspeed") {
-        if let Some(mph) = maxspeed
-            .strip_suffix(" mph")
-            .and_then(|x| x.parse::<usize>().ok())
-        {
-            return mph;
-        }
-    }
-
-    // TODO Check these against osmactive
-    match hwy {
-        Highway::Motorway => 70,
-        Highway::Trunk => 60,
-        Highway::Primary => 40,
-        Highway::Secondary | Highway::Tertiary | Highway::Residential => 30,
-        Highway::Service | Highway::Unclassified => 10,
-        Highway::LivingStreet => 15,
-        // TODO What should these do?
-        Highway::Footway | Highway::Cycleway | Highway::Pedestrian | Highway::Path => 10,
     }
 }

@@ -15,6 +15,7 @@ use graph::{Graph, RoadID, Timer};
 use log::{info, warn};
 use rstar::AABB;
 use serde::Deserialize;
+use utils::Tags;
 
 use self::disconnected::remove_disconnected_components;
 use backend::{Highway, MapModel, Streetspace, Tier, TrafficVolume};
@@ -170,10 +171,28 @@ fn create(
         &graph,
     )?;
 
-    let traffic_volumes = read_traffic_volumes("../data_prep/tmp/clos.gpkg", &graph, timer)?;
+    let highways: Vec<_> = graph
+        .roads
+        .iter()
+        .map(|r| Highway::classify(&r.osm_tags).unwrap())
+        .collect();
 
-    let coherent_network =
-        read_coherent_network("../data_prep/tmp/coherent_network.gpkg", &graph, timer)?;
+    let traffic_volumes =
+        read_traffic_volumes("../data_prep/tmp/clos.gpkg", &graph, &highways, timer)?;
+
+    let speeds = graph
+        .roads
+        .iter()
+        .enumerate()
+        .map(|(idx, r)| get_speed_mph(highways[idx], &r.osm_tags))
+        .collect();
+
+    let coherent_network = read_coherent_network(
+        "../data_prep/tmp/coherent_network.gpkg",
+        &graph,
+        &highways,
+        timer,
+    )?;
 
     let street_space = read_street_space("../data_prep/tmp/streetspace.gpkg", &graph, timer)?;
 
@@ -198,7 +217,9 @@ fn create(
         town_centres,
         settlements,
         data_zones,
+        highways,
         traffic_volumes,
+        speeds,
         coherent_network,
         street_space,
         is_attractive,
@@ -286,6 +307,7 @@ struct OtherDesireLineRow {
 fn read_traffic_volumes(
     path: &str,
     graph: &Graph,
+    highways: &Vec<Highway>,
     timer: &mut Timer,
 ) -> Result<Vec<TrafficVolume>> {
     // Read all relevant lines
@@ -335,12 +357,12 @@ fn read_traffic_volumes(
     .unwrap();
 
     let mut results = Vec::new();
-    for (idx, road) in graph.roads.iter().enumerate() {
+    for idx in 0..graph.roads.len() {
         // There are issues with small dead-end service roads next to big roads and car-free roads
         // having high traffic assigned. Sometimes the problem is map matching, sometimes the
         // source dataset is wrong. Override in some cases.
         if matches!(
-            Highway::classify(&road.osm_tags).unwrap(),
+            highways[idx],
             Highway::Service
                 | Highway::Footway
                 | Highway::Cycleway
@@ -446,6 +468,7 @@ fn read_gradients(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<f6
 fn read_coherent_network(
     path: &str,
     graph: &Graph,
+    highways: &Vec<Highway>,
     timer: &mut Timer,
 ) -> Result<Vec<Option<Tier>>> {
     // Read all relevant lines
@@ -504,13 +527,10 @@ fn read_coherent_network(
     .unwrap();
 
     let mut results = Vec::new();
-    for (idx, road) in graph.roads.iter().enumerate() {
+    for idx in 0..graph.roads.len() {
         // The coherent network can never be on the motorway, but in Glasgow, it's hard to
         // distinguish some of the parallel roads
-        if matches!(
-            Highway::classify(&road.osm_tags).unwrap(),
-            Highway::Motorway
-        ) {
+        if matches!(highways[idx], Highway::Motorway) {
             results.push(None);
             continue;
         }
@@ -694,4 +714,36 @@ fn buffer_polygon(area: &impl Buffer<Scalar = f64>, distance: f64) -> Result<Pol
         }
     };
     Ok(polygon)
+}
+
+// TODO Unit test
+fn get_speed_mph(hwy: Highway, tags: &Tags) -> usize {
+    if tags.is("maxspeed", "national") {
+        return if matches!(hwy, Highway::Motorway) {
+            70
+        } else {
+            60
+        };
+    }
+
+    if let Some(maxspeed) = tags.get("maxspeed") {
+        if let Some(mph) = maxspeed
+            .strip_suffix(" mph")
+            .and_then(|x| x.parse::<usize>().ok())
+        {
+            return mph;
+        }
+    }
+
+    // TODO Check these against osmactive
+    match hwy {
+        Highway::Motorway => 70,
+        Highway::Trunk => 60,
+        Highway::Primary => 40,
+        Highway::Secondary | Highway::Tertiary | Highway::Residential => 30,
+        Highway::Service | Highway::Unclassified => 10,
+        Highway::LivingStreet => 15,
+        // TODO What should these do?
+        Highway::Footway | Highway::Cycleway | Highway::Pedestrian | Highway::Path => 10,
+    }
 }

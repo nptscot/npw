@@ -143,7 +143,9 @@ impl MapModel {
         town_centres: Vec<places::TownCentre>,
         settlements: Vec<places::Settlement>,
         data_zones: Vec<places::DataZone>,
+        highways: Vec<Highway>,
         traffic_volumes: Vec<TrafficVolume>,
+        speeds: Vec<usize>,
         coherent_network: Vec<Option<Tier>>,
         street_space: Vec<Option<Streetspace>>,
         is_attractive: Vec<bool>,
@@ -151,11 +153,6 @@ impl MapModel {
         timer: &mut Timer,
     ) -> anyhow::Result<Self> {
         timer.step("Finalizing misc fields");
-        let highways: Vec<_> = graph
-            .roads
-            .iter()
-            .map(|r| Highway::classify(&r.osm_tags).unwrap())
-            .collect();
         let closest_intersection_all = RTree::bulk_load(
             graph
                 .intersections
@@ -184,12 +181,6 @@ impl MapModel {
             .map(|(idx, r)| is_offroad(highways[idx], &r.osm_tags))
             .collect();
         let total_settlement_area_m2 = settlements.iter().map(|s| s.polygon.unsigned_area()).sum();
-        let speeds = graph
-            .roads
-            .iter()
-            .enumerate()
-            .map(|(idx, r)| level_of_service::get_speed_mph(highways[idx], &r.osm_tags))
-            .collect();
         let infra_types = std::iter::repeat(None).take(graph.roads.len()).collect();
         let override_infra_type = std::iter::repeat(false).take(graph.roads.len()).collect();
         let tiers = std::iter::repeat(None).take(graph.roads.len()).collect();
