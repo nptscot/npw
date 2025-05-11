@@ -83,6 +83,13 @@ impl Highway {
             Highway::Trunk | Highway::Primary | Highway::Secondary | Highway::Tertiary
         )
     }
+
+    pub fn has_motor_vehicles(&self) -> bool {
+        !matches!(
+            self,
+            Highway::Footway | Highway::Cycleway | Highway::Pedestrian | Highway::Path
+        )
+    }
 }
 
 /// This determines what's in the graph. The cost function is just based on distance.

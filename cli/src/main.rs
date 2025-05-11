@@ -177,15 +177,17 @@ fn create(
         .map(|r| Highway::classify(&r.osm_tags).unwrap())
         .collect();
 
-    let traffic_volumes =
+    let mut traffic_volumes =
         read_traffic_volumes("../data_prep/tmp/clos.gpkg", &graph, &highways, timer)?;
 
-    let speeds = graph
+    let mut speeds = graph
         .roads
         .iter()
         .enumerate()
         .map(|(idx, r)| get_speed_mph(highways[idx], &r.osm_tags))
         .collect();
+
+    handle_parallel_roads(&highways, &mut traffic_volumes, &mut speeds, &graph);
 
     let coherent_network = read_coherent_network(
         "../data_prep/tmp/coherent_network.gpkg",
@@ -746,4 +748,55 @@ fn get_speed_mph(hwy: Highway, tags: &Tags) -> usize {
         // TODO What should these do?
         Highway::Footway | Highway::Cycleway | Highway::Pedestrian | Highway::Path => 10,
     }
+}
+
+fn handle_parallel_roads(
+    highways: &Vec<Highway>,
+    _traffic_volumes: &mut Vec<TrafficVolume>,
+    _speeds: &mut Vec<usize>,
+    graph: &Graph,
+) {
+    // Sources are roads with motor vehicles
+    let mut source_geometry = Vec::new();
+    let mut source_data = Vec::new();
+
+    let mut targets = Vec::new();
+    for (idx, road) in graph.roads.iter().enumerate() {
+        if highways[idx].has_motor_vehicles() {
+            source_geometry.push(road.linestring.clone());
+            source_data.push(idx);
+        } else {
+            targets.push(idx);
+        }
+    }
+
+    let distance_tolerance = 15.0;
+    let angle_tolerance = 10.0;
+    let matches = Anime::new(
+        source_geometry.into_iter(),
+        targets
+            .iter()
+            .map(|idx| graph.roads[*idx].linestring.clone()),
+        distance_tolerance,
+        angle_tolerance,
+    )
+    .matches
+    .take()
+    .unwrap();
+
+    let mut features = Vec::new();
+    for (anime_target_idx, target_idx) in targets.into_iter().enumerate() {
+        if let Some(source_idx) = get_anime_match(&matches, &source_data, anime_target_idx) {
+            let mut f = graph
+                .mercator
+                .to_wgs84_gj(&graph.roads[target_idx].linestring);
+            f.set_property("way", graph.roads[source_idx].way.to_string());
+            features.push(f);
+        }
+    }
+    std::fs::write(
+        "debug_parallel.geojson",
+        serde_json::to_string(&geojson::GeoJson::from(features)).unwrap(),
+    )
+    .unwrap();
 }
