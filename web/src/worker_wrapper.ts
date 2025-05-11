@@ -1,4 +1,4 @@
-import init, { MapModel } from "backend";
+import { MapModel } from "backend";
 import * as Comlink from "comlink";
 import type {
   Feature,
@@ -63,7 +63,9 @@ export class Backend {
 
   async getInvertedBoundaryInsideSettlements(): Promise<Feature<Polygon>> {
     this.start();
-    let result = JSON.parse(await this.inner.getInvertedBoundaryInsideSettlements());
+    let result = JSON.parse(
+      await this.inner.getInvertedBoundaryInsideSettlements(),
+    );
     this.stop();
     return result;
   }
@@ -72,7 +74,9 @@ export class Backend {
     Feature<MultiPolygon>
   > {
     this.start();
-    let result = JSON.parse(await this.inner.getInvertedBoundaryOutsideSettlements());
+    let result = JSON.parse(
+      await this.inner.getInvertedBoundaryOutsideSettlements(),
+    );
     this.stop();
     return result;
   }
@@ -120,7 +124,9 @@ export class Backend {
 
   async getRouteSections(ids: Array<number>): Promise<RouteSection[]> {
     this.start();
-    let result = JSON.parse(await this.inner.getRouteSections(new Uint32Array(ids)));
+    let result = JSON.parse(
+      await this.inner.getRouteSections(new Uint32Array(ids)),
+    );
     this.stop();
     return result;
   }
@@ -164,13 +170,15 @@ export class Backend {
     majorSnapThreshold: number | null,
   ): Promise<AutosplitRoute> {
     this.start();
-    let result = JSON.parse(await this.inner.autosplitRoute(
-      editingRouteId,
-      waypoints,
-      overrideInfraType,
-      defaultTier,
-      majorSnapThreshold,
-    ));
+    let result = JSON.parse(
+      await this.inner.autosplitRoute(
+        editingRouteId,
+        waypoints,
+        overrideInfraType,
+        defaultTier,
+        majorSnapThreshold,
+      ),
+    );
     this.stop();
     return result;
   }
@@ -230,11 +238,9 @@ export class Backend {
     yOffset: number,
   ): Promise<GridMeshDensity> {
     this.start();
-    let result = JSON.parse(await this.inner.getGridMeshDensity(
-      resolution,
-      xOffset,
-      yOffset,
-    ));
+    let result = JSON.parse(
+      await this.inner.getGridMeshDensity(resolution, xOffset, yOffset),
+    );
     this.stop();
     return result;
   }
@@ -354,7 +360,9 @@ export class Backend {
     majorSnapThreshold: number | null,
   ): Promise<[number, number]> {
     this.start();
-    let result = Array.from(await this.inner.snapPoint(pt[0], pt[1], majorSnapThreshold));
+    let result = Array.from(
+      await this.inner.snapPoint(pt[0], pt[1], majorSnapThreshold),
+    );
     this.stop();
     return result as [number, number];
   }
@@ -365,11 +373,9 @@ export class Backend {
     majorSnapThreshold: number | null,
   ): Promise<[number, number, boolean][]> {
     this.start();
-    let result = JSON.parse(await this.inner.getExtraNodes(
-      waypt1,
-      waypt2,
-      majorSnapThreshold,
-    ));
+    let result = JSON.parse(
+      await this.inner.getExtraNodes(waypt1, waypt2, majorSnapThreshold),
+    );
     this.stop();
     return result;
   }

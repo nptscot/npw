@@ -3,6 +3,7 @@
   import "@scottish-government/design-system/dist/css/design-system.css";
   import "@scottish-government/design-system/dist/scripts/design-system.js";
   import "@fortawesome/fontawesome-free/css/all.min.css";
+  import type { MapModel } from "backend";
   import * as Comlink from "comlink";
   import type { Map, StyleSpecification } from "maplibre-gl";
   import { onMount } from "svelte";
@@ -68,7 +69,6 @@
   } from "../stores";
   import TopBar from "../TopBar.svelte";
   import type { Tier } from "../types";
-  import type { MapModel } from "backend";
   import { Backend } from "../worker_wrapper";
   import workerWrapper from "../worker?worker";
 
@@ -117,8 +117,11 @@
     );
     // TODO try catch
     //window.alert(`Couldn't load: ${err}`);
+    console.log("await new worker");
     let backendWorker = await new MyWorker(new Uint8Array(bytes));
+    console.log("wrap it");
     let wrappedBackend = new Backend(backendWorker);
+    console.log("done?");
 
     // Load saved state?
     let openFile = params.get("file");
