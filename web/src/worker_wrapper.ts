@@ -1,3 +1,4 @@
+import init, { MapModel } from "backend";
 import * as Comlink from "comlink";
 import type {
   Feature,
@@ -34,36 +35,35 @@ import type {
   TownCentres,
   Waypoint,
 } from "./types";
-import type { InnerBackend } from "./worker";
 
 // This is a wrapper around the Comlink wrapper. It runs on the browser/UI
 // thread and does common logging / loading stuff. Ideally we'd put the Comlink
 // wrapper around just the WASM API directly and move all the logic here, so
 // that boilerplate isn't repeated.
 export class Backend {
-  inner: Comlink.Remote<InnerBackend>;
+  inner: Comlink.Remote<MapModel>;
 
-  constructor(inner: Comlink.Remote<InnerBackend>) {
+  constructor(inner: Comlink.Remote<MapModel>) {
     this.inner = inner;
   }
 
   async getBounds(): Promise<[number, number, number, number]> {
     this.start();
-    let result = await this.inner.getBounds();
+    let result = Array.from(await this.inner.getBounds());
     this.stop();
-    return result;
+    return result as [number, number, number, number];
   }
 
   async getInvertedBoundaryForStudyArea(): Promise<Feature<Polygon>> {
     this.start();
-    let result = await this.inner.getInvertedBoundaryForStudyArea();
+    let result = JSON.parse(await this.inner.getInvertedBoundaryForStudyArea());
     this.stop();
     return result;
   }
 
   async getInvertedBoundaryInsideSettlements(): Promise<Feature<Polygon>> {
     this.start();
-    let result = await this.inner.getInvertedBoundaryInsideSettlements();
+    let result = JSON.parse(await this.inner.getInvertedBoundaryInsideSettlements());
     this.stop();
     return result;
   }
@@ -72,14 +72,14 @@ export class Backend {
     Feature<MultiPolygon>
   > {
     this.start();
-    let result = await this.inner.getInvertedBoundaryOutsideSettlements();
+    let result = JSON.parse(await this.inner.getInvertedBoundaryOutsideSettlements());
     this.stop();
     return result;
   }
 
   async getStudyAreaBoundary(): Promise<Feature<Polygon>> {
     this.start();
-    let result = await this.inner.getStudyAreaBoundary();
+    let result = JSON.parse(await this.inner.getStudyAreaBoundary());
     this.stop();
     return result;
   }
@@ -88,14 +88,14 @@ export class Backend {
     FeatureCollection<LineString, StaticRoad>
   > {
     this.start();
-    let result = await this.inner.renderStaticRoads();
+    let result = JSON.parse(await this.inner.renderStaticRoads());
     this.stop();
     return result;
   }
 
   async renderDynamicRoads(): Promise<DynamicRoad[]> {
     this.start();
-    let result = await this.inner.renderDynamicRoads();
+    let result = JSON.parse(await this.inner.renderDynamicRoads());
     this.stop();
     return result;
   }
@@ -106,47 +106,47 @@ export class Backend {
     }
   > {
     this.start();
-    let result = await this.inner.getAllRoutes();
+    let result = JSON.parse(await this.inner.getAllRoutes());
     this.stop();
     return result;
   }
 
   async getRoute(id: number): Promise<Feature<LineString, RouteProps>> {
     this.start();
-    let result = await this.inner.getRoute(id);
+    let result = JSON.parse(await this.inner.getRoute(id));
     this.stop();
     return result;
   }
 
   async getRouteSections(ids: Array<number>): Promise<RouteSection[]> {
     this.start();
-    let result = await this.inner.getRouteSections(ids);
+    let result = JSON.parse(await this.inner.getRouteSections(new Uint32Array(ids)));
     this.stop();
     return result;
   }
 
   async setRoute(id: number | null, input: SetRouteInput): Promise<number[]> {
     this.start();
-    let result = await this.inner.setRoute(id, input);
+    let result = Array.from(await this.inner.setRoute(id, input));
     this.stop();
     return result;
   }
 
   async deleteRoutes(ids: number[]) {
     this.start();
-    await this.inner.deleteRoutes(ids);
+    await this.inner.deleteRoutes(new Uint32Array(ids));
     this.stop();
   }
 
   async changeTier(routeIds: number[], tier: Tier) {
     this.start();
-    await this.inner.changeTier(routeIds, tier);
+    await this.inner.changeTier(new Uint32Array(routeIds), tier);
     this.stop();
   }
 
   async changeInfraType(routeIds: number[], infraType: InfraType) {
     this.start();
-    await this.inner.changeInfraType(routeIds, infraType);
+    await this.inner.changeInfraType(new Uint32Array(routeIds), infraType);
     this.stop();
   }
 
@@ -164,13 +164,13 @@ export class Backend {
     majorSnapThreshold: number | null,
   ): Promise<AutosplitRoute> {
     this.start();
-    let result = await this.inner.autosplitRoute(
+    let result = JSON.parse(await this.inner.autosplitRoute(
       editingRouteId,
       waypoints,
       overrideInfraType,
       defaultTier,
       majorSnapThreshold,
-    );
+    ));
     this.stop();
     return result;
   }
@@ -182,7 +182,7 @@ export class Backend {
     breakdown: "" | "los" | "infra_type" | "gradient";
   }): Promise<RouteGJ> {
     this.start();
-    let result = await this.inner.evaluateRoute(req);
+    let result = JSON.parse(await this.inner.evaluateRoute(req));
     this.stop();
     return result;
   }
@@ -190,7 +190,7 @@ export class Backend {
   // Needs loading screen
   async evaluateOD(fastSample: boolean): Promise<EvaluateODOut> {
     this.start();
-    let result = await this.inner.evaluateOD(fastSample);
+    let result = JSON.parse(await this.inner.evaluateOD(fastSample));
     this.stop();
     return result;
   }
@@ -198,29 +198,28 @@ export class Backend {
   // Fast
   async recalculateStats(): Promise<Stats> {
     this.start();
-    let result = await this.inner.recalculateStats();
+    let result = JSON.parse(await this.inner.recalculateStats());
     this.stop();
     return result;
   }
 
   async recalculateSlowStats(): Promise<SlowStats> {
     this.start();
-    let result = await this.inner.recalculateSlowStats();
+    let result = JSON.parse(await this.inner.recalculateSlowStats());
     this.stop();
     return result;
   }
 
   async getBaselineStats(): Promise<BaselineStats> {
     this.start();
-    let result = await this.inner.getBaselineStats();
+    let result = JSON.parse(await this.inner.getBaselineStats());
     this.stop();
     return result;
   }
 
-  // Needs loading screen
   async recalculateODStats(): Promise<ODStats> {
     this.start();
-    let result = await this.inner.recalculateODStats();
+    let result = JSON.parse(await this.inner.recalculateODStats());
     this.stop();
     return result;
   }
@@ -231,30 +230,27 @@ export class Backend {
     yOffset: number,
   ): Promise<GridMeshDensity> {
     this.start();
-    let result = await this.inner.getGridMeshDensity(
+    let result = JSON.parse(await this.inner.getGridMeshDensity(
       resolution,
       xOffset,
       yOffset,
-    );
+    ));
     this.stop();
     return result;
   }
 
-  // Needs loading screen
   async importExistingRoutes(kind: "infra-type" | "los") {
     this.start();
-    await this.inner.importExistingRoutes(kind);
+    await this.inner.importExistingRoutes(kind == "infra-type");
     this.stop();
   }
 
-  // Needs loading screen
   async importCoherentNetwork() {
     this.start();
     await this.inner.importCoherentNetwork();
     this.stop();
   }
 
-  // Needs loading screen
   async importArterialRoads() {
     this.start();
     await this.inner.importArterialRoads();
@@ -269,21 +265,21 @@ export class Backend {
 
   async getPOIs(): Promise<POIs> {
     this.start();
-    let result = await this.inner.getPOIs();
+    let result = JSON.parse(await this.inner.getPOIs());
     this.stop();
     return result;
   }
 
   async getTownCentres(): Promise<TownCentres> {
     this.start();
-    let result = await this.inner.getTownCentres();
+    let result = JSON.parse(await this.inner.getTownCentres());
     this.stop();
     return result;
   }
 
   async getSettlements(): Promise<Settlements> {
     this.start();
-    let result = await this.inner.getSettlements();
+    let result = JSON.parse(await this.inner.getSettlements());
     this.stop();
     return result;
   }
@@ -292,21 +288,21 @@ export class Backend {
     [string, [number, number, number, number]][]
   > {
     this.start();
-    let result = await this.inner.getSettlementLocations();
+    let result = JSON.parse(await this.inner.getSettlementLocations());
     this.stop();
     return result;
   }
 
   async getGreenspaces(): Promise<Greenspaces> {
     this.start();
-    let result = await this.inner.getGreenspaces();
+    let result = JSON.parse(await this.inner.getGreenspaces());
     this.stop();
     return result;
   }
 
   async getDataZones(): Promise<DataZones> {
     this.start();
-    let result = await this.inner.getDataZones();
+    let result = JSON.parse(await this.inner.getDataZones());
     this.stop();
     return result;
   }
@@ -317,7 +313,7 @@ export class Backend {
   ): Promise<FeatureCollection & { length_meters: number }> {
     this.start();
     try {
-      return await this.inner.debugReachablePath(kind, idx);
+      return JSON.parse(await this.inner.debugReachablePath(kind, idx));
     } finally {
       this.stop();
     }
@@ -329,7 +325,7 @@ export class Backend {
     idx: number,
   ): Promise<FeatureCollection> {
     this.start();
-    let result = await this.inner.debugUnreachablePath(kind, idx);
+    let result = JSON.parse(await this.inner.debugUnreachablePath(kind, idx));
     this.stop();
     return result;
   }
@@ -340,7 +336,7 @@ export class Backend {
   ): Promise<Feature<LineString, SetRouteInput & { length_meters: number }>> {
     this.start();
     try {
-      return await this.inner.fixUnreachablePOI(kind, idx);
+      return JSON.parse(await this.inner.fixUnreachablePOI(kind, idx));
     } finally {
       this.stop();
     }
@@ -348,7 +344,7 @@ export class Backend {
 
   async getConnectedComponents(): Promise<ConnectedComponents> {
     this.start();
-    let result = await this.inner.getConnectedComponents();
+    let result = JSON.parse(await this.inner.getConnectedComponents());
     this.stop();
     return result;
   }
@@ -358,9 +354,9 @@ export class Backend {
     majorSnapThreshold: number | null,
   ): Promise<[number, number]> {
     this.start();
-    let result = await this.inner.snapPoint(pt, majorSnapThreshold);
+    let result = Array.from(await this.inner.snapPoint(pt[0], pt[1], majorSnapThreshold));
     this.stop();
-    return result;
+    return result as [number, number];
   }
 
   async getExtraNodes(
@@ -369,39 +365,39 @@ export class Backend {
     majorSnapThreshold: number | null,
   ): Promise<[number, number, boolean][]> {
     this.start();
-    let result = await this.inner.getExtraNodes(
+    let result = JSON.parse(await this.inner.getExtraNodes(
       waypt1,
       waypt2,
       majorSnapThreshold,
-    );
+    ));
     this.stop();
     return result;
   }
 
   async getMajorJunctions(): Promise<FeatureCollection> {
     this.start();
-    let result = await this.inner.getMajorJunctions();
+    let result = JSON.parse(await this.inner.getMajorJunctions());
     this.stop();
     return result;
   }
 
   async getTownCentreRoutes(): Promise<TownCentreRoutes> {
     this.start();
-    let result = await this.inner.getTownCentreRoutes();
+    let result = JSON.parse(await this.inner.getTownCentreRoutes());
     this.stop();
     return result;
   }
 
   async getTownCentrePoints(): Promise<FeatureCollection> {
     this.start();
-    let result = await this.inner.getTownCentrePoints();
+    let result = JSON.parse(await this.inner.getTownCentrePoints());
     this.stop();
     return result;
   }
 
   async getNetworkLengths(): Promise<NetworkLengths> {
     this.start();
-    let result = await this.inner.getNetworkLengths();
+    let result = JSON.parse(await this.inner.getNetworkLengths());
     this.stop();
     return result;
   }

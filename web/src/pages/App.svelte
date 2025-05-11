@@ -68,7 +68,7 @@
   } from "../stores";
   import TopBar from "../TopBar.svelte";
   import type { Tier } from "../types";
-  import type { InnerBackend } from "../worker";
+  import type { MapModel } from "backend";
   import { Backend } from "../worker_wrapper";
   import workerWrapper from "../worker?worker";
 
@@ -91,15 +91,6 @@
     $boundaryName = params.get("boundary") || "LAD_City of Edinburgh";
     loading = `Opening ${stripPrefix($boundaryName, "LAD_")}`;
 
-    interface WorkerConstructor {
-      new (): InnerBackend;
-    }
-
-    let MyWorker: Comlink.Remote<WorkerConstructor> = Comlink.wrap(
-      new workerWrapper(),
-    );
-    let backendWorker = await new MyWorker();
-
     // Detect if we're running locally first
     let bytes: Uint8Array<ArrayBufferLike> = new Uint8Array();
     try {
@@ -118,12 +109,15 @@
       );
     }
 
-    try {
-      await backendWorker.loadFile(new Uint8Array(bytes));
-    } catch (err) {
-      window.alert(`Couldn't load: ${err}`);
+    interface WorkerConstructor {
+      new (graphBytes: Uint8Array): MapModel;
     }
-
+    let MyWorker: Comlink.Remote<WorkerConstructor> = Comlink.wrap(
+      new workerWrapper(),
+    );
+    // TODO try catch
+    //window.alert(`Couldn't load: ${err}`);
+    let backendWorker = await new MyWorker(new Uint8Array(bytes));
     let wrappedBackend = new Backend(backendWorker);
 
     // Load saved state?
