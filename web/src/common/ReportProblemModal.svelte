@@ -18,12 +18,15 @@
   let includeNetwork = false;
   let automaticDetails = {};
 
+  $: filledOut = problemType || details || email || includeNetwork;
+
   $: if ($showReportProblem) {
     start();
   }
 
   function start() {
     automaticDetails = {
+      url: window.location.toString(),
       boundary: $boundaryName,
       viewport: getViewportHash($map!),
       mode: JSON.stringify($mode),
@@ -36,7 +39,6 @@
   async function submit() {
     let network = includeNetwork ? await $backend!.getAllRoutes() : null;
 
-    // @ts-expect-error Unused
     let req = {
       problemType,
       details,
@@ -44,7 +46,22 @@
       network,
       ...automaticDetails,
     };
-    window.alert("TODO: This report isn't submitted anywhere yet");
+    try {
+      let resp = await fetch(
+        "https://problems-api.dabreegster.workers.dev/api/problems",
+        {
+          method: "POST",
+          body: JSON.stringify(req),
+        },
+      );
+      if (!resp.ok) {
+        throw new Error(`Bad response: ${resp.status}`);
+      }
+    } catch (err) {
+      window.alert(`Failed to report a problem: ${err}`);
+      return;
+    }
+    window.alert("Thank you for reporting this problem");
 
     cancel();
   }
@@ -140,16 +157,11 @@
     </Checkbox>
   </fieldset>
 
-  <fieldset>
-    <legend>The following information will be included in your report:</legend>
-    <ul>
-      {#each Object.entries(automaticDetails) as [key, value]}
-        <li>{key}: {value}</li>
-      {/each}
-    </ul>
-  </fieldset>
-
-  <div><button class="ds_button" on:click={submit}>Submit report</button></div>
+  <div>
+    <button class="ds_button" on:click={submit} disabled={!filledOut}>
+      Submit report
+    </button>
+  </div>
 
   <div>
     <button class="ds_button ds_button--secondary" on:click={cancel}>

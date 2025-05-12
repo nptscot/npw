@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "problems-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-05-10",
+  "observability": {
+    "enabled": true,
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "npw-problems",
+      "database_id": "712c6202-380c-463a-b817-644c9d53d176",
+    },
+  ],
+}
