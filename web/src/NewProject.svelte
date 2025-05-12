@@ -83,6 +83,7 @@
   class="ds_input ds_input--fixed-20"
   placeholder="Name"
   bind:value={name}
+  required
 />
 {#if usedFiles.has(name)}
   <p class="ds_question__error-message">
@@ -91,63 +92,38 @@
   </p>
 {/if}
 
-<h4>Plan a network from scratch</h4>
-
-<button
-  class="ds_button"
-  disabled={name.length == 0 ||
-    usedFiles.has(name) ||
-    useExistingHighLoS ||
-    useExistingSomeTypes ||
-    useCN}
-  on:click={newFile}
->
-  Start
-</button>
-
-<h4>Plan a network from existing infrastructure</h4>
+<p>
+  You can optionally choose to include one or more of these starting points:
+</p>
 
 <div class="ds_field-group">
   <Checkbox bind:checked={useExistingHighLoS}>
-    All existing infrastructure from OpenStreetMap, if it achieves high Level of
-    Service
+    All existing infrastructure, if it achieves high Level of Service
   </Checkbox>
 
   <Checkbox bind:checked={useExistingSomeTypes}>
-    Existing segregated tracks and off-road cycleways from OpenStreetMap
+    Existing segregated tracks and off-road cycleways
+  </Checkbox>
+
+  <Checkbox bind:checked={useArterialRoads}>
+    All arterial roads (trunk, A, B, and C roads)
+  </Checkbox>
+
+  <Checkbox bind:checked={useCN}>
+    Coherent network: Created by the NPT team, this is an
+    automatically-generated network in urban areas connecting key origins and
+    destinations with relatively direct routes
   </Checkbox>
 </div>
 
-<br />
-
 <button
   class="ds_button"
-  disabled={name.length == 0 ||
-    usedFiles.has(name) ||
-    !(useExistingSomeTypes || useExistingHighLoS)}
+  disabled={name.length == 0 || usedFiles.has(name)}
   on:click={newFile}
 >
   Start
 </button>
 
-<h4>Plan a network using shortcuts</h4>
-
-<div class="ds_field-group">
-  <Checkbox bind:checked={useCN}>Coherent network</Checkbox>
-
-  <Checkbox bind:checked={useArterialRoads}>All arterial roads</Checkbox>
-</div>
-
-<br />
-
-<button
-  class="ds_button"
-  disabled={name.length == 0 ||
-    usedFiles.has(name) ||
-    !(useCN || useArterialRoads)}
-  on:click={newFile}
->
-  Start
-</button>
+<p><i>These base networks are based on OpenStreetMap data.</i></p>
 
 <!--<p>Or clone from your existing projects</p>-->
