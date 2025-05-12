@@ -275,7 +275,7 @@
       if (canStopDrawing()) {
         cancel();
       }
-    } else if (e.key == "z" && e.ctrlKey) {
+    } else if (e.key == "z" && e.ctrlKey && !formFocused) {
       e.stopPropagation();
       undo();
     }

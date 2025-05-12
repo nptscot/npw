@@ -8,7 +8,7 @@
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "s") {
       let tag = (e.target as HTMLElement).tagName;
-      if (tag != "INPUT") {
+      if (tag != "INPUT" && tag != "TEXTAREA") {
         e.preventDefault();
 
         if ($backgroundLayer == "off") {

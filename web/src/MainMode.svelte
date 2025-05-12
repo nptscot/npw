@@ -8,7 +8,7 @@
   function onKeyDown(e: KeyboardEvent) {
     if (e.key == "r") {
       let tag = (e.target as HTMLElement).tagName;
-      if (tag != "INPUT") {
+      if (tag != "INPUT" && tag != "TEXTAREA") {
         e.preventDefault();
         $mode = {
           kind: "edit-route",
