@@ -4,7 +4,7 @@
 
 The Network Planning Workspace (NPW) is designed to enable local authorities to plan a cycle network for a local authority area, using segregated infrastructure on key routes and ensuring local places are properly connected without severance.
 
-As a user of the NPW tool, you are able to ‘draw on’ the map to create the network, starting from a primary ‘tier’ forming the backbone of the network, followed by a secondary tier and then local connections and long-distance routes between settlements.
+As a user of the NPW tool, you are able to 'draw on' the map to create the network, starting from a primary 'tier' forming the backbone of the network, followed by a secondary tier and then local connections and long-distance routes between settlements.
 
 While drawing on each segment of the network, the NPW will automatically try to determine the most appropriate achievable infrastructure within the street space available. Where infrastructure cannot meet best practice, you will need to resolve deliverability problems and sub-optimal Level of Service issues. As the network is built up, metrics to determine the performance of the network are calculated and displayed.
 
@@ -23,7 +23,7 @@ The stages, each of which starts with a main screen, are:
 _Opening:_
 
 1. **Introduction page**, which welcomes you to the tool, and requests an area to be selected.
-2. **Project selection**, where you can begin work in the selected geographical area on a new project or continue an existing project. (Note that, at present, work is saved only within your computer’s browser rather than to a web service.)
+2. **Project selection**, where you can begin work in the selected geographical area on a new project or continue an existing project. (Note that, at present, work is saved only within your computer's browser rather than to a web service.)
 3. **New network design** (if starting a new project), where you can choose either to start from a blank map, or kick-start your network creation from a range of potential pre-created datasets.
 
 _Network planning by tier:_
@@ -37,7 +37,7 @@ _Network planning by tier:_
 _Finish:_
 
 9. **Assess network quality:** Having designed your network, you can now fix any problems and assess its performance. A range of tools are presented for this
-10. **Export:** Here you can complete the process, by exporting your finalised network for submission, and printing off a report summarising the network’s performance.
+10. **Export:** Here you can complete the process, by exporting your finalised network for submission, and printing off a report summarising the network's performance.
 
 More detail on these sections is given later in this manual.
 
@@ -98,7 +98,7 @@ It is composed of high-potential, direct routes that strategically connect urban
 
 The coherent network serves as a guide for prioritising investment by highlighting routes that maximize coverage and connectivity across urban zones.
 
-Route selection for the coherent network is based on two key attributes: road classification and cycling connectivity potential, both of which influence the "arterialness" score. This score prioritises routes that balance road hierarchy with accessibility for cycling. Using a spatial clustering algorithm (DBSCAN), high-flow areas are identified, forming a focused core network by filtering out redundant or isolated segments. This method ensures that selected routes maximize connectivity and suitability, aligning the network’s structure with both directness and density requirements.
+Route selection for the coherent network is based on two key attributes: road classification and cycling connectivity potential, both of which influence the "arterialness" score. This score prioritises routes that balance road hierarchy with accessibility for cycling. Using a spatial clustering algorithm (DBSCAN), high-flow areas are identified, forming a focused core network by filtering out redundant or isolated segments. This method ensures that selected routes maximize connectivity and suitability, aligning the network's structure with both directness and density requirements.
 
 Routes are then classified into primary and secondary categories based on road type:
 
@@ -106,7 +106,7 @@ Routes are then classified into primary and secondary categories based on road t
 - All other roads, including B roads, minor roads, and off-road paths, are classified as secondary routes, providing supplementary connections and ensuring comprehensive coverage.
 - If the road segment is outside a settlement, we always force it to the long distance tier.
 
-The network is adjusted to ensure direct routes with optimal density, following Transport Scotland’s specifications (250m in urban centres, 400m in suburban areas). This allows the network to meet a wide range of origin-destination trip needs, improving access and usability.
+The network is adjusted to ensure direct routes with optimal density, following Transport Scotland's specifications (250m in urban centres, 400m in suburban areas). This allows the network to meet a wide range of origin-destination trip needs, improving access and usability.
 
 The [algorithm for the coherent network](https://github.com/nptscot/npt/blob/main/R/cohesive_network.R) is published and available openly.
 
@@ -154,7 +154,7 @@ To draw a route, you pick a sequence of two or more waypoints on the map. The ro
 
 You should aim to create the routes as logical segments between major junctions.
 
-Start by clicking on a map to begin the line, ensuring that if you are joining to another line, you connect exactly at its endpoint. The line is now ‘open’ and ready for a next point. Move along the proposed road/street/path, and click again to set another point. You can continue clicking to draw further waypoints. When you have drawn a line that makes a logical segment, you need to ‘close’ that line, which you do either by clicking on the final point, or pressing Finish on the left.
+Start by clicking on a map to begin the line, ensuring that if you are joining to another line, you connect exactly at its endpoint. The line is now 'open' and ready for a next point. Move along the proposed road/street/path, and click again to set another point. You can continue clicking to draw further waypoints. When you have drawn a line that makes a logical segment, you need to 'close' that line, which you do either by clicking on the final point, or pressing Finish on the left.
 
 While the line being drawn is still open (i.e. incomplete) you can pan, zoom in/out and drag the map in the normal way. This means you can move quite some distance away from the point you started from.
 
@@ -162,7 +162,7 @@ During drawing, you can also click the Undo button to undo the last operation, e
 
 If the route alignment is incorrect, you can drag one of the small white dots and create a new waypoint.
 
-All of the waypoints ‘snap’ to an intersection, in order to enable you to join up sections of the network easily without leaving gaps. When you draw in the primary or secondary tier, by default, these waypoints try to snap to major junctions, shown as small grey dots. You can adjust this by zooming in to the map more closely and dragging a waypoint.
+All of the waypoints 'snap' to an intersection, in order to enable you to join up sections of the network easily without leaving gaps. When you draw in the primary or secondary tier, by default, these waypoints try to snap to major junctions, shown as small grey dots. You can adjust this by zooming in to the map more closely and dragging a waypoint.
 
 The route you draw will be split into sections when either:
 
@@ -204,8 +204,8 @@ The automatic infrastructure type recommendation follows this order:
 
 Note there may be two cases where the automatic recommendation has problems:
 
-- When speed and volume are very high, even a segregated track does not achieve high LoS according to CbD guidance. In that case, you must accept this lower LoS, realign the route, or upgrade to the stronger ‘Segregated + traffic measures’ type.
-- Another problem may be that a segregated track does not fit the available streetspace. This is a rough estimate. It is subject to problems with the data and methodology, and may have both false positives and negatives. When it is a real problem, you can switch to the ‘Mixed traffic + traffic measures’ type, realign the route, or pick a lesser infrastructure type and accept a lower LoS.
+- When speed and volume are very high, even a segregated track does not achieve high LoS according to CbD guidance. In that case, you must accept this lower LoS, realign the route, or upgrade to the stronger 'Segregated + traffic measures' type.
+- Another problem may be that a segregated track does not fit the available streetspace. This is a rough estimate. It is subject to problems with the data and methodology, and may have both false positives and negatives. When it is a real problem, you can switch to the 'Mixed traffic + traffic measures' type, realign the route, or pick a lesser infrastructure type and accept a lower LoS.
 
 ## Contextual data layers
 
@@ -225,7 +225,7 @@ _Infrastructure-related:_
 - **Speed limit:** The known speed limit. This uses the standard national speed limits (e.g. 30 mph for local streets) except where exceptions have been marked (e.g. 20 mph). For service roads we assume 10 mph.
 - **Gradient:** The average gradient of the road is shown as a percentage. Steeper roads are a barrier to cycling and affect route choice and the uptake of cycling in the scenarios. Please note in some locations where the network does follow the land contours, e.g. some bridges, the gradient will incorrectly show flat sections of network as steep.
 - **Street space:** This provides an analysis of whether a segregated track would fit within the carriageway, or carriageway with verges, or with the footway also included. This dataset uses an Ordnance Survey dataset to determine the edge-to-edge (i.e. from property to opposite property) road width and carriageway-only road width.
-- **Attractive streets:** This experimental layer aims to determine the attractiveness of a street based on its proximity to green space. This uses the Ordnance Survey’s Open Greenspace dataset. If a road center-line is within 10m of any green space polygon (without any filtering), it is considered attractive. The algorithm is thus currently very simplistic, so should not be relied upon beyond providing a basic indication.
+- **Attractive streets:** This experimental layer aims to determine the attractiveness of a street based on its proximity to green space. This uses the Ordnance Survey's Open Greenspace dataset. If a road center-line is within 10m of any green space polygon (without any filtering), it is considered attractive. The algorithm is thus currently very simplistic, so should not be relied upon beyond providing a basic indication.
 - **NPT full network:** The route network estimates the number of cycle trips on each road. It is designed to emphasise roads with lots of cycling potential and so aid planners in deciding where cycling infrastructure is needed. Full details are given in the [NPT manual](https://npt.scot/manual/#routenetwork).
 
 _Socio-demographic:_
@@ -256,7 +256,7 @@ Some of the metrics determine if a population zone, town centre, or POI (school,
 
 **TODO** Utility trips from…
 
-**TODO** School trips excluded, because the zone-to-point isn't public data \[don’t think this is still the case?\]
+**TODO** School trips excluded, because the zone-to-point isn't public data \[don't think this is still the case?\]
 
 You may not be able to achieve 100% on the cycling demand coverage metrics in the tool. In some cases, there is high demand on parallel roads, like with dual carriageways or a more suitable street parallel to a main road. Even though you have provided an adequate route, this score literally counts coverage on a fixed set of roads.
 
@@ -271,9 +271,9 @@ You may not be able to achieve 100% on the cycling demand coverage metrics in th
 - **Bidirectionality**: A simplifying assumption throughout NPW is that all infrastructure is bidirectional. When you draw something along a road, it is assumed that people cycling will be able to travel either direction along it, even when the road is one-way for drivers. NPW does not presently differentiate between two one-way segregated cycle tracks on both sides of the road versus a single segregated bidirectional track on one side of the road.
 - **Paths alongside motorways:** Similar to the note above about new bridges or links, there is currently no way to represent a proposed new path alongside an existing motorway, because motorway data is not imported (and thus its attributes cannot be changed) and it is not currently possible to draw on new links.
 - **Gradients:** Currently a basic interpretation of land height data is used. This means that where the network does follow the land contours, e.g. some bridges, the gradient will incorrectly show flat sections of network as steep. Similarly, paths alongside waterways could end up with oscillating results due to the resolution of the underlying height readings. For the coherent network, which uses CycleStreets routing, a full-scale implementation of gradients has been used and so that dataset is not been subject to these distortions.
-- **Attractive streets:** This experimental layer aims to determine the attractiveness of a street based on its proximity to green space, but the algorithm is currently very simplistic. This uses the Ordnance Survey’s Open Greenspace dataset. If a road center-line is within 10m of any green space polygon (without any filtering), it is considered attractive. We hope in future to create a more comprehensive analysis.
-- **Out-of-boundary drawing:** Currently the NPW disallows drawing outside the boundary of settlements. It is recognised that this can cause issues when a boundary line forms a concave shape, and that the edges of this need a route going into another local authority’s boundary. In this scenario, for now, local authority officers should communicate with each other to ensure their collective submissions ensure routes across these areas.
-- **Saving work:** Currently work is saved only within your computer’s browser rather than to a web service. This means that if you want to switch to another computer, you need to export the data first, then load it into your other computer’s browser on the project selection screen.
+- **Attractive streets:** This experimental layer aims to determine the attractiveness of a street based on its proximity to green space, but the algorithm is currently very simplistic. This uses the Ordnance Survey's Open Greenspace dataset. If a road center-line is within 10m of any green space polygon (without any filtering), it is considered attractive. We hope in future to create a more comprehensive analysis.
+- **Out-of-boundary drawing:** Currently the NPW disallows drawing outside the boundary of settlements. It is recognised that this can cause issues when a boundary line forms a concave shape, and that the edges of this need a route going into another local authority's boundary. In this scenario, for now, local authority officers should communicate with each other to ensure their collective submissions ensure routes across these areas.
+- **Saving work:** Currently work is saved only within your computer's browser rather than to a web service. This means that if you want to switch to another computer, you need to export the data first, then load it into your other computer's browser on the project selection screen.
 - **Mobile phone compatibility:** No attempt has been made to adapt the layout of the site to work well on phones, as the ability to plan a network would be hard to do efficiently on a small screen. It is assumed at present that transport professionals will be using a desktop computer or a large tablet. However, we have not actively disabled any functionality on smaller devices, and we are using web standards that should be well-supported on any device.
 
 ## OpenStreetMap
