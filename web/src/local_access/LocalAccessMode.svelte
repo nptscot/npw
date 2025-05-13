@@ -151,7 +151,7 @@
   async function onKeyDown(e: KeyboardEvent) {
     if (e.key == "a" && $currentPOI && !$currentPOI.reachable) {
       let tag = (e.target as HTMLElement).tagName;
-      if (tag != "INPUT" && tag != "TEXTAREA") {
+      if (tag != "INPUT" && tag != "TEXTAREA" && tag != "SELECT") {
         e.preventDefault();
         await fixUnreachable();
       }
@@ -159,7 +159,7 @@
 
     if (e.key == "n" && $currentPOI && filteredPOIs.length > 0) {
       let tag = (e.target as HTMLElement).tagName;
-      if (tag != "INPUT" && tag != "TEXTAREA") {
+      if (tag != "INPUT" && tag != "TEXTAREA" && tag != "SELECT") {
         e.preventDefault();
         findAnother();
       }

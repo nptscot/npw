@@ -263,7 +263,7 @@
 
   function keyDown(e: KeyboardEvent) {
     let tag = (e.target as HTMLElement).tagName;
-    let formFocused = tag == "INPUT" || tag == "TEXTAREA";
+    let formFocused = tag == "INPUT" || tag == "TEXTAREA" || tag == "SELECT";
 
     if (e.key === "Enter" && !formFocused) {
       e.stopPropagation();
