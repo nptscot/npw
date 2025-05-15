@@ -66,12 +66,6 @@
   {#if $backgroundLayer == "cn"}
     <b>Coherent network</b>
     <QualitativeLegend labelColors={cnTierColors} />
-
-    {#if $devMode}
-      <Checkbox small bind:checked={$debugOriginalData}>
-        Show original data
-      </Checkbox>
-    {/if}
   {:else if $backgroundLayer == "existing_infra"}
     <b>Existing infrastructure</b>
     <QualitativeLegend labelColors={infraTypeColorLegend} />

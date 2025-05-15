@@ -8,7 +8,7 @@ As a user of the NPW tool, you are able to 'draw on' the map to create the netwo
 
 While drawing on each segment of the network, the NPW will automatically try to determine the most appropriate achievable infrastructure within the street space available. Where infrastructure cannot meet best practice, you will need to resolve deliverability problems and sub-optimal Level of Service issues. As the network is built up, metrics to determine the performance of the network are calculated and displayed.
 
-Users are able to kick-start the creation of their network from a range of potential starting points, e.g. a proposed coherent network, or all existing on-street infrastructure meeting a quality standard.
+Users are able to kick-start the creation of their network from a range of potential starting points, such as all existing on-street infrastructure meeting a quality standard.
 
 A range of contextual data layers are available, covering transport and socio-demographic information. These should be consulted to aid the creation of the network, to help ensure your proposals support active travel comprehensively in the area.
 
@@ -80,7 +80,6 @@ You can start with a completely blank network, or you can initially seed your ne
 - All existing physical infrastructure, if it achieves high Level of Service.
 - Existing segregated tracks and off-road cycleways.
 - All arterial roads, i.e. trunk, A, B and C roads.
-- Coherent network (automatically-generated). This is a suggested network automatically produced by the NPT team, and is described below. Note that there are various caveats with this network, so you should not just blindly trust it.
 
 In each case, each road/street/path segment will be automatically allocated to a tier (Primary / Secondary / Local access / Long distance). These can be toggled within the network panel at the bottom of the map, which also provides a legend for the colourings.
 
@@ -92,9 +91,7 @@ If a particular street/path is incorrect or missing, you can give feedback using
 
 ## Coherent network
 
-The coherent network is available as a starting point for the creation of a network.
-
-It is composed of high-potential, direct routes that strategically connect urban areas. Created through automated analysis by the NPT team, this network emphasises coherence in design to ensure cycling infrastructure is functional, accessible, and efficient.
+The coherent network is available as a background layer. It is composed of high-potential, direct routes that strategically connect urban areas. Created through automated analysis by the NPT team, this network emphasises coherence in design to ensure cycling infrastructure is functional, accessible, and efficient. You can trace over it to start your primary and secondary network.
 
 The coherent network serves as a guide for prioritising investment by highlighting routes that maximize coverage and connectivity across urban zones.
 

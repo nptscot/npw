@@ -7,7 +7,6 @@
   import { notNull } from "svelte-utils";
   import { constructMatchExpression, makeRamp, Popup } from "svelte-utils/map";
   import {
-    cnTierColors,
     gradient,
     infraTypeColors,
     levelOfServiceColors,
@@ -51,9 +50,7 @@
     if (severances) {
       return undefined;
     }
-    if (style == "cn") {
-      return ["to-boolean", ["get", "cn"]];
-    } else if (style == "existing_infra") {
+    if (style == "existing_infra") {
       return ["to-boolean", ["get", "existing_infra"]];
     } else if (style == "street_space") {
       return ["to-boolean", ["get", "street_space"]];
@@ -103,7 +100,7 @@
     let invisibile = "black";
     return {
       off: invisibile,
-      cn: constructMatchExpression(["get", "cn"], cnTierColors, "cyan"),
+      cn: invisibile,
       existing_infra: constructMatchExpression(
         ["get", "existing_infra"],
         infraTypeColors,
@@ -169,20 +166,15 @@
     }
     if (
       debugOriginalData &&
-      [
-        "traffic",
-        "los",
-        "existing_infra",
-        "speed",
-        "cn",
-        "street_space",
-      ].includes(style)
+      ["traffic", "los", "existing_infra", "speed", "street_space"].includes(
+        style,
+      )
     ) {
       return false;
     }
     return {
       off: false,
-      cn: true,
+      cn: false,
       existing_infra: true,
       traffic: true,
       gradient: true,
@@ -244,11 +236,6 @@
       <p>
         Speed: <b>{props.speed} mph</b>
       </p>
-      {#if props.cn}
-        <p>
-          Coherent network tier: <b>{props.cn}</b>
-        </p>
-      {/if}
       {#if props.existing_infra}
         <p>
           Existing infrastructure: <b>

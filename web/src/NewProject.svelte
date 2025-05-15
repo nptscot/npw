@@ -19,16 +19,10 @@
   );
 
   let loading = "";
-  let useCN = false;
   let useExistingSomeTypes = false;
   let useExistingHighLoS = false;
   let useArterialRoads = false;
-  $: reimport(
-    useCN,
-    useExistingSomeTypes,
-    useExistingHighLoS,
-    useArterialRoads,
-  );
+  $: reimport(useExistingSomeTypes, useExistingHighLoS, useArterialRoads);
 
   async function newFile() {
     setCurrentFile(name);
@@ -38,7 +32,6 @@
   }
 
   async function reimport(
-    useCN: boolean,
     useExistingSomeTypes: boolean,
     useExistingHighLoS: boolean,
     useArterialRoads: boolean,
@@ -46,9 +39,6 @@
     loading = "Loading network for preview";
     await $backend!.clearAllRoutes();
 
-    if (useCN) {
-      await $backend!.importCoherentNetwork();
-    }
     if (useExistingSomeTypes) {
       await $backend!.importExistingRoutes("infra-type");
     }
@@ -107,12 +97,6 @@
 
   <Checkbox bind:checked={useArterialRoads}>
     All arterial roads (trunk, A, B, and C roads)
-  </Checkbox>
-
-  <Checkbox bind:checked={useCN}>
-    Coherent network: Created by the NPT team, this is an
-    automatically-generated network in urban areas connecting key origins and
-    destinations with relatively direct routes
   </Checkbox>
 </div>
 

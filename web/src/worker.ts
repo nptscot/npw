@@ -172,13 +172,11 @@ export class InnerBackend {
     );
   }
 
-  // Needs loading screen
   evaluateOD(fastSample: boolean): EvaluateODOut {
     this.checkReady();
     return JSON.parse(this.inner!.evaluateOD(fastSample));
   }
 
-  // Fast
   recalculateStats(): Stats {
     this.checkReady();
     return JSON.parse(this.inner!.recalculateStats());
@@ -194,7 +192,6 @@ export class InnerBackend {
     return JSON.parse(this.inner!.getBaselineStats());
   }
 
-  // Needs loading screen
   recalculateODStats(): ODStats {
     this.checkReady();
     return JSON.parse(this.inner!.recalculateODStats());
@@ -211,19 +208,17 @@ export class InnerBackend {
     );
   }
 
-  // Needs loading screen
   importExistingRoutes(kind: "infra-type" | "los") {
     this.checkReady();
     this.inner!.importExistingRoutes(kind == "infra-type");
   }
 
-  // Needs loading screen
+  // TODO Unused
   importCoherentNetwork() {
     this.checkReady();
     this.inner!.importCoherentNetwork();
   }
 
-  // Needs loading screen
   importArterialRoads() {
     this.checkReady();
     this.inner!.importArterialRoads();

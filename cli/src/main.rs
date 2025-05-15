@@ -468,6 +468,7 @@ fn read_gradients(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<f6
     Ok(gradients)
 }
 
+// TODO Now unused
 // The output is per road. If the road is part of the coherent network, what tier is it?
 fn read_coherent_network(
     path: &str,

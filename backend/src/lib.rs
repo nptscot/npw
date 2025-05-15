@@ -68,6 +68,7 @@ pub struct MapModel {
     within_settlement: Vec<bool>,
     is_offroad: Vec<bool>,
     traffic_volumes: Vec<TrafficVolume>,
+    // TODO Unused
     coherent_network: Vec<Option<Tier>>,
     // Go Dutch totals for all purposes
     precalculated_demands: Vec<usize>,

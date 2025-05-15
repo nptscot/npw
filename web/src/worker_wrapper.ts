@@ -187,7 +187,6 @@ export class Backend {
     return result;
   }
 
-  // Needs loading screen
   async evaluateOD(fastSample: boolean): Promise<EvaluateODOut> {
     this.start();
     let result = await this.inner.evaluateOD(fastSample);
@@ -195,7 +194,6 @@ export class Backend {
     return result;
   }
 
-  // Fast
   async recalculateStats(): Promise<Stats> {
     this.start();
     let result = await this.inner.recalculateStats();
@@ -217,7 +215,6 @@ export class Backend {
     return result;
   }
 
-  // Needs loading screen
   async recalculateODStats(): Promise<ODStats> {
     this.start();
     let result = await this.inner.recalculateODStats();
@@ -240,21 +237,19 @@ export class Backend {
     return result;
   }
 
-  // Needs loading screen
   async importExistingRoutes(kind: "infra-type" | "los") {
     this.start();
     await this.inner.importExistingRoutes(kind);
     this.stop();
   }
 
-  // Needs loading screen
+  // TODO Unused
   async importCoherentNetwork() {
     this.start();
     await this.inner.importCoherentNetwork();
     this.stop();
   }
 
-  // Needs loading screen
   async importArterialRoads() {
     this.start();
     await this.inner.importArterialRoads();
