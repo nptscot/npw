@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { backfillSavefile } from "./backfill";
   import { BackLink, stripPrefix } from "./common";
   import { getKey, listFilesInBoundary, setLocalStorage } from "./common/files";
   import { SplitComponent } from "./common/layout";
@@ -40,7 +41,8 @@
     let value = window.localStorage.getItem(getKey($boundaryName, filename));
     if (value) {
       try {
-        await $backend!.loadSavefile(value);
+        let fixed = await backfillSavefile(value, $boundaryName);
+        await $backend!.loadSavefile(fixed);
         setCurrentFile(filename);
       } catch (err) {
         window.alert(`Couldn't open project ${filename}. Error: ${err}`);
@@ -62,7 +64,9 @@
     let value = await fileInput.files![0].text();
 
     try {
-      await $backend!.loadSavefile(value);
+      // The user is bringing in a new file, so don't assume they've matched $boundaryName correctly
+      let fixed = await backfillSavefile(value, null);
+      await $backend!.loadSavefile(fixed);
     } catch (err) {
       window.alert(`This is not a valid NPW file: ${err}`);
       return;

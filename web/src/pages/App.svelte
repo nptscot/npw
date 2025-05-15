@@ -25,6 +25,7 @@
   import school1Icon from "../../assets/school_reachable.png";
   import school2Icon from "../../assets/school_unreachable.png";
   import AssessMode from "../assess/AssessMode.svelte";
+  import { backfillSavefile } from "../backfill";
   import BulkEditMode from "../BulkEditMode.svelte";
   import { layerId, LoadingSpinner, stripPrefix } from "../common";
   import DisableInteractiveLayers from "../common/DisableInteractiveLayers.svelte";
@@ -132,7 +133,8 @@
       let item = window.localStorage.getItem(getKey($boundaryName, openFile));
       if (item) {
         try {
-          await wrappedBackend.loadSavefile(item);
+          let fixed = await backfillSavefile(item, $boundaryName);
+          await wrappedBackend.loadSavefile(fixed);
           $currentFilename = openFile;
           $mode = { kind: "overview" };
         } catch (err) {
