@@ -339,11 +339,21 @@ impl MapModel {
         let mut ok = false;
         if let Some(Value::Number(num)) = foreign_members.get("version") {
             if let Some(version) = num.as_u64() {
-                ok = version == 1;
+                ok = version == 2;
             }
         }
         if !ok {
             return Err(JsValue::from_str("Savefile is out-of-date"));
+        }
+
+        let Some(Value::String(study_area_name)) = foreign_members.get("study_area_name") else {
+            return Err(JsValue::from_str("Savefile is mising study_area_name"));
+        };
+        if study_area_name != &self.study_area_name {
+            return Err(JsValue::from_str(&format!(
+                "Savefile is for {study_area_name}, but you are currently in {}",
+                self.study_area_name
+            )));
         }
 
         self.id_counter = match foreign_members.get("id_counter") {

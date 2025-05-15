@@ -37,6 +37,7 @@ mod wasm;
 #[wasm_bindgen]
 #[derive(Serialize, Deserialize)]
 pub struct MapModel {
+    study_area_name: String,
     graph: Graph,
     closest_intersection_all: RTree<GeomWithData<Point, IntersectionID>>,
     closest_intersection_major: RTree<GeomWithData<Point, IntersectionID>>,
@@ -130,8 +131,9 @@ pub struct Streetspace {
 }
 
 impl MapModel {
-    // TODO For main.rs to create this. Can't make fields public without wasm_bindgen on them
+    // For main.rs to create this. Can't make fields public without wasm_bindgen on them
     pub fn create(
+        study_area_name: String,
         graph: Graph,
         boundary_wgs84: MultiPolygon,
         commute_desire_lines: Vec<(usize, usize, usize)>,
@@ -191,6 +193,7 @@ impl MapModel {
         let precalculated_demands = std::iter::repeat(0).take(graph.roads.len()).collect();
 
         let mut model = Self {
+            study_area_name,
             graph,
             closest_intersection_all,
             closest_intersection_major,

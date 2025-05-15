@@ -54,7 +54,8 @@ fn main() -> Result<()> {
         .last()
         .unwrap()
         .strip_suffix(".bin")
-        .unwrap();
+        .unwrap()
+        .to_string();
     let model = create(study_area_name, &osm_bytes, &boundary_gj, &mut timer)?;
 
     timer.step("writing");
@@ -71,7 +72,7 @@ fn main() -> Result<()> {
 }
 
 fn create(
-    study_area_name: &str,
+    study_area_name: String,
     input_bytes: &[u8],
     boundary_gj: &str,
     timer: &mut Timer,
@@ -208,6 +209,7 @@ fn create(
     let gradients = read_gradients("../data_prep/tmp/UK-dem-50m-4326.tif", &graph, timer)?;
 
     Ok(MapModel::create(
+        study_area_name,
         graph,
         boundary_wgs84,
         commute_desire_lines,

@@ -215,7 +215,8 @@ impl MapModel {
             bbox: None,
             foreign_members: Some(into_object_value(serde_json::json!({
                 "id_counter": self.id_counter,
-                "version": 1,
+                "version": 2,
+                "study_area_name": self.study_area_name.clone(),
             }))),
         }
     }

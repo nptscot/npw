@@ -263,8 +263,11 @@ export class Backend {
 
   async loadSavefile(contents: string) {
     this.start();
-    await this.inner.loadSavefile(contents);
-    this.stop();
+    try {
+      await this.inner.loadSavefile(contents);
+    } finally {
+      this.stop();
+    }
   }
 
   async getPOIs(): Promise<POIs> {
