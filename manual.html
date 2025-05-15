@@ -3,7 +3,7 @@
 <p>The Network Planning Workspace (NPW) is designed to enable local authorities to plan a cycle network for a local authority area, using segregated infrastructure on key routes and ensuring local places are properly connected without severance.</p>
 <p>As a user of the NPW tool, you are able to 'draw on' the map to create the network, starting from a primary 'tier' forming the backbone of the network, followed by a secondary tier and then local connections and long-distance routes between settlements.</p>
 <p>While drawing on each segment of the network, the NPW will automatically try to determine the most appropriate achievable infrastructure within the street space available. Where infrastructure cannot meet best practice, you will need to resolve deliverability problems and sub-optimal Level of Service issues. As the network is built up, metrics to determine the performance of the network are calculated and displayed.</p>
-<p>Users are able to kick-start the creation of their network from a range of potential starting points, e.g. a proposed coherent network, or all existing on-street infrastructure meeting a quality standard.</p>
+<p>Users are able to kick-start the creation of their network from a range of potential starting points, such as all existing on-street infrastructure meeting a quality standard.</p>
 <p>A range of contextual data layers are available, covering transport and socio-demographic information. These should be consulted to aid the creation of the network, to help ensure your proposals support active travel comprehensively in the area.</p>
 <p>Upon completion of the network, a final report can be created, and the data exported.</p>
 <h2 id="structureofthetool">Structure of the tool</h2>
@@ -60,15 +60,13 @@
 <li>All existing physical infrastructure, if it achieves high Level of Service.</li>
 <li>Existing segregated tracks and off-road cycleways.</li>
 <li>All arterial roads, i.e. trunk, A, B and C roads.</li>
-<li>Coherent network (automatically-generated). This is a suggested network automatically produced by the NPT team, and is described below. Note that there are various caveats with this network, so you should not just blindly trust it.</li>
 </ul>
 <p>In each case, each road/street/path segment will be automatically allocated to a tier (Primary / Secondary / Local access / Long distance). These can be toggled within the network panel at the bottom of the map, which also provides a legend for the colourings.</p>
 <p>If you choose more than one of the sources, any overlapping parts will automatically be de-duplicated.</p>
 <p>Naturally the existing on-street network contains much existing infrastructure that does not form part of an appropriate network, so you should carefully consider what should or should not be used in your area. Therefore, if you start from any of the above options, you should audit everything to make sure it really matches the expectations given. There is always the possibility of incorrect data or, in the case of the coherent network, limitations arising from use of an algorithm.</p>
 <p>If a particular street/path is incorrect or missing, you can give feedback using the button in the bottom-left of the map.</p>
 <h2 id="coherentnetwork">Coherent network</h2>
-<p>The coherent network is available as a starting point for the creation of a network.</p>
-<p>It is composed of high-potential, direct routes that strategically connect urban areas. Created through automated analysis by the NPT team, this network emphasises coherence in design to ensure cycling infrastructure is functional, accessible, and efficient.</p>
+<p>The coherent network is available as a background layer. It is composed of high-potential, direct routes that strategically connect urban areas. Created through automated analysis by the NPT team, this network emphasises coherence in design to ensure cycling infrastructure is functional, accessible, and efficient. You can trace over it to start your primary and secondary network.</p>
 <p>The coherent network serves as a guide for prioritising investment by highlighting routes that maximize coverage and connectivity across urban zones.</p>
 <p>Route selection for the coherent network is based on two key attributes: road classification and cycling connectivity potential, both of which influence the "arterialness" score. This score prioritises routes that balance road hierarchy with accessibility for cycling. Using a spatial clustering algorithm (DBSCAN), high-flow areas are identified, forming a focused core network by filtering out redundant or isolated segments. This method ensures that selected routes maximize connectivity and suitability, aligning the network's structure with both directness and density requirements.</p>
 <p>Routes are then classified into primary and secondary categories based on road type:</p>
