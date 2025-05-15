@@ -1,3 +1,4 @@
+import { prettyPrintDistance } from "../common";
 import type { Stats } from "../types";
 
 export type Rating = "very poor" | "poor" | "medium" | "good" | "very good";
@@ -63,7 +64,11 @@ export function safetyPrimarySecondary(s: Stats): [string, Rating, number] {
     s.high_los_primary_secondary_length,
     s.total_primary_secondary_length,
   );
-  return [`${pct}%`, stepLessThanOrEqual(pct, [20, 40, 60, 80]), pct];
+  return [
+    `${pct}% of ${prettyPrintDistance(s.total_primary_secondary_length)}`,
+    stepLessThanOrEqual(pct, [20, 40, 60, 80]),
+    pct,
+  ];
 }
 
 export function safetyCombined(s: Stats): [string, Rating, number] {
@@ -121,13 +126,21 @@ export function coherenceCombined(s: Stats): [string, Rating, number] {
 
 export function comfort(s: Stats): [string, Rating, number] {
   let pct = percent3(s.total_low_gradient_length, s.total_network_length);
-  return [`${pct}%`, stepLessThanOrEqual(pct, [10, 20, 40, 60]), pct];
+  return [
+    `${pct}% of ${prettyPrintDistance(s.total_network_length)}`,
+    stepLessThanOrEqual(pct, [10, 20, 40, 60]),
+    pct,
+  ];
 }
 
 export function attractiveness(s: Stats): [string, Rating, number] {
   let pct = percent3(s.total_attractive_length, s.total_network_length);
   // First threshold will almost never happen; this is a deliberate choice
-  return [`${pct}%`, stepLessThanOrEqual(pct, [0, 25, 50, 75]), pct];
+  return [
+    `${pct}% of ${prettyPrintDistance(s.total_network_length)}`,
+    stepLessThanOrEqual(pct, [0, 25, 50, 75]),
+    pct,
+  ];
 }
 
 export function directness(s: {
