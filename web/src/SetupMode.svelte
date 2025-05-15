@@ -131,7 +131,7 @@
         </div>
       {:else if subpage == "project-list"}
         <header class="ds_page-header">
-          <h2 class="ds_page-header__title">Plan cycle network</h2>
+          <h2 class="ds_page-header__title">Pick a project</h2>
         </header>
 
         <h4>Start a new project for this area</h4>
