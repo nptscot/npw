@@ -129,13 +129,32 @@ pub fn get_level_of_service(
         // "Detached or Remote Cycle Track"
         InfraType::OffRoad => LevelOfService::High,
 
-        // Not in CbD. Just depends on urban/rural.
-        // TODO Settlements are not quite the same as urban areas.
         InfraType::SharedFootway => {
+            // Always low within a settlement
             if within_settlement {
                 LevelOfService::Low
             } else {
-                LevelOfService::High
+                // Use "Stepped or Footway Level Cycle Track" CbD rules. The speed and volume of
+                // motorized roads are copied onto this road, with plenty of map-matching caveats
+                if speed <= 20 {
+                    LevelOfService::High
+                } else if speed <= 30 {
+                    if traffic <= TrafficVolume::UpTo4000 {
+                        LevelOfService::High
+                    } else {
+                        LevelOfService::Medium
+                    }
+                } else if speed <= 40 {
+                    LevelOfService::Medium
+                } else if speed <= 50 {
+                    if traffic == TrafficVolume::UpTo1000 {
+                        LevelOfService::Medium
+                    } else {
+                        LevelOfService::Low
+                    }
+                } else {
+                    LevelOfService::Low
+                }
             }
         }
 
