@@ -22,19 +22,22 @@
   <ul>
     <li class:selected={$editsRoadStyle == "off"}>
       <button on:click={() => ($editsRoadStyle = "off")}>
-        &#10680;&nbsp; Hidden
+        <i class="fa-solid fa-eye-slash"></i>
+        Hidden
       </button>
     </li>
 
     <li class:selected={$editsRoadStyle == "edits_tier"}>
       <button on:click={() => ($editsRoadStyle = "edits_tier")}>
-        ‖‖&nbsp; Tier
+        <i class="fa-solid fa-ranking-star"></i>
+        Tier
       </button>
     </li>
 
     <li class:selected={$editsRoadStyle == "edits_infra"}>
       <button on:click={() => ($editsRoadStyle = "edits_infra")}>
-        ☰&nbsp; Infrastructure type
+        <i class="fa-solid fa-road"></i>
+        Infrastructure type
       </button>
     </li>
 

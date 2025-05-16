@@ -89,7 +89,7 @@
                     class:selected={$editsRoadStyle == "edits_tier"}
                     on:click={() => ($editsRoadStyle = "edits_tier")}
                   >
-                    ‖‖
+                    <i class="fa-solid fa-ranking-star"></i>
                   </button>
                 </th>
                 <th>
@@ -97,7 +97,7 @@
                     class:selected={$editsRoadStyle == "edits_infra"}
                     on:click={() => ($editsRoadStyle = "edits_infra")}
                   >
-                    ☰
+                    <i class="fa-solid fa-road"></i>
                   </button>
                 </th>
                 <th>

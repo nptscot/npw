@@ -59,7 +59,7 @@
       on:click={() => ($editModeBreakdown = "infra_type")}
       class:focused={$editModeBreakdown == "infra_type"}
     >
-      ☰
+      <i class="fa-solid fa-road"></i>
     </button>
   </div>
 
@@ -122,7 +122,7 @@
         on:click={() => ($editModeBreakdown = "tier")}
         class:focused={$editModeBreakdown == "tier"}
       >
-        ‖‖
+        <i class="fa-solid fa-ranking-star"></i>
       </button>
     </span>
   </div>
