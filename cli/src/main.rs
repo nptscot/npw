@@ -376,8 +376,11 @@ fn read_traffic_volumes(
             results.push(TrafficVolume::UpTo1000);
             continue;
         }
-        results
-            .push(get_anime_match(&matches, &source_data, idx).unwrap_or(TrafficVolume::UpTo1000));
+        results.push(
+            get_anime_match(&matches, &source_data, idx)
+                .map(|pair| pair.0)
+                .unwrap_or(TrafficVolume::UpTo1000),
+        );
     }
     Ok(results)
 }
@@ -437,7 +440,7 @@ fn read_street_space(
     // TODO Only for big roads
     let mut results = Vec::new();
     for idx in 0..graph.roads.len() {
-        results.push(get_anime_match(&matches, &source_data, idx));
+        results.push(get_anime_match(&matches, &source_data, idx).map(|pair| pair.0));
     }
     Ok(results)
 }
@@ -539,7 +542,7 @@ fn read_coherent_network(
             results.push(None);
             continue;
         }
-        results.push(get_anime_match(&matches, &source_data, idx));
+        results.push(get_anime_match(&matches, &source_data, idx).map(|pair| pair.0));
     }
     Ok(results)
 }
@@ -673,17 +676,18 @@ fn read_access_points(path: &str, graph: &Graph) -> Result<HashMap<String, Vec<P
     Ok(pts_per_site)
 }
 
+// Returns the data and shared length
 fn get_anime_match<T: Clone>(
     matches: &anime::MatchesMap,
     source_data: &Vec<T>,
     target_idx: usize,
-) -> Option<T> {
+) -> Option<(T, f64)> {
     let candidates = matches.get(&target_idx)?;
     // Use the one with the most shared length
     let c = candidates
         .into_iter()
         .max_by_key(|c| (c.shared_len * 1000.0) as usize)?;
-    Some(source_data[c.source_index].clone())
+    Some((source_data[c.source_index].clone(), c.shared_len))
 }
 
 // TODO By michaelkirk, copied from ltn repo -- will wind up upstreamed in geo likely soon
@@ -755,8 +759,8 @@ fn get_speed_mph(hwy: Highway, tags: &Tags) -> usize {
 
 fn handle_parallel_roads(
     highways: &Vec<Highway>,
-    _traffic_volumes: &mut Vec<TrafficVolume>,
-    _speeds: &mut Vec<usize>,
+    traffic_volumes: &mut Vec<TrafficVolume>,
+    speeds: &mut Vec<usize>,
     graph: &Graph,
 ) {
     // Sources are roads with motor vehicles
@@ -787,19 +791,44 @@ fn handle_parallel_roads(
     .take()
     .unwrap();
 
+    let debug = false;
     let mut features = Vec::new();
+
     for (anime_target_idx, target_idx) in targets.into_iter().enumerate() {
-        if let Some(source_idx) = get_anime_match(&matches, &source_data, anime_target_idx) {
-            let mut f = graph
-                .mercator
-                .to_wgs84_gj(&graph.roads[target_idx].linestring);
-            f.set_property("way", graph.roads[source_idx].way.to_string());
-            features.push(f);
+        if let Some((source_idx, shared_len)) =
+            get_anime_match(&matches, &source_data, anime_target_idx)
+        {
+            // TODO This isn't correct; it's over 100% sometimes. Unclear what this represents. But
+            // it still seems to be 0 when the target road is just incident to the source and not
+            // actually parallel.
+            let pct_shared_len = 100.0 * (shared_len / graph.roads[target_idx].length_meters);
+            if pct_shared_len < 1.0 {
+                continue;
+            }
+
+            if debug {
+                let mut f = graph
+                    .mercator
+                    .to_wgs84_gj(&graph.roads[target_idx].linestring);
+                f.set_property("way", graph.roads[source_idx].way.to_string());
+                f.set_property(
+                    "pct_shared_len",
+                    100.0 * (shared_len / graph.roads[target_idx].length_meters),
+                );
+                features.push(f);
+            }
+
+            // Copy the speed/volume from the big road
+            speeds[target_idx] = speeds[source_idx];
+            traffic_volumes[target_idx] = traffic_volumes[source_idx];
         }
     }
-    std::fs::write(
-        "debug_parallel.geojson",
-        serde_json::to_string(&geojson::GeoJson::from(features)).unwrap(),
-    )
-    .unwrap();
+
+    if debug {
+        std::fs::write(
+            "debug_parallel.geojson",
+            serde_json::to_string(&geojson::GeoJson::from(features)).unwrap(),
+        )
+        .unwrap();
+    }
 }
