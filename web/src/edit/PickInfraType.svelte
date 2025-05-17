@@ -1,6 +1,7 @@
 <script lang="ts">
   import cycleLaneIcon from "../../assets/CycleLane.jpg";
   import mixedTrafficIcon from "../../assets/MixedTraffic.jpg";
+  import mixedTrafficWithSpeedVolumeIcon from "../../assets/MixedTrafficWithSpeedVolume.jpg";
   import offRoadIcon from "../../assets/OffRoad.jpg";
   import segregatedIcon from "../../assets/Segregated.jpg";
   import segregatedWithSpeedVolumeIcon from "../../assets/SegregatedWithSpeedVolume.jpg";
@@ -33,8 +34,16 @@
       cycleLaneIcon,
       "https://www.cyclestreets.net/location/81341/",
     ],
-    ["MixedTraffic", mixedTrafficIcon, ""],
-    ["MixedTrafficWithSpeedVolume", mixedTrafficIcon, ""],
+    [
+      "MixedTraffic",
+      mixedTrafficIcon,
+      "https://www.cyclestreets.net/location/193245/",
+    ],
+    [
+      "MixedTrafficWithSpeedVolume",
+      mixedTrafficWithSpeedVolumeIcon,
+      "https://www.cyclestreets.net/location/215206/",
+    ],
   ];
 </script>
 
@@ -67,7 +76,7 @@
 
 <style>
   .card {
-    flex: 0 0 30%;
+    flex: 0 0 24%;
     cursor: pointer;
   }
 
