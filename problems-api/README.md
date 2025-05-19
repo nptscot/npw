@@ -28,7 +28,8 @@ report. Then dump the results to a file, `npx wrangler d1 export npw-problems
 ## Production
 
 For setting up or dumping the DB, just add `--remote` to the wrangler commands.
-`npm run deploy` to deploy the worker.
+`npm run deploy` to deploy the worker. To quickly see all entries:
+`npx wrangler d1 execute npw-problems --remote --command 'SELECT * FROM problems'`
 
 For now, the plan is to manually and periodically export the prod DB and share
 amongst maintainers. Later we can consider something nicer.

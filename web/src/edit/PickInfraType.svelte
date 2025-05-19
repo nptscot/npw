@@ -37,12 +37,12 @@
     [
       "MixedTraffic",
       mixedTrafficIcon,
-      "https://www.cyclestreets.net/location/193245/",
+      "https://www.cyclestreets.net/location/43639/",
     ],
     [
       "MixedTrafficWithSpeedVolume",
       mixedTrafficWithSpeedVolumeIcon,
-      "https://www.cyclestreets.net/location/215206/",
+      "https://www.cyclestreets.net/location/31664/",
     ],
   ];
 </script>
