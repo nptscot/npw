@@ -4,7 +4,7 @@ use anyhow::Result;
 use enum_map::EnumMap;
 use geo::{Centroid, Coord, Distance, Euclidean};
 use geojson::FeatureCollection;
-use graph::{Graph, PathStep, RoadID, Route, Timer};
+use graph::{PathStep, RoadID, Route, Timer};
 use nanorand::WyRand;
 use serde::{Deserialize, Serialize};
 
@@ -21,7 +21,8 @@ pub struct CountsOD {
 #[derive(Default, Serialize, Deserialize)]
 pub struct SlowStats {
     pub average_weighted_directness: f64,
-    pub worst_directness_routes: Vec<(Coord, Coord)>,
+    /// (from, to, directness)
+    pub worst_directness_routes: Vec<(Coord, Coord, f64)>,
 }
 
 impl CountsOD {
@@ -255,8 +256,8 @@ impl MapModel {
                 continue;
             };
 
-            let directness = route_length_fast(&self.graph, &quiet_route)
-                / route_length_fast(&self.graph, &direct_route);
+            let directness = weighted_route_length(&self, &quiet_route)
+                / unweighted_route_length(&self, &direct_route);
             sum_directness += directness;
             sum_count += 1;
 
@@ -274,10 +275,11 @@ impl MapModel {
             average_weighted_directness: sum_directness / (sum_count as f64),
             worst_directness_routes: worst_directness_routes
                 .into_iter()
-                .map(|(start, end, _)| {
+                .map(|(start, end, ratio)| {
                     (
                         self.graph.mercator.pt_to_wgs84(start),
                         self.graph.mercator.pt_to_wgs84(end),
+                        ratio,
                     )
                 })
                 .collect(),
@@ -393,13 +395,24 @@ fn find_cycling_demand_thresholds(demands: &Vec<usize>) -> Result<(usize, usize)
     Ok((high, medium))
 }
 
-// route.linestring() is more accurate, but slower
-fn route_length_fast(graph: &Graph, route: &Route) -> f64 {
-    let mut len = 0.0;
+// The result is distance, weighted by the per-LoS penalty
+fn weighted_route_length(model: &MapModel, route: &Route) -> f64 {
+    let mut cost = 0.0;
     for step in &route.steps {
         if let PathStep::Road { road, .. } = step {
-            len += graph.roads[road.0].length_meters;
+            cost += model.los[road.0].penalty() * model.graph.roads[road.0].length_meters;
         }
     }
-    len
+    cost
+}
+
+// The result is JUST distance
+fn unweighted_route_length(model: &MapModel, route: &Route) -> f64 {
+    let mut cost = 0.0;
+    for step in &route.steps {
+        if let PathStep::Road { road, .. } = step {
+            cost += model.graph.roads[road.0].length_meters;
+        }
+    }
+    cost
 }

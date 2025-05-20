@@ -1,6 +1,5 @@
 use std::time::Duration;
 
-use geo::{Euclidean, Length};
 use graph::{Road, Timer};
 
 use crate::{LevelOfService, MapModel};
@@ -30,14 +29,6 @@ impl MapModel {
 }
 
 fn quiet_edge_cost(road: &Road, los: LevelOfService) -> Duration {
-    // TODO Just making these up for now!
-    let penalty = match los {
-        LevelOfService::High => 1.0,
-        LevelOfService::Medium => 1.5,
-        LevelOfService::Low => 3.0,
-        LevelOfService::ShouldNotBeUsed => 5.0,
-    };
-
     // TODO Ignore cyclist speed for now. Later, do include it -- slower on SharedFootway or uphill
-    Duration::from_secs_f64(penalty * Euclidean.length(&road.linestring))
+    Duration::from_secs_f64(los.penalty() * road.length_meters)
 }

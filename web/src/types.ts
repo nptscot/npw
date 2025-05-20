@@ -108,6 +108,7 @@ export interface SlowStats {
 export type WorstRoutes = [
   { x: number; y: number },
   { x: number; y: number },
+  number,
 ][];
 
 export type POIs = FeatureCollection<

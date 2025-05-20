@@ -146,10 +146,9 @@ export function attractiveness(s: Stats): [string, Rating, number] {
 export function directness(s: {
   average_weighted_directness: number;
 }): [string, Rating, number] {
-  // TODO Doesn't match table
   let rating = stepGreaterThan(
     s.average_weighted_directness,
-    [1.5, 1.4, 1.3, 1.2],
+    [1.3, 1.2, 1.1, 1],
   );
   return [
     `${s.average_weighted_directness.toFixed(1)}x`,

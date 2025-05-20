@@ -12,6 +12,19 @@ pub enum LevelOfService {
     ShouldNotBeUsed,
 }
 
+impl LevelOfService {
+    /// A multiplier to penalize traveling along a road with this LoS. These values are made up,
+    /// but the quiet routes seem reasonable.
+    pub fn penalty(self) -> f64 {
+        match self {
+            LevelOfService::High => 1.0,
+            LevelOfService::Medium => 1.5,
+            LevelOfService::Low => 3.0,
+            LevelOfService::ShouldNotBeUsed => 5.0,
+        }
+    }
+}
+
 #[derive(Clone, Copy, PartialOrd, PartialEq, Serialize, Deserialize)]
 pub enum TrafficVolume {
     UpTo1000,

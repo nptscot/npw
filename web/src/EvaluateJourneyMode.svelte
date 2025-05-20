@@ -151,6 +151,12 @@
           </button>
         </div>
 
+        <p>
+          The directness score is {browse[currentBrowse][2].toFixed(1)}. Click
+          <i>Directness</i>
+          at the top to understand this score.
+        </p>
+
         <hr />
       {/if}
 
