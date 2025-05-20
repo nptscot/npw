@@ -14,7 +14,7 @@
   }
 
   function onClick(e: MouseEvent) {
-    // only dismiss the modal when clicking outside of the inner dialog content, on the dialog itself.
+    // Only dismiss the modal when clicking outside of the inner dialog content (the extra div), on the dialog itself.
     if (e.target == modalDialog) {
       show = false;
     }
@@ -34,7 +34,9 @@
   on:click|stopPropagation={onClick}
   on:keydown={onKeyDown}
 >
-  <slot />
+  <div>
+    <slot />
+  </div>
 </dialog>
 
 <style>
