@@ -1,8 +1,26 @@
 <script lang="ts">
-  import { slowStats } from "../stores";
+  import { subpage } from "../assess";
+  import { currentStage, mode, slowStats } from "../stores";
   import { directness } from "./";
 
+  export let show: boolean;
+
   $: [value, rating] = directness($slowStats!);
+
+  function checkJourney() {
+    $mode = {
+      kind: "evaluate-journey",
+      browse: $slowStats!.worst_directness_routes,
+    };
+    show = false;
+  }
+
+  function checkNetwork() {
+    $mode = { kind: "main" };
+    $currentStage = "assessment";
+    $subpage = "directness-network";
+    show = false;
+  }
 </script>
 
 <h2>Directness</h2>
@@ -33,6 +51,13 @@
     <b>shorter travel distances than the arterial road alternative</b>
   </li>
 </ul>
+
+<button class="ds_button ds_button--secondary" on:click={checkJourney}>
+  Check journeys used to calculate directness
+</button>
+<button class="ds_button ds_button--secondary" on:click={checkNetwork}>
+  Check directness network
+</button>
 
 <h3>Sub-metrics</h3>
 <table class="ds_table">

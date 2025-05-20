@@ -57,7 +57,7 @@
 
   {#if $slowStats}
     <Modal bind:show={showDirectness}>
-      <Directness />
+      <Directness bind:show={showDirectness} />
     </Modal>
   {/if}
 
