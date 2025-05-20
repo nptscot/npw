@@ -62,7 +62,7 @@
   {/if}
 
   <Modal bind:show={showCoherence}>
-    <Coherence />
+    <Coherence bind:show={showCoherence} />
   </Modal>
 
   <Modal bind:show={showComfort}>

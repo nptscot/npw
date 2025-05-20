@@ -9,14 +9,15 @@
 
 <h3>Definition</h3>
 <p>
-  Cycling should be smooth, easy, and stress-free—minimising both physical
+  Cycling should be smooth, easy, and stress-free, minimising both physical
   effort and mental strain.
 </p>
 
 <h3>Methodology</h3>
 <p>
-  Currently measured by the <b>proportion of low-gradient segments</b>
-  (&le; 3%), as gradient significantly affects comfort.
+  Currently measured by the <b>percent of low-gradient segments</b>
+  (&le; 3%) over the drawn network, as gradient significantly affects comfort. When
+  your drawn network is very small, this will not be very meaningful.
 </p>
 <p>
   <i>
@@ -29,7 +30,9 @@
 <ul>
   <li>
     Plan routes with <b>gentle slopes</b>
-    and avoid steep gradients wherever possible
+    and avoid steep gradients wherever possible, using the
+    <i>Gradient</i>
+    layer on the right
   </li>
 </ul>
 

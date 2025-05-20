@@ -390,11 +390,11 @@
 </Modal>
 
 <Modal bind:show={showDirectness}>
-  <Directness />
+  <Directness bind:show={showDirectness} />
 </Modal>
 
 <Modal bind:show={showCoherence}>
-  <Coherence />
+  <Coherence bind:show={showCoherence} />
 </Modal>
 
 <Modal bind:show={showComfort}>

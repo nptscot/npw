@@ -20,7 +20,12 @@
 <h3>Methodology</h3>
 <p>
   We use the <b>Safety Level of Service (LoS)</b>
-  as a key indicator to evaluate network safety across the network.
+  as a key indicator to evaluate network safety. LoS depends on the infrastructure
+  type, the speed limit, estimated traffic volume, and whether a route is within
+  a settlement, using guidance from Cycling by Design. The sub-metrics measure the
+  percent of high LoS by length among all arterial roads and among the drawn primary/secondary
+  network. The second sub-metric might be a high percent when the primary/secondary
+  network is very small, so the value is not meaningful until you draw your network.
 </p>
 
 <h3>How to improve</h3>
@@ -29,8 +34,11 @@
     Draw high LoS routes along <b>arterial roads</b>
   </li>
   <li>
-    Override infrastructure types by adding <b>traffic constraints</b>
-    , e.g. reduced speed limits or segregated lanes
+    Find sections of your drawn network that do not achieve high LoS using the
+    bottom panel, then override the infrastructure type to include <b>
+      traffic measures
+    </b>
+    like speed limits, bus gates, and turn restrictions
   </li>
 </ul>
 

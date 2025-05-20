@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { stats } from "../stores";
+  import { subpage } from "../assess";
+  import { currentStage, mode, stats } from "../stores";
   import {
     coherenceCombined,
     coherenceDensity,
@@ -7,42 +8,68 @@
     safetyArterial,
   } from "./";
 
+  export let show: boolean;
+
   $: [arterialValue, arterialRating] = safetyArterial($stats!);
   $: [densityValue, densityRating] = coherenceDensity($stats!);
   $: [integrityValue, integrityRating] = coherenceIntegrity($stats!);
   $: [combinedValue, combinedRating] = coherenceCombined($stats!);
+
+  function meshDensity() {
+    $mode = { kind: "main" };
+    $currentStage = "assessment";
+    $subpage = "mesh-density";
+    show = false;
+  }
+
+  function networkSplits() {
+    $mode = { kind: "main" };
+    $currentStage = "assessment";
+    $subpage = "disconnected";
+    show = false;
+  }
 </script>
 
 <h2>Coherence</h2>
 
 <h3>Definition</h3>
 <p>
-  A coherence cycle network should provide continuous, well-connected routes
-  that link key destinations such as homes, schools, shops, and transport hubs.
+  A coherent cycle network should provide continuous, well-connected routes that
+  link key destinations such as homes, schools, shops, and transport hubs.
 </p>
 
 <h3>Methodology</h3>
 <p>
   We assess <b>network density</b>
-  ,
-  <b>network integrity</b>
-  （whether the network is continuous or fragmented, and
+  by dividing the total settlement area by the total length of primary and secondary
+  routes within settlements.
+</p>
+<p>
   <b>Safety Level of Service (LoS)</b>
-  coverage on arterial roads.
+  checks for high LoS on arterial roads
+</p>
+<p>
+  <b>Network integrity</b>
+  measures the number of disconnected pieces of your network. There should ideally
+  be just one piece per settlement.
 </p>
 
 <h3>How to improve</h3>
 <ul>
   <li>
-    Increase route density, especially along <b>primary and secondary routes</b>
+    Draw more <b>primary and secondary routes</b>
+    to increase density.
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={meshDensity}>Check mesh density</a>
+    for areas to target.
   </li>
   <li>
-    Ensure <b>high LoS coverage</b>
-    on arterial roads
+    Draw high LoS routes along <b>arterial roads</b>
   </li>
   <li>
-    Avoid fragmented networks — aim for a <b>single, integrated network</b>
-    to support internal connectivity and intuitive navigation
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={networkSplits}>Check network splits</a>
+    and fill in the gaps between pieces of your network.
   </li>
 </ul>
 

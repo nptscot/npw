@@ -15,15 +15,18 @@
 
 <h3>Methodology</h3>
 <p>
-  Measured by the <b>share of green space along routes</b>
-  .
+  Measured by the <b>percent of attractive streets</b>
+  over the drawn network. Attractive streets are defined as being within 10m of any
+  greenspace defined by Ordnance Survey Open Greenspace. This dataset does not capture
+  all greenspaces, so do not prioritise this metric.
 </p>
 <p><i>Additional indicators like lighting and noise may be added later.</i></p>
 
 <h3>How to improve</h3>
 <ul>
   <li>
-    Route through <b>parks or green corridors</b>
+    Route through <b>attractive streets</b>
+    as indicated on the right
   </li>
 </ul>
 

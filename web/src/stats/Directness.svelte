@@ -33,31 +33,51 @@
 
 <h3>Methodology</h3>
 <p>
-  We assess <b>Detour Factor</b>
-  , which compares the actual cycling route distance between town centres to the
-  equivalent
-  <b>arterial road distance</b>
-  , to evaluate how direct the network is.
+  We calculate an <b>average detour factor</b>
+  by checking the journey route between all town centres within 5km of each other.
+  For each pair of town centres, we calculate a
+  <b>direct route</b>
+  that minimises distance, ignoring infrastructure and Level of Service (LoS) completely.
+  We also calculate a
+  <b>balanced route</b>
+  that penalises roads by LoS, treating a low LoS road as 3 times longer than the
+  equivalent high LoS road. The ratio of the
+  <b>weighted balanced route score</b>
+  and the
+  <b>unweighted direct route distance</b>
+  gives the
+  <b>detour factor</b>
+  .
+</p>
+<p>
+  When the direct and balanced route follow the same path, the detour factor
+  will be 1 (the best case) only when the entire route is high LoS. In other
+  cases, the balanced route will either take longer detours to find nearby
+  higher LoS roads, or sometimes it is forced to go along low LoS roads.
 </p>
 
 <h3>How to improve</h3>
 <ul>
   <li>
-    Reroute along <b>shorter, straighter paths</b>
+    Prioritise alignments that <b>follow arterial roads</b>
+    , rather than zig-zagging through quieter residential streets
   </li>
   <li>
-    Prioritise alignments that <b>follow or cut through arterial roads</b>
-    , aiming for
-    <b>shorter travel distances than the arterial road alternative</b>
+    Ensure the direct routes have <b>high LoS</b>
+  </li>
+  <li>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={checkJourney}>
+      Check the town centres with the worst detour factors
+    </a>
+  </li>
+  <li>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a href="#" on:click|preventDefault={checkNetwork}>
+      Compare all direct routes between town centres with the balanced routes
+    </a>
   </li>
 </ul>
-
-<button class="ds_button ds_button--secondary" on:click={checkJourney}>
-  Check journeys used to calculate directness
-</button>
-<button class="ds_button ds_button--secondary" on:click={checkNetwork}>
-  Check directness network
-</button>
 
 <h3>Sub-metrics</h3>
 <table class="ds_table">
@@ -78,7 +98,7 @@
   </thead>
   <tbody>
     <tr>
-      <td>Detour factor</td>
+      <td>Average detour factor</td>
       <td class:match={rating == "very poor"}>&ge; 1.3</td>
       <td class:match={rating == "poor"}>&ge; 1.2</td>
       <td class:match={rating == "medium"}>&ge; 1.1</td>
