@@ -2,7 +2,7 @@ name: Deploy web
 
 on:
   push:
-    branches: [main, demo_may6]
+    branches: [main]
 
 jobs:
   build:
