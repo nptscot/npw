@@ -149,6 +149,13 @@
     font-weight: bold;
   }
 
+  /* Remove the SG focus state; it breaks on the text+progress bar "links" */
+  a:focus {
+    background-color: unset;
+    box-shadow: unset;
+    outline: unset;
+  }
+
   .progress-summary {
     padding-left: 20px;
     margin-left: auto;
