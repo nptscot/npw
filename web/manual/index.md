@@ -59,7 +59,7 @@ NPW models a network, consisting of road segments leading between exactly two in
 
 The underlying network data is built using OpenStreetMap (OSM), an open data source of the physical road/street/path network. More details about OSM are given later in this manual. Note that, although OpenStreetMap is a data source being constantly updated, changes there are not reflected in NPW until the development team regenerates NPW base data.
 
-The OSM data in NPW is dated **TODO**.
+The OSM data in NPW is dated 19 May 2025.
 
 Only roads that should be candidates for a cycling network are included in NPW.
 
