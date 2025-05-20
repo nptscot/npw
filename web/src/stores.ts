@@ -69,6 +69,7 @@ export type BackgroundLayer =
   | "off"
   | "cn"
   | "existing_infra"
+  | "existing_los"
   | "traffic"
   | "gradient"
   | "street_space"

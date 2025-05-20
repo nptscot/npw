@@ -188,15 +188,9 @@
       labels={{ limits: deprived.limits }}
     />
     <p>Darker colours are more deprived.</p>
-  {:else if $backgroundLayer == "los"}
+  {:else if $backgroundLayer == "los" || $backgroundLayer == "existing_los"}
     <b>Level of Service</b>
     <QualitativeLegend labelColors={levelOfServiceLegend} />
-
-    {#if $devMode}
-      <Checkbox small bind:checked={$debugOriginalData}>
-        Show original data
-      </Checkbox>
-    {/if}
   {:else if $backgroundLayer == "reachability"}
     <b>Severances</b>
     <QualitativeLegend itemsPerRow={1} labelColors={reachabilityColors} />

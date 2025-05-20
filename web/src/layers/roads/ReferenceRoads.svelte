@@ -106,6 +106,7 @@
         infraTypeColors,
         "black",
       ),
+      existing_los: invisibile,
       traffic: constructMatchExpression(
         ["get", "traffic"],
         trafficColors,
@@ -176,6 +177,7 @@
       off: false,
       cn: false,
       existing_infra: true,
+      existing_los: false,
       traffic: true,
       gradient: true,
       street_space: true,

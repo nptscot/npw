@@ -39,6 +39,11 @@
       style="speed"
       icon="fa-gauge-simple-high"
     />
+    <Toggle
+      name="Existing Level of Service"
+      style="existing_los"
+      icon="fa-face-meh"
+    />
     <Toggle name="Gradient" style="gradient" icon="fa-mound" />
     <Toggle
       name="Street space"

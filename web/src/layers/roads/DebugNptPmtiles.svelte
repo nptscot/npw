@@ -45,8 +45,9 @@
   />
 
   <LineLayer
-    {...layerId("los-debug")}
+    {...layerId("existing-los")}
     sourceLayer="cbd_layer"
+    filter={["has", "Level of Service"]}
     paint={{
       "line-color": constructMatchExpression(
         ["get", "Level of Service"],
@@ -54,15 +55,15 @@
           High: "mediumseagreen",
           Medium: "orange",
           Low: "red",
-          "Should not be used": "brown",
+          "Should not be used (non-compliant intervention)": "brown",
+          "Should not be used (mixed traffic)": "brown",
         },
         "cyan",
       ),
       "line-width": roadLineWidth(1),
     }}
     layout={{
-      visibility:
-        $backgroundLayer == "los" && $debugOriginalData ? "visible" : "none",
+      visibility: $backgroundLayer == "existing_los" ? "visible" : "none",
     }}
   />
 
