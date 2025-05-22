@@ -48,7 +48,24 @@
       restoreWaypoints,
     };
   }
+
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.key == "r") {
+      let tag = (e.target as HTMLElement).tagName;
+      if (tag != "INPUT" && tag != "TEXTAREA" && tag != "SELECT") {
+        e.preventDefault();
+        $mode = {
+          kind: "edit-route",
+          id: null,
+          anyEdits: false,
+          restoreWaypoints: [],
+        };
+      }
+    }
+  }
 </script>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <SplitComponent>
   <div slot="controls" class="left">
@@ -68,11 +85,27 @@
 
       <div class="ds_button-group">
         <button class="ds_button" on:click={() => ($mode = { kind: "main" })}>
-          Continue
+          Stop drawing
         </button>
 
         <button class="ds_button ds_button--secondary" on:click={deleteRoute}>
           Delete
+        </button>
+      </div>
+
+      <div>
+        <button
+          class="ds_button ds_button--secondary"
+          on:click={() =>
+            ($mode = {
+              kind: "edit-route",
+              id: null,
+              anyEdits: false,
+              restoreWaypoints: [],
+            })}
+        >
+          Draw another route
+          <kbd>r</kbd>
         </button>
       </div>
 
