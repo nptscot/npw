@@ -11,6 +11,7 @@ export default defineConfig({
         npw: resolve(__dirname, "npw.html"),
         local_storage: resolve(__dirname, "local_storage.html"),
         credits: resolve(__dirname, "credits.html"),
+        manual: resolve(__dirname, "manual.html"),
         not_found: resolve(__dirname, "404.html"),
       },
     },

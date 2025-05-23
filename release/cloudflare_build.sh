@@ -14,7 +14,5 @@ curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 cd web
 npm ci
 npm run wasm-release
-npm run build --if-present
-
-# Writes to dist/
 npm run generate-manual
+npm run build --if-present

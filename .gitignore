@@ -4,6 +4,9 @@ node_modules/
 
 problems-api/.wrangler
 
+# Auto-generated
+web/src/manual/Contents.svelte
+
 # Local symlink to avoid hitting remote storage
 web/public
 

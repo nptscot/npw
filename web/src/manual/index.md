@@ -1,5 +1,3 @@
-# Network Planning Workspace: User guide
-
 ## Overview
 
 The Network Planning Workspace (NPW) is designed to enable local authorities to plan a cycle network for a local authority area, using segregated infrastructure on key routes and ensuring local places are properly connected without severance.

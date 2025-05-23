@@ -9,6 +9,7 @@ for branch in main; do
 
   npm ci
   npm run wasm-release
+  npm run generate-manual
 
   if [ "$branch" == "main" ]; then
     npm run build -- --base=/npw/
@@ -19,9 +20,6 @@ for branch in main; do
   # TODO Vite suddenly broke and I have no idea why. Hack around it.
   # new URL('backend_bg.wasm', import.meta.url) doesn't exist at build time, it will remain unchanged to be resolved at runtime
   ln -s assets/backend_bg.wasm dist/
-
-  # Writes to dist/. If the script is missing in some old branches, don't fail.
-  npm run generate-manual || echo
 
   if [ "$branch" == "main" ]; then
     mv dist/* deployme
