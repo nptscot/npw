@@ -112,3 +112,10 @@
   </li>
   <li>And countless other open source libraries</li>
 </ul>
+
+<style>
+  :global(body) {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+</style>

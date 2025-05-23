@@ -18,3 +18,10 @@
 <BackLink on:click={() => (window.location.href = "./")}>Back to NPW</BackLink>
 
 <Contents />
+
+<style>
+  :global(body) {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+</style>
