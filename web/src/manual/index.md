@@ -34,7 +34,7 @@ _Network planning by tier:_
 
 _Finish:_
 
-9. **Assess network quality:** Having designed your network, you can now fix any problems and assess its performance. A range of tools are presented for this
+9. **Assess network quality:** Having designed your network, you can now fix any problems and assess its performance. A range of tools are presented for this.
 10. **Export:** Here you can complete the process, by exporting your finalised network for submission, and printing off a report summarising the network's performance.
 
 More detail on these sections is given later in this manual.
@@ -65,7 +65,8 @@ Only roads that should be candidates for a cycling network are included in NPW.
 - Most OSM highway types for roads are included.
 - Anything currently under construction is excluded.
 - Steps/stairs are excluded, because unless this becomes an appropriate ramp, this can never be acceptable infrastructure.
-- When OSM has pedestrian-oriented infrastructure, it is only included sometimes, depending on tagging. **TODO More specific information needed.**
+- Footways and off-road paths are included, except for sidewalks parallel to a road and paths that do not allow cyclists currently. These are usually hiking paths unlikely to ever be part of a network.
+- Private access roads are excluded.
 
 Currently all routes in NPW must follow one of these existing road segments.
 
@@ -79,11 +80,11 @@ You can start with a completely blank network, or you can initially seed your ne
 - Existing segregated tracks and off-road cycleways.
 - All arterial roads, i.e. trunk, A, B and C roads.
 
-In each case, each road/street/path segment will be automatically allocated to a tier (Primary / Secondary / Local access / Long distance). These can be toggled within the network panel at the bottom of the map, which also provides a legend for the colourings.
+In each case, each road segment will be automatically allocated to a tier (Primary / Secondary / Local access / Long distance). These can be toggled within the network panel at the bottom of the map, which also provides a legend for the colourings.
 
 If you choose more than one of the sources, any overlapping parts will automatically be de-duplicated.
 
-Naturally the existing on-street network contains much existing infrastructure that does not form part of an appropriate network, so you should carefully consider what should or should not be used in your area. Therefore, if you start from any of the above options, you should audit everything to make sure it really matches the expectations given. There is always the possibility of incorrect data or, in the case of the coherent network, limitations arising from use of an algorithm.
+Naturally the existing on-street network contains much existing infrastructure that does not form part of an appropriate network, so you should carefully consider what should or should not be used in your area. Therefore, if you start from any of the above options, you should audit everything to make sure it really matches the expectations given. There is always the possibility of incorrect data.
 
 If a particular street/path is incorrect or missing, you can give feedback using the button in the bottom-left of the map.
 
@@ -99,7 +100,6 @@ Routes are then classified into primary and secondary categories based on road t
 
 - A roads are classified as primary routes, forming the backbone of the cycling network.
 - All other roads, including B roads, minor roads, and off-road paths, are classified as secondary routes, providing supplementary connections and ensuring comprehensive coverage.
-- If the road segment is outside a settlement, we always force it to the long distance tier.
 
 The network is adjusted to ensure direct routes with optimal density, following Transport Scotland's specifications (250m in urban centres, 400m in suburban areas). This allows the network to meet a wide range of origin-destination trip needs, improving access and usability.
 
@@ -141,7 +141,7 @@ Long distance routes are primarily inter-settlement links connecting settlements
 
 TODO: Need something outlining best practice and expectations here.
 
-If drawing over a major road between settlements, the tool will automatically assign the route to the long-distance tier.
+If drawing over a road between settlements, the tool will automatically assign the route to the long-distance tier.
 
 ## Drawing routes
 
@@ -164,8 +164,8 @@ The route you draw will be split into sections when either:
 - the route crosses another existing route;
 - the auto-recommended or manual infrastructure type changes;
 - the infrastructure type does or does not fit in the available streetspace;
-- the Level of Service changes, based on the infrastructure type;
-- the tier changes, based on whether the road is inside a settlement or not (e.g. if drawing over a major road between settlements, the tool will automatically assign this to the long-distance tier.
+- the Level of Service (LoS) changes;
+- the tier changes, based on whether the road is inside a settlement or not (e.g. if drawing over a road between settlements, the tool will automatically assign this to the long-distance tier)
 
 After saving a route, these sections become independent. You can edit each one, but the original longer line you drew is lost.
 
@@ -179,22 +179,22 @@ By default, each route section is assigned the most appropriate infrastructure t
 
 The LoS is only focused on safety and separation from motor vehicles, not comfort or speed or separation from pedestrians.
 
-LoS depends on four things: the infrastructure type, the marked speed limit of the road, an estimate of the traffic volume along that road (which has various caveats), and whether the road is within a settlement or not
+LoS depends on four things: the infrastructure type, the marked speed limit of the road, an estimate of the traffic volume along that road (which has various caveats), and whether the road is within a settlement or not.
 
-Many of the rules come from table 3.2 of [Cycling by Design](https://www.transport.gov.scot/media/50323/cycling-by-design-update-2019-final-document-15-september-2021-1.pdf).
+Many of the rules come from table 3.2 of [Cycling by Design](https://www.transport.gov.scot/media/50323/cycling-by-design-update-2019-final-document-15-september-2021-1.pdf) (CbD).
 
 - **Segregated cycle tracks** follow the table in Cycling by Design, for "Cycle Track at Carriageway Level".
 - **Off-road** routes are high LoS by definition, because they are separated from motor vehicles. NPW's LoS definition does not account for path surface or lighting.
 - **Painted cycle lanes** follow the table in Cycling by Design; speed and traffic matter
 - **Mixed traffic** or **Segregated tracks with traffic measures** always achieve high LoS, by definition. The NPW assumes that transport professionals will include measures at time of implementation that would reduce traffic volume and/or speed to a level that would make mixed traffic or a segregated track appropriate.
-- **Shared footways** are scored low LoS when they are within a settlement, and high when they are between settlements. TODO: Subject to change
-- **Mixed traffic** follows the CbD table; speed and traffic levels matter.
+- **Shared footways** are always scored low LoS when they are within a settlement. When they are outside of a settlement, they follow the Cycling by Design table for "Stepped or Footway Level Cycle Track".
+- **Mixed traffic** follows the Cycling by Design table; speed and traffic levels matter.
 
 The automatic infrastructure type recommendation follows this order:
 
 - If the segment is off-road, then use that type. This is automatically detected from existing roads, based on OSM highway type and naming, and may have bugs;
 - If mixed traffic is appropriate based on speed and volume, use that;
-- If the road is outside a settlement, use a shared footway;
+- If the road is outside a settlement and speed and volume are low, use a shared footway;
 - Otherwise, use a segregated cycle track.
 
 Note there may be two cases where the automatic recommendation has problems:
@@ -218,28 +218,33 @@ _Infrastructure-related:_
 - **Existing infrastructure:** The type of infrastructure currently present on street, e.g. segregated track, shared-use footway, etc.
 - **Estimated traffic volume:** The estimated traffic volume, based on an [algorithm](https://github.com/nptscot/osmactive/blob/main/code/traffic-volumes.R).
 - **Speed limit:** The known speed limit. This uses the standard national speed limits (e.g. 30 mph for local streets) except where exceptions have been marked (e.g. 20 mph). For service roads we assume 10 mph.
+- **Existing Level of Service:** The Level of Service based on infrastructure currently present on street and the estimates of traffic volume and speed.
 - **Gradient:** The average gradient of the road is shown as a percentage. Steeper roads are a barrier to cycling and affect route choice and the uptake of cycling in the scenarios. Please note in some locations where the network does follow the land contours, e.g. some bridges, the gradient will incorrectly show flat sections of network as steep.
-- **Street space:** This provides an analysis of whether a segregated track would fit within the carriageway, or carriageway with verges, or with the footway also included. This dataset uses an Ordnance Survey dataset to determine the edge-to-edge (i.e. from property to opposite property) road width and carriageway-only road width.
+- **Street space:** This provides an analysis of whether a segregated track would fit within the carriageway, verges, and footways. This dataset uses an Ordnance Survey dataset to determine the edge-to-edge (i.e. from property to opposite property) road width.
 - **Attractive streets:** This experimental layer aims to determine the attractiveness of a street based on its proximity to green space. This uses the Ordnance Survey's Open Greenspace dataset. If a road center-line is within 10m of any green space polygon (without any filtering), it is considered attractive. The algorithm is thus currently very simplistic, so should not be relied upon beyond providing a basic indication.
-- **NPT full network:** The route network estimates the number of cycle trips on each road. It is designed to emphasise roads with lots of cycling potential and so aid planners in deciding where cycling infrastructure is needed. Full details are given in the [NPT manual](https://npt.scot/manual/#routenetwork).
+- **NPT full network:** The route network estimates the number of potential/future cycle trips on each road. It is designed to emphasise roads with lots of cycling potential and so aid planners in deciding where cycling infrastructure is needed. Full details are given in the [NPT manual](https://npt.scot/manual/#routenetwork).
 
 _Socio-demographic:_
 
-- **Population:** This provides the population density. An option is available to style these based on level of cycling demand.
-- **Deprived population (SIMD):** This provides data from the [Scottish Index of Multiple Deprivation 2020](https://simd.scot/). Again, this layer can be styled based on demand (rather than the SIMD level).
+- **Population:** This provides the population density.
+- **Deprived population (SIMD):** This provides data from the [Scottish Index of Multiple Deprivation 2020](https://simd.scot/).
 
 _Evaluation-based (i.e. based on what you have drawn):_
 
-- **Level of service:** This applies the resulting Level of Service (LoS) of the network you have drawn to every road/street/path on the map. As you change the map, the effect of your network will be reflected here.
+- **Level of Service:** This applies the resulting Level of Service (LoS) of the network you have drawn to every road/street/path on the map. As you change the map, the effect of your network will be reflected here.
 - **Severances:** This evaluates, for each road/street/path, whether a user can or cannot cycle to it without having reached a severance (e.g. a major road without cycle infrastructure).
 
 Fuller details of each of the infrastructure and socio-demographic layers can be seen in the [NPT manual](https://npt.scot/manual/).
 
-Some of the layers can be styled by level of potential/future demand, colouring based on the estimated cycle flows.
-
 ## Reachability
 
-Some of the metrics determine if a population zone, town centre, or POI (school, hospital or GP, or greenspace) are reachable from your network.
+Some of the metrics determine if a population zone, town centre, or POI (railway station, school, hospital or GP, or greenspace) are reachable from your network.
+
+starts from the drawn network that achieves high los, only
+
+"floods" out, sticking only to high los roads. small residential streets with no infrastucture but low speed and volume are fine.
+
+example diagrams for crossings.
 
 **TODO** discuss what this means, using the audit doc. Be careful about disconnectd networks.
 
@@ -256,6 +261,8 @@ Some of the metrics determine if a population zone, town centre, or POI (school,
 You may not be able to achieve 100% on the cycling demand coverage metrics in the tool. In some cases, there is high demand on parallel roads, like with dual carriageways or a more suitable street parallel to a main road. Even though you have provided an adequate route, this score literally counts coverage on a fixed set of roads.
 
 ## Other metrics
+
+The 5 NQ ones -- click each one to see details of how it is measured, and the scoring rubric.
 
 **TODO** Anything else not covered, like mesh density
 
