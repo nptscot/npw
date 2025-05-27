@@ -48,3 +48,9 @@ kbd:hover {
   top: 2px;
   left: 2px;
 }
+
+body {
+  font-family: "GDS Transport", arial, sans-serif;
+  margin: 0;
+  padding: 1em; /* Added padding */
+}
