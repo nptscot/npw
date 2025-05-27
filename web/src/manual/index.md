@@ -238,33 +238,41 @@ Fuller details of each of the infrastructure and socio-demographic layers can be
 
 ## Reachability
 
-Some of the metrics determine if a population zone, town centre, or POI (railway station, school, hospital or GP, or greenspace) are reachable from your network.
+Some of the metrics determine if a population zone, town centre, or POI (railway station, school, hospital or GP, or greenspace) is reachable from your network. You can enable the **Severances** layer on the right to understand what this means.
 
-starts from the drawn network that achieves high los, only
+Starting from the parts of your network that achieve high Level of Service, this layer expands onto nearby roads, as long as they also have high Level of Service -- without any infrastructure, this is only possible when speed and volume are low. This expansion process stops at severances -- roads with medium or low Level of Service.
 
-"floods" out, sticking only to high los roads. small residential streets with no infrastucture but low speed and volume are fine.
+The search for reachable roads will not travel along any severances, and it also will not _cross over_ a severance, unless you have drawn routes covering the roads on both sides. In other words, to cross over a severance in a perpendicular way, you must draw a route explicitly crossing the severance. It is assumed that any road covered by a route in your network has suitable crossings over it as well.
 
-example diagrams for crossings.
-
-**TODO** discuss what this means, using the audit doc. Be careful about disconnectd networks.
+Note if your network is split into many disconnected pieces, then this reachability analysis may not show anything useful. If you have a small, disconnected cycle lane somewhere far away from the bulk of your network, then the reachable roads near the small section are only reachable from there, not from the main part of your network. The assess mode has a tool showing _Network splits_.
 
 ## Cycling demand
 
-**TODO** Discuss how the demand network is built -- the OD data source, the methods, the lack of gradient data, the difference from what's shown on the NPT site.
+The _NPT full network_ layer and the high/medium demand corridors both show the potential/future cycle trips along roads. The specific cycling flows may differ from those shown on the NPT site, due to different methodology. This section describes how the flows are calculated in NPW.
 
-**TODO** Commute data from…
+The process starts with origin/destination (OD) data representing trips people currently take today:
 
-**TODO** Utility trips from…
+- Commute data represents trips from home to work (only that direction), from the 2011 census. Flows are between two Data Zones.
+- School trips are aggregated from the number of pupils travelling to individual schools from a Data Zone, using the 2021 Scottish Census (source: Scottish Government Education Department).
+- Utility trips include shopping, leisure, and social trips, and are simulated using a [Spatial Interaction Model](https://nptscot.github.io/manual/#trippurposes).
 
-**TODO** School trips excluded, because the zone-to-point isn't public data \[don't think this is still the case?\]
+For trips beginning or ending in a Data Zone, NPW randomly picks a specific point within that zone. School and utility trips have specific destination points.
 
-You may not be able to achieve 100% on the cycling demand coverage metrics in the tool. In some cases, there is high demand on parallel roads, like with dual carriageways or a more suitable street parallel to a main road. Even though you have provided an adequate route, this score literally counts coverage on a fixed set of roads.
+For each of these trips, NPW calculates the most _direct_ route, ignoring existing conditions and Level of Service completely. The high demand corridors thus help you prioritise where to place the most direct routes that many potential trips could use. NPW then counts a weighted sum of trips crossing each road segment in this direct route. The weighting penalises long distance trips as unlikely, based on the "2020 Go Dutch uptake" parameters. Note that this model normally uses both distance and hilliness to estimate uptake, but NPW only uses distance.
+
+When you are drawing your network, you may not be able to achieve 100% on the cycling demand coverage metrics. In some cases, there is high demand on parallel roads, like with dual carriageways or a more suitable street parallel to a main road. Even though you have provided an adequate route, this score literally counts coverage on a fixed set of roads.
 
 ## Other metrics
 
-The 5 NQ ones -- click each one to see details of how it is measured, and the scoring rubric.
+Five network quality metrics are always shown at the top -- safety, directness, coherence, comfort, and attractiveness. Click a metric to read about the specific methodology and scoring details.
 
-**TODO** Anything else not covered, like mesh density
+The _assess_ mode has some specialised layers to help you understand some of these metrics.
+
+The _mesh density_ is one sub-metric for coherence. In 800m by 800m squares, the total length of primary and secondary routes is measured. Within dense urban areas, you should aim to provide more routes.
+
+**Network impacts on demand** evaluates the origin/destination trips described in the previous section using a _balanced_ route, which more closely resembles how a cyclist would avoid roads with low and medium Level of Service. The thick red lines in this layer help show you where there's high potential flow on poor quality roads. These are important gaps in your network to address.
+
+There are two layers to help you understand how the directness score is calculated. Further instructions how to interpret them are shown in the tool.
 
 ## Known limitations
 
