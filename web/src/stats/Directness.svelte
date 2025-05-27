@@ -39,10 +39,10 @@
   <b>direct route</b>
   that minimises distance, ignoring infrastructure and Level of Service (LoS) completely.
   We also calculate a
-  <b>balanced route</b>
+  <b>quiet route</b>
   that penalises roads by LoS, treating a low LoS road as 3 times longer than the
   equivalent high LoS road. The ratio of the
-  <b>weighted balanced route score</b>
+  <b>weighted quiet route score</b>
   and the
   <b>unweighted direct route distance</b>
   gives the
@@ -50,10 +50,10 @@
   .
 </p>
 <p>
-  When the direct and balanced route follow the same path, the detour factor
-  will be 1 (the best case) only when the entire route is high LoS. In other
-  cases, the balanced route will either take longer detours to find nearby
-  higher LoS roads, or sometimes it is forced to go along low LoS roads.
+  When the direct and quiet route follow the same path, the detour factor will
+  be 1 (the best case) only when the entire route is high LoS. In other cases,
+  the quiet route will either take longer detours to find nearby higher LoS
+  roads, or sometimes it is forced to go along low LoS roads.
 </p>
 
 <h3>How to improve</h3>
@@ -74,7 +74,7 @@
   <li>
     <!-- svelte-ignore a11y-invalid-attribute -->
     <a href="#" on:click|preventDefault={checkNetwork}>
-      Compare all direct routes between town centres with the balanced routes
+      Compare all direct routes between town centres with the quiet routes
     </a>
   </li>
 </ul>

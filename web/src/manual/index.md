@@ -272,7 +272,7 @@ The _assess_ mode has some specialised layers to help you understand some of the
 
 The _mesh density_ is one sub-metric for coherence. In 800m by 800m squares, the total length of primary and secondary routes is measured. Within dense urban areas, you should aim to provide more routes.
 
-**Network impacts on demand** evaluates the origin/destination trips described in the previous section using a _balanced_ route, which more closely resembles how a cyclist would avoid roads with low and medium Level of Service. The thick red lines in this layer help show you where there's high potential flow on poor quality roads. These are important gaps in your network to address.
+**Network impacts on demand** evaluates the origin/destination trips described in the previous section using a _quiet_ route, which more closely resembles how a cyclist would avoid roads with low and medium Level of Service. The thick red lines in this layer help show you where there's high potential flow on poor quality roads. These are important gaps in your network to address.
 
 There are two layers to help you understand how the directness score is calculated. Further instructions how to interpret them are shown in the tool.
 
