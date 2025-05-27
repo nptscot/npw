@@ -12,6 +12,8 @@ A range of contextual data layers are available, covering transport and socio-de
 
 Upon completion of the network, a final report can be created, and the data exported.
 
+If you have any questions not answered by this manual, please email the NPW maintainer at <a href="mailto:dabreegster@gmail.com">dabreegster@gmail.com</a>.
+
 ## Structure of the tool
 
 The NPW is intended to guide users through the process of creating a network, using a step-by-step approach. However, it does not force users to stick to a linear approach rigidly.
@@ -341,3 +343,17 @@ The visual design and user experience design makes use of the [Scottish Governme
 In following these design principles, we have adhered to the workflow concepts of a single main action to ensure that the intended action at any point is always clear, and that users are taken through in a step-wise manner.
 
 The entire codebase of the system is open source, and [available on Github](https://github.com/nptscot/npw/). Contributions of code, bug reports, design, tests, and documentation, are all warmly welcomed.
+
+## Diagnosing problems using NPW
+
+If you find a problem with the data shown by NPW or something happening at a specific place on the map, zoom in and then use the _Report a problem_ tool on the bottom left.
+
+If you have other problems using NPW, please email the NPW maintainer at <a href="mailto:dabreegster@gmail.com">dabreegster@gmail.com</a>. Please follow the instructions in this section to include information allowing the problem to be diagnosed.
+
+Open your browser's developer console, usually by pressing <i>Ctrl+Shift+I</i>. There will be a few tabs shown. Start by clicking <i>Console</i>, scrolling to the bottom and taking a screenshot of any messages shown there.
+
+If you are having trouble loading the tool, open the <i>Network</i> tab in the developer console. Filter the URLs for `bin`. There will usually be two entries -- the first is generally a 404 error and can be ignored. Click the second one and include a screenshot of details.
+
+## Changelog
+
+The beta version of NPW was released on 1 June 2025. Further updates will be documented here.
