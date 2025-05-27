@@ -55,9 +55,9 @@
     <h1>Network Planning Workspace</h1>
 
     <p>
-      The NPW is designed to enable local authorities to plan a cycle network
-      for the area, using segregated infrastructure on key routes and ensuring
-      local places are properly connected without severance.
+      The NPW is for designing cycle networks in Scotland.
+      Building on datasets presented in the <a href="https://www.npt.scot/">Network Planning Tool (NPT)</a>, it enables planning
+      infrastructure, sharing plans, and rapid insight into the benefits of changes via key metrics.
     </p>
 
     <div><a href="credits.html">Credits</a></div>
