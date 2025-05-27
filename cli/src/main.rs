@@ -8,8 +8,8 @@ use clap::Parser;
 use elevation::GeoTiffElevation;
 use gdal::{vector::LayerAccess, Dataset};
 use geo::{
-    Area, BoundingRect, Buffer, Centroid, Contains, Coord, Geometry, Intersects, LineString,
-    MultiPolygon, Point, Polygon, Rect,
+    Area, BoundingRect, Buffer, Centroid, Contains, Coord, Intersects, LineString, MultiPolygon,
+    Point, Polygon, Rect,
 };
 use graph::{Graph, RoadID, Timer};
 use log::{info, warn};
@@ -18,7 +18,7 @@ use serde::Deserialize;
 use utils::Tags;
 
 use self::disconnected::remove_disconnected_components;
-use backend::{Highway, MapModel, Streetspace, Tier, TrafficVolume};
+use backend::{Highway, MapModel, Streetspace, TrafficVolume};
 
 mod disconnected;
 
@@ -190,13 +190,6 @@ fn create(
 
     handle_parallel_roads(&highways, &mut traffic_volumes, &mut speeds, &graph);
 
-    let coherent_network = read_coherent_network(
-        "../data_prep/tmp/coherent_network.gpkg",
-        &graph,
-        &highways,
-        timer,
-    )?;
-
     let street_space = read_street_space("../data_prep/tmp/streetspace.gpkg", &graph, timer)?;
 
     let is_attractive = find_streets_by_greenspace(
@@ -224,7 +217,6 @@ fn create(
         highways,
         traffic_volumes,
         speeds,
-        coherent_network,
         street_space,
         is_attractive,
         gradients,
@@ -469,82 +461,6 @@ fn read_gradients(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<f6
         gradients.push(slope.into());
     }
     Ok(gradients)
-}
-
-// TODO Now unused
-// The output is per road. If the road is part of the coherent network, what tier is it?
-fn read_coherent_network(
-    path: &str,
-    graph: &Graph,
-    highways: &Vec<Highway>,
-    timer: &mut Timer,
-) -> Result<Vec<Option<Tier>>> {
-    // Read all relevant lines
-    timer.step("read coherent network");
-    let dataset = Dataset::open(path)?;
-    let mut layer = dataset.layer(0)?;
-    let b = &graph.mercator.wgs84_bounds;
-    layer.set_spatial_filter_rect(b.min().x, b.min().y, b.max().x, b.max().y);
-    let road_function_npt_idx = layer.defn().field_index("road_function_npt")?;
-
-    let mut source_geometry = Vec::new();
-    let mut source_data = Vec::new();
-    for input in layer.features() {
-        let Some(function) = input.field_as_string(road_function_npt_idx)? else {
-            bail!("Missing road_function_npt");
-        };
-        let tier = match function.as_str() {
-            "Primary" => Tier::Primary,
-            "Secondary" => Tier::Secondary,
-            // TODO This is supposed to be gone, but it's still here
-            "Local Access" => {
-                continue;
-            }
-            x => bail!("Unknown road_function_npt {x}"),
-        };
-
-        let geo = input.geometry().unwrap().to_geo()?;
-        match geo {
-            Geometry::LineString(mut ls) => {
-                graph.mercator.to_mercator_in_place(&mut ls);
-                source_geometry.push(ls);
-                source_data.push(tier);
-            }
-            Geometry::MultiLineString(mls) => {
-                for mut ls in mls {
-                    graph.mercator.to_mercator_in_place(&mut ls);
-                    source_geometry.push(ls);
-                    source_data.push(tier);
-                }
-            }
-            _ => bail!("read_coherent_network found something besides a LS or MLS"),
-        }
-    }
-
-    timer.step("match coherent network");
-    let distance_tolerance = 15.0;
-    let angle_tolerance = 10.0;
-    let matches = Anime::new(
-        source_geometry.into_iter(),
-        graph.roads.iter().map(|r| r.linestring.clone()),
-        distance_tolerance,
-        angle_tolerance,
-    )
-    .matches
-    .take()
-    .unwrap();
-
-    let mut results = Vec::new();
-    for idx in 0..graph.roads.len() {
-        // The coherent network can never be on the motorway, but in Glasgow, it's hard to
-        // distinguish some of the parallel roads
-        if matches!(highways[idx], Highway::Motorway) {
-            results.push(None);
-            continue;
-        }
-        results.push(get_anime_match(&matches, &source_data, idx).map(|pair| pair.0));
-    }
-    Ok(results)
 }
 
 fn read_greenspaces(

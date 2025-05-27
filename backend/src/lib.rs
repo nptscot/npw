@@ -68,8 +68,6 @@ pub struct MapModel {
     within_settlement: Vec<bool>,
     is_offroad: Vec<bool>,
     traffic_volumes: Vec<TrafficVolume>,
-    // TODO Unused
-    coherent_network: Vec<Option<Tier>>,
     // Go Dutch totals for all purposes
     precalculated_demands: Vec<usize>,
     street_space: Vec<Option<Streetspace>>,
@@ -149,7 +147,6 @@ impl MapModel {
         highways: Vec<Highway>,
         traffic_volumes: Vec<TrafficVolume>,
         speeds: Vec<usize>,
-        coherent_network: Vec<Option<Tier>>,
         street_space: Vec<Option<Streetspace>>,
         is_attractive: Vec<bool>,
         gradients: Vec<f64>,
@@ -215,7 +212,6 @@ impl MapModel {
             within_settlement,
             is_offroad,
             traffic_volumes,
-            coherent_network,
             precalculated_demands,
             street_space,
             is_attractive,
@@ -297,10 +293,6 @@ impl MapModel {
             f.set_property(
                 "traffic",
                 serde_json::to_value(self.traffic_volumes[idx]).unwrap(),
-            );
-            f.set_property(
-                "cn",
-                serde_json::to_value(self.coherent_network[idx]).unwrap(),
             );
             f.set_property("speed", self.speeds[idx]);
             f.set_property("gradient", self.gradients[idx]);

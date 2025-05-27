@@ -18,8 +18,6 @@ function get_private_data {
 }
 
 function coherent_net {
-  wget https://github.com/nptscot/npt/releases/download/v2025-05-01/coherentnetwork_2025-05-01.gpkg -O tmp/coherent_network.gpkg
-  # While we're still comparing map-matched results, include this too
   get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.pmtiles ../web/public/coherent_network.pmtiles
 }
 

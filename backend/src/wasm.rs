@@ -394,12 +394,6 @@ impl MapModel {
         self.import_existing_routes(only_some_infra_types);
     }
 
-    // TODO Unused
-    #[wasm_bindgen(js_name = importCoherentNetwork)]
-    pub fn import_coherent_network_wasm(&mut self) {
-        self.import_coherent_network();
-    }
-
     #[wasm_bindgen(js_name = importArterialRoads)]
     pub fn import_arterial_roads_wasm(&mut self) {
         self.import_arterial_roads();

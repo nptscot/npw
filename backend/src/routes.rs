@@ -284,28 +284,6 @@ impl MapModel {
         self.import_roads(imports);
     }
 
-    pub fn import_coherent_network(&mut self) {
-        let used_roads = self.used_roads();
-        let mut imports = Vec::new();
-
-        for idx in 0..self.graph.roads.len() {
-            let road_id = RoadID(idx);
-            if used_roads.contains(&road_id) {
-                continue;
-            }
-            if let Some(mut tier) = self.coherent_network[idx] {
-                // Override the tier only in one case; ignore if the CN doesn't match the demand
-                // thresholds here
-                if !self.within_settlement[idx] {
-                    tier = Tier::LongDistance;
-                }
-                imports.push((road_id, self.best_infra_type(road_id), tier));
-            }
-        }
-
-        self.import_roads(imports);
-    }
-
     pub fn import_arterial_roads(&mut self) {
         let used_roads = self.used_roads();
         let mut imports = Vec::new();

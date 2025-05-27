@@ -272,7 +272,6 @@ export interface StaticRoad {
   within_settlement: boolean;
   is_attractive: boolean;
   traffic: TrafficVolume;
-  cn: Tier | null;
   speed: number;
   gradient: number;
   existing_infra: InfraType | null;
