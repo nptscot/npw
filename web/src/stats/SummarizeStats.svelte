@@ -116,6 +116,11 @@
           {@html renderScore(directness(baseline))}
           {@html renderScore(directness($slowStats))}
         </tr>
+        <tr>
+          <td>Average detour factor</td>
+          {@html renderScore(directness(baseline))}
+          {@html renderScore(directness($slowStats))}
+        </tr>
 
         <tr>
           <th scope="row">
@@ -159,6 +164,11 @@
           {@html renderScore(comfort(baseline))}
           {@html renderScore(comfort($stats))}
         </tr>
+        <tr>
+          <td>Proportion of low gradient (&lt; 3%) length</td>
+          {@html renderScore(comfort(baseline))}
+          {@html renderScore(comfort($stats))}
+        </tr>
 
         <tr>
           <th scope="row">
@@ -170,6 +180,11 @@
               <i class="fa-solid fa-circle-info"></i>
             </button>
           </th>
+          {@html renderScore(attractiveness(baseline))}
+          {@html renderScore(attractiveness($stats))}
+        </tr>
+        <tr>
+          <td>Share of green spaces</td>
           {@html renderScore(attractiveness(baseline))}
           {@html renderScore(attractiveness($stats))}
         </tr>

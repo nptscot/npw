@@ -243,13 +243,6 @@ export class Backend {
     this.stop();
   }
 
-  // TODO Unused
-  async importCoherentNetwork() {
-    this.start();
-    await this.inner.importCoherentNetwork();
-    this.stop();
-  }
-
   async importArterialRoads() {
     this.start();
     await this.inner.importArterialRoads();

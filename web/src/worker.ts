@@ -213,12 +213,6 @@ export class InnerBackend {
     this.inner!.importExistingRoutes(kind == "infra-type");
   }
 
-  // TODO Unused
-  importCoherentNetwork() {
-    this.checkReady();
-    this.inner!.importCoherentNetwork();
-  }
-
   importArterialRoads() {
     this.checkReady();
     this.inner!.importArterialRoads();
