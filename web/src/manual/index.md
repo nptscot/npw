@@ -141,8 +141,6 @@ At all times, a Street View button is available in the bottom-left, to help judg
 
 Long distance routes are primarily inter-settlement links connecting settlements together with main urban areas (that are close enough for everyday work, shopping or social journeys).
 
-TODO: Need something outlining best practice and expectations here.
-
 If drawing over a road between settlements, the tool will automatically assign the route to the long-distance tier.
 
 ## Drawing routes

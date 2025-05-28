@@ -88,7 +88,7 @@
       </Checkbox>
     {/if}
   {:else if $backgroundLayer == "speed"}
-    <b>Estimated speed limit</b>
+    <b>Speed limit</b>
     <SequentialLegend
       colorScale={speed.colorScale}
       labels={{ buckets: speed.limits }}
@@ -194,7 +194,7 @@
   {:else if $backgroundLayer == "reachability"}
     <b>Severances</b>
     <QualitativeLegend itemsPerRow={1} labelColors={reachabilityColors} />
-    <p>Based on estimated traffic volumes and speeds</p>
+    <p>Based on estimated traffic volumes and speed limits</p>
   {/if}
 
   <CalculatedRouteNetwork />

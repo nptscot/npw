@@ -34,11 +34,7 @@
       icon="fa-road"
     />
     <Toggle name="Estimated traffic volume" style="traffic" icon="fa-car" />
-    <Toggle
-      name="Estimated speed limit"
-      style="speed"
-      icon="fa-gauge-simple-high"
-    />
+    <Toggle name="Speed limit" style="speed" icon="fa-gauge-simple-high" />
     <Toggle
       name="Existing Level of Service"
       style="existing_los"
