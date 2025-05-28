@@ -10,7 +10,6 @@ use crate::InfraType;
 /// All of the OSM highway types used anywhere. This forces exhaustive matching of all cases.
 #[derive(Clone, Copy, Serialize, Deserialize)]
 pub enum Highway {
-    Motorway,
     Trunk,
     Primary,
     Secondary,
@@ -32,7 +31,8 @@ impl Highway {
     // different, because unless a road can't be modified, then it still belongs in the graph.
     pub fn classify(tags: &Tags) -> Option<Self> {
         let hwy = match tags.get("highway")?.as_str() {
-            "motorway" | "motorway_link" => Some(Highway::Motorway),
+            // Motorways are excluded completely from the model; they are not editable
+            "motorway" | "motorway_link" => None,
             "trunk" | "trunk_link" => Some(Highway::Trunk),
             "primary" | "primary_link" => Some(Highway::Primary),
             "secondary" | "secondary_link" => Some(Highway::Secondary),
@@ -77,7 +77,6 @@ impl Highway {
     }
 
     pub fn is_arterial_road(&self) -> bool {
-        // Motorway can't be drawn on, so ignore it
         matches!(
             self,
             Highway::Trunk | Highway::Primary | Highway::Secondary | Highway::Tertiary
@@ -114,8 +113,7 @@ pub fn bicycle_profile(tags: &Tags, linestring: &LineString) -> (Direction, Dura
 // TODO This is only a partial implementation
 pub fn classify_existing_osm_infra(is_offroad: bool, tags: &Tags) -> Option<InfraType> {
     match Highway::classify(tags).unwrap() {
-        Highway::Motorway
-        | Highway::Trunk
+        Highway::Trunk
         | Highway::Primary
         | Highway::Secondary
         | Highway::Tertiary

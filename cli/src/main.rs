@@ -644,11 +644,8 @@ fn buffer_polygon(area: &impl Buffer<Scalar = f64>, distance: f64) -> Result<Pol
 // TODO Unit test
 fn get_speed_mph(hwy: Highway, tags: &Tags) -> usize {
     if tags.is("maxspeed", "national") {
-        return if matches!(hwy, Highway::Motorway) {
-            70
-        } else {
-            60
-        };
+        // No motorways are included
+        return 60;
     }
 
     if let Some(maxspeed) = tags.get("maxspeed") {
@@ -662,7 +659,6 @@ fn get_speed_mph(hwy: Highway, tags: &Tags) -> usize {
 
     // TODO Check these against osmactive
     match hwy {
-        Highway::Motorway => 70,
         Highway::Trunk => 60,
         Highway::Primary => 40,
         Highway::Secondary | Highway::Tertiary | Highway::Residential => 30,
