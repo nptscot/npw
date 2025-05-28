@@ -155,12 +155,10 @@ export function assetUrl(path: string): string {
     return path;
   }
 
-  // Github pages points to dev
-  if (import.meta.env.BASE_URL.startsWith("/npw") || !import.meta.env.PROD) {
-    return `https://assets.npw.scot/dev/${path}`;
-  }
-
-  return `https://assets.npw.scot/prod/${path}`;
+  // This version number is incremented every time files are regenerated. Dev
+  // and prod might point to the same place or not. The versioned files
+  // are immutable; any updates will result in a new version.
+  return `https://assets.npw.scot/v1/${path}`;
 }
 
 // TODO Might work better as onDestroy of the components?
