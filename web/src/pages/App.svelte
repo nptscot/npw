@@ -249,7 +249,7 @@
   <p style="font-size: 0.5em">
     If the progress bar does not change after a few seconds, then either your
     internet connection is slow or your browser proxy is blocking access to
-    https://npw.scot. Try <a href="manual.html#diagnosingproblemsusingnpw">
+    https://npw.scot. Try <a href="manual.html#diagnosing-problems-using-npw">
       these steps to diagnose problems
     </a>
     .
