@@ -111,12 +111,18 @@
       $remoteStorage = false;
     } catch (err) {
       console.log(`Using remote hosted files`);
-      bytes = await fetchWithProgress(
-        assetUrl(`areas/${$boundaryName}.bin.gz`),
-        (p) => {
-          progress = p;
-        },
-      );
+      try {
+        bytes = await fetchWithProgress(
+          assetUrl(`areas/${$boundaryName}.bin.gz`),
+          (p) => {
+            progress = p;
+          },
+        );
+      } catch (err) {
+        window.alert(
+          `Your browser proxy is blocking access to https://npw.scot. Error: ${err}`,
+        );
+      }
     }
 
     try {
@@ -239,7 +245,16 @@
   <title>Network Planning Workspace - {$boundaryName}</title>
 </svelte:head>
 
-<Loading {loading} {progress} />
+<Loading {loading} {progress}>
+  <p style="font-size: 0.5em">
+    If the progress bar does not change after a few seconds, then either your
+    internet connection is slow or your browser proxy is blocking access to
+    https://npw.scot. Try <a href="manual.html#diagnosingproblemsusingnpw">
+      these steps to diagnose problems
+    </a>
+    .
+  </p>
+</Loading>
 
 <Layout>
   <header slot="top">

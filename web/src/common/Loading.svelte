@@ -4,6 +4,8 @@
 
   export let loading: string;
   export let progress: number | null = null;
+
+  // If a slot is present, shown before progress is 100
 </script>
 
 {#if loading}
@@ -11,12 +13,13 @@
     {loading}
 
     {#if progress != null}
-      <div>
+      <div class="inner">
         {#if progress == 100}
           Setting up...
           <progress style:width="100%" />
         {:else}
           Loading...
+          <slot />
           <progress value={progress} style:width="100%" />
         {/if}
       </div>
@@ -40,5 +43,11 @@
 
     color: white;
     font-size: 32px;
+  }
+
+  .inner {
+    background: grey;
+    width: 50%;
+    padding: 8px;
   }
 </style>
