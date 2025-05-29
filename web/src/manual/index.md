@@ -14,7 +14,7 @@ Upon completion of the network, a final report can be created, and the data expo
 
 If you have any questions not answered by this manual, please email the NPW maintainer at <a href="mailto:dabreegster@gmail.com">dabreegster@gmail.com</a>.
 
-## Structure of the tool
+### Structure of the tool
 
 The NPW is intended to guide users through the process of creating a network, using a step-by-step approach. However, it does not force users to stick to a linear approach rigidly.
 
@@ -41,7 +41,7 @@ _Finish:_
 
 More detail on these sections is given later in this manual.
 
-## Interface areas
+### Interface areas
 
 After the initial screens for starting to plan a network, the main workspace area provides a consistent interface consisting of:
 
@@ -53,7 +53,7 @@ After the initial screens for starting to plan a network, the main workspace are
 - **Show network panel**: This appears at the bottom and enables you to show which dimension of your drawn network should be shown visually, e.g. colouring by infrastructure type, by tier, and so on.
 - **Tier-specific metrics:** When in a tier-specific screen, the bottom of the workspace panel will provide key metrics for the performance of your network in respect of that tier. In this area you can also evaluate a specific A-B journey to see how it would use your proposed network.
 
-## The editable network
+### The editable network
 
 NPW models a network, consisting of road segments leading between exactly two intersections.
 
@@ -90,7 +90,7 @@ Naturally the existing on-street network contains much existing infrastructure t
 
 If a particular street/path is incorrect or missing, you can give feedback using the button in the bottom-left of the map.
 
-## Coherent network
+### Coherent network
 
 The coherent network is available as a background layer. It is composed of high-potential, direct routes that strategically connect urban areas. Created through automated analysis by the NPT team, this network emphasises coherence in design to ensure cycling infrastructure is functional, accessible, and efficient. You can trace over it to start your primary and secondary network.
 
@@ -107,7 +107,9 @@ The network is adjusted to ensure direct routes with optimal density, following 
 
 The [algorithm for the coherent network](https://github.com/nptscot/npt/blob/main/R/cohesive_network.R) is published and available openly.
 
-## Tier 1: Plan primary routes
+## Tiers
+
+### Tier 1: Plan primary routes
 
 Primary routes form the core of a cycle network. They should closely follow the highest demand, most strategic corridors and form key connections over LA boundaries.
 
@@ -115,13 +117,13 @@ Often these will be A roads, or key links over bridges, or along existing major 
 
 The most fundamental part of this process, as with other tiers, is drawing lines on the map, representing the on-street infrastructure. Fuller details of the mechanics of how to draw are given later in this manual.
 
-## Tier 2: Plan secondary routes
+### Tier 2: Plan secondary routes
 
 Secondary tier routes should cover medium cycling demand corridors, connect town centres and neighbourhoods.
 
 To see severance issues (due to high traffic speeds and volumes), turn on the layer on the right.
 
-## Tier 3: Plan local access to POIs
+### Tier 3: Plan local access to POIs
 
 The local access tier is the finest grained part of the network and ensures access to key points of interest (POIs), such as railway stations, schools, hospitals and green spaces.
 
@@ -137,7 +139,7 @@ Multiple types of POIs are included: railway stations, schools, hospitals and gr
 
 At all times, a Street View button is available in the bottom-left, to help judge the suitability of local streets.
 
-## Tier 4: Plan long distance network
+### Tier 4: Plan long distance network
 
 Long distance routes are primarily inter-settlement links connecting settlements together with main urban areas (that are close enough for everyday work, shopping or social journeys).
 
@@ -173,7 +175,7 @@ Where the appropriate infrastructure type needed in a section would not actually
 
 While drawing, and as the number of drawn routes increases, you should carefully review the network to check that places are properly connected to each other. For instance, at a junction the end point of one line should always be directly connected to the start point of another line, at exactly the same point – not a few metres away. Otherwise you will be creating gaps in the network, which people cannot cycle over, thus lowering the scoring of the performance of the network.
 
-## Level of Service and automatic infrastructure types
+### Level of Service and automatic infrastructure types
 
 By default, each route section is assigned the most appropriate infrastructure type, based on the "cheapest" type that achieves a high Level of Service (LoS).
 
@@ -202,7 +204,9 @@ Note there may be two cases where the automatic recommendation has problems:
 - When speed and volume are very high, even a segregated track does not achieve high LoS according to CbD guidance. In that case, you must accept this lower LoS, realign the route, or upgrade to the stronger 'Segregated + traffic measures' type.
 - Another problem may be that a segregated track does not fit the available streetspace. This is a rough estimate. It is subject to problems with the data and methodology, and may have both false positives and negatives. When it is a real problem, you can switch to the 'Mixed traffic + traffic measures' type, realign the route, or pick a lesser infrastructure type and accept a lower LoS.
 
-## Contextual data layers
+## Details
+
+### Contextual data layers
 
 When designing a network, one should always be taking into account a range of attributes of the roads/streets/paths being used, whether physical attributes or socio-demographic aspects of an area.
 
@@ -236,7 +240,7 @@ _Evaluation-based (i.e. based on what you have drawn):_
 
 Fuller details of each of the infrastructure and socio-demographic layers can be seen in the [NPT manual](https://npt.scot/manual/).
 
-## Reachability
+### Reachability
 
 Some of the metrics determine if a population zone, town centre, or POI (railway station, school, hospital or GP, or greenspace) is reachable from your network. You can enable the **Severances** layer on the right to understand what this means.
 
@@ -246,7 +250,7 @@ The search for reachable roads will not travel along any severances, and it also
 
 Note if your network is split into many disconnected pieces, then this reachability analysis may not show anything useful. If you have a small, disconnected cycle lane somewhere far away from the bulk of your network, then the reachable roads near the small section are only reachable from there, not from the main part of your network. The assess mode has a tool showing _Network splits_.
 
-## Cycling demand
+### Cycling demand
 
 The _NPT full network_ layer and the high/medium demand corridors both show the potential/future cycle trips along roads. The specific cycling flows may differ from those shown on the NPT site, due to different methodology. This section describes how the flows are calculated in NPW.
 
@@ -262,7 +266,7 @@ For each of these trips, NPW calculates the most _direct_ route, ignoring existi
 
 When you are drawing your network, you may not be able to achieve 100% on the cycling demand coverage metrics. In some cases, there is high demand on parallel roads, like with dual carriageways or a more suitable street parallel to a main road. Even though you have provided an adequate route, this score literally counts coverage on a fixed set of roads.
 
-## Other metrics
+### Other metrics
 
 Five network quality metrics are always shown at the top -- safety, directness, coherence, comfort, and attractiveness. Click a metric to read about the specific methodology and scoring details.
 
@@ -274,7 +278,9 @@ The _mesh density_ is one sub-metric for coherence. In 800m by 800m squares, the
 
 There are two layers to help you understand how the directness score is calculated. Further instructions how to interpret them are shown in the tool.
 
-## Known limitations
+## Appendices
+
+### Known limitations
 
 - **New bridges or links:** You cannot draw new road segments in places where there is no existing infrastructure. It's impossible to model a new bridge over a canal or through a park. If you intend to create a new off-road route parallel to an existing road, then for now, draw along that road.
 - **Junctions:** There is currently no modelling of the effect of junctions or the ability to specify an improvement at a junction. At present it is assumed that a designer will incorporate appropriate junction treatments. We hope to address this in a later phase of work.
@@ -286,7 +292,7 @@ There are two layers to help you understand how the directness score is calculat
 - **Saving work:** Currently work is saved only within your computer's browser rather than to a web service. This means that if you want to switch to another computer, you need to export the data first, then load it into your other computer's browser on the project selection screen.
 - **Mobile phone compatibility:** No attempt has been made to adapt the layout of the site to work well on phones, as the ability to plan a network would be hard to do efficiently on a small screen. It is assumed at present that transport professionals will be using a desktop computer or a large tablet. However, we have not actively disabled any functionality on smaller devices, and we are using web standards that should be well-supported on any device.
 
-## OpenStreetMap
+### OpenStreetMap
 
 [OpenStreetMap](https://www.openstreetmap.org/#map=7/56.514/-3.834) (OSM) is a free, editable map of the whole world that is being built by volunteers largely from scratch, together with data provided by companies and governmental organisations and released with an open-content license.
 
@@ -323,7 +329,7 @@ There are various ways to obtain source OSM data:
 - Using a querying interface to obtain selected parts of the data, such as [Overpass Turbo](https://overpass-turbo.eu/)
 - Via a wide range of third-party apps, websites, QA tools, and other systems.
 
-## Technical overview
+### Technical overview
 
 NPW is an entirely self-contained web application, running entirely within your web browser, like a normal website. No downloading of software is required.
 
@@ -342,7 +348,7 @@ In following these design principles, we have adhered to the workflow concepts o
 
 The entire codebase of the system is open source, and [available on Github](https://github.com/nptscot/npw/). Contributions of code, bug reports, design, tests, and documentation, are all warmly welcomed.
 
-## Diagnosing problems using NPW
+### Diagnosing problems using NPW
 
 If you find a problem with the data shown by NPW or something happening at a specific place on the map, zoom in and then use the _Report a problem_ tool on the bottom left.
 
@@ -352,6 +358,6 @@ Open your browser's developer console, usually by pressing <i>Ctrl+Shift+I</i>. 
 
 If you are having trouble loading the tool, open the <i>Network</i> tab in the developer console. Filter the URLs for `bin`. There will usually be two entries -- the first is generally a 404 error and can be ignored. Click the second one and include a screenshot of details.
 
-## Changelog
+### Changelog
 
 The beta version of NPW was released on 1 June 2025. Further updates will be documented here.
