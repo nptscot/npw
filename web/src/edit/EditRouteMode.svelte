@@ -337,7 +337,6 @@
       {map}
       {finish}
       {cancel}
-      {tier}
     />
 
     <GeoJSON data={sectionsGj}>

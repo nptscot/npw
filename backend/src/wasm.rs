@@ -198,6 +198,22 @@ impl MapModel {
         .map_err(err_to_js)
     }
 
+    /// Simpler than autosplitRoute; doesn't split sections
+    #[wasm_bindgen(js_name = previewRoute)]
+    pub fn preview_route_wasm(
+        &self,
+        raw_waypoints: JsValue,
+        major_snap_threshold: Option<f64>,
+    ) -> Result<String, JsValue> {
+        let mut waypoints: Vec<Waypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
+        for w in &mut waypoints {
+            self.to_mercator(&mut w.point);
+        }
+
+        self.preview_route(waypoints, major_snap_threshold)
+            .map_err(err_to_js)
+    }
+
     #[wasm_bindgen(js_name = snapPoint)]
     pub fn snap_point(&self, lon: f64, lat: f64, major_snap_threshold: Option<f64>) -> Vec<f64> {
         let pt = self.graph.mercator.pt_to_mercator(Coord { x: lon, y: lat });

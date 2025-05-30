@@ -13,13 +13,12 @@
   import { layerId } from "../common";
   import { majorJunctions } from "../layers/stores";
   import { backend } from "../stores";
-  import type { Tier, Waypoint } from "../types";
+  import type { Waypoint } from "../types";
   import { canStopDrawing, waypoints } from "./stores";
 
   export let map: Map;
   export let finish: () => void;
   export let cancel: () => void;
-  export let tier: Tier;
   export let cannotUndo: boolean;
 
   // TODO Fix svelte-maplibre -- this isn't just a layer event
@@ -167,37 +166,18 @@
 
     try {
       if (waypoints.length > 0 && rawCursor) {
-        // Immediately show a straight line
-        if (false) {
-          previewGj = {
-            type: "FeatureCollection",
-            features: [
-              {
-                type: "Feature",
-                properties: {},
-                geometry: {
-                  type: "LineString",
-                  coordinates: [
-                    waypoints[waypoints.length - 1].point,
-                    rawCursor!.mapPt,
-                  ],
-                },
-              },
-            ],
-          };
-        }
-
-        // Asynchronously update to the real route (if it exists)
-        previewGj = await $backend!.autosplitRoute(
-          null,
-          [
-            waypoints[waypoints.length - 1],
-            { point: rawCursor.mapPt, snapped: true },
+        previewGj = {
+          type: "FeatureCollection",
+          features: [
+            await $backend!.previewRoute(
+              [
+                waypoints[waypoints.length - 1],
+                { point: rawCursor.mapPt, snapped: true },
+              ],
+              majorSnapThreshold(),
+            ),
           ],
-          null,
-          tier,
-          majorSnapThreshold(),
-        );
+        };
       }
     } catch (err) {}
   }

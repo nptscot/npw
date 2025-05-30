@@ -175,6 +175,16 @@ export class Backend {
     return result;
   }
 
+  async previewRoute(
+    waypoints: Waypoint[],
+    majorSnapThreshold: number | null,
+  ): Promise<Feature<LineString>> {
+    let t = this.start("previewRoute");
+    let result = await this.inner.previewRoute(waypoints, majorSnapThreshold);
+    this.stop(t);
+    return result;
+  }
+
   async evaluateRoute(req: {
     // TODO LngLatLike doesn't work?
     start: { lng: number; lat: number };

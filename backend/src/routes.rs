@@ -450,6 +450,16 @@ impl MapModel {
         })?)
     }
 
+    pub fn preview_route(
+        &self,
+        waypoints: Vec<Waypoint>,
+        major_snap_threshold: Option<f64>,
+    ) -> Result<String> {
+        let (_, linestring) = self.waypoints_to_path(&waypoints, major_snap_threshold);
+        let f = self.graph.mercator.to_wgs84_gj(&linestring);
+        Ok(serde_json::to_string(&f)?)
+    }
+
     pub fn change_tier(&mut self, route_ids: Vec<usize>, tier: Tier) -> Result<()> {
         for id in route_ids {
             if let Some(route) = self.routes.get_mut(&id) {

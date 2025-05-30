@@ -154,6 +154,14 @@ export class InnerBackend {
     );
   }
 
+  previewRoute(
+    waypoints: Waypoint[],
+    majorSnapThreshold: number | null,
+  ): Feature<LineString> {
+    this.checkReady();
+    return JSON.parse(this.inner!.previewRoute(waypoints, majorSnapThreshold));
+  }
+
   evaluateRoute(req: {
     // TODO LngLatLike doesn't work?
     start: { lng: number; lat: number };
