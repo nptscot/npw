@@ -48,55 +48,55 @@ export class Backend {
   }
 
   async getBounds(): Promise<[number, number, number, number]> {
-    this.start();
+    let t = this.start("getBounds");
     let result = await this.inner.getBounds();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getInvertedBoundaryForStudyArea(): Promise<Feature<Polygon>> {
-    this.start();
+    let t = this.start("getInvertedBoundaryForStudyArea");
     let result = await this.inner.getInvertedBoundaryForStudyArea();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getInvertedBoundaryInsideSettlements(): Promise<Feature<Polygon>> {
-    this.start();
+    let t = this.start("getInvertedBoundaryInsideSettlements");
     let result = await this.inner.getInvertedBoundaryInsideSettlements();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getInvertedBoundaryOutsideSettlements(): Promise<
     Feature<MultiPolygon>
   > {
-    this.start();
+    let t = this.start("getInvertedBoundaryOutsideSettlements");
     let result = await this.inner.getInvertedBoundaryOutsideSettlements();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getStudyAreaBoundary(): Promise<Feature<Polygon>> {
-    this.start();
+    let t = this.start("getStudyAreaBoundary");
     let result = await this.inner.getStudyAreaBoundary();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async renderStaticRoads(): Promise<
     FeatureCollection<LineString, StaticRoad>
   > {
-    this.start();
+    let t = this.start("renderStaticRoads");
     let result = await this.inner.renderStaticRoads();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async renderDynamicRoads(): Promise<DynamicRoad[]> {
-    this.start();
+    let t = this.start("renderDynamicRoads");
     let result = await this.inner.renderDynamicRoads();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
@@ -105,55 +105,55 @@ export class Backend {
       id_counter: number;
     }
   > {
-    this.start();
+    let t = this.start("getAllRoutes");
     let result = await this.inner.getAllRoutes();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getRoute(id: number): Promise<Feature<LineString, RouteProps>> {
-    this.start();
+    let t = this.start("getRoute");
     let result = await this.inner.getRoute(id);
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getRouteSections(ids: Array<number>): Promise<RouteSection[]> {
-    this.start();
+    let t = this.start("getRouteSections");
     let result = await this.inner.getRouteSections(ids);
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async setRoute(id: number | null, input: SetRouteInput): Promise<number[]> {
-    this.start();
+    let t = this.start("setRoute");
     let result = await this.inner.setRoute(id, input);
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async deleteRoutes(ids: number[]) {
-    this.start();
+    let t = this.start("deleteRoutes");
     await this.inner.deleteRoutes(ids);
-    this.stop();
+    this.stop(t);
   }
 
   async changeTier(routeIds: number[], tier: Tier) {
-    this.start();
+    let t = this.start("changeTier");
     await this.inner.changeTier(routeIds, tier);
-    this.stop();
+    this.stop(t);
   }
 
   async changeInfraType(routeIds: number[], infraType: InfraType) {
-    this.start();
+    let t = this.start("changeInfraType");
     await this.inner.changeInfraType(routeIds, infraType);
-    this.stop();
+    this.stop(t);
   }
 
   async clearAllRoutes() {
-    this.start();
+    let t = this.start("clearAllRoutes");
     await this.inner.clearAllRoutes();
-    this.stop();
+    this.stop(t);
   }
 
   async autosplitRoute(
@@ -163,7 +163,7 @@ export class Backend {
     defaultTier: Tier,
     majorSnapThreshold: number | null,
   ): Promise<AutosplitRoute> {
-    this.start();
+    let t = this.start("autosplitRoute");
     let result = await this.inner.autosplitRoute(
       editingRouteId,
       waypoints,
@@ -171,7 +171,7 @@ export class Backend {
       defaultTier,
       majorSnapThreshold,
     );
-    this.stop();
+    this.stop(t);
     return result;
   }
 
@@ -181,44 +181,44 @@ export class Backend {
     end: Position;
     breakdown: "" | "los" | "infra_type" | "gradient";
   }): Promise<RouteGJ> {
-    this.start();
+    let t = this.start("evaluateRoute");
     let result = await this.inner.evaluateRoute(req);
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async evaluateOD(fastSample: boolean): Promise<EvaluateODOut> {
-    this.start();
+    let t = this.start("evaluateOD");
     let result = await this.inner.evaluateOD(fastSample);
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async recalculateStats(): Promise<Stats> {
-    this.start();
+    let t = this.start("recalculateStats");
     let result = await this.inner.recalculateStats();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async recalculateSlowStats(): Promise<SlowStats> {
-    this.start();
+    let t = this.start("recalculateSlowStats");
     let result = await this.inner.recalculateSlowStats();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getBaselineStats(): Promise<BaselineStats> {
-    this.start();
+    let t = this.start("getBaselineStats");
     let result = await this.inner.getBaselineStats();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async recalculateODStats(): Promise<ODStats> {
-    this.start();
+    let t = this.start("recalculateODStats");
     let result = await this.inner.recalculateODStats();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
@@ -227,78 +227,78 @@ export class Backend {
     xOffset: number,
     yOffset: number,
   ): Promise<GridMeshDensity> {
-    this.start();
+    let t = this.start("getGridMeshDensity");
     let result = await this.inner.getGridMeshDensity(
       resolution,
       xOffset,
       yOffset,
     );
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async importExistingRoutes(kind: "infra-type" | "los") {
-    this.start();
+    let t = this.start("importExistingRoutes");
     await this.inner.importExistingRoutes(kind);
-    this.stop();
+    this.stop(t);
   }
 
   async importArterialRoads() {
-    this.start();
+    let t = this.start("importArterialRoads");
     await this.inner.importArterialRoads();
-    this.stop();
+    this.stop(t);
   }
 
   async loadSavefile(contents: string) {
-    this.start();
+    let t = this.start("loadSavefile");
     try {
       await this.inner.loadSavefile(contents);
     } finally {
-      this.stop();
+      this.stop(t);
     }
   }
 
   async getPOIs(): Promise<POIs> {
-    this.start();
+    let t = this.start("getPOIs");
     let result = await this.inner.getPOIs();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getTownCentres(): Promise<TownCentres> {
-    this.start();
+    let t = this.start("getTownCentres");
     let result = await this.inner.getTownCentres();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getSettlements(): Promise<Settlements> {
-    this.start();
+    let t = this.start("getSettlements");
     let result = await this.inner.getSettlements();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getSettlementLocations(): Promise<
     [string, [number, number, number, number]][]
   > {
-    this.start();
+    let t = this.start("getSettlementLocations");
     let result = await this.inner.getSettlementLocations();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getGreenspaces(): Promise<Greenspaces> {
-    this.start();
+    let t = this.start("getGreenspaces");
     let result = await this.inner.getGreenspaces();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getDataZones(): Promise<DataZones> {
-    this.start();
+    let t = this.start("getDataZones");
     let result = await this.inner.getDataZones();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
@@ -306,11 +306,11 @@ export class Backend {
     kind: string,
     idx: number,
   ): Promise<FeatureCollection & { length_meters: number }> {
-    this.start();
+    let t = this.start("debugReachablePath");
     try {
       return await this.inner.debugReachablePath(kind, idx);
     } finally {
-      this.stop();
+      this.stop(t);
     }
   }
 
@@ -319,9 +319,9 @@ export class Backend {
     kind: string,
     idx: number,
   ): Promise<FeatureCollection> {
-    this.start();
+    let t = this.start("debugUnreachablePath");
     let result = await this.inner.debugUnreachablePath(kind, idx);
-    this.stop();
+    this.stop(t);
     return result;
   }
 
@@ -329,18 +329,18 @@ export class Backend {
     kind: string,
     idx: number,
   ): Promise<Feature<LineString, SetRouteInput & { length_meters: number }>> {
-    this.start();
+    let t = this.start("fixUnreachablePOI");
     try {
       return await this.inner.fixUnreachablePOI(kind, idx);
     } finally {
-      this.stop();
+      this.stop(t);
     }
   }
 
   async getConnectedComponents(): Promise<ConnectedComponents> {
-    this.start();
+    let t = this.start("getConnectedComponents");
     let result = await this.inner.getConnectedComponents();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
@@ -348,9 +348,9 @@ export class Backend {
     pt: number[],
     majorSnapThreshold: number | null,
   ): Promise<[number, number]> {
-    this.start();
+    let t = this.start("snapPoint");
     let result = await this.inner.snapPoint(pt, majorSnapThreshold);
-    this.stop();
+    this.stop(t);
     return result;
   }
 
@@ -359,51 +359,52 @@ export class Backend {
     waypt2: Waypoint,
     majorSnapThreshold: number | null,
   ): Promise<[number, number, boolean][]> {
-    this.start();
+    let t = this.start("getExtraNodes");
     let result = await this.inner.getExtraNodes(
       waypt1,
       waypt2,
       majorSnapThreshold,
     );
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getMajorJunctions(): Promise<FeatureCollection> {
-    this.start();
+    let t = this.start("getMajorJunctions");
     let result = await this.inner.getMajorJunctions();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getTownCentreRoutes(): Promise<TownCentreRoutes> {
-    this.start();
+    let t = this.start("getTownCentreRoutes");
     let result = await this.inner.getTownCentreRoutes();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getTownCentrePoints(): Promise<FeatureCollection> {
-    this.start();
+    let t = this.start("getTownCentrePoints");
     let result = await this.inner.getTownCentrePoints();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
   async getNetworkLengths(): Promise<NetworkLengths> {
-    this.start();
+    let t = this.start("getNetworkLengths");
     let result = await this.inner.getNetworkLengths();
-    this.stop();
+    this.stop(t);
     return result;
   }
 
-  private start() {
+  private start(method: string): string {
     loadingSpinners.update((x) => {
       return x + 1;
     });
+    return method;
   }
 
-  private stop() {
+  private stop(timer: string) {
     loadingSpinners.update((x) => {
       return x - 1;
     });
