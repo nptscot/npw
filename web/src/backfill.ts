@@ -6,7 +6,8 @@ import type {
   Polygon,
 } from "geojson";
 import { get, writable, type Writable } from "svelte/store";
-import boundariesUrl from "../assets/boundaries.geojson?url";
+// Only one country had v1 savefiles
+import boundariesUrl from "../assets/scotland_boundaries.geojson?url";
 
 type Boundaries = FeatureCollection<Polygon | MultiPolygon, { name: string }>;
 

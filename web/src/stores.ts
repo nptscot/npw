@@ -34,6 +34,8 @@ export type Mode =
   | { kind: "evaluate-journey"; browse: WorstRoutes }
   | { kind: "bulk-edit" };
 
+export let country: Writable<"scotland" | "england"> =
+  writable(detectCountry());
 export let boundaryName = writable("");
 // When this is blank, changes aren't saved.
 export let currentFilename = writable("");
@@ -151,6 +153,11 @@ export function setCurrentFile(name: string) {
 }
 
 export function assetUrl(path: string): string {
+  if (get(country) == "england") {
+    // Only locally deployed
+    return `england/${path}`;
+  }
+
   if (!get(remoteStorage)) {
     return path;
   }
@@ -192,4 +199,12 @@ export function changeStage(rawNewStage: string) {
   for (let show of enableLayersPerStage[newStage]) {
     show.set(true);
   }
+}
+
+function detectCountry(): "scotland" | "england" {
+  let x = import.meta.env.VITE_COUNTRY;
+  if (x == "scotland" || x == "england") {
+    return x;
+  }
+  return "scotland";
 }

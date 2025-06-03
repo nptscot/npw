@@ -13,11 +13,12 @@
     type LayerClickInfo,
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
-  import boundariesUrl from "../../assets/boundaries.geojson?url";
+  import englandBoundariesUrl from "../../assets/england_boundaries.geojson?url";
   import logo from "../../assets/npt_logo.png?url";
+  import scotlandBoundariesUrl from "../../assets/scotland_boundaries.geojson?url";
   import { stripPrefix } from "../common";
   import { listAllFiles } from "../common/files";
-  import { maptilerApiKey } from "../stores";
+  import { country, maptilerApiKey } from "../stores";
 
   let gj: FeatureCollection<Polygon | MultiPolygon, { name: string }> = {
     type: "FeatureCollection" as const,
@@ -32,7 +33,12 @@
     // @ts-expect-error This really exists for the SG design system, but TS doesn't know about it
     window.DS.initAll();
 
-    let resp = await fetch(boundariesUrl);
+    let resp = await fetch(
+      {
+        scotland: scotlandBoundariesUrl,
+        england: englandBoundariesUrl,
+      }[$country],
+    );
     gj = await resp.json();
 
     for (let f of gj.features) {
@@ -40,6 +46,11 @@
     }
     ladNames.sort();
     ladNames = ladNames;
+
+    // Local storage entries are not namespaced by country. Just filter here.
+    previousBoundaries = previousBoundaries.filter((b) =>
+      ladNames.includes(stripPrefix(b, "LAD_")),
+    );
   });
 
   function onClick(e: CustomEvent<LayerClickInfo>) {
@@ -53,6 +64,10 @@
     <p><a href="https://www.npt.scot/"><img src={logo} alt="NPT logo" /></a></p>
 
     <h1>Network Planning Workspace</h1>
+
+    {#if $country != "scotland"}
+      <b>Warning: This is an experimental version</b>
+    {/if}
 
     <p>
       The NPW is designed to enable local authorities to plan a cycle network

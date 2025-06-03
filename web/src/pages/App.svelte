@@ -54,6 +54,7 @@
     backend,
     basemap,
     boundaryName,
+    country,
     currentFilename,
     currentStage,
     map as mapStore,
@@ -104,9 +105,16 @@
     // Detect if we're running locally first
     let bytes: Uint8Array<ArrayBufferLike> = new Uint8Array();
     try {
-      bytes = await fetchWithProgress(`areas/${$boundaryName}.bin.gz`, (p) => {
-        progress = p;
-      });
+      let prefix = {
+        scotland: "",
+        england: "england/",
+      }[$country];
+      bytes = await fetchWithProgress(
+        `${prefix}areas/${$boundaryName}.bin.gz`,
+        (p) => {
+          progress = p;
+        },
+      );
       console.log(`Using locally hosted files`);
       $remoteStorage = false;
     } catch (err) {
@@ -261,6 +269,9 @@
     <TopBar />
   </header>
   <main slot="controls">
+    {#if $country != "scotland"}
+      <b>Warning: This is an experimental version</b>
+    {/if}
     <div class="controlsDiv" bind:this={controlsDiv} />
     {#if $backend}
       <ReportProblemModal />
