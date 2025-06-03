@@ -4,6 +4,7 @@ AREA=$1
 set -ex
 
 cargo run --release -- \
+  --country england \
   --input "../data_prep/england/osm/out/$AREA.osm.pbf" \
   --boundary "../data_prep/england/osm/$AREA.geojson" \
   --output "../web/public/england/areas/$AREA.bin" \
