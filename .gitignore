@@ -14,3 +14,6 @@ data_prep/scotland/scotland-latest.osm.pbf
 data_prep/scotland/osm/
 data_prep/scotland/baseline_stats/
 data_prep/scotland/tmp/
+
+data_prep/england/england-latest.osm.pbf
+data_prep/england/osm/
