@@ -43,8 +43,8 @@ function build_graph_files {
           geojson=$(basename $osm .osm.pbf).geojson
           out=$(basename $osm .osm.pbf).bin
           stats=$(basename $osm .osm.pbf).json
-          task=$(pueue add --print-task-id --escape $bin --input "$osm" --boundary "osm/$geojson" --output "../web/public/areas/$out" --stats-output "baseline_stats/$stats")
-          pueue add --after $task --escape gzip -f "../web/public/areas/$out"
+          task=$(pueue add --print-task-id --escape $bin --input "$osm" --boundary "osm/$geojson" --output "../web/public/scotland/areas/$out" --stats-output "baseline_stats/$stats")
+          pueue add --after $task --escape gzip -f "../web/public/scotland/areas/$out"
         done
 
         # Manually wait for pueue to finish

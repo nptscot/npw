@@ -18,17 +18,17 @@ function get_private_data {
 }
 
 function coherent_net {
-  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.pmtiles ../web/public/coherent_network.pmtiles
+  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/combined_CN_4_2025-04-01_OS.pmtiles ../web/public/scotland/coherent_network.pmtiles
 }
 
 function rnet {
   # For visualization
-  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/rnet_2025-04-01.pmtiles ../web/public/route_network.pmtiles
+  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-04-01/rnet_2025-04-01.pmtiles ../web/public/scotland/route_network.pmtiles
 }
 
 function streetspace {
   # For visualization
-  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-03-01/os_networks_categorized_street_space_with_widths.pmtiles ../web/public/streetspace.pmtiles
+  get_private_data https://github.com/nptscot/outputdata/releases/download/v2025-03-01/os_networks_categorized_street_space_with_widths.pmtiles ../web/public/scotland/streetspace.pmtiles
 
   # For analysis
   wget https://github.com/nptscot/npt/releases/download/v2025-05-01/streetspace_2025-05-01.gpkg -O tmp/streetspace.gpkg
@@ -92,7 +92,7 @@ function traffic {
   wget https://github.com/nptscot/npt/releases/download/v2025-05-01/clos_2025-05-01.gpkg -O tmp/clos.gpkg
 
   # While we're still comparing map-matched results, include this too
-  wget https://nptscot.blob.core.windows.net/pmtiles/cbd_layer_2025-04-01.pmtiles -O ../web/public/cbd.pmtiles
+  wget https://nptscot.blob.core.windows.net/pmtiles/cbd_layer_2025-04-01.pmtiles -O ../web/public/scotland/cbd.pmtiles
 }
 
 function population {
@@ -170,4 +170,4 @@ function railways {
 #railways
 
 # Keep track of input files
-md5sum tmp/* ../web/public/*pmtiles > manifest
+md5sum tmp/* ../web/public/scotland/*pmtiles > manifest

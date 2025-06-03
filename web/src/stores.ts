@@ -153,13 +153,15 @@ export function setCurrentFile(name: string) {
 }
 
 export function assetUrl(path: string): string {
-  if (get(country) == "england") {
+  let countryValue = get(country);
+
+  if (countryValue == "england") {
     // Only locally deployed
     return `england/${path}`;
   }
 
   if (!get(remoteStorage)) {
-    return path;
+    return `scotland/${path}`;
   }
 
   // This version number is incremented every time files are regenerated. Dev

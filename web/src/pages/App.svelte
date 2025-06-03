@@ -105,12 +105,8 @@
     // Detect if we're running locally first
     let bytes: Uint8Array<ArrayBufferLike> = new Uint8Array();
     try {
-      let prefix = {
-        scotland: "",
-        england: "england/",
-      }[$country];
       bytes = await fetchWithProgress(
-        `${prefix}areas/${$boundaryName}.bin.gz`,
+        `${$country}/areas/${$boundaryName}.bin.gz`,
         (p) => {
           progress = p;
         },
