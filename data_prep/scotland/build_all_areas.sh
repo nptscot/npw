@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# This generates a graph file per LAD and TA boundary. You'll need some dependencies:
+# This generates a graph file per LAD. You'll need some dependencies:
 #
 # - wget, python3
 # - osmium (https://osmcode.org/osmium-tool)
@@ -20,7 +20,7 @@ function split_osm {
         mkdir osm
         cd osm
         mkdir out
-        python3 ../geojson_to_osmium_extracts.py ../boundaries.geojson --output_dir=out/ --batch_size=10
+        python3 ../../geojson_to_osmium_extracts.py ../boundaries.geojson --output_dir=out/ --batch_size=10
 
         # Create an osm.pbf file per boundary
         for batch in osmium_cfg_*; do

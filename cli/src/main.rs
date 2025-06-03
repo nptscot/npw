@@ -1,11 +1,11 @@
 use std::collections::{HashMap, HashSet};
-use std::fs::File;
 use std::io::{BufReader, BufWriter};
 
 use anime::Anime;
 use anyhow::{bail, Result};
 use clap::Parser;
 use elevation::GeoTiffElevation;
+use fs_err::File;
 use gdal::{vector::LayerAccess, Dataset};
 use geo::{
     Area, BoundingRect, Buffer, Centroid, Contains, Coord, Intersects, LineString, MultiPolygon,
@@ -46,8 +46,8 @@ fn main() -> Result<()> {
     let args = Args::parse();
 
     let mut timer = Timer::new("build model", None);
-    let osm_bytes = std::fs::read(&args.input)?;
-    let boundary_gj = std::fs::read_to_string(&args.boundary)?;
+    let osm_bytes = fs_err::read(&args.input)?;
+    let boundary_gj = fs_err::read_to_string(&args.boundary)?;
     let study_area_name = args
         .output
         .split("/")
@@ -62,7 +62,7 @@ fn main() -> Result<()> {
     let writer = BufWriter::new(File::create(&args.output)?);
     bincode::serialize_into(writer, &model)?;
 
-    std::fs::write(
+    fs_err::write(
         &args.stats_output,
         serde_json::to_string(&model.get_baseline_stats())?,
     )?;
@@ -100,7 +100,7 @@ fn create(
 
     timer.step("loading data zones");
     let data_zones = backend::places::DataZone::from_gj(
-        &std::fs::read_to_string("../data_prep/tmp/population.geojson")?,
+        &fs_err::read_to_string("../data_prep/scotland/tmp/population.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
@@ -112,17 +112,17 @@ fn create(
 
     timer.step("loading commute desire lines");
     let commute_desire_lines =
-        read_commute_desire_lines_csv("../data_prep/tmp/od_commute.csv", &zone_ids)?;
+        read_commute_desire_lines_csv("../data_prep/scotland/tmp/od_commute.csv", &zone_ids)?;
     timer.step("loading utility and school desire lines");
     let mut other_desire_lines = read_other_desire_lines_csv(
-        "../data_prep/tmp/od_utility.csv",
+        "../data_prep/scotland/tmp/od_utility.csv",
         &zone_ids,
         &graph,
         &boundary_wgs84,
     )?;
     // TODO Combine counts for utility and school trips
     other_desire_lines.extend(read_other_desire_lines_csv(
-        "../data_prep/tmp/od_school.csv",
+        "../data_prep/scotland/tmp/od_school.csv",
         &zone_ids,
         &graph,
         &boundary_wgs84,
@@ -130,44 +130,44 @@ fn create(
 
     timer.step("loading schools");
     let schools = backend::places::School::from_gj(
-        &std::fs::read_to_string("../data_prep/tmp/schools.geojson")?,
+        &fs_err::read_to_string("../data_prep/scotland/tmp/schools.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
 
     timer.step("loading GPs/hospitals");
     let gp_hospitals = backend::places::GPHospital::from_gj(
-        &std::fs::read_to_string("../data_prep/tmp/gp_practices.geojson")?,
-        &std::fs::read_to_string("../data_prep/tmp/hospitals.geojson")?,
+        &fs_err::read_to_string("../data_prep/scotland/tmp/gp_practices.geojson")?,
+        &fs_err::read_to_string("../data_prep/scotland/tmp/hospitals.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
 
     timer.step("loading railway stations");
     let railway_stations = backend::places::RailwayStation::from_gj(
-        &std::fs::read_to_string("../data_prep/tmp/railways.geojson")?,
+        &fs_err::read_to_string("../data_prep/scotland/tmp/railways.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
 
     timer.step("loading greenspaces");
     let greenspaces = read_greenspaces(
-        "../data_prep/tmp/greenspace.gpkg",
-        "../data_prep/tmp/greenspace_access_points.gpkg",
+        "../data_prep/scotland/tmp/greenspace.gpkg",
+        "../data_prep/scotland/tmp/greenspace_access_points.gpkg",
         &boundary_wgs84,
         &graph,
     )?;
 
     timer.step("loading town centres");
     let town_centres = backend::places::TownCentre::from_gj(
-        &std::fs::read_to_string("../data_prep/tmp/town_centres.geojson")?,
+        &fs_err::read_to_string("../data_prep/scotland/tmp/town_centres.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
 
     timer.step("loading settlements");
     let settlements = backend::places::Settlement::from_gj(
-        &std::fs::read_to_string("../data_prep/tmp/settlements.geojson")?,
+        &fs_err::read_to_string("../data_prep/scotland/tmp/settlements.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
@@ -178,8 +178,12 @@ fn create(
         .map(|r| Highway::classify(&r.osm_tags).unwrap())
         .collect();
 
-    let mut traffic_volumes =
-        read_traffic_volumes("../data_prep/tmp/clos.gpkg", &graph, &highways, timer)?;
+    let mut traffic_volumes = read_traffic_volumes(
+        "../data_prep/scotland/tmp/clos.gpkg",
+        &graph,
+        &highways,
+        timer,
+    )?;
 
     let mut speeds = graph
         .roads
@@ -190,16 +194,21 @@ fn create(
 
     handle_parallel_roads(&highways, &mut traffic_volumes, &mut speeds, &graph);
 
-    let street_space = read_street_space("../data_prep/tmp/streetspace.gpkg", &graph, timer)?;
+    let street_space =
+        read_street_space("../data_prep/scotland/tmp/streetspace.gpkg", &graph, timer)?;
 
     let is_attractive = find_streets_by_greenspace(
-        "../data_prep/tmp/all_greenspace.gpkg",
+        "../data_prep/scotland/tmp/all_greenspace.gpkg",
         &boundary_wgs84,
         &graph,
         timer,
     )?;
 
-    let gradients = read_gradients("../data_prep/tmp/UK-dem-50m-4326.tif", &graph, timer)?;
+    let gradients = read_gradients(
+        "../data_prep/scotland/tmp/UK-dem-50m-4326.tif",
+        &graph,
+        timer,
+    )?;
 
     Ok(MapModel::create(
         study_area_name,
@@ -737,7 +746,7 @@ fn handle_parallel_roads(
     }
 
     if debug {
-        std::fs::write(
+        fs_err::write(
             "debug_parallel.geojson",
             serde_json::to_string(&geojson::GeoJson::from(features)).unwrap(),
         )

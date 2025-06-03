@@ -24,3 +24,4 @@ simple_logger = "5.0.0"
 utils = { git = "https://github.com/a-b-street/utils", features = ["serde"] }
 serde_json = "1.0.133"
 geo-types = "0.7.16"
+fs-err = "3.1.0"

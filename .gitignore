@@ -10,8 +10,7 @@ web/src/manual/Contents.svelte
 # Local symlink to avoid hitting remote storage
 web/public
 
-data_prep/scotland-latest.osm.pbf
-data_prep/osm/
-data_prep/graph-files/
-data_prep/baseline_stats/
-data_prep/tmp/
+data_prep/scotland/scotland-latest.osm.pbf
+data_prep/scotland/osm/
+data_prep/scotland/baseline_stats/
+data_prep/scotland/tmp/
