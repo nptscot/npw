@@ -138,7 +138,6 @@ dependencies = [
  "geo 0.30.0 (git+https://github.com/georust/geo?branch=mkirk%2Fgeo-buffer)",
  "geojson",
  "graph",
- "hilbert_2d",
  "js-sys",
  "log",
  "nanorand",

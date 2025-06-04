@@ -1,7 +1,6 @@
 use std::collections::BTreeSet;
 
 use anyhow::Result;
-use log::info;
 use petgraph::graphmap::UnGraphMap;
 use utils::osm2graph::{EdgeID, Graph, IntersectionID};
 

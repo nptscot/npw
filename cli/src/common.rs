@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use anime::Anime;
-use anyhow::{bail, Result};
+use anyhow::Result;
 use fs_err::File;
 use geo::MultiPolygon;
 use graph::Graph;

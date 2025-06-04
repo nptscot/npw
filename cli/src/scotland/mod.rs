@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::io::BufReader;
 
 use anime::Anime;
-use anyhow::{bail, Result};
+use anyhow::Result;
 use elevation::GeoTiffElevation;
 use fs_err::File;
 use gdal::{vector::LayerAccess, Dataset};
@@ -11,12 +11,13 @@ use geo::{
     MultiPolygon, Point, Polygon, Rect,
 };
 use graph::{Graph, RoadID, Timer};
-use log::{info, warn};
 use rstar::AABB;
 use serde::Deserialize;
 
 use crate::{common, disconnected::remove_disconnected_components};
 use backend::{places::DataZone, Highway, MapModel, Streetspace, TrafficVolume};
+
+mod pois;
 
 pub fn create(
     study_area_name: String,
@@ -78,14 +79,14 @@ pub fn create(
     )?);
 
     timer.step("loading schools");
-    let schools = backend::places::School::from_gj(
+    let schools = pois::load_schools(
         &fs_err::read_to_string("../data_prep/scotland/tmp/schools.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
 
     timer.step("loading GPs/hospitals");
-    let gp_hospitals = backend::places::GPHospital::from_gj(
+    let gp_hospitals = pois::load_gps_hospitals(
         &fs_err::read_to_string("../data_prep/scotland/tmp/gp_practices.geojson")?,
         &fs_err::read_to_string("../data_prep/scotland/tmp/hospitals.geojson")?,
         &boundary_wgs84,
@@ -93,7 +94,7 @@ pub fn create(
     )?;
 
     timer.step("loading railway stations");
-    let railway_stations = backend::places::RailwayStation::from_gj(
+    let railway_stations = pois::load_railway_stations(
         &fs_err::read_to_string("../data_prep/scotland/tmp/railways.geojson")?,
         &boundary_wgs84,
         &graph,
@@ -108,14 +109,14 @@ pub fn create(
     )?;
 
     timer.step("loading town centres");
-    let town_centres = backend::places::TownCentre::from_gj(
+    let town_centres = pois::load_town_centres(
         &fs_err::read_to_string("../data_prep/scotland/tmp/town_centres.geojson")?,
         &boundary_wgs84,
         &graph,
     )?;
 
     timer.step("loading settlements");
-    let settlements = backend::places::Settlement::from_gj(
+    let settlements = pois::load_settlements(
         &fs_err::read_to_string("../data_prep/scotland/tmp/settlements.geojson")?,
         &boundary_wgs84,
         &graph,

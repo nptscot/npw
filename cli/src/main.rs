@@ -1,6 +1,11 @@
+#[macro_use]
+extern crate anyhow;
+#[macro_use]
+extern crate log;
+
 use std::io::BufWriter;
 
-use anyhow::{bail, Result};
+use anyhow::Result;
 use clap::Parser;
 use fs_err::File;
 use graph::Timer;

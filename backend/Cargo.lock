@@ -69,7 +69,6 @@ dependencies = [
  "geo 0.30.0 (git+https://github.com/georust/geo?branch=mkirk%2Fgeo-buffer)",
  "geojson",
  "graph",
- "hilbert_2d",
  "js-sys",
  "log",
  "nanorand",
@@ -450,12 +449,6 @@ dependencies = [
  "hash32",
  "stable_deref_trait",
 ]
-
-[[package]]
-name = "hilbert_2d"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "705f81e042b11734af35c701c7f6b65f8a968a430621fa2c95e72e27f9f8be5c"
 
 [[package]]
 name = "home"

@@ -3,7 +3,6 @@ use std::collections::{HashMap, HashSet};
 use anyhow::Result;
 use geo::{Area, BooleanOps, BoundingRect, Centroid, Intersects, MultiPolygon, Point, Rect};
 use graph::{Graph, RoadID, Timer};
-use log::info;
 use rstar::AABB;
 use serde::Deserialize;
 
