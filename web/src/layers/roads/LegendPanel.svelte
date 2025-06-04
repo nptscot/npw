@@ -19,6 +19,7 @@
   import { Checkbox, HelpButton } from "../../common";
   import {
     backgroundLayer,
+    country,
     currentStage,
     devMode,
     editModeBreakdown,
@@ -70,7 +71,7 @@
     <b>Existing infrastructure</b>
     <QualitativeLegend labelColors={infraTypeColorLegend} />
 
-    {#if $devMode}
+    {#if $devMode && $country == "scotland"}
       <Checkbox small bind:checked={$debugOriginalData}>
         Show osmactive data
       </Checkbox>
@@ -82,7 +83,7 @@
       labels={{ buckets: Object.values(trafficLabels) }}
     />
 
-    {#if $devMode}
+    {#if $devMode && $country == "scotland"}
       <Checkbox small bind:checked={$debugOriginalData}>
         Show original data
       </Checkbox>
@@ -94,7 +95,7 @@
       labels={{ buckets: speed.limits }}
     />
 
-    {#if $devMode}
+    {#if $devMode && $country == "scotland"}
       <Checkbox small bind:checked={$debugOriginalData}>
         Show original data
       </Checkbox>
@@ -144,7 +145,7 @@
       <QualitativeLegend labelColors={{ yes: "green", no: "red" }} />
     {/if}
 
-    {#if $devMode}
+    {#if $devMode && $country == "scotland"}
       <Checkbox small bind:checked={$debugOriginalData}>
         Show original data
       </Checkbox>
@@ -169,7 +170,7 @@
       />
     {/if}
 
-    {#if $devMode}
+    {#if $devMode && $country == "scotland"}
       <Checkbox small bind:checked={$debugOriginalData}>
         Show original data
       </Checkbox>
