@@ -1,6 +1,7 @@
 import type {
   DataDrivenPropertyValueSpecification,
   ExpressionSpecification,
+  LngLatBoundsLike,
 } from "maplibre-gl";
 
 export { default as BackLink } from "./BackLink.svelte";
@@ -114,3 +115,8 @@ export function lineColorForDemand(
 export function stripPrefix(value: string, prefix: string): string {
   return value.startsWith(prefix) ? value.slice(prefix.length) : value;
 }
+
+export let countryBounds = {
+  scotland: [-8.943, 54.631, -0.901, 59.489] as LngLatBoundsLike,
+  england: [-5.96, 49.89, 2.31, 55.94] as LngLatBoundsLike,
+};

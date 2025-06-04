@@ -16,7 +16,7 @@
   import englandBoundariesUrl from "../../assets/england_boundaries.geojson?url";
   import logo from "../../assets/npt_logo.png?url";
   import scotlandBoundariesUrl from "../../assets/scotland_boundaries.geojson?url";
-  import { stripPrefix } from "../common";
+  import { countryBounds, stripPrefix } from "../common";
   import { listAllFiles } from "../common/files";
   import { country, maptilerApiKey } from "../stores";
 
@@ -124,7 +124,7 @@
   <div class="map">
     <MapLibre
       style={`https://api.maptiler.com/maps/streets-v2/style.json?key=${maptilerApiKey}`}
-      bounds={[-8.943, 54.631, -0.901, 59.489]}
+      bounds={countryBounds[$country]}
       on:error={(e) => {
         // @ts-expect-error ErrorEvent isn't exported
         console.log(e.detail.error);

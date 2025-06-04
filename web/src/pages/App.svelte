@@ -27,7 +27,12 @@
   import AssessMode from "../assess/AssessMode.svelte";
   import { backfillSavefile } from "../backfill";
   import BulkEditMode from "../BulkEditMode.svelte";
-  import { layerId, LoadingSpinner, stripPrefix } from "../common";
+  import {
+    countryBounds,
+    layerId,
+    LoadingSpinner,
+    stripPrefix,
+  } from "../common";
   import DisableInteractiveLayers from "../common/DisableInteractiveLayers.svelte";
   import { getKey } from "../common/files";
   import Geocoder from "../common/Geocoder.svelte";
@@ -279,7 +284,7 @@
       <MapLibre
         {style}
         maxZoom={19}
-        bounds={[-8.943, 54.631, -0.901, 59.489]}
+        bounds={countryBounds[$country]}
         bind:map
         bind:zoom={$zoom}
         on:error={(e) => {
