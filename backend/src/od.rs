@@ -388,10 +388,6 @@ fn find_cycling_demand_thresholds(demands: &Vec<usize>) -> Result<(usize, usize)
         .into_iter()
         .map(|group| *group.last().unwrap())
         .collect();
-    if maxes.len() == 1 {
-        warn!("No demand data configured yet");
-        return Ok((2, 1));
-    }
 
     // 5th highest break for high, 7th highest break for medium
     let high = maxes[10 - 5];

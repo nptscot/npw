@@ -58,8 +58,10 @@ pub fn create(
         .collect();
 
     timer.step("loading commute desire lines");
-    let commute_desire_lines =
-        read_commute_desire_lines_csv("../data_prep/scotland/tmp/od_commute.csv", &zone_ids)?;
+    let commute_desire_lines = crate::read_commute_desire_lines_csv(
+        "../data_prep/scotland/tmp/od_commute.csv",
+        &zone_ids,
+    )?;
     timer.step("loading utility and school desire lines");
     let mut other_desire_lines = read_other_desire_lines_csv(
         "../data_prep/scotland/tmp/od_utility.csv",
@@ -178,32 +180,6 @@ pub fn create(
         gradients,
         timer,
     )?)
-}
-
-fn read_commute_desire_lines_csv(
-    path: &str,
-    zone_ids: &HashMap<String, usize>,
-) -> Result<Vec<(usize, usize, usize)>> {
-    let mut out = Vec::new();
-    for rec in csv::Reader::from_reader(File::open(path)?).deserialize() {
-        let row: CommuteDesireLineRow = rec?;
-        if let (Some(zone1), Some(zone2)) =
-            (zone_ids.get(&row.geo_code1), zone_ids.get(&row.geo_code2))
-        {
-            out.push((*zone1, *zone2, row.count));
-        }
-    }
-    if out.is_empty() {
-        bail!("No matching commute desire lines");
-    }
-    Ok(out)
-}
-
-#[derive(Deserialize)]
-struct CommuteDesireLineRow {
-    geo_code1: String,
-    geo_code2: String,
-    count: usize,
 }
 
 fn read_other_desire_lines_csv(

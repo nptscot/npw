@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::io::BufWriter;
 
 use anime::Anime;
@@ -6,6 +7,7 @@ use clap::Parser;
 use fs_err::File;
 use geo::MultiPolygon;
 use graph::{Graph, Timer};
+use serde::Deserialize;
 use utils::Tags;
 
 use backend::{Highway, TrafficVolume};
@@ -198,4 +200,30 @@ fn get_anime_match<T: Clone>(
         .into_iter()
         .max_by_key(|c| (c.shared_len * 1000.0) as usize)?;
     Some((source_data[c.source_index].clone(), c.shared_len))
+}
+
+fn read_commute_desire_lines_csv(
+    path: &str,
+    zone_ids: &HashMap<String, usize>,
+) -> Result<Vec<(usize, usize, usize)>> {
+    let mut out = Vec::new();
+    for rec in csv::Reader::from_reader(File::open(path)?).deserialize() {
+        let row: CommuteDesireLineRow = rec?;
+        if let (Some(zone1), Some(zone2)) =
+            (zone_ids.get(&row.geo_code1), zone_ids.get(&row.geo_code2))
+        {
+            out.push((*zone1, *zone2, row.count));
+        }
+    }
+    if out.is_empty() {
+        bail!("No matching commute desire lines");
+    }
+    Ok(out)
+}
+
+#[derive(Deserialize)]
+struct CommuteDesireLineRow {
+    geo_code1: String,
+    geo_code2: String,
+    count: usize,
 }

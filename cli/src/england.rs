@@ -34,14 +34,24 @@ pub fn create(
     )?;
     let boundary_wgs84 = crate::read_multipolygon(boundary_gj)?;
 
-    let data_zones: Vec<backend::places::DataZone> = Vec::new();
-    let _zone_ids: HashMap<String, usize> = data_zones
+    // TODO Rename these to be a bit more general
+    timer.step("loading data zones");
+    let data_zones = backend::places::DataZone::from_england_gj(
+        &fs_err::read_to_string("../data_prep/england/inputs/zones.geojson")?,
+        &boundary_wgs84,
+        &graph,
+    )?;
+    let zone_ids: HashMap<String, usize> = data_zones
         .iter()
         .enumerate()
         .map(|(idx, zone)| (zone.id.clone(), idx))
         .collect();
 
-    let commute_desire_lines = Vec::new();
+    timer.step("loading commute desire lines");
+    let commute_desire_lines = crate::read_commute_desire_lines_csv(
+        "../data_prep/england/inputs/od_commute.csv",
+        &zone_ids,
+    )?;
     let other_desire_lines = Vec::new();
 
     let schools = Vec::new();
