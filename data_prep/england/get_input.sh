@@ -20,8 +20,17 @@ function zones {
   # https://github.com/dabreegster/uk-boundaries has already preprocessed 2021 output areas
   wget https://github.com/dabreegster/uk-boundaries/raw/main/2021_output_areas.geojson.gz
   gunzip 2021_output_areas.geojson.gz
+  ogr2ogr raw_zones.geojson -nlt PROMOTE_TO_MULTI -sql 'SELECT OA21CD AS name FROM "2021_output_areas"' 2021_output_areas.geojson
 
-  ogr2ogr ../inputs/zones.geojson -nlt PROMOTE_TO_MULTI -sql 'SELECT OA21CD AS name FROM "2021_output_areas"' 2021_output_areas.geojson
+  # Separately grab population density data
+  wget https://www.nomisweb.co.uk/output/census/2021/census2021-ts006.zip
+  unzip census2021-ts006.zip census2021-ts006-oa.csv
+
+  # Join the data
+  mapshaper raw_zones.geojson -join census2021-ts006-oa.csv keys=name,"geography code" fields="Population Density: Persons per square kilometre; measures: Value" -rename-fields population="Population Density: Persons per square kilometre; measures: Value" -o zones_with_population.geojson
+
+  # Mapshaper gets rid of MultiPolygons; coerce back
+  ogr2ogr ../inputs/zones.geojson -nlt PROMOTE_TO_MULTI zones_with_population.geojson
 }
 
 function elevation {

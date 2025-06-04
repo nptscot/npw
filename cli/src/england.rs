@@ -164,6 +164,7 @@ fn load_data_zones(
     let boundary_mercator = graph.mercator.to_mercator(boundary_wgs84);
 
     let mut zones = Vec::new();
+    let mut densities = Vec::new();
     for x in geojson::de::deserialize_feature_collection_str_to_vec::<OutputAreaGJ>(gj)? {
         if boundary_wgs84.intersects(&x.geometry) {
             let polygon = graph.mercator.to_mercator(&x.geometry);
@@ -205,7 +206,7 @@ fn load_data_zones(
                 id: x.name,
                 imd_rank: 0,
                 imd_percentile: 0,
-                population: 0,
+                population: x.population as usize,
                 area_km2,
                 roads,
                 density_quintile: 0,
@@ -216,7 +217,14 @@ fn load_data_zones(
                 x2: (bbox.max().x * 100.0) as i64,
                 y2: (bbox.max().y * 100.0) as i64,
             });
+
+            densities.push((x.population / area_km2) as usize);
         }
+    }
+
+    let stats = common::Quintiles::new(&densities);
+    for zone in &mut zones {
+        zone.density_quintile = stats.quintile(((zone.population as f64) / zone.area_km2) as usize);
     }
 
     info!("Matched {} population zones", zones.len());
@@ -228,6 +236,7 @@ struct OutputAreaGJ {
     #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
     geometry: MultiPolygon,
     name: String,
+    population: f64,
 }
 
 #[derive(Default)]
