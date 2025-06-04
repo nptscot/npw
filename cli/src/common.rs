@@ -1,10 +1,12 @@
 use std::collections::HashMap;
+use std::io::BufReader;
 
 use anime::Anime;
 use anyhow::Result;
+use elevation::GeoTiffElevation;
 use fs_err::File;
 use geo::{MultiPolygon, Point};
-use graph::Graph;
+use graph::{Graph, Timer};
 use serde::Deserialize;
 use utils::Tags;
 
@@ -293,4 +295,30 @@ pub fn make_railway_station(
         road,
         sort,
     }
+}
+
+pub fn read_gradients(path: &str, graph: &Graph, timer: &mut Timer) -> Result<Vec<f64>> {
+    timer.step("read gradients");
+    let mut geotiff = GeoTiffElevation::new(BufReader::new(File::open(path)?));
+    let mut gradients = Vec::new();
+    for road in &graph.roads {
+        // TODO This only checks the start and end point
+        let pt1 = graph
+            .mercator
+            .pt_to_wgs84(*road.linestring.coords().next().unwrap());
+        let pt2 = graph
+            .mercator
+            .pt_to_wgs84(*road.linestring.coords().last().unwrap());
+
+        let Some(height1) = geotiff.get_height_for_lon_lat(pt1.x as f32, pt1.y as f32) else {
+            bail!("Couldn't get height for {pt1:?}");
+        };
+        let Some(height2) = geotiff.get_height_for_lon_lat(pt2.x as f32, pt2.y as f32) else {
+            bail!("Couldn't get height for {pt2:?}");
+        };
+
+        let slope = (height2 - height1) / (road.length_meters as f32) * 100.0;
+        gradients.push(slope.into());
+    }
+    Ok(gradients)
 }

@@ -125,7 +125,11 @@ pub fn create(
 
     let is_attractive = std::iter::repeat(false).take(highways.len()).collect();
 
-    let gradients = std::iter::repeat(0.0).take(highways.len()).collect();
+    let gradients = common::read_gradients(
+        "../data_prep/england/inputs/UK-dem-50m-4326.tif",
+        &graph,
+        timer,
+    )?;
 
     Ok(MapModel::create(
         study_area_name,

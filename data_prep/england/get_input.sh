@@ -24,5 +24,13 @@ function zones {
   ogr2ogr ../inputs/zones.geojson -nlt PROMOTE_TO_MULTI -sql 'SELECT OA21CD AS name FROM "2021_output_areas"' 2021_output_areas.geojson
 }
 
-od
-zones
+function elevation {
+  # TODO Switch to https://osdatahub.os.uk/downloads/open/Terrain50 directly
+  wget https://play.abstreet.org/dev/data/input/shared/elevation/UK-dem-50m-4326.tif.gz
+  gunzip UK-dem-50m-4326.tif.gz
+  mv UK-dem-50m-4326.tif ../inputs/
+}
+
+#od
+#zones
+#elevation
