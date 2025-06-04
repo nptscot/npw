@@ -54,7 +54,13 @@ pub fn create(
 
     let town_centres = Vec::new();
 
-    let settlements = Vec::new();
+    let settlements = vec![backend::places::Settlement {
+        polygon: graph.boundary_polygon.clone(),
+        name: None,
+        // TODO Make it optional
+        population: 0,
+        roads: graph.roads.iter().map(|r| r.id).collect(),
+    }];
 
     let highways: Vec<_> = graph
         .roads

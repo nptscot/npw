@@ -347,7 +347,7 @@ struct TownCentreGJ {
 pub struct Settlement {
     pub polygon: Polygon,
     pub name: Option<String>,
-    population: usize,
+    pub population: usize,
     pub roads: HashSet<RoadID>,
 }
 
