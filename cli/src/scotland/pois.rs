@@ -5,29 +5,20 @@ use geo::{Area, BooleanOps, Centroid, Contains, Intersects, MultiPolygon, Point,
 use graph::{Graph, RoadID};
 use serde::Deserialize;
 
+use crate::common;
 use backend::places::{GPHospital, RailwayStation, School, Settlement, TownCentre};
 
 pub fn load_schools(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<School>> {
     let mut schools = Vec::new();
     for obj in geojson::de::deserialize_feature_collection_str_to_vec::<SchoolGJ>(gj)? {
         if boundary_wgs84.contains(&obj.geometry) {
-            let point = graph.mercator.to_mercator(&obj.geometry);
-            let road = graph
-                .snap_to_road(point.into(), graph.profile_names["bicycle_direct"])
-                .road;
-            let x = point.x() / graph.mercator.width;
-            let y = point.y() / graph.mercator.height;
-            let sort =
-                hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0;
-
-            schools.push(School {
-                point,
-                kind: obj.r#type,
-                name: obj.name,
-                pupils: obj.pupils as usize,
-                road,
-                sort,
-            });
+            schools.push(common::make_school(
+                &graph,
+                obj.geometry,
+                obj.name,
+                obj.r#type,
+                obj.pupils as usize,
+            ));
         }
     }
     info!("Matched {} schools", schools.len());
@@ -53,22 +44,12 @@ pub fn load_gps_hospitals(
     for (gj, kind) in [(gp_gj, "GP"), (hospitals_gj, "hospital")] {
         for obj in geojson::de::deserialize_feature_collection_str_to_vec::<GPHospitalGJ>(gj)? {
             if boundary_wgs84.contains(&obj.geometry) {
-                let point = graph.mercator.to_mercator(&obj.geometry);
-                let road = graph
-                    .snap_to_road(point.into(), graph.profile_names["bicycle_direct"])
-                    .road;
-                let x = point.x() / graph.mercator.width;
-                let y = point.y() / graph.mercator.height;
-                let sort =
-                    hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0;
-
-                gp_hospitals.push(GPHospital {
-                    point,
-                    kind: kind.to_string(),
-                    name: obj.name,
-                    road,
-                    sort,
-                });
+                gp_hospitals.push(common::make_gp_hospital(
+                    &graph,
+                    obj.geometry,
+                    obj.name,
+                    kind.to_string(),
+                ));
             }
         }
     }
@@ -91,21 +72,7 @@ pub fn load_railway_stations(
     let mut railway_stations = Vec::new();
     for obj in geojson::de::deserialize_feature_collection_str_to_vec::<RailwayStationGJ>(gj)? {
         if boundary_wgs84.contains(&obj.geometry) {
-            let point = graph.mercator.to_mercator(&obj.geometry);
-            let road = graph
-                .snap_to_road(point.into(), graph.profile_names["bicycle_direct"])
-                .road;
-            let x = point.x() / graph.mercator.width;
-            let y = point.y() / graph.mercator.height;
-            let sort =
-                hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0;
-
-            railway_stations.push(RailwayStation {
-                point,
-                name: obj.name,
-                road,
-                sort,
-            });
+            railway_stations.push(common::make_railway_station(&graph, obj.geometry, obj.name));
         }
     }
     info!("Matched {} railway stations", railway_stations.len());

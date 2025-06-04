@@ -17,6 +17,7 @@ gdal = "0.18.0"
 graph = { git = "https://github.com/a-b-street/15m" }
 hilbert_2d = "1.1.0"
 log = "0.4.20"
+osm-reader = { git = "https://github.com/a-b-street/osm-reader" }
 petgraph = "0.7.1"
 rstar = { version = "0.12.0", features = ["serde"] }
 serde = "1.0.188"

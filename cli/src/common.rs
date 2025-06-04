@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use anime::Anime;
 use anyhow::Result;
 use fs_err::File;
-use geo::MultiPolygon;
+use geo::{MultiPolygon, Point};
 use graph::Graph;
 use serde::Deserialize;
 use utils::Tags;
@@ -222,5 +222,75 @@ impl Quintiles {
         } else {
             5
         }
+    }
+}
+
+// TODO Merge School, GPHospital, RailwayStation into one struct
+pub fn make_school(
+    graph: &Graph,
+    wgs84: Point,
+    name: String,
+    kind: String,
+    pupils: usize,
+) -> backend::places::School {
+    let point = graph.mercator.to_mercator(&wgs84);
+    let road = graph
+        .snap_to_road(point.into(), graph.profile_names["bicycle_direct"])
+        .road;
+    let x = point.x() / graph.mercator.width;
+    let y = point.y() / graph.mercator.height;
+    let sort = hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0;
+
+    backend::places::School {
+        point,
+        kind,
+        name,
+        pupils,
+        road,
+        sort,
+    }
+}
+
+pub fn make_gp_hospital(
+    graph: &Graph,
+    wgs84: Point,
+    name: String,
+    kind: String,
+) -> backend::places::GPHospital {
+    let point = graph.mercator.to_mercator(&wgs84);
+    let road = graph
+        .snap_to_road(point.into(), graph.profile_names["bicycle_direct"])
+        .road;
+    let x = point.x() / graph.mercator.width;
+    let y = point.y() / graph.mercator.height;
+    let sort = hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0;
+
+    backend::places::GPHospital {
+        point,
+        kind,
+        name,
+        road,
+        sort,
+    }
+}
+
+pub fn make_railway_station(
+    graph: &Graph,
+    wgs84: Point,
+    name: Option<String>,
+) -> backend::places::RailwayStation {
+    let point = graph.mercator.to_mercator(&wgs84);
+    let road = graph
+        .snap_to_road(point.into(), graph.profile_names["bicycle_direct"])
+        .road;
+    let x = point.x() / graph.mercator.width;
+    let y = point.y() / graph.mercator.height;
+    let sort = hilbert_2d::xy2h_continuous_f64(x, y, hilbert_2d::Variant::Hilbert) * 1_000.0;
+
+    backend::places::RailwayStation {
+        point,
+        name,
+        road,
+        sort,
     }
 }

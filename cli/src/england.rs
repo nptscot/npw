@@ -1,10 +1,14 @@
 use std::collections::{HashMap, HashSet};
 
 use anyhow::Result;
-use geo::{Area, BooleanOps, BoundingRect, Centroid, Intersects, MultiPolygon, Point, Rect};
+use geo::{
+    Area, BooleanOps, BoundingRect, Centroid, Coord, Intersects, LineString, MultiPolygon, Point,
+    Polygon, Rect,
+};
 use graph::{Graph, RoadID, Timer};
 use rstar::AABB;
 use serde::Deserialize;
+use utils::Tags;
 
 use crate::{common, disconnected::remove_disconnected_components};
 use backend::{places::DataZone, Highway, MapModel, TrafficVolume};
@@ -15,10 +19,12 @@ pub fn create(
     boundary_gj: &str,
     timer: &mut Timer,
 ) -> Result<MapModel> {
+    let mut pois = OsmPOIs::default();
+
     info!("Creating MapModel for {study_area_name}");
     let graph = Graph::new(
         input_bytes,
-        &mut utils::osm2graph::NullReader,
+        &mut pois,
         Box::new(remove_disconnected_components),
         vec![
             (
@@ -56,11 +62,26 @@ pub fn create(
     )?;
     let other_desire_lines = Vec::new();
 
-    let schools = Vec::new();
+    let schools = pois
+        .schools
+        .into_iter()
+        .map(|(pt, name)| common::make_school(&graph, pt, name, String::new(), 0))
+        .collect();
 
-    let gp_hospitals = Vec::new();
+    let gp_hospitals =
+        pois.gps
+            .into_iter()
+            .map(|(pt, name)| common::make_gp_hospital(&graph, pt, name, "GP".to_string()))
+            .chain(pois.hospitals.into_iter().map(|(pt, name)| {
+                common::make_gp_hospital(&graph, pt, name, "hospital".to_string())
+            }))
+            .collect();
 
-    let railway_stations = Vec::new();
+    let railway_stations = pois
+        .railway_stations
+        .into_iter()
+        .map(|(pt, name)| common::make_railway_station(&graph, pt, Some(name)))
+        .collect();
 
     let greenspaces = Vec::new();
 
@@ -203,4 +224,105 @@ struct OutputAreaGJ {
     #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
     geometry: MultiPolygon,
     name: String,
+}
+
+#[derive(Default)]
+struct OsmPOIs {
+    schools: Vec<(Point, String)>,
+    gps: Vec<(Point, String)>,
+    hospitals: Vec<(Point, String)>,
+    railway_stations: Vec<(Point, String)>,
+}
+
+// TODO Needs more thorough work to handle all cases, handle relations (like schools over many
+// buildings)
+impl utils::osm2graph::OsmReader for OsmPOIs {
+    fn node(&mut self, _: osm_reader::NodeID, pt: Coord, tags: Tags) {
+        if let Some(name) = is_school(&tags) {
+            self.schools.push((pt.into(), name));
+        } else if let Some(name) = is_gp(&tags) {
+            self.gps.push((pt.into(), name));
+        } else if let Some(name) = is_hospital(&tags) {
+            self.hospitals.push((pt.into(), name));
+        } else if let Some(name) = is_railway_station(&tags) {
+            self.railway_stations.push((pt.into(), name));
+        }
+    }
+
+    fn way(
+        &mut self,
+        _: osm_reader::WayID,
+        node_ids: &Vec<osm_reader::NodeID>,
+        node_mapping: &HashMap<osm_reader::NodeID, Coord>,
+        tags: &Tags,
+    ) {
+        // It's not critical to handle holes just to calculate a centroid
+        let get_pt = || {
+            let exterior = LineString::new(node_ids.into_iter().map(|n| node_mapping[n]).collect());
+            Polygon::new(exterior, Vec::new()).centroid().unwrap()
+        };
+
+        if let Some(name) = is_school(&tags) {
+            self.schools.push((get_pt(), name));
+        } else if let Some(name) = is_gp(&tags) {
+            self.gps.push((get_pt(), name));
+        } else if let Some(name) = is_hospital(&tags) {
+            self.hospitals.push((get_pt(), name));
+        }
+    }
+
+    // TODO Handle these
+    fn relation(
+        &mut self,
+        _: osm_reader::RelationID,
+        _members: &Vec<(String, osm_reader::OsmID)>,
+        _tags: &Tags,
+    ) {
+    }
+}
+
+fn is_school(tags: &Tags) -> Option<String> {
+    if tags.is("amenity", "school") {
+        // TODO Some have capacity (pupils)
+        // TODO Could determine kind from the name sometimes
+        return Some(
+            tags.get("name")
+                .cloned()
+                .unwrap_or_else(|| "Unnamed school".to_string()),
+        );
+    }
+    None
+}
+
+fn is_gp(tags: &Tags) -> Option<String> {
+    if tags.is("amenity", "doctors") {
+        return Some(
+            tags.get("name")
+                .cloned()
+                .unwrap_or_else(|| "Unnamed GP".to_string()),
+        );
+    }
+    None
+}
+
+fn is_hospital(tags: &Tags) -> Option<String> {
+    if tags.is("amenity", "hospital") {
+        return Some(
+            tags.get("name")
+                .cloned()
+                .unwrap_or_else(|| "Unnamed hospital".to_string()),
+        );
+    }
+    None
+}
+
+fn is_railway_station(tags: &Tags) -> Option<String> {
+    if tags.is("railway", "station") {
+        return Some(
+            tags.get("name")
+                .cloned()
+                .unwrap_or_else(|| "Unnamed railway station".to_string()),
+        );
+    }
+    None
 }
