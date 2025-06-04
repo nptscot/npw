@@ -4,7 +4,7 @@ use anyhow::Result;
 use graph::{Graph, Timer};
 use log::info;
 
-use crate::disconnected::remove_disconnected_components;
+use crate::{common, disconnected::remove_disconnected_components};
 use backend::{Highway, MapModel, TrafficVolume};
 
 pub fn create(
@@ -32,7 +32,7 @@ pub fn create(
         ],
         timer,
     )?;
-    let boundary_wgs84 = crate::read_multipolygon(boundary_gj)?;
+    let boundary_wgs84 = common::read_multipolygon(boundary_gj)?;
 
     // TODO Rename these to be a bit more general
     timer.step("loading data zones");
@@ -48,7 +48,7 @@ pub fn create(
         .collect();
 
     timer.step("loading commute desire lines");
-    let commute_desire_lines = crate::read_commute_desire_lines_csv(
+    let commute_desire_lines = common::read_commute_desire_lines_csv(
         "../data_prep/england/inputs/od_commute.csv",
         &zone_ids,
     )?;
@@ -93,10 +93,10 @@ pub fn create(
         .roads
         .iter()
         .enumerate()
-        .map(|(idx, r)| crate::get_speed_mph(highways[idx], &r.osm_tags))
+        .map(|(idx, r)| common::get_speed_mph(highways[idx], &r.osm_tags))
         .collect();
 
-    crate::handle_parallel_roads(&highways, &mut traffic_volumes, &mut speeds, &graph);
+    common::handle_parallel_roads(&highways, &mut traffic_volumes, &mut speeds, &graph);
 
     let street_space = std::iter::repeat(None).take(highways.len()).collect();
 

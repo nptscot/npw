@@ -15,7 +15,7 @@ use log::{info, warn};
 use rstar::AABB;
 use serde::Deserialize;
 
-use crate::disconnected::remove_disconnected_components;
+use crate::{common, disconnected::remove_disconnected_components};
 use backend::{Highway, MapModel, Streetspace, TrafficVolume};
 
 pub fn create(
@@ -43,7 +43,7 @@ pub fn create(
         ],
         timer,
     )?;
-    let boundary_wgs84 = crate::read_multipolygon(boundary_gj)?;
+    let boundary_wgs84 = common::read_multipolygon(boundary_gj)?;
 
     timer.step("loading data zones");
     let data_zones = backend::places::DataZone::from_gj(
@@ -58,7 +58,7 @@ pub fn create(
         .collect();
 
     timer.step("loading commute desire lines");
-    let commute_desire_lines = crate::read_commute_desire_lines_csv(
+    let commute_desire_lines = common::read_commute_desire_lines_csv(
         "../data_prep/scotland/tmp/od_commute.csv",
         &zone_ids,
     )?;
@@ -138,10 +138,10 @@ pub fn create(
         .roads
         .iter()
         .enumerate()
-        .map(|(idx, r)| crate::get_speed_mph(highways[idx], &r.osm_tags))
+        .map(|(idx, r)| common::get_speed_mph(highways[idx], &r.osm_tags))
         .collect();
 
-    crate::handle_parallel_roads(&highways, &mut traffic_volumes, &mut speeds, &graph);
+    common::handle_parallel_roads(&highways, &mut traffic_volumes, &mut speeds, &graph);
 
     let street_space =
         read_street_space("../data_prep/scotland/tmp/streetspace.gpkg", &graph, timer)?;
@@ -289,7 +289,7 @@ fn read_traffic_volumes(
             continue;
         }
         results.push(
-            crate::get_anime_match(&matches, &source_data, idx)
+            common::get_anime_match(&matches, &source_data, idx)
                 .map(|pair| pair.0)
                 .unwrap_or(TrafficVolume::UpTo1000),
         );
@@ -352,7 +352,7 @@ fn read_street_space(
     // TODO Only for big roads
     let mut results = Vec::new();
     for idx in 0..graph.roads.len() {
-        results.push(crate::get_anime_match(&matches, &source_data, idx).map(|pair| pair.0));
+        results.push(common::get_anime_match(&matches, &source_data, idx).map(|pair| pair.0));
     }
     Ok(results)
 }
