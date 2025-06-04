@@ -1,18 +1,12 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
-use geo::{
-    Area, BooleanOps, BoundingRect, Centroid, Contains, Coord, Intersects, MultiPolygon, Point,
-    Polygon, Rect,
-};
+use geo::{Area, BooleanOps, Centroid, Contains, Coord, Intersects, MultiPolygon, Point, Polygon};
 use geojson::Feature;
 use graph::{Graph, RoadID};
 use nanorand::{Rng, WyRand};
-use rstar::AABB;
 use serde::{Deserialize, Serialize};
 use utils::Mercator;
-
-use crate::utils::Quintiles;
 
 // TODO We can't use geojson::ser::to_feature_collection_string and similar magic, because bincode
 // doesn't work with it, and we need to do the CRS transform
@@ -446,22 +440,22 @@ struct SettlementGJ {
 // These are data zones from the 2020 SIMD
 #[derive(Serialize, Deserialize)]
 pub struct DataZone {
-    polygon: MultiPolygon,
+    pub polygon: MultiPolygon,
     pub id: String,
-    imd_rank: usize,
+    pub imd_rank: usize,
     pub imd_percentile: usize,
     pub population: usize,
     pub roads: HashSet<RoadID>,
-    area_km2: f64,
+    pub area_km2: f64,
     // Relative to the study area, not all of Scotland
-    density_quintile: usize,
-    centroid_wgs84: Coord,
+    pub density_quintile: usize,
+    pub centroid_wgs84: Coord,
 
     // The bbox, rounded to centimeters, for generate_range to work
-    x1: i64,
-    y1: i64,
-    x2: i64,
-    y2: i64,
+    pub x1: i64,
+    pub y1: i64,
+    pub x2: i64,
+    pub y2: i64,
 }
 
 impl DataZone {
@@ -481,149 +475,6 @@ impl DataZone {
         f
     }
 
-    pub fn from_gj(gj: &str, boundary_wgs84: &MultiPolygon, graph: &Graph) -> Result<Vec<Self>> {
-        let profile = graph.profile_names["bicycle_direct"];
-        let boundary_mercator = graph.mercator.to_mercator(boundary_wgs84);
-
-        let mut zones = Vec::new();
-        let mut densities = Vec::new();
-        for x in geojson::de::deserialize_feature_collection_str_to_vec::<DataZoneGj>(gj)? {
-            if boundary_wgs84.intersects(&x.geometry) {
-                let polygon = graph.mercator.to_mercator(&x.geometry);
-
-                // How much of the zone intersects the study area?
-                let overlap = boundary_mercator.intersection(&polygon);
-                let ratio_in_boundary = overlap.unsigned_area() / polygon.unsigned_area();
-                if ratio_in_boundary < 0.1 {
-                    info!(
-                        "Skipping population zone {} because only {}% of it overlaps the boundary",
-                        x.id,
-                        ratio_in_boundary * 100.0
-                    );
-                    continue;
-                }
-
-                // TODO rstar can't directly calculate a MultiPolygon envelope
-                let bbox: Rect = polygon.bounding_rect().unwrap().into();
-                let envelope = AABB::from_corners(
-                    Point::new(bbox.min().x, bbox.min().y),
-                    Point::new(bbox.max().x, bbox.max().y),
-                );
-
-                // All intersecting roads
-                let roads: HashSet<RoadID> = graph.routers[profile.0]
-                    .closest_road
-                    .locate_in_envelope_intersecting(&envelope)
-                    .map(|obj| obj.data)
-                    .collect();
-
-                // Of the entire data zone, not just the part clipped to the study area
-                let area_km2 = x.area / 10.0e6;
-
-                let centroid = overlap.centroid().unwrap();
-                let centroid_wgs84 = graph.mercator.pt_to_wgs84(centroid.into());
-
-                zones.push(DataZone {
-                    polygon,
-                    id: x.id,
-                    imd_rank: x.rank,
-                    imd_percentile: x.percentile,
-                    population: x.population,
-                    area_km2,
-                    roads,
-                    density_quintile: 0,
-                    centroid_wgs84,
-
-                    x1: (bbox.min().x * 100.0) as i64,
-                    y1: (bbox.min().y * 100.0) as i64,
-                    x2: (bbox.max().x * 100.0) as i64,
-                    y2: (bbox.max().y * 100.0) as i64,
-                });
-
-                densities.push(((x.population as f64) / area_km2) as usize);
-            }
-        }
-
-        let stats = Quintiles::new(&densities);
-        for zone in &mut zones {
-            zone.density_quintile =
-                stats.quintile(((zone.population as f64) / zone.area_km2) as usize);
-        }
-
-        info!("Matched {} population zones", zones.len());
-        Ok(zones)
-    }
-
-    // TODO The input doesn't have IMD or population yet
-    // TODO Maybe move this to the CLI
-    pub fn from_england_gj(
-        gj: &str,
-        boundary_wgs84: &MultiPolygon,
-        graph: &Graph,
-    ) -> Result<Vec<Self>> {
-        let profile = graph.profile_names["bicycle_direct"];
-        let boundary_mercator = graph.mercator.to_mercator(boundary_wgs84);
-
-        let mut zones = Vec::new();
-        for x in geojson::de::deserialize_feature_collection_str_to_vec::<OutputAreaGJ>(gj)? {
-            if boundary_wgs84.intersects(&x.geometry) {
-                let polygon = graph.mercator.to_mercator(&x.geometry);
-
-                // How much of the zone intersects the study area?
-                let overlap = boundary_mercator.intersection(&polygon);
-                let ratio_in_boundary = overlap.unsigned_area() / polygon.unsigned_area();
-                if ratio_in_boundary < 0.1 {
-                    info!(
-                        "Skipping population zone {} because only {}% of it overlaps the boundary",
-                        x.name,
-                        ratio_in_boundary * 100.0
-                    );
-                    continue;
-                }
-
-                // TODO rstar can't directly calculate a MultiPolygon envelope
-                let bbox: Rect = polygon.bounding_rect().unwrap().into();
-                let envelope = AABB::from_corners(
-                    Point::new(bbox.min().x, bbox.min().y),
-                    Point::new(bbox.max().x, bbox.max().y),
-                );
-
-                // All intersecting roads
-                let roads: HashSet<RoadID> = graph.routers[profile.0]
-                    .closest_road
-                    .locate_in_envelope_intersecting(&envelope)
-                    .map(|obj| obj.data)
-                    .collect();
-
-                // Of the entire data zone, not just the part clipped to the study area
-                let area_km2 = polygon.unsigned_area() / 10.0e6;
-
-                let centroid = overlap.centroid().unwrap();
-                let centroid_wgs84 = graph.mercator.pt_to_wgs84(centroid.into());
-
-                zones.push(DataZone {
-                    polygon,
-                    id: x.name,
-                    imd_rank: 0,
-                    imd_percentile: 0,
-                    population: 0,
-                    area_km2,
-                    roads,
-                    density_quintile: 0,
-                    centroid_wgs84,
-
-                    x1: (bbox.min().x * 100.0) as i64,
-                    y1: (bbox.min().y * 100.0) as i64,
-                    x2: (bbox.max().x * 100.0) as i64,
-                    y2: (bbox.max().y * 100.0) as i64,
-                });
-            }
-        }
-
-        info!("Matched {} population zones", zones.len());
-        Ok(zones)
-    }
-
     pub fn random_point(&self, rng: &mut WyRand) -> Coord {
         loop {
             let x = (rng.generate_range(self.x1..=self.x2) as f64) / 100.0;
@@ -634,23 +485,4 @@ impl DataZone {
             }
         }
     }
-}
-
-#[derive(Deserialize)]
-struct DataZoneGj {
-    #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
-    geometry: MultiPolygon,
-    #[serde(rename = "DataZone")]
-    id: String,
-    rank: usize,
-    percentile: usize,
-    population: usize,
-    area: f64,
-}
-
-#[derive(Deserialize)]
-struct OutputAreaGJ {
-    #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
-    geometry: MultiPolygon,
-    name: String,
 }

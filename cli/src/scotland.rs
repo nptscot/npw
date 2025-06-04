@@ -7,8 +7,8 @@ use elevation::GeoTiffElevation;
 use fs_err::File;
 use gdal::{vector::LayerAccess, Dataset};
 use geo::{
-    Area, BoundingRect, Buffer, Centroid, Contains, Coord, Intersects, LineString, MultiPolygon,
-    Point, Polygon, Rect,
+    Area, BooleanOps, BoundingRect, Buffer, Centroid, Contains, Coord, Intersects, LineString,
+    MultiPolygon, Point, Polygon, Rect,
 };
 use graph::{Graph, RoadID, Timer};
 use log::{info, warn};
@@ -16,7 +16,7 @@ use rstar::AABB;
 use serde::Deserialize;
 
 use crate::{common, disconnected::remove_disconnected_components};
-use backend::{Highway, MapModel, Streetspace, TrafficVolume};
+use backend::{places::DataZone, Highway, MapModel, Streetspace, TrafficVolume};
 
 pub fn create(
     study_area_name: String,
@@ -46,7 +46,7 @@ pub fn create(
     let boundary_wgs84 = common::read_multipolygon(boundary_gj)?;
 
     timer.step("loading data zones");
-    let data_zones = backend::places::DataZone::from_gj(
+    let data_zones = load_data_zones(
         &fs_err::read_to_string("../data_prep/scotland/tmp/population.geojson")?,
         &boundary_wgs84,
         &graph,
@@ -545,4 +545,92 @@ fn buffer_polygon(area: &impl Buffer<Scalar = f64>, distance: f64) -> Result<Pol
         }
     };
     Ok(polygon)
+}
+
+fn load_data_zones(
+    gj: &str,
+    boundary_wgs84: &MultiPolygon,
+    graph: &Graph,
+) -> Result<Vec<DataZone>> {
+    let profile = graph.profile_names["bicycle_direct"];
+    let boundary_mercator = graph.mercator.to_mercator(boundary_wgs84);
+
+    let mut zones = Vec::new();
+    let mut densities = Vec::new();
+    for x in geojson::de::deserialize_feature_collection_str_to_vec::<DataZoneGj>(gj)? {
+        if boundary_wgs84.intersects(&x.geometry) {
+            let polygon = graph.mercator.to_mercator(&x.geometry);
+
+            // How much of the zone intersects the study area?
+            let overlap = boundary_mercator.intersection(&polygon);
+            let ratio_in_boundary = overlap.unsigned_area() / polygon.unsigned_area();
+            if ratio_in_boundary < 0.1 {
+                info!(
+                    "Skipping population zone {} because only {}% of it overlaps the boundary",
+                    x.id,
+                    ratio_in_boundary * 100.0
+                );
+                continue;
+            }
+
+            // TODO rstar can't directly calculate a MultiPolygon envelope
+            let bbox: Rect = polygon.bounding_rect().unwrap().into();
+            let envelope = AABB::from_corners(
+                Point::new(bbox.min().x, bbox.min().y),
+                Point::new(bbox.max().x, bbox.max().y),
+            );
+
+            // All intersecting roads
+            let roads: HashSet<RoadID> = graph.routers[profile.0]
+                .closest_road
+                .locate_in_envelope_intersecting(&envelope)
+                .map(|obj| obj.data)
+                .collect();
+
+            // Of the entire data zone, not just the part clipped to the study area
+            let area_km2 = x.area / 10.0e6;
+
+            let centroid = overlap.centroid().unwrap();
+            let centroid_wgs84 = graph.mercator.pt_to_wgs84(centroid.into());
+
+            zones.push(DataZone {
+                polygon,
+                id: x.id,
+                imd_rank: x.rank,
+                imd_percentile: x.percentile,
+                population: x.population,
+                area_km2,
+                roads,
+                density_quintile: 0,
+                centroid_wgs84,
+
+                x1: (bbox.min().x * 100.0) as i64,
+                y1: (bbox.min().y * 100.0) as i64,
+                x2: (bbox.max().x * 100.0) as i64,
+                y2: (bbox.max().y * 100.0) as i64,
+            });
+
+            densities.push(((x.population as f64) / area_km2) as usize);
+        }
+    }
+
+    let stats = common::Quintiles::new(&densities);
+    for zone in &mut zones {
+        zone.density_quintile = stats.quintile(((zone.population as f64) / zone.area_km2) as usize);
+    }
+
+    info!("Matched {} population zones", zones.len());
+    Ok(zones)
+}
+
+#[derive(Deserialize)]
+struct DataZoneGj {
+    #[serde(deserialize_with = "geojson::de::deserialize_geometry")]
+    geometry: MultiPolygon,
+    #[serde(rename = "DataZone")]
+    id: String,
+    rank: usize,
+    percentile: usize,
+    population: usize,
+    area: f64,
 }
