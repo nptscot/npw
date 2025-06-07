@@ -88,14 +88,18 @@ export class Backend {
     FeatureCollection<LineString, StaticRoad>
   > {
     let t = this.start("renderStaticRoads");
-    let result = await this.inner.renderStaticRoads();
+    let result = JSON.parse(
+      new TextDecoder().decode(await this.inner.renderStaticRoads()),
+    );
     this.stop(t);
     return result;
   }
 
   async renderDynamicRoads(): Promise<DynamicRoad[]> {
     let t = this.start("renderDynamicRoads");
-    let result = await this.inner.renderDynamicRoads();
+    let result = JSON.parse(
+      new TextDecoder().decode(await this.inner.renderDynamicRoads()),
+    );
     this.stop(t);
     return result;
   }
@@ -407,14 +411,16 @@ export class Backend {
     return result;
   }
 
-  private start(method: string): string {
+  private start(method: string): [string, number] {
     loadingSpinners.update((x) => {
       return x + 1;
     });
-    return method;
+    return [method, Date.now()];
   }
 
-  private stop(timer: string) {
+  private stop(timer: [string, number]) {
+    let elapsed = Date.now() - timer[1];
+    //console.log(`${timer[0]} took ${elapsed}ms`);
     loadingSpinners.update((x) => {
       return x - 1;
     });

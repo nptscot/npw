@@ -13,7 +13,6 @@ import type {
   BaselineStats,
   ConnectedComponents,
   DataZones,
-  DynamicRoad,
   EvaluateODOut,
   Greenspaces,
   GridMeshDensity,
@@ -27,7 +26,6 @@ import type {
   SetRouteInput,
   Settlements,
   SlowStats,
-  StaticRoad,
   Stats,
   Tier,
   TownCentreRoutes,
@@ -80,14 +78,16 @@ export class InnerBackend {
     return JSON.parse(this.inner!.getStudyAreaBoundary());
   }
 
-  renderStaticRoads(): FeatureCollection<LineString, StaticRoad> {
+  renderStaticRoads(): Uint8Array {
     this.checkReady();
-    return JSON.parse(this.inner!.renderStaticRoads());
+    let data = this.inner!.renderStaticRoads();
+    return Comlink.transfer(data, [data.buffer]);
   }
 
-  renderDynamicRoads(): DynamicRoad[] {
+  renderDynamicRoads(): Uint8Array {
     this.checkReady();
-    return JSON.parse(this.inner!.renderDynamicRoads());
+    let data = this.inner!.renderDynamicRoads();
+    return Comlink.transfer(data, [data.buffer]);
   }
 
   getAllRoutes(): FeatureCollection<LineString, RouteProps> & {

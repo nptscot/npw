@@ -30,14 +30,14 @@ impl MapModel {
 
     /// Returns GJ with one feature per road, with all properties that never change.
     #[wasm_bindgen(js_name = renderStaticRoads)]
-    pub fn render_static_roads_wasm(&self) -> Result<String, JsValue> {
-        serde_json::to_string(&self.render_static_roads()).map_err(err_to_js)
+    pub fn render_static_roads_wasm(&self) -> Result<Vec<u8>, JsValue> {
+        serde_json::to_vec(&self.render_static_roads()).map_err(err_to_js)
     }
 
     /// Returns a list of objects per road, with all properties that do change.
     #[wasm_bindgen(js_name = renderDynamicRoads)]
-    pub fn render_dynamic_roads_wasm(&self) -> Result<String, JsValue> {
-        serde_json::to_string(&self.render_dynamic_roads()).map_err(err_to_js)
+    pub fn render_dynamic_roads_wasm(&self) -> Result<Vec<u8>, JsValue> {
+        serde_json::to_vec(&self.render_dynamic_roads()).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = getInvertedBoundaryInsideSettlements)]
