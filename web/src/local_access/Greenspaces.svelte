@@ -60,6 +60,7 @@
   <FillLayer
     {...layerId("greenspaces-fill", false)}
     manageHoverState
+    filter={["==", ["get", "kind"], "greenspace"]}
     paint={{
       "fill-color": showGreenspaces
         ? ["case", ["get", "reachable"], "green", "red"]
@@ -73,6 +74,7 @@
   <LineLayer
     {...layerId("greenspaces-outline")}
     interactive={false}
+    filter={["==", ["get", "kind"], "greenspace"]}
     paint={{
       "line-color": showGreenspaces
         ? ["case", ["get", "reachable"], "green", "red"]
