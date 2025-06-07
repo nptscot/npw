@@ -14,7 +14,7 @@ impl MapModel {
         resolution: f64,
         x_offset: f64,
         y_offset: f64,
-    ) -> Result<String> {
+    ) -> Result<Vec<u8>> {
         // Make a 2D grid covering the entire area. Each tile counts (total length of routes built
         // inside, total length of all roads inside).
         // TODO We can stop counting the total length of roads inside?
@@ -90,7 +90,7 @@ impl MapModel {
                 features.push(f);
             }
         }
-        Ok(serde_json::to_string(&FeatureCollection {
+        Ok(serde_json::to_vec(&FeatureCollection {
             features,
             bbox: None,
             foreign_members: None,

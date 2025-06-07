@@ -187,7 +187,7 @@ impl MapModel {
     }
 
     /// Returns detailed GJ with per-road counts
-    pub fn evaluate_od(&self, fast_sample: bool) -> Result<String> {
+    pub fn evaluate_od(&self, fast_sample: bool) -> Result<Vec<u8>> {
         let od = self.od_counts(fast_sample, "bicycle_quiet")?;
 
         let mut max_count = 0;
@@ -212,7 +212,7 @@ impl MapModel {
         }));
         od.describe(self, &mut foreign_members)?;
 
-        Ok(serde_json::to_string(&FeatureCollection {
+        Ok(serde_json::to_vec(&FeatureCollection {
             features,
             bbox: None,
             foreign_members: Some(foreign_members),

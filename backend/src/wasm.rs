@@ -179,7 +179,7 @@ impl MapModel {
         override_infra_type: JsValue,
         default_tier: String,
         major_snap_threshold: Option<f64>,
-    ) -> Result<String, JsValue> {
+    ) -> Result<Vec<u8>, JsValue> {
         let mut waypoints: Vec<Waypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
         for w in &mut waypoints {
             self.to_mercator(&mut w.point);
@@ -204,7 +204,7 @@ impl MapModel {
         &self,
         raw_waypoints: JsValue,
         major_snap_threshold: Option<f64>,
-    ) -> Result<String, JsValue> {
+    ) -> Result<Vec<u8>, JsValue> {
         let mut waypoints: Vec<Waypoint> = serde_wasm_bindgen::from_value(raw_waypoints)?;
         for w in &mut waypoints {
             self.to_mercator(&mut w.point);
@@ -227,19 +227,19 @@ impl MapModel {
 
     /// Returns GJ Features of every route
     #[wasm_bindgen(js_name = getAllRoutes)]
-    pub fn get_all_routes_wasm(&self) -> Result<String, JsValue> {
-        serde_json::to_string(&self.get_all_routes()).map_err(err_to_js)
+    pub fn get_all_routes_wasm(&self) -> Result<Vec<u8>, JsValue> {
+        serde_json::to_vec(&self.get_all_routes()).map_err(err_to_js)
     }
 
     /// Returns one GJ Feature of the route
     #[wasm_bindgen(js_name = getRoute)]
-    pub fn get_route_wasm(&self, id: usize) -> Result<String, JsValue> {
+    pub fn get_route_wasm(&self, id: usize) -> Result<Vec<u8>, JsValue> {
         let route = self.get_route(id).map_err(err_to_js)?;
-        serde_json::to_string(&route).map_err(err_to_js)
+        serde_json::to_vec(&route).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = getRouteSections)]
-    pub fn get_route_sections_wasm(&self, ids: Vec<usize>) -> Result<String, JsValue> {
+    pub fn get_route_sections_wasm(&self, ids: Vec<usize>) -> Result<Vec<u8>, JsValue> {
         self.get_route_sections(ids).map_err(err_to_js)
     }
 
@@ -293,7 +293,7 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = evaluateOD)]
-    pub fn evaluate_od_wasm(&mut self, fast_sample: bool) -> Result<String, JsValue> {
+    pub fn evaluate_od_wasm(&mut self, fast_sample: bool) -> Result<Vec<u8>, JsValue> {
         if !self.quiet_router_ok {
             let mut timer = Timer::new("recalculate bicycle_quiet", None);
             self.recalculate_quiet_router(&mut timer);
@@ -399,7 +399,7 @@ impl MapModel {
         resolution: f64,
         x_offset: f64,
         y_offset: f64,
-    ) -> Result<String, JsValue> {
+    ) -> Result<Vec<u8>, JsValue> {
         self.calculate_grid_mesh_density(resolution, x_offset, y_offset)
             .map_err(err_to_js)
     }
@@ -417,7 +417,7 @@ impl MapModel {
 
     // TODO Except greenspaces
     #[wasm_bindgen(js_name = getPOIs)]
-    pub fn get_pois(&self) -> Result<String, JsValue> {
+    pub fn get_pois(&self) -> Result<Vec<u8>, JsValue> {
         // TODO Some kind of caching would make this nicer
         let roads = self.get_reachable_network();
 
@@ -432,7 +432,7 @@ impl MapModel {
             features.push(poi.to_gj(&self.graph.mercator, roads.covers(poi.road), idx));
         }
 
-        serde_json::to_string(&FeatureCollection {
+        serde_json::to_vec(&FeatureCollection {
             bbox: None,
             foreign_members: None,
             features,
@@ -441,11 +441,11 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = getGreenspaces)]
-    pub fn get_greenspaces(&self) -> Result<String, JsValue> {
+    pub fn get_greenspaces(&self) -> Result<Vec<u8>, JsValue> {
         // TODO Some kind of caching would make this nicer
         let roads = self.get_reachable_network();
 
-        serde_json::to_string(&FeatureCollection {
+        serde_json::to_vec(&FeatureCollection {
             bbox: None,
             foreign_members: None,
             features: self
@@ -459,11 +459,11 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = getTownCentres)]
-    pub fn get_town_centres(&self) -> Result<String, JsValue> {
+    pub fn get_town_centres(&self) -> Result<Vec<u8>, JsValue> {
         // TODO Some kind of caching would make this nicer
         let roads = self.get_reachable_network();
 
-        serde_json::to_string(&FeatureCollection {
+        serde_json::to_vec(&FeatureCollection {
             bbox: None,
             foreign_members: None,
             features: self
@@ -495,11 +495,11 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = getSettlements)]
-    pub fn get_settlements(&self) -> Result<String, JsValue> {
+    pub fn get_settlements(&self) -> Result<Vec<u8>, JsValue> {
         // TODO Some kind of caching would make this nicer
         let roads = self.get_reachable_network();
 
-        serde_json::to_string(&FeatureCollection {
+        serde_json::to_vec(&FeatureCollection {
             bbox: None,
             foreign_members: None,
             features: self
@@ -537,11 +537,11 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = getDataZones)]
-    pub fn get_data_zones(&self) -> Result<String, JsValue> {
+    pub fn get_data_zones(&self) -> Result<Vec<u8>, JsValue> {
         // TODO Some kind of caching would make this nicer
         let roads = self.get_reachable_network();
 
-        serde_json::to_string(&FeatureCollection {
+        serde_json::to_vec(&FeatureCollection {
             bbox: None,
             foreign_members: None,
             features: self
@@ -576,14 +576,14 @@ impl MapModel {
     }
 
     #[wasm_bindgen(js_name = getMajorJunctions)]
-    pub fn get_major_junctions(&self) -> Result<String, JsValue> {
+    pub fn get_major_junctions(&self) -> Result<Vec<u8>, JsValue> {
         let mut features = Vec::new();
         for i in &self.graph.intersections {
             if crate::is_major_junction(i, &self.highways) {
                 features.push(self.graph.mercator.to_wgs84_gj(&i.point));
             }
         }
-        serde_json::to_string(&FeatureCollection {
+        serde_json::to_vec(&FeatureCollection {
             bbox: None,
             foreign_members: None,
             features,

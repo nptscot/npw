@@ -88,18 +88,14 @@ export class Backend {
     FeatureCollection<LineString, StaticRoad>
   > {
     let t = this.start("renderStaticRoads");
-    let result = JSON.parse(
-      new TextDecoder().decode(await this.inner.renderStaticRoads()),
-    );
+    let result = fromBytes(await this.inner.renderStaticRoads());
     this.stop(t);
     return result;
   }
 
   async renderDynamicRoads(): Promise<DynamicRoad[]> {
     let t = this.start("renderDynamicRoads");
-    let result = JSON.parse(
-      new TextDecoder().decode(await this.inner.renderDynamicRoads()),
-    );
+    let result = fromBytes(await this.inner.renderDynamicRoads());
     this.stop(t);
     return result;
   }
@@ -110,21 +106,21 @@ export class Backend {
     }
   > {
     let t = this.start("getAllRoutes");
-    let result = await this.inner.getAllRoutes();
+    let result = fromBytes(await this.inner.getAllRoutes());
     this.stop(t);
     return result;
   }
 
   async getRoute(id: number): Promise<Feature<LineString, RouteProps>> {
     let t = this.start("getRoute");
-    let result = await this.inner.getRoute(id);
+    let result = fromBytes(await this.inner.getRoute(id));
     this.stop(t);
     return result;
   }
 
   async getRouteSections(ids: Array<number>): Promise<RouteSection[]> {
     let t = this.start("getRouteSections");
-    let result = await this.inner.getRouteSections(ids);
+    let result = fromBytes(await this.inner.getRouteSections(ids));
     this.stop(t);
     return result;
   }
@@ -168,12 +164,14 @@ export class Backend {
     majorSnapThreshold: number | null,
   ): Promise<AutosplitRoute> {
     let t = this.start("autosplitRoute");
-    let result = await this.inner.autosplitRoute(
-      editingRouteId,
-      waypoints,
-      overrideInfraType,
-      defaultTier,
-      majorSnapThreshold,
+    let result = fromBytes(
+      await this.inner.autosplitRoute(
+        editingRouteId,
+        waypoints,
+        overrideInfraType,
+        defaultTier,
+        majorSnapThreshold,
+      ),
     );
     this.stop(t);
     return result;
@@ -184,7 +182,9 @@ export class Backend {
     majorSnapThreshold: number | null,
   ): Promise<Feature<LineString>> {
     let t = this.start("previewRoute");
-    let result = await this.inner.previewRoute(waypoints, majorSnapThreshold);
+    let result = fromBytes(
+      await this.inner.previewRoute(waypoints, majorSnapThreshold),
+    );
     this.stop(t);
     return result;
   }
@@ -203,7 +203,7 @@ export class Backend {
 
   async evaluateOD(fastSample: boolean): Promise<EvaluateODOut> {
     let t = this.start("evaluateOD");
-    let result = await this.inner.evaluateOD(fastSample);
+    let result = fromBytes(await this.inner.evaluateOD(fastSample));
     this.stop(t);
     return result;
   }
@@ -242,10 +242,8 @@ export class Backend {
     yOffset: number,
   ): Promise<GridMeshDensity> {
     let t = this.start("getGridMeshDensity");
-    let result = await this.inner.getGridMeshDensity(
-      resolution,
-      xOffset,
-      yOffset,
+    let result = fromBytes(
+      await this.inner.getGridMeshDensity(resolution, xOffset, yOffset),
     );
     this.stop(t);
     return result;
@@ -274,21 +272,21 @@ export class Backend {
 
   async getPOIs(): Promise<POIs> {
     let t = this.start("getPOIs");
-    let result = await this.inner.getPOIs();
+    let result = fromBytes(await this.inner.getPOIs());
     this.stop(t);
     return result;
   }
 
   async getTownCentres(): Promise<TownCentres> {
     let t = this.start("getTownCentres");
-    let result = await this.inner.getTownCentres();
+    let result = fromBytes(await this.inner.getTownCentres());
     this.stop(t);
     return result;
   }
 
   async getSettlements(): Promise<Settlements> {
     let t = this.start("getSettlements");
-    let result = await this.inner.getSettlements();
+    let result = fromBytes(await this.inner.getSettlements());
     this.stop(t);
     return result;
   }
@@ -304,14 +302,14 @@ export class Backend {
 
   async getGreenspaces(): Promise<Greenspaces> {
     let t = this.start("getGreenspaces");
-    let result = await this.inner.getGreenspaces();
+    let result = fromBytes(await this.inner.getGreenspaces());
     this.stop(t);
     return result;
   }
 
   async getDataZones(): Promise<DataZones> {
     let t = this.start("getDataZones");
-    let result = await this.inner.getDataZones();
+    let result = fromBytes(await this.inner.getDataZones());
     this.stop(t);
     return result;
   }
@@ -385,7 +383,7 @@ export class Backend {
 
   async getMajorJunctions(): Promise<FeatureCollection> {
     let t = this.start("getMajorJunctions");
-    let result = await this.inner.getMajorJunctions();
+    let result = fromBytes(await this.inner.getMajorJunctions());
     this.stop(t);
     return result;
   }
@@ -419,10 +417,14 @@ export class Backend {
   }
 
   private stop(timer: [string, number]) {
-    let elapsed = Date.now() - timer[1];
+    //let elapsed = Date.now() - timer[1];
     //console.log(`${timer[0]} took ${elapsed}ms`);
     loadingSpinners.update((x) => {
       return x - 1;
     });
   }
+}
+
+function fromBytes(data: Uint8Array): any {
+  return JSON.parse(new TextDecoder().decode(data));
 }

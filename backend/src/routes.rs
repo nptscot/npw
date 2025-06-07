@@ -313,7 +313,7 @@ impl MapModel {
         override_infra_type: Option<InfraType>,
         default_tier: Tier,
         major_snap_threshold: Option<f64>,
-    ) -> Result<String> {
+    ) -> Result<Vec<u8>> {
         let mut used_roads = self.used_roads();
         if let Some(id) = editing_route_id {
             for (r, _) in &self.routes[&id].roads {
@@ -443,7 +443,7 @@ impl MapModel {
         los_details.dedup();
         sse_details.los_details = los_details;
 
-        Ok(serde_json::to_string(&FeatureCollection {
+        Ok(serde_json::to_vec(&FeatureCollection {
             features: sections,
             bbox: None,
             foreign_members: Some(into_object_value(serde_json::to_value(&sse_details)?)),
@@ -454,10 +454,10 @@ impl MapModel {
         &self,
         waypoints: Vec<Waypoint>,
         major_snap_threshold: Option<f64>,
-    ) -> Result<String> {
+    ) -> Result<Vec<u8>> {
         let (_, linestring) = self.waypoints_to_path(&waypoints, major_snap_threshold);
         let f = self.graph.mercator.to_wgs84_gj(&linestring);
-        Ok(serde_json::to_string(&f)?)
+        Ok(serde_json::to_vec(&f)?)
     }
 
     pub fn change_tier(&mut self, route_ids: Vec<usize>, tier: Tier) -> Result<()> {
@@ -491,7 +491,7 @@ impl MapModel {
         Ok(())
     }
 
-    pub fn get_route_sections(&self, ids: Vec<usize>) -> Result<String> {
+    pub fn get_route_sections(&self, ids: Vec<usize>) -> Result<Vec<u8>> {
         let mut sections = Vec::new();
         for id in ids {
             let Some(route) = self.routes.get(&id) else {
@@ -516,7 +516,7 @@ impl MapModel {
                 los,
             });
         }
-        Ok(serde_json::to_string(&sections)?)
+        Ok(serde_json::to_vec(&sections)?)
     }
 
     fn import_roads(&mut self, imports: Vec<(RoadID, InfraType, Tier)>) {

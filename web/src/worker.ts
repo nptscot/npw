@@ -9,27 +9,17 @@ import type {
   Position,
 } from "geojson";
 import type {
-  AutosplitRoute,
   BaselineStats,
   ConnectedComponents,
-  DataZones,
-  EvaluateODOut,
-  Greenspaces,
-  GridMeshDensity,
   InfraType,
   NetworkLengths,
   ODStats,
-  POIs,
   RouteGJ,
-  RouteProps,
-  RouteSection,
   SetRouteInput,
-  Settlements,
   SlowStats,
   Stats,
   Tier,
   TownCentreRoutes,
-  TownCentres,
   Waypoint,
 } from "./types";
 
@@ -79,32 +69,23 @@ export class InnerBackend {
   }
 
   renderStaticRoads(): Uint8Array {
-    this.checkReady();
-    let data = this.inner!.renderStaticRoads();
-    return Comlink.transfer(data, [data.buffer]);
+    return asBytes(this.checkReady().renderStaticRoads());
   }
 
   renderDynamicRoads(): Uint8Array {
-    this.checkReady();
-    let data = this.inner!.renderDynamicRoads();
-    return Comlink.transfer(data, [data.buffer]);
+    return asBytes(this.checkReady().renderDynamicRoads());
   }
 
-  getAllRoutes(): FeatureCollection<LineString, RouteProps> & {
-    id_counter: number;
-  } {
-    this.checkReady();
-    return JSON.parse(this.inner!.getAllRoutes());
+  getAllRoutes(): Uint8Array {
+    return asBytes(this.checkReady().getAllRoutes());
   }
 
-  getRoute(id: number): Feature<LineString, RouteProps> {
-    this.checkReady();
-    return JSON.parse(this.inner!.getRoute(id));
+  getRoute(id: number): Uint8Array {
+    return asBytes(this.checkReady().getRoute(id));
   }
 
-  getRouteSections(ids: Array<number>): RouteSection[] {
-    this.checkReady();
-    return JSON.parse(this.inner!.getRouteSections(new Uint32Array(ids)));
+  getRouteSections(ids: Array<number>): Uint8Array {
+    return asBytes(this.checkReady().getRouteSections(new Uint32Array(ids)));
   }
 
   // TODO Be consistent about undefined vs null
@@ -141,10 +122,9 @@ export class InnerBackend {
     overrideInfraType: InfraType | null,
     defaultTier: Tier,
     majorSnapThreshold: number | null,
-  ): AutosplitRoute {
-    this.checkReady();
-    return JSON.parse(
-      this.inner!.autosplitRoute(
+  ): Uint8Array {
+    return asBytes(
+      this.checkReady().autosplitRoute(
         editingRouteId == null ? undefined : editingRouteId,
         waypoints,
         overrideInfraType,
@@ -157,9 +137,10 @@ export class InnerBackend {
   previewRoute(
     waypoints: Waypoint[],
     majorSnapThreshold: number | null,
-  ): Feature<LineString> {
-    this.checkReady();
-    return JSON.parse(this.inner!.previewRoute(waypoints, majorSnapThreshold));
+  ): Uint8Array {
+    return asBytes(
+      this.checkReady().previewRoute(waypoints, majorSnapThreshold),
+    );
   }
 
   evaluateRoute(req: {
@@ -180,9 +161,8 @@ export class InnerBackend {
     );
   }
 
-  evaluateOD(fastSample: boolean): EvaluateODOut {
-    this.checkReady();
-    return JSON.parse(this.inner!.evaluateOD(fastSample));
+  evaluateOD(fastSample: boolean): Uint8Array {
+    return asBytes(this.checkReady().evaluateOD(fastSample));
   }
 
   recalculateStats(): Stats {
@@ -209,10 +189,9 @@ export class InnerBackend {
     resolution: number,
     xOffset: number,
     yOffset: number,
-  ): GridMeshDensity {
-    this.checkReady();
-    return JSON.parse(
-      this.inner!.getGridMeshDensity(resolution, xOffset, yOffset),
+  ): Uint8Array {
+    return asBytes(
+      this.checkReady().getGridMeshDensity(resolution, xOffset, yOffset),
     );
   }
 
@@ -231,19 +210,16 @@ export class InnerBackend {
     this.inner!.loadSavefile(contents);
   }
 
-  getPOIs(): POIs {
-    this.checkReady();
-    return JSON.parse(this.inner!.getPOIs());
+  getPOIs(): Uint8Array {
+    return asBytes(this.checkReady().getPOIs());
   }
 
-  getTownCentres(): TownCentres {
-    this.checkReady();
-    return JSON.parse(this.inner!.getTownCentres());
+  getTownCentres(): Uint8Array {
+    return asBytes(this.checkReady().getTownCentres());
   }
 
-  getSettlements(): Settlements {
-    this.checkReady();
-    return JSON.parse(this.inner!.getSettlements());
+  getSettlements(): Uint8Array {
+    return asBytes(this.checkReady().getSettlements());
   }
 
   getSettlementLocations(): [string, [number, number, number, number]][] {
@@ -251,14 +227,12 @@ export class InnerBackend {
     return JSON.parse(this.inner!.getSettlementLocations());
   }
 
-  getGreenspaces(): Greenspaces {
-    this.checkReady();
-    return JSON.parse(this.inner!.getGreenspaces());
+  getGreenspaces(): Uint8Array {
+    return asBytes(this.checkReady().getGreenspaces());
   }
 
-  getDataZones(): DataZones {
-    this.checkReady();
-    return JSON.parse(this.inner!.getDataZones());
+  getDataZones(): Uint8Array {
+    return asBytes(this.checkReady().getDataZones());
   }
 
   debugReachablePath(
@@ -305,9 +279,8 @@ export class InnerBackend {
     );
   }
 
-  getMajorJunctions(): FeatureCollection {
-    this.checkReady();
-    return JSON.parse(this.inner!.getMajorJunctions());
+  getMajorJunctions(): Uint8Array {
+    return asBytes(this.checkReady().getMajorJunctions());
   }
 
   getTownCentreRoutes(): TownCentreRoutes {
@@ -325,11 +298,17 @@ export class InnerBackend {
     return JSON.parse(this.inner!.getNetworkLengths());
   }
 
-  private checkReady() {
+  private checkReady(): MapModel {
     if (!this.inner) {
       throw new Error("InnerBackend used without a file loaded");
     }
+    return this.inner;
   }
+}
+
+// Avoid a structured clone when passing data from the web worker back to the main thread
+function asBytes(data: Uint8Array): Uint8Array {
+  return Comlink.transfer(data, [data.buffer]);
 }
 
 Comlink.expose(InnerBackend);
