@@ -15,6 +15,7 @@
     ScaleControl,
   } from "svelte-maplibre";
   import { fetchWithProgress } from "svelte-utils";
+  import favicon from "../../assets/favicon.ico?url";
   import hospital3Icon from "../../assets/hospital_ignore.png";
   import hospital1Icon from "../../assets/hospital_reachable.png";
   import hospital2Icon from "../../assets/hospital_unreachable.png";
@@ -250,6 +251,7 @@
 
 <svelte:head>
   <title>Network Planning Workspace - {$boundaryName}</title>
+  <link rel="icon" type="image/x-icon" href={favicon} />
 </svelte:head>
 
 <Loading {loading} {progress}>

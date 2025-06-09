@@ -3,6 +3,7 @@
   import "@scottish-government/design-system/dist/scripts/design-system.js";
   import "@fortawesome/fontawesome-free/css/all.min.css";
   import { onMount } from "svelte";
+  import favicon from "../../assets/favicon.ico?url";
   import { BackLink } from "../common";
 
   onMount(async () => {
@@ -10,6 +11,10 @@
     window.DS.initAll();
   });
 </script>
+
+<svelte:head>
+  <link rel="icon" type="image/x-icon" href={favicon} />
+</svelte:head>
 
 <h1>Network Planning Workspace</h1>
 

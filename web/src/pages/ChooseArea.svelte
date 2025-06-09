@@ -14,6 +14,7 @@
   } from "svelte-maplibre";
   import { Popup } from "svelte-utils/map";
   import englandBoundariesUrl from "../../assets/england_boundaries.geojson?url";
+  import favicon from "../../assets/favicon.ico?url";
   import logo from "../../assets/npt_logo.png?url";
   import scotlandBoundariesUrl from "../../assets/scotland_boundaries.geojson?url";
   import { countryBounds, stripPrefix } from "../common";
@@ -58,6 +59,10 @@
     window.location.href = `npw.html?boundary=LAD_${props.name}`;
   }
 </script>
+
+<svelte:head>
+  <link rel="icon" type="image/x-icon" href={favicon} />
+</svelte:head>
 
 <div class="container">
   <div class="controls">
