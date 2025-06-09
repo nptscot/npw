@@ -12,6 +12,7 @@ export { default as LegendWithToggles } from "./LegendWithToggles.svelte";
 export { default as LoadingSpinner } from "./LoadingSpinner.svelte";
 export { default as Modal } from "./Modal.svelte";
 export { default as Radio } from "./Radio.svelte";
+export { getBasemapStyle } from "./basemap";
 export { layerId } from "./zorder";
 
 // Zoom-dependant line width, adapted from from the Minor road layer (secondary

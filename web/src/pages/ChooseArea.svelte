@@ -17,9 +17,9 @@
   import favicon from "../../assets/favicon.ico?url";
   import logo from "../../assets/npt_logo.png?url";
   import scotlandBoundariesUrl from "../../assets/scotland_boundaries.geojson?url";
-  import { countryBounds, stripPrefix } from "../common";
+  import { countryBounds, getBasemapStyle, stripPrefix } from "../common";
   import { listAllFiles } from "../common/files";
-  import { country, maptilerApiKey } from "../stores";
+  import { country } from "../stores";
 
   let gj: FeatureCollection<Polygon | MultiPolygon, { name: string }> = {
     type: "FeatureCollection" as const,
@@ -128,7 +128,7 @@
 
   <div class="map">
     <MapLibre
-      style={`https://api.maptiler.com/maps/streets-v2/style.json?key=${maptilerApiKey}`}
+      style={getBasemapStyle("light")}
       bounds={countryBounds[$country]}
       on:error={(e) => {
         // @ts-expect-error ErrorEvent isn't exported

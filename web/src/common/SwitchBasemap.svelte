@@ -2,7 +2,7 @@
   import { basemap } from "../stores";
 
   function swap() {
-    $basemap = $basemap == "streets" ? "light" : "streets";
+    $basemap = $basemap == "light" ? "grayscale" : "light";
   }
 </script>
 

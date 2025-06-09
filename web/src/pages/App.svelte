@@ -4,7 +4,10 @@
   import "@scottish-government/design-system/dist/scripts/design-system.js";
   import "@fortawesome/fontawesome-free/css/all.min.css";
   import * as Comlink from "comlink";
-  import type { Map, StyleSpecification } from "maplibre-gl";
+  import type { Map } from "maplibre-gl";
+  import maplibregl from "maplibre-gl";
+  // TODO Indirect dependencies
+  import * as pmtiles from "pmtiles";
   import { onMount } from "svelte";
   import {
     FillLayer,
@@ -30,6 +33,7 @@
   import BulkEditMode from "../BulkEditMode.svelte";
   import {
     countryBounds,
+    getBasemapStyle,
     layerId,
     LoadingSpinner,
     stripPrefix,
@@ -83,6 +87,10 @@
   let loading = "";
   let progress = 0;
 
+  let protocol = new pmtiles.Protocol();
+  maplibregl.addProtocol("pmtiles", protocol.tile);
+  let knowRemoteStorage = false;
+
   let map: Map;
   $: if (map) {
     map.keyboard.disableRotation();
@@ -119,8 +127,10 @@
       );
       console.log(`Using locally hosted files`);
       $remoteStorage = false;
+      knowRemoteStorage = true;
     } catch (err) {
       console.log(`Using remote hosted files`);
+      knowRemoteStorage = true;
       try {
         bytes = await fetchWithProgress(
           assetUrl(`areas/${$boundaryName}.bin.gz`),
@@ -199,28 +209,6 @@
     mapDiv.appendChild($mapContents);
   }
 
-  let style: string | StyleSpecification | null = null;
-  $: updateStyle($basemap);
-  async function updateStyle(basemap: string) {
-    if (basemap == "light") {
-      let resp = await fetch(
-        `https://api.maptiler.com/maps/dataviz-light/style.json?key=${maptilerApiKey}`,
-      );
-      let json = await resp.json();
-      style = json;
-      return;
-    }
-
-    // streets-v2 uses a fill-extrusion layer for 3D buildings that's very distracting. Remove it, and make the regular buildings layer display at high zoom instead.
-    let resp = await fetch(
-      `https://api.maptiler.com/maps/streets-v2/style.json?key=${maptilerApiKey}`,
-    );
-    let json = await resp.json();
-    json.layers = json.layers.filter((l: any) => l.id != "Building 3D");
-    delete json.layers.find((l: any) => l.id == "Building")!.maxzoom;
-    style = json;
-  }
-
   // Start less than $mutationCounter
   let lastUpdateFastStats = 0;
   async function recalcFastStats() {
@@ -280,140 +268,138 @@
   </main>
 
   <main slot="map" class="map-container">
-    {#if style}
-      <MapLibre
-        {style}
-        maxZoom={19}
-        bounds={countryBounds[$country]}
-        bind:map
-        bind:zoom={$zoom}
-        on:error={(e) => {
-          // @ts-expect-error ErrorEvent isn't exported
-          console.log(e.detail.error);
-        }}
-        images={[
-          { id: "railway_stations_reachable", url: railwayStation1Icon },
-          { id: "railway_stations_unreachable", url: railwayStation2Icon },
-          { id: "railway_stations_ignore", url: railwayStation3Icon },
-          { id: "schools_reachable", url: school1Icon },
-          { id: "schools_unreachable", url: school2Icon },
-          { id: "schools_ignore", url: school3Icon },
-          { id: "gp_hospitals_reachable", url: hospital1Icon },
-          { id: "gp_hospitals_unreachable", url: hospital2Icon },
-          { id: "gp_hospitals_ignore", url: hospital3Icon },
-        ]}
-        hash
-      >
-        <NavigationControl showCompass={false} />
-        <ScaleControl />
-        <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
-        <LoadingSpinner />
-        <SettlementPicker />
-        <DisableInteractiveLayers />
-        {#if $currentStage != "LocalAccess"}
-          <StreetView />
-        {/if}
-        <ReportProblemMap />
-        <SwitchBasemap />
+    <MapLibre
+      style={getBasemapStyle(knowRemoteStorage, $basemap)}
+      maxZoom={19}
+      bounds={countryBounds[$country]}
+      bind:map
+      bind:zoom={$zoom}
+      on:error={(e) => {
+        // @ts-expect-error ErrorEvent isn't exported
+        console.log(e.detail.error);
+      }}
+      images={[
+        { id: "railway_stations_reachable", url: railwayStation1Icon },
+        { id: "railway_stations_unreachable", url: railwayStation2Icon },
+        { id: "railway_stations_ignore", url: railwayStation3Icon },
+        { id: "schools_reachable", url: school1Icon },
+        { id: "schools_unreachable", url: school2Icon },
+        { id: "schools_ignore", url: school3Icon },
+        { id: "gp_hospitals_reachable", url: hospital1Icon },
+        { id: "gp_hospitals_unreachable", url: hospital2Icon },
+        { id: "gp_hospitals_ignore", url: hospital3Icon },
+      ]}
+      hash
+    >
+      <NavigationControl showCompass={false} />
+      <ScaleControl />
+      <Geocoder {map} apiKey={maptilerApiKey} country="gb" />
+      <LoadingSpinner />
+      <SettlementPicker />
+      <DisableInteractiveLayers />
+      {#if $currentStage != "LocalAccess"}
+        <StreetView />
+      {/if}
+      <ReportProblemMap />
+      <SwitchBasemap />
 
-        <div bind:this={mapDiv} />
+      <div bind:this={mapDiv} />
 
-        {#if $backend}
-          {#await $backend.getInvertedBoundaryInsideSettlements() then data}
-            <GeoJSON {data}>
-              <FillLayer
-                {...layerId("fade-study-area-inside")}
-                paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
-                layout={{
-                  visibility:
-                    invertLayer($mode, $currentStage) == "inside"
-                      ? "visible"
-                      : "none",
-                }}
-              />
-            </GeoJSON>
-          {/await}
-          {#await $backend.getInvertedBoundaryOutsideSettlements() then data}
-            <GeoJSON {data}>
-              <FillLayer
-                {...layerId("fade-study-area-outside")}
-                paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
-                layout={{
-                  visibility:
-                    invertLayer($mode, $currentStage) == "outside"
-                      ? "visible"
-                      : "none",
-                }}
-              />
-            </GeoJSON>
-          {/await}
-          {#await $backend.getInvertedBoundaryForStudyArea() then data}
-            <GeoJSON {data}>
-              <FillLayer
-                {...layerId("fade-study-area-entire")}
-                paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
-                layout={{
-                  visibility:
-                    invertLayer($mode, $currentStage) == "all"
-                      ? "visible"
-                      : "none",
-                }}
-              />
-            </GeoJSON>
-          {/await}
-          {#await $backend.getStudyAreaBoundary() then data}
-            <GeoJSON {data}>
-              <LineLayer
-                {...layerId("study-area-outline")}
-                paint={{
-                  "line-color": "black",
-                  "line-width": 2,
-                  "line-dasharray": [2, 1],
-                }}
-              />
-            </GeoJSON>
-          {/await}
-
-          <ReferenceLayers />
-          <RightLayers />
-          <LegendPanel />
-          {#if $mode.kind != "setup" || $mode.subpage == "new-project"}
-            <BottomPanel />
-          {/if}
-
-          {#if $mode.kind == "setup"}
-            <SetupMode bind:subpage={$mode.subpage} />
-          {:else if $mode.kind == "overview"}
-            <OverviewMode />
-          {:else if $mode.kind == "main"}
-            {#if $currentStage == "assessment"}
-              <AssessMode />
-            {:else if $currentStage == "LocalAccess"}
-              <LocalAccessMode />
-            {:else}
-              <MainMode />
-            {/if}
-          {:else if $mode.kind == "edit-route" && map}
-            <EditRouteMode
-              id={$mode.id}
-              {map}
-              bind:anyEdits={$mode.anyEdits}
-              restoreWaypoints={$mode.restoreWaypoints}
+      {#if $backend}
+        {#await $backend.getInvertedBoundaryInsideSettlements() then data}
+          <GeoJSON {data}>
+            <FillLayer
+              {...layerId("fade-study-area-inside")}
+              paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
+              layout={{
+                visibility:
+                  invertLayer($mode, $currentStage) == "inside"
+                    ? "visible"
+                    : "none",
+              }}
             />
-          {:else if $mode.kind == "review-sections"}
-            <ReviewSectionsMode
-              ids={$mode.ids}
-              sections={$mode.sections}
-              restoreWaypoints={$mode.restoreWaypoints}
+          </GeoJSON>
+        {/await}
+        {#await $backend.getInvertedBoundaryOutsideSettlements() then data}
+          <GeoJSON {data}>
+            <FillLayer
+              {...layerId("fade-study-area-outside")}
+              paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
+              layout={{
+                visibility:
+                  invertLayer($mode, $currentStage) == "outside"
+                    ? "visible"
+                    : "none",
+              }}
             />
-          {:else if $mode.kind == "evaluate-journey"}
-            <EvaluateJourneyMode browse={$mode.browse} />
-          {:else if $mode.kind == "bulk-edit"}
-            <BulkEditMode />
-          {/if}
+          </GeoJSON>
+        {/await}
+        {#await $backend.getInvertedBoundaryForStudyArea() then data}
+          <GeoJSON {data}>
+            <FillLayer
+              {...layerId("fade-study-area-entire")}
+              paint={{ "fill-color": "black", "fill-opacity": 0.3 }}
+              layout={{
+                visibility:
+                  invertLayer($mode, $currentStage) == "all"
+                    ? "visible"
+                    : "none",
+              }}
+            />
+          </GeoJSON>
+        {/await}
+        {#await $backend.getStudyAreaBoundary() then data}
+          <GeoJSON {data}>
+            <LineLayer
+              {...layerId("study-area-outline")}
+              paint={{
+                "line-color": "black",
+                "line-width": 2,
+                "line-dasharray": [2, 1],
+              }}
+            />
+          </GeoJSON>
+        {/await}
+
+        <ReferenceLayers />
+        <RightLayers />
+        <LegendPanel />
+        {#if $mode.kind != "setup" || $mode.subpage == "new-project"}
+          <BottomPanel />
         {/if}
-      </MapLibre>
-    {/if}
+
+        {#if $mode.kind == "setup"}
+          <SetupMode bind:subpage={$mode.subpage} />
+        {:else if $mode.kind == "overview"}
+          <OverviewMode />
+        {:else if $mode.kind == "main"}
+          {#if $currentStage == "assessment"}
+            <AssessMode />
+          {:else if $currentStage == "LocalAccess"}
+            <LocalAccessMode />
+          {:else}
+            <MainMode />
+          {/if}
+        {:else if $mode.kind == "edit-route" && map}
+          <EditRouteMode
+            id={$mode.id}
+            {map}
+            bind:anyEdits={$mode.anyEdits}
+            restoreWaypoints={$mode.restoreWaypoints}
+          />
+        {:else if $mode.kind == "review-sections"}
+          <ReviewSectionsMode
+            ids={$mode.ids}
+            sections={$mode.sections}
+            restoreWaypoints={$mode.restoreWaypoints}
+          />
+        {:else if $mode.kind == "evaluate-journey"}
+          <EvaluateJourneyMode browse={$mode.browse} />
+        {:else if $mode.kind == "bulk-edit"}
+          <BulkEditMode />
+        {/if}
+      {/if}
+    </MapLibre>
   </main>
 </Layout>
 

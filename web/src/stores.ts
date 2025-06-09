@@ -52,7 +52,7 @@ export let mode: Writable<Mode> = writable({
 export let currentStage: Writable<Tier | "assessment"> = writable("Primary");
 export let map: Writable<Map | null> = writable(null);
 export let zoom: Writable<number | undefined> = writable(undefined);
-export let basemap = writable("streets");
+export let basemap = writable("light");
 
 // When the state is modified, trigger to refresh various things
 export let mutationCounter = writable(1);
