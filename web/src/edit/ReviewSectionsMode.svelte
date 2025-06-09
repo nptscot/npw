@@ -21,9 +21,10 @@
     editsRoadStyle,
     mode,
   } from "../stores";
-  import type { Waypoint } from "../types";
+  import type { RouteSection, Waypoint } from "../types";
 
   export let ids: number[];
+  export let sections: RouteSection[];
   export let restoreWaypoints: Waypoint[];
 
   $: headerLabel = { ...tierLabels, assessment: "Assess" }[$currentStage];
@@ -111,89 +112,84 @@
 
       <p>This route was split into {ids.length} sections.</p>
 
-      {#if $backend}
-        {#await $backend.getRouteSections(ids) then sections}
-          <table>
-            <thead>
-              <tr>
-                <th>Section</th>
-                <th>
-                  <button
-                    class:selected={$editsRoadStyle == "edits_tier"}
-                    on:click={() => ($editsRoadStyle = "edits_tier")}
-                  >
-                    <i class="fa-solid fa-ranking-star"></i>
-                  </button>
-                </th>
-                <th>
-                  <button
-                    class:selected={$editsRoadStyle == "edits_infra"}
-                    on:click={() => ($editsRoadStyle = "edits_infra")}
-                  >
-                    <i class="fa-solid fa-road"></i>
-                  </button>
-                </th>
-                <th>
-                  <button
-                    class:selected={$editsRoadStyle == "edits_deliverability"}
-                    on:click={() => ($editsRoadStyle = "edits_deliverability")}
-                  >
-                    <i class="fa-solid fa-person-digging"></i>
-                  </button>
-                </th>
-                <th>
-                  <button
-                    class:selected={$editsRoadStyle == "edits_los"}
-                    on:click={() => ($editsRoadStyle = "edits_los")}
-                  >
-                    <i class="fa-solid fa-face-smile"></i>
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each sections as section, idx}
-                <tr>
-                  <td
-                    class="section-cell"
-                    on:click={() =>
-                      ($mode = {
-                        kind: "edit-route",
-                        id: section.id,
-                        anyEdits: false,
-                        restoreWaypoints: [],
-                      })}
-                  >
-                    {idx + 1}
-                  </td>
+      <table>
+        <thead>
+          <tr>
+            <th>Section</th>
+            <th>
+              <button
+                class:selected={$editsRoadStyle == "edits_tier"}
+                on:click={() => ($editsRoadStyle = "edits_tier")}
+              >
+                <i class="fa-solid fa-ranking-star"></i>
+              </button>
+            </th>
+            <th>
+              <button
+                class:selected={$editsRoadStyle == "edits_infra"}
+                on:click={() => ($editsRoadStyle = "edits_infra")}
+              >
+                <i class="fa-solid fa-road"></i>
+              </button>
+            </th>
+            <th>
+              <button
+                class:selected={$editsRoadStyle == "edits_deliverability"}
+                on:click={() => ($editsRoadStyle = "edits_deliverability")}
+              >
+                <i class="fa-solid fa-person-digging"></i>
+              </button>
+            </th>
+            <th>
+              <button
+                class:selected={$editsRoadStyle == "edits_los"}
+                on:click={() => ($editsRoadStyle = "edits_los")}
+              >
+                <i class="fa-solid fa-face-smile"></i>
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each sections as section, idx}
+            <tr>
+              <td
+                class="section-cell"
+                on:click={() =>
+                  ($mode = {
+                    kind: "edit-route",
+                    id: section.id,
+                    anyEdits: false,
+                    restoreWaypoints: [],
+                  })}
+              >
+                {idx + 1}
+              </td>
 
-                  <td
-                    style:background={tierColors[section.tier]}
-                    title={"Tier: " + tierLabels[section.tier]}
-                  ></td>
+              <td
+                style:background={tierColors[section.tier]}
+                title={"Tier: " + tierLabels[section.tier]}
+              ></td>
 
-                  <td
-                    style:background={infraTypeColors[section.infra_type]}
-                    title={"Infrastructure type: " +
-                      infraTypeLabels[section.infra_type]}
-                  ></td>
+              <td
+                style:background={infraTypeColors[section.infra_type]}
+                title={"Infrastructure type: " +
+                  infraTypeLabels[section.infra_type]}
+              ></td>
 
-                  <td
-                    style:background={section.fits ? "green" : "red"}
-                    title={"Fits: " + (section.fits ? "yes" : "no")}
-                  ></td>
+              <td
+                style:background={section.fits ? "green" : "red"}
+                title={"Fits: " + (section.fits ? "yes" : "no")}
+              ></td>
 
-                  <td
-                    style:background={levelOfServiceColors[section.los]}
-                    title={"Level of Service: " +
-                      levelOfServiceLabels[section.los]}
-                  ></td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        {/await}
-      {/if}
+              <td
+                style:background={levelOfServiceColors[section.los]}
+                title={"Level of Service: " + levelOfServiceLabels[section.los]}
+              ></td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
 
       <RelevantLayers />
     </div>

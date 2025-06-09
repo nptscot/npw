@@ -122,9 +122,11 @@
     await autosave();
 
     if (allIds.length > 1) {
+      let sections = await $backend!.getRouteSections(allIds);
       $mode = {
         kind: "review-sections",
         ids: allIds,
+        sections,
         restoreWaypoints: JSON.parse(JSON.stringify($waypoints)),
       };
     } else {

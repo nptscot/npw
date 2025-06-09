@@ -10,6 +10,7 @@ import {
 import type {
   ConnectedComponents,
   ODStats,
+  RouteSection,
   SlowStats,
   Stats,
   Tier,
@@ -30,7 +31,12 @@ export type Mode =
       anyEdits: boolean;
       restoreWaypoints: Waypoint[];
     }
-  | { kind: "review-sections"; ids: number[]; restoreWaypoints: Waypoint[] }
+  | {
+      kind: "review-sections";
+      ids: number[];
+      sections: RouteSection[];
+      restoreWaypoints: Waypoint[];
+    }
   | { kind: "evaluate-journey"; browse: WorstRoutes }
   | { kind: "bulk-edit" };
 
@@ -130,13 +136,6 @@ export async function autosave() {
   }
   let state = await backendValue.getAllRoutes();
   setLocalStorage(getKey(boundary, filename), JSON.stringify(state));
-
-  // TODO Temporary debugging
-  /*let total = 0;
-  for (let route of Object.values(state.features)) {
-    total += (route as any).properties.waypoints.length;
-  }
-  console.log(`Autosaving. ${total} waypoints in all routes`);*/
 }
 
 // Updates the URL and enters the main state

@@ -403,6 +403,7 @@
           {:else if $mode.kind == "review-sections"}
             <ReviewSectionsMode
               ids={$mode.ids}
+              sections={$mode.sections}
               restoreWaypoints={$mode.restoreWaypoints}
             />
           {:else if $mode.kind == "evaluate-journey"}
