@@ -43,11 +43,9 @@ pub struct Stats {
 impl MapModel {
     /// After any edit, calculate summary stats. This must be fast, since it's automatically done
     /// after every edit.
-    pub fn get_stats(&self, timer: &mut Timer) -> Stats {
-        timer.step("get reachable network");
+    pub fn get_stats(&self) -> Stats {
         let roads = self.get_reachable_network();
 
-        timer.step("reachable stats");
         let percent_reachable_schools = percent(
             self.schools.iter().filter(|x| roads.covers(x.road)).count(),
             self.schools.len(),
@@ -111,7 +109,6 @@ impl MapModel {
         let percent_reachable_imd_population = percent(deprived_sum, deprived_total).into();
         let percent_reachable_population = percent(population_sum, population_total).into();
 
-        timer.step("covered demands");
         let mut covered_high_demand = 0;
         let mut total_high_demand = 0;
         let mut covered_medium_demand = 0;

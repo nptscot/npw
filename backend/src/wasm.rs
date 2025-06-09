@@ -304,10 +304,7 @@ impl MapModel {
 
     #[wasm_bindgen(js_name = recalculateStats)]
     pub fn recalculate_stats_wasm(&mut self) -> Result<String, JsValue> {
-        let mut timer = Timer::new("recalculate fast stats", None);
-        let result = serde_json::to_string(&self.get_stats(&mut timer)).map_err(err_to_js);
-        timer.done();
-        result
+        serde_json::to_string(&self.get_stats()).map_err(err_to_js)
     }
 
     #[wasm_bindgen(js_name = recalculateSlowStats)]

@@ -232,7 +232,7 @@ impl MapModel {
         // Calculate baseline stats, relative to existing infrastructure
         let only_some_infra_types = true;
         model.import_existing_routes(only_some_infra_types);
-        model.baseline_stats = model.get_stats(timer);
+        model.baseline_stats = model.get_stats();
         model.recalculate_quiet_router(timer);
         model.baseline_slow_stats = model.get_slow_stats(timer);
         // Clear those edits

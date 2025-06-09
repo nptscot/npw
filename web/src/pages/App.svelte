@@ -224,9 +224,7 @@
   let lastUpdateFastStats = 0;
   async function recalcFastStats() {
     if ($backend && lastUpdateFastStats != $mutationCounter) {
-      console.time("Recalculate fast stats");
       $stats = await $backend.recalculateStats();
-      console.timeEnd("Recalculate fast stats");
       lastUpdateFastStats = $mutationCounter;
     }
   }
