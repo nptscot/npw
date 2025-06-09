@@ -27,28 +27,48 @@
       center,
     });
   }
+
+  // Note we don't bind:checked for the Checkboxes here -- when this component
+  // gets destroyed, that was changing the checkbox stores to undefined
+  // for some reason
 </script>
 
 {#if $currentStage == "Primary"}
   <h3>Reference layers</h3>
 
-  <Checkbox small bind:checked={$cyclingDemandHigh}>
+  <Checkbox
+    small
+    checked={$cyclingDemandHigh}
+    on:change={(e) => cyclingDemandHigh.set(e.detail)}
+  >
     High cycling demand corridors
   </Checkbox>
   {#if $cyclingDemandHigh}
     <div style:margin-left="20px">
-      <Checkbox small bind:checked={$showUncoveredDemand}>
+      <Checkbox
+        small
+        checked={$showUncoveredDemand}
+        on:change={(e) => showUncoveredDemand.set(e.detail)}
+      >
         Show all demand, even if covered
       </Checkbox>
     </div>
   {/if}
 
-  <Checkbox small bind:checked={$arterialRoadCoverage}>
+  <Checkbox
+    small
+    checked={$arterialRoadCoverage}
+    on:change={(e) => arterialRoadCoverage.set(e.detail)}
+  >
     Arterial road network coverage
   </Checkbox>
   {#if $arterialRoadCoverage}
     <div style:margin-left="20px">
-      <Checkbox small bind:checked={$showUncoveredDemand}>
+      <Checkbox
+        small
+        checked={$showUncoveredDemand}
+        on:change={(e) => showUncoveredDemand.set(e.detail)}
+      >
         Show all arterial roads, even if covered
       </Checkbox>
     </div>
@@ -58,18 +78,30 @@
 {#if $currentStage == "Secondary"}
   <h3>Reference layers</h3>
 
-  <Checkbox small bind:checked={$cyclingDemandMedium}>
+  <Checkbox
+    small
+    checked={$cyclingDemandMedium}
+    on:change={(e) => cyclingDemandMedium.set(e.detail)}
+  >
     Medium cycling demand corridors
   </Checkbox>
   {#if $cyclingDemandMedium}
     <div style:margin-left="20px">
-      <Checkbox small bind:checked={$showUncoveredDemand}>
+      <Checkbox
+        small
+        checked={$showUncoveredDemand}
+        on:change={(e) => showUncoveredDemand.set(e.detail)}
+      >
         Show all demand, even if covered
       </Checkbox>
     </div>
   {/if}
 
-  <Checkbox small bind:checked={$uncoveredPopulation}>
+  <Checkbox
+    small
+    checked={$uncoveredPopulation}
+    on:change={(e) => uncoveredPopulation.set(e.detail)}
+  >
     Unconnected neighbourhoods
   </Checkbox>
   {#if $uncoveredPopulation}
@@ -80,11 +112,23 @@
     </div>
   {/if}
 
-  <Checkbox small bind:checked={$townCentres}>Town centres</Checkbox>
+  <Checkbox
+    small
+    checked={$townCentres}
+    on:change={(e) => townCentres.set(e.detail)}
+  >
+    Town centres
+  </Checkbox>
 {/if}
 
 {#if $currentStage == "LongDistance"}
   <h3>Reference layers</h3>
 
-  <Checkbox small bind:checked={$settlements}>Settlement boundaries</Checkbox>
+  <Checkbox
+    small
+    checked={$settlements}
+    on:change={(e) => settlements.set(e.detail)}
+  >
+    Settlement boundaries
+  </Checkbox>
 {/if}
