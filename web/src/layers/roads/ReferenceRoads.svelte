@@ -269,7 +269,12 @@
       {:else}
         <p>No streetspace evaluation data</p>
       {/if}
-      <a href={props.way} target="_blank">Open OSM</a>
+      <a
+        href={`https://www.openstreetmap.org/way/${props.way}`}
+        target="_blank"
+      >
+        Open OSM
+      </a>
 
       <hr />
 

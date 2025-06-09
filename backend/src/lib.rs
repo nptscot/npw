@@ -285,7 +285,7 @@ impl MapModel {
         for (idx, road) in self.graph.roads.iter().enumerate() {
             let mut f = self.graph.mercator.to_wgs84_gj(&road.linestring);
             f.set_property("id", idx);
-            f.set_property("way", road.way.to_string());
+            f.set_property("way", road.way.0);
             f.set_property("is_arterial_road", self.highways[idx].is_arterial_road());
             f.set_property("within_settlement", self.within_settlement[idx]);
             f.set_property("is_attractive", self.is_attractive[idx]);
@@ -295,7 +295,7 @@ impl MapModel {
                 serde_json::to_value(self.traffic_volumes[idx]).unwrap(),
             );
             f.set_property("speed", self.speeds[idx]);
-            f.set_property("gradient", self.gradients[idx]);
+            f.set_property("gradient", (self.gradients[idx] * 100.0).round() / 100.0);
             f.set_property(
                 "existing_infra",
                 serde_json::to_value(existing::classify_existing_osm_infra(
