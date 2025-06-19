@@ -5,6 +5,7 @@ import type {
 } from "maplibre-gl";
 
 export { default as BackLink } from "./BackLink.svelte";
+export { default as Beta } from "./Beta.svelte";
 export { default as Checkbox } from "./Checkbox.svelte";
 export { default as DrawRectangle } from "./DrawRectangle.svelte";
 export { default as HelpButton } from "./HelpButton.svelte";

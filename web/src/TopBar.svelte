@@ -1,6 +1,7 @@
 <script lang="ts">
   import logo from "../assets/npt_logo.png?url";
   import { tierLabels } from "./colors";
+  import { Beta } from "./common";
   import { canStopDrawing } from "./edit/stores";
   import TopBarStats from "./stats/TopBarStats.svelte";
   import { changeStage, currentStage, exitCurrentStage, mode } from "./stores";
@@ -29,6 +30,9 @@
           <a class="ds_site-navigation__link" href="./">
             <img id="logo" src={logo} alt="NPT logo" />
           </a>
+        </li>
+        <li class="ds_site-navigation__item" style:margin-right="12px">
+          <Beta />
         </li>
 
         {#if $mode.kind != "setup"}

@@ -17,7 +17,7 @@
   import favicon from "../../assets/favicon.ico?url";
   import logo from "../../assets/npt_logo.png?url";
   import scotlandBoundariesUrl from "../../assets/scotland_boundaries.geojson?url";
-  import { countryBounds, stripPrefix } from "../common";
+  import { Beta, countryBounds, stripPrefix } from "../common";
   import { listAllFiles } from "../common/files";
   import { country, maptilerApiKey } from "../stores";
 
@@ -67,6 +67,7 @@
 <div class="container">
   <div class="controls">
     <p><a href="https://www.npt.scot/"><img src={logo} alt="NPT logo" /></a></p>
+    <Beta />
 
     <h1>Network Planning Workspace</h1>
 
