@@ -30,9 +30,8 @@
     >
       NPT
     </a>
-    ) for Scotland is a web-based application designed to support strategic
-    cycle network planning and investment decisions, primarily for use by local
-    authorities.
+    ) for Scotland is a web-based application designed to support strategic cycle
+    network planning and investment decisions, primarily for use by local authorities.
   </p>
   <p>
     This tool utilises various datasets, some of which have <a
@@ -41,9 +40,9 @@
     >
       limitations
     </a>
-    . Users should always verify outputs against the most up to date geospatial
-    data held by the local authority before proceeding with detailed design or
-    investment decisions.
+    . Users should always verify outputs against the most up to date geospatial data
+    held by the local authority before proceeding with detailed design or investment
+    decisions.
   </p>
   <p>
     Please note that the commute layer results are based on 2011 Census data,

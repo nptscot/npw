@@ -5,8 +5,8 @@ use geo::{Haversine, Length, LineString};
 use geojson::{Feature, FeatureCollection, Geometry};
 use graph::{Graph, PathStep, Position, RoadID};
 use serde::{Deserialize, Serialize};
+use utils::{collapse_degree_2, KeyedLineString};
 
-use crate::join_lines::KeyedLineString;
 use crate::route_snapper::roads_to_waypoints;
 use crate::{
     level_of_service::get_level_of_service, utils::into_object_value, Highway, InfraType,
@@ -540,26 +540,25 @@ impl MapModel {
 
             pieces.push(KeyedLineString {
                 linestring: self.graph.roads[r.0].linestring.clone(),
-                ids: vec![(r, Dir::Forwards)],
+                ids: vec![(r, true)],
                 key: (infra_type, tier, fits, los),
             });
         }
 
         // Group them in hopefully meaningful chunks
-        // TODO Could try more aggressive joining after this, but this one seems to work fine so
-        // far. Although oddly it seems to handle more than just degree 2...
-        pieces = crate::join_lines::collapse_degree_2(pieces);
+        pieces = collapse_degree_2(pieces);
 
         for line in pieces {
+            let roads: Vec<(RoadID, Dir)> = line.ids.into_iter().map(fix_dir).collect();
+
             let (infra_type, tier, _, _) = line.key;
 
             let linestring_wgs84 = self.graph.mercator.to_wgs84(&line.linestring);
-            let waypoints_wgs84 = roads_to_waypoints(&self.graph, &line.ids);
+            let waypoints_wgs84 = roads_to_waypoints(&self.graph, &roads);
 
             // Pick the first name
             // TODO Does this short-circuit?
-            let name = line
-                .ids
+            let name = roads
                 .iter()
                 .filter_map(|(r, _)| self.graph.roads[r.0].osm_tags.get("name").cloned())
                 .next()
@@ -570,7 +569,7 @@ impl MapModel {
 
                 linestring_wgs84,
 
-                roads: line.ids,
+                roads,
 
                 name,
                 notes: "imported from existing network".to_string(),
@@ -592,6 +591,17 @@ impl MapModel {
             .flat_map(|route| route.roads.iter().map(|(r, _)| *r))
             .collect()
     }
+}
+
+fn fix_dir(pair: (RoadID, bool)) -> (RoadID, Dir) {
+    (
+        pair.0,
+        if pair.1 {
+            Dir::Forwards
+        } else {
+            Dir::Backwards
+        },
+    )
 }
 
 // TODO Upstream to graph

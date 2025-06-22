@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Loading } from "svelte-utils";
   import { BackLink, Checkbox } from "./common";
   import { listFilesInBoundary } from "./common/files";
   import {
@@ -18,7 +17,6 @@
     listFilesInBoundary($boundaryName).map(([filename, _]) => filename),
   );
 
-  let loading = "";
   let useExistingSomeTypes = false;
   let useExistingHighLoS = false;
   let useArterialRoads = false;
@@ -36,7 +34,6 @@
     useExistingHighLoS: boolean,
     useArterialRoads: boolean,
   ) {
-    loading = "Loading network for preview";
     await $backend!.clearAllRoutes();
 
     if (useExistingSomeTypes) {
@@ -50,11 +47,8 @@
     }
 
     $mutationCounter += 1;
-    loading = "";
   }
 </script>
-
-<Loading {loading} />
 
 <header class="ds_page-header">
   <h2 class="ds_page-header__title">New network design</h2>
