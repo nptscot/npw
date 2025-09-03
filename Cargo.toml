@@ -1,0 +1,20 @@
+[workspace]
+members = ["backend", "cli"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+
+[workspace.dependencies]
+anyhow = "1.0.98"
+bincode = "1.3.3"
+geo = "0.31.0"
+graph = { git = "https://github.com/a-b-street/15m" }
+log = "0.4.20"
+serde = "1.0.188"
+serde_json = "1.0.133"
+
+# For local development, build dependencies in release mode once, but otherwise
+# use dev profile and avoid wasm-opt.
+[profile.dev.package."*"]
+opt-level = 3

@@ -28,6 +28,7 @@ pub fn create(
         input_bytes,
         &mut utils::osm2graph::NullReader,
         Box::new(remove_disconnected_components),
+        Box::new(|_, _| Ok(())),
         vec![
             (
                 "bicycle_quiet".to_string(),
