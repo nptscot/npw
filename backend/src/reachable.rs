@@ -8,9 +8,7 @@ use utils::PriorityQueueItem;
 
 use crate::route_snapper::roads_to_waypoints;
 use crate::routes::glue_route_wgs84;
-use crate::{
-    utils::into_object_value, Dir, InfraType, LevelOfService, MapModel, SetRouteInput, Tier,
-};
+use crate::{Dir, InfraType, LevelOfService, MapModel, SetRouteInput, Tier};
 
 pub struct Reachability {
     pub network: HashSet<RoadID>,
@@ -147,7 +145,7 @@ impl MapModel {
         Ok(serde_json::to_string(&FeatureCollection {
             features,
             bbox: None,
-            foreign_members: Some(into_object_value(serde_json::json!({
+            foreign_members: Some(utils::into_object_value(serde_json::json!({
                 "length_meters": length_meters,
             }))),
         })?)
@@ -218,16 +216,18 @@ impl MapModel {
                 let waypoints_wgs84 = roads_to_waypoints(&self.graph, &roads);
                 let linestring_wgs84 = glue_route_wgs84(&self.graph, &roads);
                 let mut f = Feature::from(Geometry::from(&linestring_wgs84));
-                f.properties = Some(into_object_value(serde_json::to_value(&SetRouteInput {
-                    waypoints: waypoints_wgs84,
+                f.properties = Some(utils::into_object_value(serde_json::to_value(
+                    &SetRouteInput {
+                        waypoints: waypoints_wgs84,
 
-                    name: "connection to local POI".to_string(),
-                    notes: String::new(),
-                    // Doesn't matter
-                    infra_type: InfraType::MixedTraffic,
-                    override_infra_type: false,
-                    tier: Tier::LocalAccess,
-                })?));
+                        name: "connection to local POI".to_string(),
+                        notes: String::new(),
+                        // Doesn't matter
+                        infra_type: InfraType::MixedTraffic,
+                        override_infra_type: false,
+                        tier: Tier::LocalAccess,
+                    },
+                )?));
                 f.set_property("length_meters", Haversine.length(&linestring_wgs84));
                 return Ok(serde_json::to_string(&f)?);
             }

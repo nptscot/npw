@@ -5,7 +5,7 @@ use geojson::FeatureCollection;
 use graph::{IntersectionID, RoadID};
 use petgraph::graphmap::UnGraphMap;
 
-use crate::{utils::into_object_value, MapModel};
+use crate::MapModel;
 
 impl MapModel {
     // Fast enough to calculate immediately
@@ -72,7 +72,7 @@ impl MapModel {
         FeatureCollection {
             features,
             bbox: None,
-            foreign_members: Some(into_object_value(serde_json::json!({
+            foreign_members: Some(utils::into_object_value(serde_json::json!({
                 "component_lengths": component_lengths,
                 "component_bboxes": component_bboxes,
             }))),

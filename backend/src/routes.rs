@@ -9,8 +9,8 @@ use utils::{collapse_degree_2, KeyedLineString};
 
 use crate::route_snapper::roads_to_waypoints;
 use crate::{
-    level_of_service::get_level_of_service, utils::into_object_value, Highway, InfraType,
-    LevelOfService, MapModel, Tier, TrafficVolume,
+    level_of_service::get_level_of_service, Highway, InfraType, LevelOfService, MapModel, Tier,
+    TrafficVolume,
 };
 
 #[derive(Clone)]
@@ -213,7 +213,7 @@ impl MapModel {
                 .map(|(id, r)| r.to_gj(*id))
                 .collect::<Vec<_>>(),
             bbox: None,
-            foreign_members: Some(into_object_value(serde_json::json!({
+            foreign_members: Some(utils::into_object_value(serde_json::json!({
                 "id_counter": self.id_counter,
                 "version": 2,
                 "study_area_name": self.study_area_name.clone(),
@@ -446,7 +446,9 @@ impl MapModel {
         Ok(serde_json::to_vec(&FeatureCollection {
             features: sections,
             bbox: None,
-            foreign_members: Some(into_object_value(serde_json::to_value(&sse_details)?)),
+            foreign_members: Some(utils::into_object_value(serde_json::to_value(
+                &sse_details,
+            )?)),
         })?)
     }
 

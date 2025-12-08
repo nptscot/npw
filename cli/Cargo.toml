@@ -25,4 +25,4 @@ rstar = { version = "0.12.0", features = ["serde"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 simple_logger = "5.0.0"
-utils = { git = "https://github.com/a-b-street/utils", features = ["serde"] }
+utils = { workspace = true }

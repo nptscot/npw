@@ -30,7 +30,6 @@ mod route_snapper;
 mod routes;
 mod stats;
 mod uptake;
-mod utils;
 mod wasm;
 
 #[wasm_bindgen]

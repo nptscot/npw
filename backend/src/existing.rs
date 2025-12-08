@@ -199,7 +199,8 @@ mod tests {
             (vec!["highway=steps"], false),
         ] {
             let do_include =
-                bicycle_profile(&tags(&input), &LineString::new(Vec::new())).0 != Direction::None;
+                bicycle_profile(&Tags::new_from_pairs(&input), &LineString::new(Vec::new())).0
+                    != Direction::None;
             if should_include && !do_include {
                 println!("For {input:?}, we should include it, but don't\n");
                 ok = false;
@@ -296,7 +297,7 @@ mod tests {
             ),
         ] {
             let is_offroad = false;
-            let actual = classify_existing_osm_infra(is_offroad, &tags(&input));
+            let actual = classify_existing_osm_infra(is_offroad, &Tags::new_from_pairs(&input));
             if actual != expected {
                 println!("For {input:?}, expected {expected:?} but got {actual:?}\n");
                 ok = false;
@@ -306,15 +307,5 @@ mod tests {
         if !ok {
             panic!("Some cases failed");
         }
-    }
-
-    // TODO Upstream as a test utility
-    fn tags(input: &Vec<&'static str>) -> Tags {
-        let mut tags = Tags::empty();
-        for kv in input {
-            let parts = kv.split("=").collect::<Vec<_>>();
-            tags.insert(parts[0], parts[1]);
-        }
-        tags
     }
 }

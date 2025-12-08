@@ -322,7 +322,7 @@ impl MapModel {
     /// Includes slow stats too
     #[wasm_bindgen(js_name = getBaselineStats)]
     pub fn get_baseline_stats_wasm(&self) -> Result<String, JsValue> {
-        let mut props = crate::utils::into_object_value(
+        let mut props = utils::into_object_value(
             serde_json::to_value(&self.baseline_stats).map_err(err_to_js)?,
         );
         props.insert(

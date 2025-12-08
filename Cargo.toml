@@ -13,6 +13,7 @@ graph = { git = "https://github.com/a-b-street/15m" }
 log = "0.4.20"
 serde = "1.0.188"
 serde_json = "1.0.133"
+utils = { git = "https://github.com/a-b-street/utils", features = ["serde"] }
 
 # For local development, build dependencies in release mode once, but otherwise
 # use dev profile and avoid wasm-opt.

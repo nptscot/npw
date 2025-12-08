@@ -4,9 +4,7 @@ use geojson::FeatureCollection;
 use graph::PathStep;
 use serde::Serialize;
 
-use crate::{
-    routes::gradient_group, utils::into_object_value, InfraType, LevelOfService, MapModel,
-};
+use crate::{routes::gradient_group, InfraType, LevelOfService, MapModel};
 
 pub enum Breakdown {
     None,
@@ -95,7 +93,7 @@ impl MapModel {
         Ok(serde_json::to_string(&FeatureCollection {
             features,
             bbox: None,
-            foreign_members: Some(into_object_value(serde_json::json!({
+            foreign_members: Some(utils::into_object_value(serde_json::json!({
                 "direct_bike_length": Euclidean.length(&full_route_linestring),
                 "quiet_bike_length": Euclidean.length(&quiet_bike_linestring),
                 "straight_line_length": straight_line_length,
