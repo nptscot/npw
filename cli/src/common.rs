@@ -16,7 +16,7 @@ pub fn read_multipolygon(gj_string: &str) -> Result<MultiPolygon> {
     let gj: geojson::Feature = gj_string.parse()?;
     if matches!(
         gj.geometry.as_ref().unwrap().value,
-        geojson::Value::Polygon(_)
+        geojson::GeometryValue::Polygon { .. }
     ) {
         Ok(MultiPolygon(vec![gj.try_into()?]))
     } else {

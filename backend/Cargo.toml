@@ -15,6 +15,7 @@ console_log = "1.0.0"
 enum-map = "2.7.3"
 geo = { workspace = true }
 geojson = { git = "https://github.com/georust/geojson", features = ["geo-types"] }
+getrandom = { version = "0.2.16", features = ["js"] }
 graph = { workspace = true }
 js-sys = "0.3.69"
 log = { workspace = true }

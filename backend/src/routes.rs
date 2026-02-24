@@ -651,7 +651,7 @@ pub fn end_pos((road, dir): (RoadID, Dir), graph: &Graph) -> Position {
 
 impl InMemoryRoute {
     fn to_gj(&self, id: usize) -> Feature {
-        geojson::ser::to_feature(SavedRoute {
+        geojson::ser::to_feature(&SavedRoute {
             geometry: self.linestring_wgs84.clone(),
             id,
             waypoints: self.waypoints_wgs84.clone(),

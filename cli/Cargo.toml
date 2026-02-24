@@ -15,7 +15,8 @@ fs-err = "3.1.0"
 geo = { workspace = true }
 geo-types = "0.7.16"
 geojson = { git = "https://github.com/georust/geojson", features = ["geo-types"] }
-gdal = "0.18.0"
+#gdal = { version = "0.18.0", features = [""] }
+gdal = { version = "0.18.0", features = ["bindgen"] }
 graph = { workspace = true }
 hilbert_2d = "1.1.0"
 log = { workspace = true }

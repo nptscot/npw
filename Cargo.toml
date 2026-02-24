@@ -8,7 +8,7 @@ edition = "2021"
 [workspace.dependencies]
 anyhow = "1.0.98"
 bincode = "1.3.3"
-geo = "0.31.0"
+geo = "0.32.0"
 graph = { git = "https://github.com/a-b-street/15m" }
 log = "0.4.20"
 serde = "1.0.188"
