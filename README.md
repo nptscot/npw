@@ -1,5 +1,7 @@
 # Network Planning Workspace
 
+Note: as of May 2026, development on this repository is frozen. Development has moved to a private repository. Please contact dustin@abstreet.uk if you want to discuss access.
+
 Dev: <https://nptscot.github.io/npw>
 
 Prod: <https://npw.scot>
